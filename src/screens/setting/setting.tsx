@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
-import { TextColor } from "../../constants/theme";
+import { BgColor, BorderColor, BoxColor, Lato, TextColor, WhiteColor } from "../../constants/theme";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DeleteWallet from "../../organims/setting/modal/deleteWallet";
 import { removeChain, setChain } from "../../util/secureKeyChain";
 import { getWalletList } from "../../util/walletList";
 import Container from "../../components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -87,15 +88,14 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
         <Container
             title="Setting"
             backEvent={handleBack}>
-
-            <View  style={styles.contents}>
-                <ScrollView>
+            <ViewContainer bgColor={BgColor}>
+                <ScrollView style={{borderTopWidth: 1, borderTopColor: BgColor}}>
                     {settingList.map((item, index) => {
                         return (
                         <TouchableOpacity key={index} onPress={()=>handleMenus(item.path)}>
                             <View style={styles.listItem}>
                                 <Text style={styles.itemTitle}>{item.title}</Text>
-                                <Icon name="arrow-forward-ios" size={20} color={"#ddd"}/>
+                                <Icon name="arrow-forward-ios" size={20} color={WhiteColor}/>
                             </View>
                         </TouchableOpacity>
                         )
@@ -119,27 +119,23 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
                         setOpenModal={handleDelModal}
                         deleteWallet={handleDeleteWallet}/>
                 </ScrollView>
-            </View>
+            </ViewContainer>
         </Container>
     )
 }
 
 const styles = StyleSheet.create({
-    contents: {
-        paddingTop: 1,
-        flex: 1,
-        backgroundColor: "#efefef",
-    },
     listItem: {
-        backgroundColor: "#fff",
+        backgroundColor: BoxColor,
         padding: 20,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
+        borderBottomWidth: .5,
+        borderBottomColor: BgColor,
     },
     itemTitle: {
+        fontFamily: Lato,
         fontSize: 16,
         color: TextColor
     },

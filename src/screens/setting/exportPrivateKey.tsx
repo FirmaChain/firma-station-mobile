@@ -14,6 +14,8 @@ import { decrypt, keyEncrypt } from "../../util/keystore";
 import { getChain } from "../../util/secureKeyChain";
 import { PasswordValidationCheck } from "../../util/validationCheck";
 import ExportModal from "../../organims/setting/modal/exportModal";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -96,47 +98,50 @@ const ExportPrivateKeyScreen: React.FunctionComponent<ExportPrivateKeyProps> = (
     }
 
     return (
-        <View style={styles.container}>
-            <Header step='' onPressEvent={() => handleGoBack()} />
-            <TitleBar title='Export private key' />
-            <View style={styles.contents}>
-                <Text style={styles.wallet}>{wallet}</Text>
-                <InputSetVertical
-                    title={currentPasswordTextObj.title}
-                    placeholder={currentPasswordTextObj.placeholder} 
-                    validation={true}
-                    secure={true}
-                    onChangeEvent={handlePassword} />
-            </View>
-            <View style={styles.buttonBox}>
-                <Button title='Export' active={validation} onPressEvent={exportPrivateKey} />
-            </View>
+        <Container
+            title="Export private key"
+            backEvent={handleGoBack}>
+                <ViewContainer bgColor={BgColor}>
+                    <View style={styles.container}>
+                        <View style={styles.contents}>
+                            {/* <Text style={styles.wallet}>{wallet}</Text> */}
+                            <InputSetVertical
+                                title={currentPasswordTextObj.title}
+                                placeholder={currentPasswordTextObj.placeholder} 
+                                validation={true}
+                                secure={true}
+                                onChangeEvent={handlePassword} />
+                        </View>
+                        <View style={styles.buttonBox}>
+                            <Button title='Export' active={validation} onPressEvent={exportPrivateKey} />
+                        </View>
 
-            <AlertModal
-                visible={status === 0 && isModalOpen}
-                handleOpen={handleModalOpen}
-                isSingleButton={true}
-                title={'Wrong password'}
-                desc={'Please check your current password.'}/>
+                        <AlertModal
+                            visible={status === 0 && isModalOpen}
+                            handleOpen={handleModalOpen}
+                            isSingleButton={true}
+                            title={'Wrong password'}
+                            desc={'Please check your current password.'}/>
 
-            <CustomModal
-                visible={status === 1 && isModalOpen}
-                handleOpen={handleModalOpen}>
-                <ExportModal privatekey={privatekey} onPressEvent={handleGoBack}/>
-            </CustomModal>
-        </View>
+                        <CustomModal
+                            visible={status === 1 && isModalOpen}
+                            handleOpen={handleModalOpen}>
+                            <ExportModal privatekey={privatekey} onPressEvent={handleGoBack}/>
+                        </CustomModal>
+                    </View>
+                </ViewContainer>
+        </Container>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        paddingTop: Platform.OS === "ios" ? getStatusBarHeight() : 0,
-        backgroundColor: BgColor,
+        flex: 3,
+        paddingHorizontal: 20,
     },
     contents: {
-        flex: 1,
-        paddingHorizontal: 20,
+        flex: 2,
+        paddingVertical: 20,
     },
     wallet:{
         paddingVertical: 10,
@@ -145,6 +150,7 @@ const styles = StyleSheet.create({
         color: '#aaa',
     },
     buttonBox: {
+        flex: 1,
         justifyContent: "flex-end",
     }
 })

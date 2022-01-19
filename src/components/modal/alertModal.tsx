@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, TouchableOpacity, StyleSheet, Text, View } from "react-native";
-import { ContainerColor, TextColor, TextGrayColor } from "../../constants/theme";
+import { BoxColor, ContainerColor, Lato, PointColor, TextCatTitleColor, TextColor, TextGrayColor, TextWarnColor } from "../../constants/theme";
 
 interface Props {
     visible: boolean;
@@ -24,12 +24,13 @@ const AlertModal = ({visible, handleOpen, isSingleButton = false, title, desc, c
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {display: visible? "flex":"none"}]}>
             <Modal
-                animationType="slide"
+                animationType="fade"
                 transparent={true}
                 visible={visible}>
-                    <View style={styles.modalContainer}> 
+                    <View style={styles.modalContainer}>
+                        <View style={styles.deem}/>
                         <View style={styles.modalBox}>
                             <View style={styles.textBox}>
                                 <Text style={styles.title}>{title}</Text>
@@ -38,8 +39,8 @@ const AlertModal = ({visible, handleOpen, isSingleButton = false, title, desc, c
                             <View style={styles.buttonBox}>
                                 <TouchableOpacity 
                                     style={isSingleButton?
-                                        [styles.button, {padding: 15, borderBottomEndRadius: 8, borderBottomStartRadius: 8}]:
-                                        [styles.button, {borderBottomLeftRadius: 8}]} 
+                                        [styles.button, {padding: 15, borderBottomEndRadius: 4, borderBottomStartRadius: 4}]:
+                                        [styles.button, {borderBottomLeftRadius: 4}]} 
                                     onPress={()=>closeModal()}>
                                     <Text style={styles.buttonTitle}>{isSingleButton? 'OK':'Cancel'}</Text>
                                 </TouchableOpacity>
@@ -64,11 +65,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        position: "absolute",
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    deem: {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        backgroundColor: "#000",
+        opacity: 0.5,
     },
     modalBox: {
         width: 300,
@@ -80,22 +89,26 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 8,
+        backgroundColor: BoxColor,
+        borderRadius: 4,
     },
     textBox: {
         padding: 20,
     },
     title: {
-        color: TextColor,
+        color: TextCatTitleColor,
         fontSize: 20,
+        fontFamily: Lato,
         fontWeight: "600",
         textAlign: "center",
         marginBottom: 15,
     },
     desc: {
-        fontSize: 14,
+        fontSize: 16,
+        fontFamily: Lato,
         textAlign: "center",
+        paddingVertical: 10,
+        color: TextColor,
     },
     buttonBox: {
         width: '100%',
@@ -111,12 +124,12 @@ const styles = StyleSheet.create({
         width: 150,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: ContainerColor,
+        backgroundColor: PointColor,
     },
     buttonTitle: {
         fontSize: 16,
         fontWeight: "600",
-        color: TextGrayColor,
+        color: TextColor,
     }
 })
 

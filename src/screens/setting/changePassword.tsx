@@ -1,3 +1,5 @@
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
@@ -141,56 +143,58 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }
 
     return (
-        <View style={styles.container}>
-            <Header step='' onPressEvent={() => handleGoBack()} />
-            <TitleBar title='Change password' />
-            <View style={styles.contents}>
-                <Text style={styles.wallet}>{wallet}</Text>
-                <InputSetVertical
-                    title={currentPasswordTextObj.title}
-                    placeholder={currentPasswordTextObj.placeholder} 
-                    validation={true}
-                    secure={true}
-                    onChangeEvent={handleCurrentPassword} />
-                <InputSetVertical
-                    title={newPasswordTextObj.title}
-                    placeholder={newPasswordTextObj.placeholder} 
-                    message={newPwMessage}
-                    validation={newPwValidation}
-                    secure={true}
-                    onChangeEvent={handleNewPassword} />
-                <InputSetVertical
-                    title={confirmPasswordTextObj.title}
-                    placeholder={confirmPasswordTextObj.placeholder} 
-                    message={confirmPwMessage}
-                    validation={confirmPwValidation}
-                    secure={true}
-                    onChangeEvent={handleConfirmPassword} />
-            </View>
+        <Container
+            title="Change password"
+            backEvent={handleGoBack}>
+                <ViewContainer bgColor={BgColor}>
+                    <View style={styles.container}>
+                        <View style={styles.contents}>
+                            {/* <Text style={styles.wallet}>{wallet}</Text> */}
+                            <InputSetVertical
+                                title={currentPasswordTextObj.title}
+                                placeholder={currentPasswordTextObj.placeholder} 
+                                validation={true}
+                                secure={true}
+                                onChangeEvent={handleCurrentPassword} />
+                            <InputSetVertical
+                                title={newPasswordTextObj.title}
+                                placeholder={newPasswordTextObj.placeholder} 
+                                message={newPwMessage}
+                                validation={newPwValidation}
+                                secure={true}
+                                onChangeEvent={handleNewPassword} />
+                            <InputSetVertical
+                                title={confirmPasswordTextObj.title}
+                                placeholder={confirmPasswordTextObj.placeholder} 
+                                message={confirmPwMessage}
+                                validation={confirmPwValidation}
+                                secure={true}
+                                onChangeEvent={handleConfirmPassword} />
+                        </View>
+                        <View style={styles.buttonBox}>
+                            <Button title='Change' active={confirmPwValidation} onPressEvent={changeNewPassword} />
+                        </View>
+                        <AlertModal
+                            visible={isModalOpen}
+                            handleOpen={handleModalOpen}
+                            isSingleButton={true}
+                            title={status === 0?'Wrong password':'Change password'}
+                            desc={status === 0?'Please check your current password.':'Successfully changed your password.'}/>
+                    </View>
+                </ViewContainer>
+        </Container>
 
-            <View style={styles.buttonBox}>
-                <Button title='Change' active={confirmPwValidation} onPressEvent={changeNewPassword} />
-            </View>
-
-            <AlertModal
-                visible={isModalOpen}
-                handleOpen={handleModalOpen}
-                isSingleButton={true}
-                title={status === 0?'Wrong password':'Change password'}
-                desc={status === 0?'Please check your current password.':'Successfully changed your password.'}/>
-        </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        paddingTop: Platform.OS === "ios" ? getStatusBarHeight() : 0,
-        backgroundColor: BgColor,
+        flex: 3,
+        paddingHorizontal: 20,
     },
     contents: {
-        flex: 10,
-        paddingHorizontal: 20,
+        flex: 2,
+        paddingVertical: 20,
     },
     wallet:{
         paddingVertical: 10,
@@ -199,6 +203,7 @@ const styles = StyleSheet.create({
         color: '#aaa',
     },
     buttonBox: {
+        flex: 1,
         justifyContent: "flex-end",
     }
 })

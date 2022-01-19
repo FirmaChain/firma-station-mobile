@@ -1,9 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { ContainerColor, TextColor } from "../../../constants/theme";
+import { BoxColor, ContainerColor, GrayColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "../../../constants/theme";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
+import Button from "@/components/button/button";
 
 interface Props {
     privatekey: string;
@@ -14,7 +15,7 @@ const ExportModal = ({privatekey, onPressEvent}:Props) => {
 
     const modalText = {
         title: 'Private key',
-        confirmTitle: 'Okay'
+        confirmTitle: 'Export'
     }
 
     const copyPrivateKey = () => {
@@ -33,13 +34,18 @@ const ExportModal = ({privatekey, onPressEvent}:Props) => {
             <Text style={styles.title}>{modalText.title}</Text>
             <View style={styles.modalPWBox}>
                 <TouchableOpacity onPress={() => copyPrivateKey()}>
-                    <Icon name="content-copy" size={15} color={ContainerColor} style={styles.icon}/>
+                    <Icon name="content-copy" size={15} color={WhiteColor} style={styles.icon}/>
                     <Text style={styles.privatekey}>{privatekey}</Text>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.button} onPress={() => onPressEvent()}>
+            <Button
+                title="Export"
+                active={true}
+                onPressEvent={onPressEvent}/>
+
+            {/* <TouchableOpacity style={styles.button} onPress={() => onPressEvent()}>
                 <Text style={{color: '#fff', fontSize: 16, fontWeight: '600'}}>{modalText.confirmTitle}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     )
 }
@@ -51,18 +57,19 @@ const styles = StyleSheet.create({
         height: "auto",
     },
     title: {
-        color: TextColor,
+        fontFamily: Lato,
         fontSize: 20,
         fontWeight: "600",
+        color: TextCatTitleColor,
     },
     desc: {
+        fontFamily: Lato,
         fontSize: 14,
     },
     modalPWBox: {
         marginVertical: 20,
-        borderColor: ContainerColor,
-        borderWidth: 1,
-        borderRadius: 8,
+        borderRadius: 4,
+        backgroundColor: BoxColor,
     },
     icon: {
         position: "absolute",
@@ -71,14 +78,9 @@ const styles = StyleSheet.create({
     },
     privatekey: {
         padding: 20,
+        fontFamily: Lato,
         fontSize: 14,
-    },
-    button: {
-        height: 50,
-        borderRadius: 8,
-        backgroundColor: ContainerColor,
-        alignItems: "center",
-        justifyContent: "center"
+        color: TextColor,
     }
 })
 
