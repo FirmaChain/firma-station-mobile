@@ -70,6 +70,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
                 <Tab.Screen 
                     name={'Staking'} 
                     component={StakingScreen} 
+                    initialParams={{address: address, walletName: walletName}} 
                     options={{
                         tabBarIcon:
                         ({focused}) => {

@@ -13,7 +13,7 @@ import WalletScreen, { WalletParams } from "../screens/home/wallet/wallet";
 import ValidatorScreen, { ValidatorParams } from "../screens/home/staking/validator";
 import ProposalScreen, { ProposalParams } from "../screens/home/governance/proposal";
 import GovernanceScreen from "../screens/home/governance/governance";
-import StakingScreen from "../screens/home/staking/staking";
+import StakingScreen, { StakingParams } from "../screens/home/staking/staking";
 import SendScreen, { SendParams } from "../screens/home/wallet/send";
 import DelegateScreen, { DelegateParams } from "../screens/home/staking/delegate";
 import TransactionScreen from "../screens/transaction/transaction";
@@ -62,7 +62,7 @@ export type StackParamList = {
     Wallet: WalletParams;
     Send: SendParams;
 
-    Staking: undefined;
+    Staking: StakingParams;
     Validator: ValidatorParams;
     Delegate: DelegateParams;
 

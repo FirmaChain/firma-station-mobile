@@ -8,7 +8,7 @@ import ChainInfoBox from "../../../organims/wallet/chainInfoBox";
 import HistoryBox from "../../../organims/wallet/historyBox";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "../../../navigators/stackNavigators";
-import { useOrganizedBalances } from "../../../hooks/wallet/useBalanceData";
+import { useBalanceData, useOrganizedBalances } from "../../../hooks/wallet/useBalanceData";
 import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
@@ -29,7 +29,8 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
 
     const {address, walletName} = params;
 
-    const { organizedBalances, organizedReward } = useOrganizedBalances();
+    const { balance } = useBalanceData(address);
+    const { organizedBalances, organizedReward } = useOrganizedBalances(address);
     const [chainInfo, setChainInfo]:Array<any> = useState([]);
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false);
 
@@ -68,7 +69,7 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
     }
 
     const handleDelegate = () => {
-        navigation.navigate(Screens.Staking);
+        navigation.navigate(Screens.Staking, {address: address, walletName: walletName});
     }
 
     useEffect(() => {
@@ -82,7 +83,7 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
             <RefreshScrollView refreshFunc={refreshData}>
                 <ScrollView>
                     <View style={styles.content}>
-                        <BalanceBox balance={organizedBalances} reward={organizedReward} handleSend={handleSend} handleDelegate={handleDelegate}/>
+                        <BalanceBox  balance={balance} staking={organizedBalances} reward={organizedReward} handleSend={handleSend} handleDelegate={handleDelegate}/>
                         <HistoryBox />
                         {/* <ChainInfoBox chainInfo={chainInfo} /> */}
                         {/* <ExplorerBox /> */}

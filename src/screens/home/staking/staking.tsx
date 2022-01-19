@@ -13,18 +13,27 @@ import RewardBox from "../../../organims/staking/parts/rewardBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
+export type StakingParams = {
+    address: string;
+    walletName: string;
+}
+
 interface Props {
+    route: {params: StakingParams};
     navigation: ScreenNavgationProps;
 }
 
 const StakingScreen: React.FunctionComponent<Props> = (props) => {
-    const {navigation} = props;
+    const {navigation, route} = props;
+    const {params} = route;
+
+    const {address, walletName} = params;
     
     const { validatorsState } = useStakingData();
-    const { organizedBalances, organizedReward } = useOrganizedBalances();
+    const { organizedBalances, organizedReward } = useOrganizedBalances(address);
 
     const handleMoveToValidator = (validator:any) => {
-        navigation.navigate(Screens.Validator, {validator: validator});
+        navigation.navigate(Screens.Validator, {validator: validator, address: address, walletName: walletName});
     }
 
     const handleTransaction = () => {

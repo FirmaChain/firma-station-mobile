@@ -16,6 +16,8 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validato
 
 export type ValidatorParams = {
     validator: any;
+    address: string;
+    walletName: string;
 }
 
 interface ValidatorScreenProps {
@@ -26,9 +28,9 @@ interface ValidatorScreenProps {
 const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) => {
     const {navigation, route} = props;
     const {params} = route;
-    const {validator} = params;
+    const {validator, address, walletName} = params;
 
-    const { organizedReward } = useOrganizedBalances();
+    const { organizedReward } = useOrganizedBalances(address);
 
     const moniker = validator.validatorMoniker;
     const description = validator.validatorDetail;
