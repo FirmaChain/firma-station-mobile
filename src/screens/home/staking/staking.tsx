@@ -4,7 +4,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useStakingData } from "../../../hooks/staking/useStakingData";
 import RefreshScrollView from "../../../components/parts/refreshScrollView";
 import ValidatorList from "../../../organims/staking/validatorList";
-import { BgColor } from "../../../constants/theme";
+import { BgColor, BoxColor } from "../../../constants/theme";
 import { Screens, StackParamList } from "../../../navigators/stackNavigators";
 import DelegationList from "../../../organims/staking/delegationList";
 import BalancesBox from "../../../organims/staking/parts/balanceBox";
@@ -27,12 +27,18 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
         navigation.navigate(Screens.Validator, {validator: validator});
     }
 
+    const handleTransaction = () => {
+
+    }
+
     return (
         <View style={styles.container}>
             <RefreshScrollView>
                 <ScrollView>
-                    <BalancesBox balances={organizedBalances}/>
-                    <RewardBox reward={organizedReward} />
+                    <View style={styles.box}>
+                        <BalancesBox balances={organizedBalances}/>
+                        <RewardBox reward={organizedReward} transactionHandler={handleTransaction}/>
+                    </View>
                     <DelegationList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>
                     <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>
                 </ScrollView>
@@ -46,6 +52,12 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: BgColor,
     },
+    box: {
+        marginHorizontal: 20,
+        marginBottom: 20,
+        borderRadius: 4,
+        backgroundColor: BoxColor,
+    }
 })
 
 

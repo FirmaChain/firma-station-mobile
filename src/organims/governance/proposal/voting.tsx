@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import Button from "../../../components/button/button";
 import CustomModal from "../../../components/modal/customModal";
 import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
-import { ContainerColor, TextColor } from "../../../constants/theme";
+import { BorderColor, ContainerColor, Lato, TextColor } from "../../../constants/theme";
 
 const cols = 2;
 const marginHorizontal = 4;
@@ -37,7 +37,7 @@ const Voting = ({transactionHandler}:Props) => {
 
     return(
         <>
-        <Button title="Vote" active={true} onPressEvent={handleVoteModal} />
+        <Button title="Vote" active={true} onPressEvent={()=>handleVoteModal(true)} />
         <CustomModal
             visible={openVoteModal} 
             handleOpen={handleVoteModal}>
@@ -47,7 +47,7 @@ const Voting = ({transactionHandler}:Props) => {
                         {votingType.map((item, index) => {
                             return (
                             <TouchableOpacity key={index} style={styles.borderBox} onPress={() => handleVoting(item)}>
-                                <Text>{item}</Text>
+                                <Text style={styles.voteItem}>{item}</Text>
                             </TouchableOpacity>
                             )
                         })}
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     title: {
+        fontFamily: Lato,
         color: TextColor,
         fontSize: 20,
         fontWeight: "600",
@@ -96,12 +97,17 @@ const styles = StyleSheet.create({
         marginBottom: marginVertical,
         marginLeft: marginHorizontal,
         marginRight: marginHorizontal,
-        borderColor: ContainerColor, 
+        borderColor: BorderColor, 
         borderWidth: 1,
-        borderRadius: 8,
+        borderRadius: 4,
         padding: 10,
         alignItems: "center",
     },
+    voteItem: {
+        fontFamily: Lato,
+        fontSize: 16,
+        color: TextColor,
+    }
 })
 
 export default Voting;

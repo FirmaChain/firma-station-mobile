@@ -71,10 +71,6 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
         navigation.navigate(Screens.Staking);
     }
 
-    const handleWithdraw = () => {
-        setOpenWithdrawModal(true);
-    }
-
     useEffect(() => {
         getChainInfo();
     }, [])

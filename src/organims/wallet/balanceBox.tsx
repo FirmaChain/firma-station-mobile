@@ -34,7 +34,7 @@ const BalanceBox = ({balance, reward, handleSend, handleDelegate}:Props) => {
     return (
         <View style={styles.container}>
             <View style={styles.box}>
-                <Text style={styles.title}>Available</Text>
+                <Text style={styles.title}>Balance</Text>
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 20, paddingBottom: 19}]}>
                     <View style={styles.wrapperH}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />

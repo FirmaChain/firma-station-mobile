@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
@@ -31,7 +31,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
     const [selectedWallet, setSelectedWallet] = useState('');
     const [pwValidation, setPwValidation] = useState(false);
     const [walletInfo, setWalletInfo] = useState('');
-    
+
     const passwordText = {
         title : 'Password',
         placeholder: 'Must be at least 10 characters',
@@ -91,7 +91,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
     }
 
     const onSelectWalletAndMoveToMain = async() => {
-        let adr = null;
+        let adr = '';
         await getAdrFromMnemonic(walletInfo).then(res => {
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
