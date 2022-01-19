@@ -47,7 +47,6 @@ const DelegationList = ({validators, navigateValidator}:Props) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 10,
         marginHorizontal: 20,
         borderRadius: 4,
         overflow: "hidden",
