@@ -1,0 +1,50 @@
+import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import React from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+
+const QuestionItem: React.FC<{
+    title: string;
+    value: string;
+    focus: boolean;
+    onPressEvent: Function;
+}> = ({title, value, focus, onPressEvent}) => {
+    const val = value;
+    const bc = focus? WhiteColor : 'transparent';
+
+    return (
+        <View style={styles.viewContainer}>
+            <Text style={styles.text}>{title}</Text>
+            <TouchableOpacity
+                onPress={() => onPressEvent()}>
+                <Text style={[styles.quiz, {borderColor: bc, color: val === 'select'? TextGrayColor : TextColor}]}>{val}</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+export default QuestionItem;
+
+const styles = StyleSheet.create({
+    viewContainer: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    text: {
+        fontFamily: Lato,
+        fontSize: 16,
+        color: TextGrayColor,
+        marginBottom: 5,
+    },
+    quiz: {
+        width: 150,
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        borderRadius: 4,
+        borderWidth: 1,
+        backgroundColor: InputBgColor,
+        color: InputPlaceholderColor,
+        overflow: 'hidden'
+    }
+})

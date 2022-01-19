@@ -1,0 +1,171 @@
+{
+  "data": {
+    "proposal": [
+      {
+        "title": "Changing the voting period",
+        "description": "Hello. This is FirmaChain.\n\nFor a smoother testing scenario verification experience during the Colosseum testnet phase, we are suggesting a new proposal on [Voting Period Modification].\n\nChanging the voting period\n- As is : Voting Period - 2 days\n- Proposal : Voting Period - 1 day\n\nAll Validators, please vote on the above proposal.\n\nThank you.\n\n*Please note that this test scenario will affect the respective validator's discord test scenario participation reward.",
+        "status": "PROPOSAL_STATUS_PASSED",
+        "content": {
+          "@type": "/cosmos.params.v1beta1.ParameterChangeProposal",
+          "title": "Changing the voting period",
+          "changes": [
+            {
+              "key": "votingparams",
+              "value": "{\"voting_period\":\"86400000000000\"}",
+              "subspace": "gov"
+            }
+          ],
+          "description": "Hello. This is FirmaChain.\n\nFor a smoother testing scenario verification experience during the Colosseum testnet phase, we are suggesting a new proposal on [Voting Period Modification].\n\nChanging the voting period\n- As is : Voting Period - 2 days\n- Proposal : Voting Period - 1 day\n\nAll Validators, please vote on the above proposal.\n\nThank you.\n\n*Please note that this test scenario will affect the respective validator's discord test scenario participation reward."
+        },
+        "proposalId": 4,
+        "submitTime": "2021-11-29T07:59:34.584879",
+        "depositEndTime": "2021-12-01T07:59:34.584879",
+        "votingStartTime": "2021-11-29T07:59:34.584879",
+        "votingEndTime": "2021-12-01T07:59:34.584879",
+        "proposalDeposits": [
+          {
+            "amount": [
+              {
+                "denom": "ufct",
+                "amount": "10000000"
+              }
+            ],
+            "depositorAddress": "firma1d9spq634g39w2esd3q3vvcxkjva6slfk3ru3hs"
+          }
+        ]
+      }
+    ],
+    "govParams": [
+      {
+        "depositParams": {
+          "min_deposit": [
+            {
+              "denom": "ufct",
+              "amount": "10000000"
+            }
+          ],
+          "max_deposit_period": 172800000000000
+        },
+        "tallyParams": {
+          "quorum": "0.334000000000000000",
+          "threshold": "0.500000000000000000",
+          "veto_threshold": "0.334000000000000000"
+        },
+        "votingParams": {
+          "voting_period": 86400000000000
+        }
+      }
+    ],
+    "proposalVote": [
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1q2xjmlqmyj0gq2tnm79dk7srrku8clz92js47a"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1d9spq634g39w2esd3q3vvcxkjva6slfk3ru3hs"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma180lm0vqwmxqsjsqm92gyfkzdjtlv7hpz608zas"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1hpflclzh5lw0hfae7wagw5jdr4pdr5dclmszsr"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1prx367m4rds5q8fksj24ckk9f6q5au9gt02n9k"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1u4ja07p7kjkz9xnffdqf8r9j63rjkyh3smvkft"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1we74nst9zr9twc05th6yjxqaxm3s8psuqz6leq"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1sckjvwm55s8pakkgujyptw3qgyrxxk6xgmug96"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma18ejkw26h25yqvvkrxltgfhedcddqxxt7vg6xgl"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1mpvvrd7j8lkwcfqupltkk3ajkcvc39pfpfegq3"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1q75j7gz5ysz06tja7xnm7m2upadnmtmfg4jyv7"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma143v9wpr870kt22gmtxgl7tc72twkd6z4eyllau"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1rtmcynl8e45huv94u02s5q9x3le28feqlkthys"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma177muy880q88ugrnrk5d7zvgvrm8l62rhygyuvs"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma13frzpda7gydx4zhn29awye757ffr863mxksvsa"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1v593tk73slwfje7n4davjma2a98th0d4ct43tr"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1dakqss8uc32a5ds5ru596xw8lq3vn7dqs3nlhv"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1ck04c62gsvpl36eum92nspj8f2ejjwl66af34u"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma16fmk7rmygknac9pawmcw4zetfnn556emva93ek"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma12ns2nztypmwgqhxk0v4pn0866d8drd3r9y5v2d"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma128djg3asetlgpv452d4n00n4ag8asr6t0lehlp"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma17sszy56xqzk94vhfrk2098cgudmm22t93egypz"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1ev93vaqrtmx8h8yyvt5pvfm5d9v5faha5d7vld"
+      },
+      {
+        "option": "VOTE_OPTION_YES",
+        "voterAddress": "firma1jhgqrktlglfdtnkgxlmscymm7a4hhetp45hnjh"
+      }
+    ],
+    "stakingPool": [
+      {
+        "totalVotingPower": 33327458710845
+      }
+    ],
+    "proposalTallyResult": [
+      {
+        "yes": 30125226250408,
+        "no": 0,
+        "noWithVeto": 0,
+        "abstain": 0
+      }
+    ]
+  }
+}

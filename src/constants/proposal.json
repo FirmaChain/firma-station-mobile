@@ -1,0 +1,104 @@
+{
+  "data": {
+    "proposals": [
+      {
+        "title": "Jailed Test",
+        "proposalId": 14,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "Jailed",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test",
+        "proposalId": 13,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "Test proposal",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test Proposal",
+        "proposalId": 12,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "ledger vote test",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test Proposal",
+        "proposalId": 11,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "ledger vote test",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test Proposal for ledger",
+        "proposalId": 10,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "ledger governance test",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test Proposal",
+        "proposalId": 9,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "ledger test vote",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test Proposal",
+        "proposalId": 8,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "Deposit Test",
+        "proposalType": "Text"
+      },
+      {
+        "title": " Software Upgrade proposal - v0.3.2",
+        "proposalId": 7,
+        "status": "PROPOSAL_STATUS_PASSED",
+        "description": "Date : December 09, 2021 UTC 15:00\nVersion : v0.3.1 → v0.3.2\nUpdates :\n  - Support Hardware Ledger \n  - Support Cosmos SDK 0.44.5",
+        "proposalType": "SoftwareUpgrade"
+      },
+      {
+        "title": "adfa",
+        "proposalId": 6,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "fasdfa",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test Proposal for voting time check.",
+        "proposalId": 5,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "test1",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Changing the voting period",
+        "proposalId": 4,
+        "status": "PROPOSAL_STATUS_PASSED",
+        "description": "Hello. This is FirmaChain.\n\nFor a smoother testing scenario verification experience during the Colosseum testnet phase, we are suggesting a new proposal on [Voting Period Modification].\n\nChanging the voting period\n- As is : Voting Period - 2 days\n- Proposal : Voting Period - 1 day\n\nAll Validators, please vote on the above proposal.\n\nThank you.\n\n*Please note that this test scenario will affect the respective validator's discord test scenario participation reward.",
+        "proposalType": "ParameterChange"
+      },
+      {
+        "title": "Invite Rick Astley to the end of testnet ceremony",
+        "proposalId": 3,
+        "status": "PROPOSAL_STATUS_PASSED",
+        "description": "Validators never gonna give nodes up, never gonna let them down...",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test proposal",
+        "proposalId": 2,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "Like 💖, retweet 💫, subscibe 📬",
+        "proposalType": "Text"
+      },
+      {
+        "title": "Test Proposal",
+        "proposalId": 1,
+        "status": "PROPOSAL_STATUS_REJECTED",
+        "description": "Proposal testing",
+        "proposalType": "Text"
+      }
+    ]
+  }
+}
