@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from "react-native";
-import { BgColor, BorderColor, BoxColor, ContainerColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from "../../constants/theme";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { BoxColor, DisableColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
+import MonikerSection from "./parts/list/monikerSection";
+import DataSection from "./parts/list/dataSection";
 
 interface Props {
     validators: Array<any>;
@@ -12,30 +13,20 @@ const DelegationList = ({validators, navigateValidator}:Props) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>My delegations</Text>
-                <Text style={styles.columns}>Delegated</Text>
-                <Text style={styles.columns}>Reward</Text>
+                <Text style={styles.title}>List 
+                    <Text style={{color: PointLightColor}}> 30</Text>
+                </Text>
             </View>
             {validators.map((vd, index) => {
                 if(index < 5){
                     return (
                         <TouchableOpacity key={index} onPress={() => navigateValidator(vd)}>
-                            <View key={index} style={styles.item}>
-                                <View style={[styles.vdWrapperH, {alignItems: "center"}]}>
-                                    <View style={styles.moniikerWrapperH}>
-                                    {vd.validatorAvatar?
-                                    <Image
-                                        style={styles.avatar}
-                                        source={{uri: vd.validatorAvatar}}/>
-                                    :
-                                    <Icon style={styles.icon} name="person" size={35} />
-                                    }
-                                    <Text style={[styles.columns, {color: TextColor, textAlign: "left"}]}>{vd.validatorMoniker}</Text>
-                                    </View>
-                                    <Text style={[styles.columns, {color: TextColor}]}>123</Text>
-                                    <Text style={[styles.columns, {color: TextColor}]}>123</Text>
-                                </View>
-                                {index < validators.length - 1 && <View style={styles.divider} />}
+                            <View style={[styles.item]}>
+                                <MonikerSection validator={vd} />
+                                <DataSection title="Delegated" data="100.00 FCT" />
+                                <DataSection title="Reward" data="100.00 FCT" />
+                                <View style={{paddingBottom: 22}} />
+                                {index < 4 && <View style={styles.divider} />}
                             </View>
                         </TouchableOpacity>
                     )
@@ -47,64 +38,33 @@ const DelegationList = ({validators, navigateValidator}:Props) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginHorizontal: 20,
         borderRadius: 4,
         overflow: "hidden",
         justifyContent: 'center',
         marginBottom: 20,
     },
     header: {
-        height: 50,
+        height: 48,
         paddingHorizontal: 20,
         backgroundColor: BoxColor,
-        borderBottomColor: BgColor,
-        borderBottomWidth: 3,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
     },
     item : {
+        paddingTop: 22,
         backgroundColor: BoxColor,
     },
     title: {
         flex: 2,
         fontFamily: Lato,
-        color: TextCatTitleColor,
-        fontWeight: 'bold'
-    },
-    columns: {
-        flex: 1,
-        textAlign: "right",
-        fontFamily: Lato,
-        color: TextCatTitleColor,
-    },
-    vdWrapperH: {
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    moniikerWrapperH: {
-        flex: 2,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    avatar: {
-        width: 35,
-        maxWidth: 35,
-        height: 35,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 10,
-    },
-    icon: {
-        marginRight: 10,
+        fontSize: 16,
+        color: TextGrayColor,
     },
     divider: {
-        height: .5,
-        backgroundColor: BgColor,
+        height: 1,
+        marginHorizontal: 20,
+        backgroundColor: DisableColor,
     }
 })
 

@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from "react-native";
-import { BgColor, BoxColor, ContainerColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from "../../constants/theme";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
 import CustomModal from "../../components/modal/customModal";
 import ModalItems from "../../components/modal/modalItems";
+import { DownArrow } from "@/components/icon/icon";
+import MonikerSection from "./parts/list/monikerSection";
+import DataSection from "./parts/list/dataSection";
 
 interface Props {
     validators: Array<any>;
@@ -38,42 +40,27 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Validators</Text>
+                <Text style={styles.title}>List 
+                    <Text style={{color: PointLightColor}}> 30</Text>
+                </Text>
                 <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                    <Text style={styles.sortItem}>{sortItems[selected].toUpperCase()}</Text>
-                    <Icon name="swap-vert" size={20} color={TextCatTitleColor}/>
+                    <Text style={[styles.title, {paddingRight: 4}]}>{sortItems[selected]}</Text>
+                    <DownArrow size={12} color={GrayColor} />
                 </TouchableOpacity>
             </View>
             {validators.map((vd, index) => {
                 return (
-                    <TouchableOpacity key={index} style={styles.list} onPress={() => navigateValidator(vd)}>
-                        <View style={[styles.vdWrapperH, {alignItems: "flex-start"}]}>
-                            {vd.validatorAvatar?
-                            <Image
-                                style={styles.avatar}
-                                source={{uri: vd.validatorAvatar}}/>
-                            :
-                            <Icon style={styles.icon} name="person" size={35} />
-                            }
-                            <View style={styles.vdWrapperV}>
-                                <Text style={styles.moniker}>{vd.validatorMoniker}</Text>
-                                <View style={styles.descWrapperH}>
-                                    <Text style={styles.descTitle}>Voting power</Text>
-                                    <Text style={styles.desc}>{vd.votingPowerPercent.toString() + '%'}</Text>
-                                </View>
-                                <View style={styles.descWrapperH}>
-                                    <Text style={styles.descTitle}>Commission</Text>
-                                    <Text style={styles.desc}>{vd.commission.toString() + '%'}</Text>
-                                </View>
-                                <View style={[styles.descWrapperH, {alignItems: "flex-start"}]}>
-                                    <Text style={styles.descTitle}>APY/APR</Text>
-                                    <View style={[styles.vdWrapperH, {justifyContent:"flex-end"}]}>
-                                        <Text style={[styles.desc, {fontSize: 10, opacity: 0.8}]}>{(vd.APY * 100).toFixed(2).toString() + '%'}</Text>
-                                        <Text style={{color: TextGrayColor, paddingHorizontal: 10}}>/</Text>
-                                        <Text style={styles.desc}>{(vd.APR * 100).toFixed(2).toString() + '%'}</Text>
-                                    </View>
-                                </View>
-                            </View>
+                    <TouchableOpacity key={index} onPress={() => navigateValidator(vd)}>
+                        <View style={styles.item}>
+                            <MonikerSection validator={vd} />
+                            <DataSection title="Voting Power" data={vd.votingPowerPercent.toString() + '%'} />
+                            <DataSection title="Commission" data={vd.commission.toString() + '%'} />
+                            <DataSection 
+                                title="APY/APR" 
+                                data={(vd.APY * 100).toFixed(2).toString() + '% / ' + (vd.APR * 100).toFixed(2).toString() + '%'} />
+                            <DataSection title="Uptime" data={vd.condition.toString() + '%'} />
+                            <View style={{paddingBottom: 22}} />
+                            {index < validators.length - 1 && <View style={styles.divider} />}
                         </View>
                     </TouchableOpacity>
                 )
@@ -87,26 +74,26 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 20,
-        marginHorizontal: 20,
         borderRadius: 4,
         overflow: "hidden",
         justifyContent: 'center',
     },
     header: {
-        height: 50,
+        height: 48,
         paddingHorizontal: 20,
-        borderBottomColor: BgColor,
-        borderBottomWidth: 3,
         backgroundColor: BoxColor,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
     },
+    item : {
+        paddingTop: 22,
+        backgroundColor: BoxColor,
+    },
     title: {
-        color: TextCatTitleColor,
         fontFamily: Lato,
-        fontWeight: 'bold'
+        fontSize: 16,
+        color: TextGrayColor,
     },
     sortButton: {
         flexDirection: 'row',
@@ -118,14 +105,12 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: 'bold'
     },
-    list: {
-        padding: 20,
+
+    moniikerWrapperH: {
+        flex: 2,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: BoxColor,
-        borderBottomWidth: 1,
-        borderColor: BgColor,
+        justifyContent: 'flex-start',
     },
     vdWrapperH: {
         flexDirection: 'row',
@@ -160,16 +145,21 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         color: TextColor,
     },
-    descTitle: {
-        fontSize: 14,
-        fontFamily: Lato,
-        color: TextGrayColor,
+    divider: {
+        height: 1,
+        marginHorizontal: 20,
+        backgroundColor: DisableColor,
     },
-    desc: {
-        fontSize: 14,
+    descTitle: {
         fontFamily: Lato,
-        color: TextColor,
-        textAlign: 'right',
+        fontSize: 14,
+        color: TextDisableColor,
+    },
+    descItem: {
+        fontFamily: Lato,
+        fontSize: 14,
+        fontWeight: "600",
+        color: TextDarkGrayColor,
     },
 })
 

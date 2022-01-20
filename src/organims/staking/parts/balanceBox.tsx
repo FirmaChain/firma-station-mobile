@@ -1,9 +1,6 @@
 import React from "react";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Button from "../../../components/button/button";
-import SmallButton from "../../../components/button/smallButton";
-import { BoxColor, ContainerColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
-import RewardBox from "./rewardBox";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { BoxColor, DisableColor, Lato, LightGrayColor, TextCatTitleColor, TextColor } from "../../../constants/theme";
 
 const cols = 3;
 const marginHorizontal = 4;
@@ -20,7 +17,7 @@ const BalanceBox = ({balances}:Props) => {
             <View style={styles.box}>
                 {balances.map((item, index) => {
                     return (
-                        <View style={styles.box}>
+                        <View key={index} style={styles.box}>
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
                                 <Text style={styles.desc}>{item.data.toFixed(2)}
@@ -39,6 +36,8 @@ const BalanceBox = ({balances}:Props) => {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
+        backgroundColor: LightGrayColor,
+        borderRadius: 8,
     },
     box: {
         flexDirection: "row",
