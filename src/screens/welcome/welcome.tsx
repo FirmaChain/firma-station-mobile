@@ -21,7 +21,7 @@ const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = (props) => {
     const [walletExist, setWalletExist] = useState(false);
 
     function handleCreateStepOne(){
-        navigation.navigate(Screens.CreateStepOne);
+        navigation.navigate(Screens.CreateStepOne, {});
     }
 
     function handleSelectWallet(){

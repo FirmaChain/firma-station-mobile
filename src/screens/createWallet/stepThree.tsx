@@ -5,11 +5,12 @@ import Button from "../../components/button/button";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
 import { encrypt, keyEncrypt } from "../../util/keystore";
 import { getChain, setChain } from "../../util/secureKeyChain";
-import { getAdrFromMnemonic } from "../../util/wallet";
+import { getAdrFromMnemonic } from "@/util/firma";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "../../components/parts/containers/viewContainer";
 import MnemonicQuiz from "../../organims/createWallet/stepThree/mnemonicQuiz";
 import { BgColor } from "@/constants/theme";
+import { setNewWallet } from "@/util/wallet";
 
 type CreateStepThreeScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -32,16 +33,8 @@ const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps>
     
     const onCompleteCreateWallet = async() => {
         setConfirm(false);
-        const walletKey:string = keyEncrypt(wallet.name, wallet.password);
-        
-        const encWallet = encrypt(wallet.mnemonic, walletKey.toString());
-        setChain(wallet.name, encWallet);
-        let list = wallet.name;
-        await getChain('test_3').then(res => {
-            if(res) list += '/' + res.password;
-        }).catch(error => console.log('error : ' + error));
-        setChain('test_3', list);
 
+        await setNewWallet(wallet.name, wallet.password, wallet.mnemonic);
         let adr = null;
         await getAdrFromMnemonic(wallet.mnemonic).then(res => {
             if(res !== undefined) adr = res;

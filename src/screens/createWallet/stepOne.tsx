@@ -5,19 +5,28 @@ import Button from "../../components/button/button";
 import InputSetVertical from "../../components/input/inputSetVertical";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
 import { PasswordValidationCheck, WalletNameValidationCheck } from "../../util/validationCheck";
-import { Wallet, createNewWallet } from "../../util/wallet";
+import { Wallet, createNewWallet, getAdrFromMnemonic } from "@/util/firma";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "../../components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
+import { setNewWallet } from "@/util/wallet";
 
 type CreateStepOneScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
+export type CreateStepOneParams = {
+    wallet?: any;
+}
+
 interface CreateStepOneScreenProps {
+    route: {params: CreateStepOneParams};
     navigation: CreateStepOneScreenNavigationProps;
 }
 
 const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (props) => {
-    const {navigation} = props;
+    const {navigation, route} = props;
+    const {params} = route;
+    const {wallet = null} = params;
+
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
 
@@ -90,14 +99,24 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
         }
     }
 
+    const onCompleteRecoverWallet = async() => {
+        await setNewWallet(walletName, password, wallet.mnemonic);
+        let adr = null;
+        await getAdrFromMnemonic(wallet.mnemonic).then(res => {
+            if(res !== undefined) adr = res;
+        }).catch(error => console.log('error : ' + error));
+
+        navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: walletName} }]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
 
     return (
         <Container
-            title="New Wallet"
-            step={1}
+            title={wallet? "Recover Wallet" : "New Wallet"}
+            step={wallet? 0 : 1}
             backEvent={handleBack}>
 
             <ViewContainer bgColor={BgColor}>
@@ -125,7 +144,10 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
                             onChangeEvent={onChangeConfirmPassword} />
                     </ScrollView>
                     <View style={styles.buttonBox}>
-                        <Button title='Next' active={confirm && nameValidation} onPressEvent={onCreateWalletAndMoveToStepTwo} />
+                        <Button 
+                            title={wallet? 'Recover' : 'Next'} 
+                            active={confirm && nameValidation} 
+                            onPressEvent={wallet? onCompleteRecoverWallet : onCreateWalletAndMoveToStepTwo} />
                     </View>
                 </View>
             </ViewContainer>

@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import WelcomeScreen from '../screens/welcome/welcome';
-import CreateStepOneScreen from '../screens/createWallet/stepOne';
+import CreateStepOneScreen, { CreateStepOneParams } from '../screens/createWallet/stepOne';
 import CreateStepTwoScreen, { CreateStepTwoParams } from '../screens/createWallet/stepTwo';
 import CreateStepThreeScreen, { CreateStepThreeParams } from '../screens/createWallet/stepThree';
 import SelectWalletScreen from '../screens/welcome/selectWallet';
@@ -49,7 +49,7 @@ export enum Screens {
 
 export type StackParamList = {
     Welcome: undefined;
-    CreateStepOne: undefined;
+    CreateStepOne: CreateStepOneParams;
     CreateStepTwo: CreateStepTwoParams;
     CreateStepThree: CreateStepThreeParams;
     StepRecover: undefined;
