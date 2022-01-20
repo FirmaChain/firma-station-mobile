@@ -1,44 +1,72 @@
 import { ForwardArrow } from "@/components/icon/icon";
 import { FIRMA_LOGO } from "@/constants/images";
-import React, { useMemo } from "react";
+import { convertNumber, convertToFctNumber, resizeFontSize } from "@/util/common";
+import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SmallButton from "../../components/button/smallButton";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
 
-
 interface Props {
-    balance: Array<any>;
-    reward: any;
+    balance: number;
+    stakingBalances: any;
     handleSend: Function;
     handleDelegate: Function;
 }
 
-const BalanceBox = ({balance, reward, handleSend, handleDelegate}:Props) => {
-    const balanceData = useMemo(() => {
-        let data = []
-        if(balance !== undefined && reward !== undefined) { 
-            data = balance.concat(reward);
-        } else {
-            data = [
-                {title: "Available", data: 0},
-                {title: "Delegated", data: 0},
-                {title: "Undelegate", data: 0},
-                {title: "Staking reward", data: 0},
-            ]
-        }   
-        
-        return data;
+const BalanceBox = ({balance, stakingBalances, handleSend, handleDelegate}:Props) => {
+    const [chainInfo, setChainInfo]:Array<any> = useState([]);
+    const [balanceTextSize, setBalanceTextSize] = useState(28);
 
-    }, [balance, reward]);
+    const currentPrice = useMemo(() => {
+        if(chainInfo?.market_data === undefined) return 0;
+        return Number(chainInfo.market_data.current_price.usd);
+    }, [chainInfo]);
+
+    const available = useMemo(() => {
+        return convertToFctNumber(balance);
+    }, [balance])
+
+    const delegated = useMemo(() => {
+        return convertNumber((stakingBalances.delegated).toFixed(2)).toLocaleString();
+    }, [stakingBalances]);
+
+    const undelegate = useMemo(() => {
+        return convertNumber((stakingBalances.undelegate).toFixed(2)).toLocaleString();
+    }, [stakingBalances]);
+
+    const reward = useMemo(() => {
+        return convertNumber((stakingBalances.stakingReward).toFixed(2)).toLocaleString();
+    }, [stakingBalances]);
+    
+    const exchangeData = useMemo(() => {
+        return convertNumber((available * currentPrice).toFixed(2)).toLocaleString();
+    }, [currentPrice])
+
+    const getChainInfo = async() => {
+        await fetch('https://api.coingecko.com/api/v3/coins/firmachain')
+        .then((res) => res.json())
+        .then((resJson) => {
+            setChainInfo(resJson);
+        })
+    }
+
+    useEffect(() => {
+        getChainInfo();
+    }, [])
+
+    useEffect(() => {
+        setBalanceTextSize(resizeFontSize(available, 28));
+    }, [available]);
+    
 
     return (
         <View style={styles.container}>
             <View style={styles.box}>
-                <Text style={styles.title}>Balance</Text>
+                <Text style={styles.title}>Available</Text>
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 20, paddingBottom: 19}]}>
                     <View style={styles.wrapperH}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />
-                        <Text style={styles.balance}>100.23
+                        <Text style={[styles.balance, {fontSize:balanceTextSize}]}>{available.toLocaleString()}
                             <Text style={styles.chainName}>   FCT</Text>
                         </Text>
                     </View>
@@ -49,33 +77,33 @@ const BalanceBox = ({balance, reward, handleSend, handleDelegate}:Props) => {
                 <View style={styles.divider} />
                 <View style={[styles.wrapperH, {justifyContent: "space-between", paddingTop: 12}]}>
                     <Text style={[styles.chainName, {fontSize: 16}]}>Total Balance</Text>
-                    <Text style={[styles.balance, {fontSize: 16}]}>1,112.15
+                    <Text style={[styles.balance, {fontSize: 16}]}>{exchangeData}
                         <Text style={[styles.chainName, {fontSize: 16}]}>   USD</Text>
                     </Text>
                 </View>
             </View>
 
-            <View style={[styles.box, {marginVertical: 24}]}>
-                <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center"}]}>
+            <View style={[styles.box, {marginVertical: 16, paddingHorizontal: 0}]}>
+                <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center",paddingHorizontal: 20}]}>
                     <Text style={styles.title}>Staking</Text>
                     <TouchableOpacity onPress={()=>handleDelegate()}>
                         <ForwardArrow size={20} color={TextCatTitleColor}/>
                     </TouchableOpacity>
                 </View>
-                <View style={[styles.wrapperH, {justifyContent: "space-evenly", alignItems: "center" ,paddingTop: 25}]}>
+                <View style={[styles.wrapperH, {flex: 3, justifyContent: "space-between", alignItems: "center" ,paddingTop: 25}]}>
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Delegated</Text>
-                        <Text style={[styles.balance, {fontSize: 18}]}>4.32</Text>
+                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingBalances.delegated, 18)}]}>{delegated}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Undelegate</Text>
-                        <Text style={[styles.balance, {fontSize: 18}]}>0.32</Text>
+                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingBalances.undelegate, 18)}]}>{undelegate}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Reward</Text>
-                        <Text style={[styles.balance, {fontSize: 18}]}>1.88</Text>
+                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingBalances.stakingReward, 18)}]}>{reward}</Text>
                     </View>
                 </View>
             </View>
@@ -87,7 +115,7 @@ const styles = StyleSheet.create({
     container: {
         height: "auto",
         paddingHorizontal: 20,
-        marginTop: 24,
+        marginTop: 16,
     },
     box: {
         borderRadius: 8,
@@ -113,19 +141,22 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 28,
         fontWeight: "600",
+        textAlign: "center",
         color: TextColor,
-        paddingHorizontal: 6,
+        paddingLeft: 6,
     },
     chainName: {
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: "normal",
+        textAlign: "center",
         color: TextDarkGrayColor,
     },
     stakingWrapper: {
+        flex: 1,
         height: 51,
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
     },
     divider: {
         height: 1,

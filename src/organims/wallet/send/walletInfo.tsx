@@ -1,5 +1,6 @@
 import { BorderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import React from "react";
+import { convertToFctNumber } from "@/util/common";
+import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
@@ -8,11 +9,16 @@ interface Props {
 }
 
 const WalletInfo = ({walletName, available}:Props) => {
+
+    const availableBalance = useMemo(() => {
+        return convertToFctNumber(available).toLocaleString();
+    }, [available]);
+    
     
     return (
         <View style={styles.boxH}>
             <Text style={styles.title}>Available</Text>
-            <Text style={styles.balance}>{available.toFixed(2)}
+            <Text style={styles.balance}>{availableBalance}
                 <Text style={[styles.title, {fontSize: 14}]}>  FCT</Text>
             </Text>
         </View>

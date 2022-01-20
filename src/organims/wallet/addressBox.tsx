@@ -22,12 +22,14 @@ const AddressBox = ({address}: Props) => {
     }
 
     return (
-        <TouchableOpacity style={styles.container} onPress={handleAddressToClipboard}>
+        <View style={styles.container}>
             <Text numberOfLines={1} ellipsizeMode="middle" style={styles.address}>{address}</Text>
-            <View style={styles.copyIcon}> 
-                <Copy size={20} color={'#fff'}/>
-            </View>
-        </TouchableOpacity>
+                <View style={styles.copyIcon}>
+                    <TouchableOpacity onPress={handleAddressToClipboard}>
+                        <Copy size={20} color={'#fff'}/>
+                    </TouchableOpacity>
+                </View>
+        </View>
     )
 }
 

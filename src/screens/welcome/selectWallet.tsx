@@ -1,20 +1,20 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
 import { getChain } from "../../util/secureKeyChain";
-import { BgColor, GrayColor, InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
+import { BgColor, InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
 import InputSetVertical from "../../components/input/inputSetVertical";
 import { WalletNameValidationCheck } from "../../util/validationCheck";
 import { decrypt, keyEncrypt } from "../../util/keystore";
 import Button from "../../components/button/button";
-import { getAdrFromMnemonic } from "../../util/wallet";
+import { getAdrFromMnemonic } from "@/util/firma";
 import CustomModal from "../../components/modal/customModal";
 import ModalItems from "../../components/modal/modalItems";
-import { getWalletList } from "../../util/walletList";
-import Icon from "react-native-vector-icons/AntDesign";
+import { getWalletList } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
+import { DownArrow } from "@/components/icon/icon";
 
 type SelectWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -127,7 +127,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
                             <Text style={styles.title}>Wallet</Text>
                             <TouchableOpacity style={styles.walletBox} onPress={() => handleOpenModal(true)}>
                                 <Text style={[styles.wallet, selected < 0 &&{color: InputPlaceholderColor}]}>{selected < 0? 'Select your wallet' : selectedWallet}</Text>
-                                <Icon name="caretdown" size={10} color={InputPlaceholderColor} />
+                                <DownArrow size={10} color={InputPlaceholderColor} />
                             </TouchableOpacity>
                         </View>
                         <InputSetVertical

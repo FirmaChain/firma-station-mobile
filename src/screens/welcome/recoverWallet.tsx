@@ -63,7 +63,8 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         backgroundColor: BoxColor,
         borderRadius: 4,
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         overflow: 'hidden',
     },
     warnText: {
