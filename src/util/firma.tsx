@@ -1,0 +1,154 @@
+import { FirmaMobileSDK } from "@firmachain/firma-js"
+import { FirmaConfig } from "@firmachain/firma-js"
+import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
+import { useState } from "react";
+import { convertNumber, convertToFctNumber } from "./common";
+
+const firmaSDK = new FirmaMobileSDK(FirmaConfig.DevNetConfig);
+
+export interface Wallet {
+    name?: string;
+    password?: string;
+    mnemonic?: string;
+    privatekey?: string;
+}
+
+
+// Wallet
+export const createNewWallet = async() => {
+    try {
+        let wallet = await firmaSDK.Wallet.newWallet();
+        return organizeWallet(wallet);
+    } catch (error) {
+        console.log('error : ' + error);
+    }
+}
+
+export const recoverFromMnemonic = async(mnemonic:string) => {
+    try {
+        let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+        return wallet;
+    } catch (error) {
+        console.log('error : ' + error);
+    }
+}
+
+export const getAdrFromMnemonic = async(mnemonic:string) => {
+    try {
+        let wallet = await recoverFromMnemonic(mnemonic); 
+        let address = await wallet?.getAddress();
+        return address;
+    } catch (error) {
+        console.log('error : ' + error);
+    }
+}
+
+export const getBalanceFromAdr = async(address:string) => {
+    try {
+        let balance = await firmaSDK.Bank.getBalance(address);
+        return balance;
+    } catch (error) {
+        console.log('error : ' + error); 
+        return 0;
+    }
+}
+
+const organizeWallet = async(wallet:FirmaWalletService) => {
+    try {
+        let _mnemonic = wallet.getMnemonic();
+        let _privateKey = wallet.getPrivateKey();
+        let _address = await wallet.getAddress();
+        let _balance = await getBalanceFromAdr(_address);
+
+        const result = {
+            mnemonic: _mnemonic,
+            privateKey: _privateKey,
+            address: _address,
+            balance: _balance,
+        }
+        return result;
+    } catch (error) {
+        console.log('error : ' + error);
+        
+    }
+}
+
+export const sendToken = async(mnemonic:string, target:string, amount:number) => {
+    try {
+        let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+        let send = await firmaSDK.Bank.send(wallet, target, amount);
+
+        return send;
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+// Staking
+
+export const getDelegateData = async(address:string) => {
+    const delegateListOrigin = await firmaSDK.Staking.getTotalDelegationInfo(address);
+    const undelegateListOrigin = await firmaSDK.Staking.getTotalUndelegateInfo(address);
+    const totalReward = await firmaSDK.Distribution.getTotalRewardInfo(address);
+
+    console.log('-----------------');
+    console.log(delegateListOrigin);
+    console.log('-----------------');
+    console.log(undelegateListOrigin);
+    console.log('-----------------');
+    console.log(totalReward);
+    console.log('-----------------');
+    
+    
+    
+
+    const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
+    
+    const delegateList = delegateListSort.map((value) => {
+        return {
+        validatorAddress: value.delegation.validator_address,
+        delegatorAddress: value.delegation.delegator_address,
+        amount: convertNumber(value.balance.amount),
+        moniker: value.delegation.validator_address,
+        avatarURL: "",
+        };
+    });
+
+    const delegationBalanceList = delegateListSort.map((value) => {
+        return value.balance.amount;
+    });
+    
+    const undelegationBalanceList = undelegateListOrigin.map((value) => {
+        return value.entries
+        .map((value) => {
+            return value.balance;
+        })
+        .reduce((prev: string, current: string) => {
+            return (convertNumber(prev) + convertNumber(current)).toString();
+        });
+    });
+    
+    let balance = await getBalanceFromAdr(address);
+    const available = convertToFctNumber(convertNumber(balance));
+    const delegated = convertToFctNumber(
+        delegationBalanceList.length > 0
+        ? delegationBalanceList.reduce((prev: string, current: string) => {
+            return (convertNumber(prev) + convertNumber(current)).toString();
+            })
+        : 0
+    );
+    const undelegate = convertToFctNumber(
+        undelegationBalanceList.length > 0
+        ? undelegationBalanceList.reduce((prev: string, current: string) => {
+            return (convertNumber(prev) + convertNumber(current)).toString();
+            })
+        : 0
+    );
+    const stakingReward = convertToFctNumber(totalReward.total);
+    const stakingRewardList = totalReward.rewards;
+
+}
+
+
+
