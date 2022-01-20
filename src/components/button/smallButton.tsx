@@ -5,8 +5,9 @@ import { Lato, PointColor, TextColor } from "../../constants/theme";
 const SmallButton: React.FC<{
     title: string;
     onPressEvent: Function;
-    size?: number
-}> = ({title, onPressEvent, size = 100}) => {
+    size?: number;
+    color?: string;
+}> = ({title, onPressEvent, size = 100, color = PointColor}) => {
 
     const handleOnPress = (value?:any) => {
         onPressEvent && onPressEvent(value);
@@ -14,7 +15,7 @@ const SmallButton: React.FC<{
 
     return (
         <TouchableOpacity onPress={()=>handleOnPress()}>
-            <Text style={[styles.button, {width: size}]}>{title}</Text>
+            <Text style={[styles.button, {width: size, backgroundColor: color}]}>{title}</Text>
         </TouchableOpacity>
     )
 }
@@ -31,7 +32,6 @@ const styles = StyleSheet.create({
         fontWeight: "normal",
         paddingVertical: 12,
         paddingHorizontal: 25,
-        backgroundColor: PointColor,
         overflow: "hidden",
         borderRadius: 4,
     },

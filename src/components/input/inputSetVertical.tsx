@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
         color: TextColor,
         padding: 12,
         borderWidth: 1,
-        borderColor: ContainerColor,
         backgroundColor: InputBgColor,
         marginBottom: 5,
         
