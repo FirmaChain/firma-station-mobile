@@ -25,13 +25,12 @@ const RefreshScrollView = ({refreshFunc, children}:Props) => {
     return (
         <ScrollView
             contentContainerStyle={styles.refreshScrollView}
-            // refreshControl={
-            //     <RefreshControl 
-            //         refreshing={refreshing}
-            //         onRefresh={onRefresh}
-            //     />
-            // }
-            >
+            refreshControl={
+                <RefreshControl 
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }>
             {children}
         </ScrollView>
     )

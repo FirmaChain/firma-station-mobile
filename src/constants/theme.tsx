@@ -28,6 +28,10 @@ export const PointDarkColor = '#263fa1';
 export const BorderColor = '#696974';
 export const DisableColor = '#44444f';
 
+export const ButtonPointLightColor = '#5b75dc';
+export const AddressBoxColor = '#2741aa';
+export const AddressTextColor = '#efefef';
+
 export const toastSuccess = PointColor;
 export const toastInfo = GrayColor;
 export const toastError = TextWarnColor;

@@ -1,7 +1,6 @@
 import { FirmaMobileSDK } from "@firmachain/firma-js"
 import { FirmaConfig } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
-import { useState } from "react";
 import { convertNumber, convertToFctNumber } from "./common";
 
 const firmaSDK = new FirmaMobileSDK(FirmaConfig.DevNetConfig);
@@ -12,7 +11,6 @@ export interface Wallet {
     mnemonic?: string;
     privatekey?: string;
 }
-
 
 // Wallet
 export const createNewWallet = async() => {
@@ -46,6 +44,7 @@ export const getAdrFromMnemonic = async(mnemonic:string) => {
 export const getBalanceFromAdr = async(address:string) => {
     try {
         let balance = await firmaSDK.Bank.getBalance(address);
+        
         return balance;
     } catch (error) {
         console.log('error : ' + error); 
@@ -86,69 +85,71 @@ export const sendToken = async(mnemonic:string, target:string, amount:number) =>
 }
 
 // Staking
+export const getDelegateList = async(address:string) => {
+    return await firmaSDK.Staking.getTotalDelegationInfo(address);
+}
 
-export const getDelegateData = async(address:string) => {
-    const delegateListOrigin = await firmaSDK.Staking.getTotalDelegationInfo(address);
-    const undelegateListOrigin = await firmaSDK.Staking.getTotalUndelegateInfo(address);
-    const totalReward = await firmaSDK.Distribution.getTotalRewardInfo(address);
+export const getUndelegateList = async(address:string) => {
+    return await firmaSDK.Staking.getTotalUndelegateInfo(address);
+}
 
-    console.log('-----------------');
-    console.log(delegateListOrigin);
-    console.log('-----------------');
-    console.log(undelegateListOrigin);
-    console.log('-----------------');
-    console.log(totalReward);
-    console.log('-----------------');
-    
-    
-    
+export const getTotalReward = async(address:string) => {
+    return await firmaSDK.Distribution.getTotalRewardInfo(address);
+}
 
-    const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
-    
-    const delegateList = delegateListSort.map((value) => {
-        return {
-        validatorAddress: value.delegation.validator_address,
-        delegatorAddress: value.delegation.delegator_address,
-        amount: convertNumber(value.balance.amount),
-        moniker: value.delegation.validator_address,
-        avatarURL: "",
-        };
-    });
-
-    const delegationBalanceList = delegateListSort.map((value) => {
-        return value.balance.amount;
-    });
-    
-    const undelegationBalanceList = undelegateListOrigin.map((value) => {
-        return value.entries
-        .map((value) => {
-            return value.balance;
-        })
-        .reduce((prev: string, current: string) => {
-            return (convertNumber(prev) + convertNumber(current)).toString();
-        });
-    });
-    
-    let balance = await getBalanceFromAdr(address);
+export const getStaking = async(address:string) => {
+    const balance = await getBalanceFromAdr(address);
     const available = convertToFctNumber(convertNumber(balance));
-    const delegated = convertToFctNumber(
-        delegationBalanceList.length > 0
-        ? delegationBalanceList.reduce((prev: string, current: string) => {
-            return (convertNumber(prev) + convertNumber(current)).toString();
-            })
-        : 0
-    );
-    const undelegate = convertToFctNumber(
-        undelegationBalanceList.length > 0
-        ? undelegationBalanceList.reduce((prev: string, current: string) => {
-            return (convertNumber(prev) + convertNumber(current)).toString();
-            })
-        : 0
-    );
+
+    const totalReward = await getTotalReward(address);
     const stakingReward = convertToFctNumber(totalReward.total);
     const stakingRewardList = totalReward.rewards;
 
+    const delegateListOrigin = await getDelegateList(address);
+    const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
+    const delegateList = delegateListSort.map((value) => {
+        return {
+            validatorAddress: value.delegation.validator_address,
+            delegatorAddress: value.delegation.delegator_address,
+            amount: convertNumber(value.balance.amount),
+            reward: convertNumber(totalReward.rewards.find((adr) => adr.validator_address === value.delegation.validator_address)?.amount),
+            moniker: value.delegation.validator_address,
+            avatarURL: "",
+        };
+    });
+    const delegationBalanceList = delegateListSort.map((value) => {
+        return value.balance.amount;
+    });
+    const delegated = convertToFctNumber(delegationBalanceList.length > 0
+        ? delegationBalanceList.reduce((prev: string, current: string) => {
+            return (convertNumber(prev) + convertNumber(current)).toString();
+        })
+        : 0
+    );
+
+    const undelegateListOrigin = await getUndelegateList(address);
+    const undelegationBalanceList = undelegateListOrigin.map((value) => {
+        return value.entries.map((value) => {
+            return value.balance;
+        }).reduce((prev: string, current: string) => {
+            return (convertNumber(prev) + convertNumber(current)).toString();
+        });
+    });
+    const undelegate = convertToFctNumber(undelegationBalanceList.length > 0
+        ? undelegationBalanceList.reduce((prev: string, current: string) => {
+            return (convertNumber(prev) + convertNumber(current)).toString();
+        })
+        : 0
+    );
+
+    const staking = {
+        available,
+        delegated,
+        undelegate,
+        stakingReward,
+        stakingRewardList,
+        delegateList,
+    }
+
+    return staking;
 }
-
-
-
