@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export const convertNumber = (data: string | number) => {
+export const convertNumber = (data: string | number | undefined) => {
     if(!Number(data)) return 0;
     return Number(data);
 }
