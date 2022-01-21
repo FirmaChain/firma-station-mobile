@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { getBalanceFromAdr, getDelegateList, getStaking, getTotalReward, getUndelegateList } from "@/util/firma";
+import { useEffect, useMemo, useState } from "react";
 import { VALIDATOR_LIST } from "../../constants/dummy";
 import { convertNumber, convertToFctNumber, isValid } from "../../util/common";
 export const MINT_COIN_PER_BLOCK = 12.8629;
@@ -10,7 +11,69 @@ export interface ValidatorsState {
     validators: Array<any>;
 }
 
-export const useStakingData = () => {
+export interface StakeInfo {
+    validatorAddress: string;
+    delegatorAddress: string;
+    moniker: string;
+    avatarURL: string;
+    amount: number;
+    reward: number;
+}
+
+export interface StakingState {
+    available: number;
+    delegated: number;
+    undelegate: number;
+    stakingReward: number;
+    stakingRewardList: Array<any>;
+    delegateList: Array<StakeInfo>;
+}
+
+export interface StakingValues {
+    available: number;
+    delegated: number;
+    undelegate: number;
+    stakingReward: number;
+}
+
+export const useStakingData = (address:string) => {
+    const [refresh, setRefresh] = useState(true);
+    const [barrier, setBarrier] = useState(false);
+
+    const [stakingState, setStakingState] = useState<StakingState>({
+        available: 0,
+        delegated: 0,
+        undelegate: 0,
+        stakingReward: 0,
+        stakingRewardList: [],
+        delegateList: [],
+    });
+
+    useEffect(() => {
+        if(barrier) return;
+
+        const interval = setInterval(() => {
+            setBarrier(false);
+            clearInterval(interval);
+        }, 5000);
+
+
+        setBarrier(true);
+        getStaking(address).then((res:StakingState) => {
+            if(res) {
+                setStakingState(res);
+            }
+        })
+        setRefresh(false);
+    }, [refresh]);
+
+    return { 
+        stakingState: stakingState,
+        setRefresh: setRefresh,
+    }
+}
+
+export const useValidatorData = () => {
     const [validatorsState, setValidatorsState] = useState<ValidatorsState>({
         totalVotingPower: 0,
         validators: [],
