@@ -26,3 +26,9 @@ export const convertTime = (time:string) => {
 export const convertPercentage = (data: string | number) => {
     return  Number((Number(data) * 100).toFixed(2)).toLocaleString(undefined, {minimumFractionDigits: 2});
 }
+
+export const resizeFontSize = (amount:number, initSize:number) => {  
+    if(amount >= 100000) return initSize - 4;
+    if(amount >= 1000000) return initSize - 5;
+    return initSize;
+}

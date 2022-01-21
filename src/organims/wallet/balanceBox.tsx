@@ -63,7 +63,7 @@ const BalanceBox = ({balance, stakingBalances, handleSend, handleDelegate}:Props
         <View style={styles.container}>
             <View style={styles.box}>
                 <Text style={styles.title}>Available</Text>
-                <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 20, paddingBottom: 19}]}>
+                <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 8, paddingBottom: 19}]}>
                     <View style={styles.wrapperH}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />
                         <Text style={[styles.balance, {fontSize:balanceTextSize}]}>{available.toLocaleString()}
@@ -76,10 +76,8 @@ const BalanceBox = ({balance, stakingBalances, handleSend, handleDelegate}:Props
                 </View>
                 <View style={styles.divider} />
                 <View style={[styles.wrapperH, {justifyContent: "space-between", paddingTop: 12}]}>
-                    <Text style={[styles.chainName, {fontSize: 16}]}>Total Balance</Text>
-                    <Text style={[styles.balance, {fontSize: 16}]}>{exchangeData}
-                        <Text style={[styles.chainName, {fontSize: 16}]}>   USD</Text>
-                    </Text>
+                    <Text style={[styles.chainName, {fontSize: 16}]}>USD</Text>
+                    <Text style={[styles.balance, {fontSize: 16}]}>$ {exchangeData}</Text>
                 </View>
             </View>
 
@@ -90,7 +88,7 @@ const BalanceBox = ({balance, stakingBalances, handleSend, handleDelegate}:Props
                         <ForwardArrow size={20} color={TextCatTitleColor}/>
                     </TouchableOpacity>
                 </View>
-                <View style={[styles.wrapperH, {flex: 3, justifyContent: "space-between", alignItems: "center" ,paddingTop: 25}]}>
+                <View style={[styles.wrapperH, {flex: 3, justifyContent: "space-between", alignItems: "center" ,paddingTop: 18}]}>
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Delegated</Text>
                         <Text style={[styles.balance, {fontSize: resizeFontSize(stakingBalances.delegated, 18)}]}>{delegated}</Text>

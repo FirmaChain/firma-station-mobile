@@ -3,7 +3,7 @@ export const Lato = 'Lato-Regular';
 
 export const BgColor = '#1c1c24';
 export const BoxColor = '#292932';
-export const SndBgColor = '#dddddd';
+export const BoxDarkColor = '#14141a';
 export const ContainerColor = 'dodgerblue';
 
 export const WhiteColor = '#fff';

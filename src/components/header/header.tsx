@@ -1,4 +1,4 @@
-import { BorderColor, BoxColor, Lato, PointColor, TextColor } from "@/constants/theme";
+import { BorderColor, BoxColor, BoxDarkColor, Lato, PointColor, TextColor } from "@/constants/theme";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ScreenWidth } from "../../util/getScreenSize";
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     container: {
         height: 50,
         width: ScreenWidth(),
-        backgroundColor: BoxColor,
+        backgroundColor: BoxDarkColor,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',

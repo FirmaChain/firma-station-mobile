@@ -18,7 +18,7 @@ const MnemonicItems: React.FC<{
                     <TouchableOpacity
                         key={index} 
                         onPress={() => onPress(index)}>
-                        <Text style={[styles.item, {width: (ScreenWidth() / 3) - 40}]}>{item}</Text>
+                        <Text style={[styles.item, {width: (ScreenWidth() / 3) - 20}]}>{item}</Text>
                     </TouchableOpacity>
                 )
             })}
@@ -30,20 +30,20 @@ export default MnemonicItems;
 
 const styles = StyleSheet.create({
     conatainer: {
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap',
     },
     item: {
-        margin: 10,
-        paddingVertical: 20,
+        marginVertical: 5,
+        paddingVertical: 13,
         borderRadius: 4,
         fontFamily: Lato,
         backgroundColor: BoxColor,
         color: TextColor,
         textAlign: 'center',
-        fontSize: 12,
+        fontSize: 16,
         overflow: 'hidden',
     }
 })

@@ -6,7 +6,7 @@ import { BgColor, BorderColor, BoxColor, Lato, TextColor, WhiteColor } from "../
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DeleteWallet from "../../organims/setting/modal/deleteWallet";
 import { removeChain, setChain } from "../../util/secureKeyChain";
-import { getWalletList } from "../../util/walletList";
+import { getWalletList } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 

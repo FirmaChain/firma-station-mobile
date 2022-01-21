@@ -56,53 +56,18 @@ const HistoryBox = ({history}:Props) => {
                         <ForwardArrow size={20} color={TextCatTitleColor}/>
                     </TouchableOpacity>
                 </View>
-                <View style={[styles.wrapperH, {justifyContent: "flex-start", alignItems: "center" ,paddingTop: 25}]}>
+                <View style={[styles.wrapperH, {justifyContent: "flex-start", alignItems: "center" ,paddingTop: 18}]}>
                     <View style={styles.historyWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Block</Text>
-                        <Text style={[styles.balance, {fontSize: 18}]}>123123</Text>
+                        <Text style={[styles.balance, {fontSize: 14}]}>123123</Text>
                     </View>
                     <View style={styles.historyWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Type</Text>
-                        <Text style={[styles.balance, {fontSize: 18}]}>Send</Text>
+                        <Text style={[styles.balance, {fontSize: 14}]}>Send</Text>
                     </View>
                 </View>
             </View>
         </View>
-        // <View style={styles.container}>
-        //     {historyData.map((h, index) => {
-        //         return (
-        //             <View key={index} style={styles.box}>
-        //                 <View style={styles.boxH}>
-        //                     <View style={styles.wrapper}>
-        //                         <Text style={styles.title}>Block</Text>
-        //                         <Text style={styles.desc}>{h.block}</Text>
-        //                     </View>
-        //                     <View style={styles.wrapper}>
-        //                         <Text style={styles.title}>Type</Text>
-        //                         <Text style={styles.desc}>{h.type}</Text>
-        //                     </View>
-        //                 </View>
-        //                 <View style={styles.boxH}>
-        //                     <View style={styles.wrapper}>
-        //                         <Text style={styles.title}>Hash</Text>
-        //                         <Text numberOfLines={1} ellipsizeMode="middle" style={styles.desc}>{h.hash}</Text>
-        //                     </View>
-        //                 </View>
-        //                 <View style={styles.boxH}>
-        //                     <View style={styles.wrapper}>
-        //                         <Text style={styles.title}>Result</Text>
-        //                         <Text style={styles.desc}>{h.result}</Text>
-        //                     </View>
-        //                     <View style={styles.wrapper}>
-        //                         <Text style={styles.title}>Time</Text>
-        //                         <Text style={[styles.desc, {fontSize: 14}]}>{h.time}</Text>
-        //                     </View>
-        //                 </View>
-        //                 {index < historyData.length - 1 && <View style={styles.divider} /> }
-        //             </View>
-        //         )
-        //     })}
-        // </View>
     )
 }
 
@@ -122,7 +87,7 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: "normal",
-        color: TextCatTitleColor,
+        color: TextColor,
         paddingTop: 6,
     },
     chainName: {

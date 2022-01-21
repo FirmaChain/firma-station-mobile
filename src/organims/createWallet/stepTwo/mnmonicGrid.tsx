@@ -29,18 +29,18 @@ const MnemonicGrid: React.FC<{
 
     return (
         <View style={styles.conatainer}>
-            <View style={styles.box}>
+            <TouchableOpacity onPress={() => handleMnemonicToClipboard()}>
                 <View style={styles.copyIconWrapper}>
                     <Text style={styles.copyText}>Press to copy</Text>
                     <Copy size={15} color={GrayColor} />
                 </View>
-                <TouchableOpacity style={styles.mnemonicContainer} onPress={() => handleMnemonicToClipboard()}>
-                    {mnemonicArr.map((item, index) => {
-                        return (
-                            <Text key={index} style={styles.mnemonicItem}>{item}</Text>
-                        )
-                    })}
-                </TouchableOpacity>
+            </TouchableOpacity>
+            <View style={[styles.box, styles.mnemonicContainer]}>
+                {mnemonicArr.map((item, index) => {
+                    return (
+                        <Text key={index} style={styles.mnemonicItem}>{item}</Text>
+                    )
+                })}
             </View>
 
             <View style={styles.wranContainer}>
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     box: {
         backgroundColor: BoxColor,
         borderRadius: 4,
-        paddingVertical: 5,
+        paddingVertical: 10,
         paddingHorizontal: 6,
         marginBottom: 20,
     },
@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         backgroundColor: BoxColor,
         borderRadius: 4,
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         overflow: 'hidden',
     },
     warnText: {

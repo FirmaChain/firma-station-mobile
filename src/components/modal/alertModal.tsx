@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, TouchableOpacity, StyleSheet, Text, View } from "react-native";
-import { BoxColor, ContainerColor, Lato, PointColor, TextCatTitleColor, TextColor, TextGrayColor, TextWarnColor } from "../../constants/theme";
+import { BoxColor, Lato, PointColor, TextCatTitleColor, TextColor, } from "../../constants/theme";
 
 interface Props {
     visible: boolean;

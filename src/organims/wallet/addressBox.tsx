@@ -1,7 +1,7 @@
 import Clipboard from "@react-native-clipboard/clipboard";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, ContainerColor, Lato, PointColor, TextColor, TextGrayColor } from "../../constants/theme";
+import { Lato, PointColor, TextCatTitleColor } from "../../constants/theme";
 import Toast from "react-native-toast-message";
 import { Copy } from "../../components/icon/icon";
 
@@ -26,7 +26,7 @@ const AddressBox = ({address}: Props) => {
             <Text numberOfLines={1} ellipsizeMode="middle" style={styles.address}>{address}</Text>
                 <View style={styles.copyIcon}>
                     <TouchableOpacity onPress={handleAddressToClipboard}>
-                        <Copy size={20} color={'#fff'}/>
+                        <Copy size={20} color={TextCatTitleColor}/>
                     </TouchableOpacity>
                 </View>
         </View>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
-        color: TextColor,
+        color: TextCatTitleColor,
     },
     copyIcon: {
         flex: 1,

@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     quiz: {
-        width: 150,
+        width: 170,
         paddingHorizontal: 20,
         paddingVertical: 15,
         borderRadius: 4,

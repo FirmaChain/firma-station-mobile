@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import CustomModal from "./customModal";
-import { BorderColor, BoxColor, ContainerColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
+import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
 import { decrypt, keyEncrypt } from "../../util/keystore";
 import { getChain } from "../../util/secureKeyChain";
 import { WalletNameValidationCheck } from "../../util/validationCheck";
 import InputSetVertical from "../input/inputSetVertical";
 import Button from "../button/button";
+import { convertNumber } from "@/util/common";
 
 interface Props {
     title: string,
@@ -31,8 +32,7 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
 
         if(val.length >= 10){
             let nameCheck = await WalletNameValidationCheck(walletName);
-            
-            // id+pw의 조합이 맞다면 지갑 정보를 가져온다.
+        
             if(nameCheck){
                 const key:string = keyEncrypt(walletName, val);
                 await getChain(walletName).then(res => {
@@ -79,7 +79,7 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
                         {amount > 0 &&
                         <View style={[styles.boxH, styles.receiptDesc, {borderTopWidth: 1, borderTopColor: BorderColor}]}>
                             <Text style={styles.itemTitle}>Amount</Text>
-                            <Text style={styles.itemBalance}>{Number(amount).toFixed(2)}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={styles.itemBalance}>{convertNumber((amount)).toLocaleString()}<Text style={styles.itemTitle}>  FCT</Text></Text>
                         </View>
                         }
                         <View style={[styles.boxH, styles.receiptDesc]}>

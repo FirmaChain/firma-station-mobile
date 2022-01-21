@@ -10,7 +10,7 @@ import TabContainer from "../../components/parts/containers/tabContainer";
 import WalletScreen from "./wallet/wallet";
 import StakingScreen from "./staking/staking";
 import GovernanceScreen from "./governance/governance";
-import { BgColor, GrayColor, WhiteColor } from "@/constants/theme";
+import { BoxDarkColor, GrayColor, WhiteColor } from "@/constants/theme";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -53,7 +53,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
             <Tab.Navigator 
                 screenOptions={{ 
                     headerShown: false, 
-                    tabBarStyle: { backgroundColor: BgColor, borderTopColor: BgColor},
+                    tabBarStyle: { backgroundColor: BoxDarkColor, borderTopColor: BoxDarkColor},
                     tabBarActiveTintColor: WhiteColor,
                     tabBarInactiveTintColor: GrayColor,
                 }}
