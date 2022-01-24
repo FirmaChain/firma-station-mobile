@@ -28,7 +28,9 @@ export const convertPercentage = (data: string | number) => {
 }
 
 export const resizeFontSize = (amount:number, initSize:number) => {  
-    if(amount >= 100000) return initSize - 4;
-    if(amount >= 1000000) return initSize - 5;
-    return initSize;
+    let fontSize = initSize;
+    if(amount >= 10000) fontSize = initSize - 3;
+    if(amount >= 100000) fontSize = initSize - 4;
+    if(amount >= 1000000) fontSize = initSize - 5;
+    return fontSize;
 }

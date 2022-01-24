@@ -2,7 +2,7 @@
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { BoxColor } from "../../../constants/theme";
+import { BoxColor, BoxDarkColor } from "../../../constants/theme";
 import Header from "../../header/header";
 import TitleBar from "../titleBar";
 
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Platform.OS === "ios" ? getStatusBarHeight() : 0,
-        backgroundColor: BoxColor,
+        backgroundColor: BoxDarkColor,
     },
 })
 

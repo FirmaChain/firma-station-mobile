@@ -3,14 +3,15 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import WalletIcon from "react-native-vector-icons/Ionicons";
-import ProposalsIcon from "react-native-vector-icons/Ionicons";
-import StakingIcon from "react-native-vector-icons/FontAwesome";
+import StakingIcon from "react-native-vector-icons/AntDesign";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import TabContainer from "../../components/parts/containers/tabContainer";
 import WalletScreen from "./wallet/wallet";
 import StakingScreen from "./staking/staking";
 import GovernanceScreen from "./governance/governance";
 import { BoxDarkColor, GrayColor, WhiteColor } from "@/constants/theme";
+import { Image } from "react-native";
+import { ICON_DOCUMENT } from "@/constants/images";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -64,7 +65,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
                     initialParams={{address: address, walletName: walletName}} 
                     options={{
                         tabBarIcon: ({focused}) => {
-                            return <WalletIcon name={'ios-wallet-outline'} size={25} color={focused? WhiteColor : GrayColor}/>
+                            return <WalletIcon name={'ios-wallet-outline'} size={24} color={focused? WhiteColor : GrayColor}/>
                         }
                     }}/>
                 <Tab.Screen 
@@ -74,7 +75,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
                     options={{
                         tabBarIcon:
                         ({focused}) => {
-                            return <StakingIcon name={'handshake-o'} size={25} color={focused? WhiteColor : GrayColor}/>
+                            return <StakingIcon name={'inbox'} size={24} color={focused? WhiteColor : GrayColor}/>
                         }
                     }}/>
                 <Tab.Screen 
@@ -82,7 +83,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
                     component={GovernanceScreen} 
                     options={{
                         tabBarIcon: ({focused}) => {
-                            return <ProposalsIcon name={'document-text-outline'} size={25} color={focused? WhiteColor : GrayColor}/>
+                            return <Image style={{width: 24, height: 24, opacity: focused? 1: .6}} source={ICON_DOCUMENT}/>
                         }
                     }}/>
             </Tab.Navigator>

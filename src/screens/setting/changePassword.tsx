@@ -1,14 +1,12 @@
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
+import { setNewWallet } from "@/util/wallet";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
-import { getStatusBarHeight } from "react-native-status-bar-height";
+import { StyleSheet, View } from "react-native";
 import Button from "../../components/button/button";
-import Header from "../../components/header/header";
 import InputSetVertical from "../../components/input/inputSetVertical";
 import AlertModal from "../../components/modal/alertModal";
-import TitleBar from "../../components/parts/titleBar";
 import { BgColor } from "../../constants/theme";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
 import { decrypt, encrypt, keyEncrypt } from "../../util/keystore";
@@ -121,16 +119,13 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }
 
     const createNewPassword = async() => {
-        const walletKey:string = keyEncrypt(wallet, newPW);
-        
-        const encWallet = encrypt(mnemonic, walletKey.toString());
-        await setChain(wallet, encWallet)
+        await setNewWallet(wallet, newPW, mnemonic)
             .then(res => {
                 console.log(res);
                 setStatus(1);
                 setIsModalOpen(true);
             })
-            .catch(error => console.log(error));
+            .catch(error => console.log(error))
     }
 
     const handleModalOpen = (open:boolean) => {

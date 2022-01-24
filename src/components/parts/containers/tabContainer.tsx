@@ -1,9 +1,9 @@
 import React from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { BgColor, Lato, TextColor, WhiteColor } from "../../../constants/theme";
-import SettingIcon from 'react-native-vector-icons/AntDesign';
-import { ScreenWidth } from "../../../util/getScreenSize";
+import Icon from 'react-native-vector-icons/AntDesign';
+import { ICON_HISTORY } from "@/constants/images";
 
 interface Props {
     title: string;
@@ -16,13 +16,23 @@ const TabContainer = ({title, navEvent, children}:Props) => {
         navEvent && navEvent();
     }
 
+    const handleMoveToHistory = () => {
+
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>{title}</Text>
-                <TouchableOpacity onPress={() => handleMoveToSetting()}>
-                    <SettingIcon name='setting' size={25} color={WhiteColor}/>
-                </TouchableOpacity>
+                <View style={styles.boxH}>
+                    <TouchableOpacity style={{marginRight: 20}} onPress={() => handleMoveToHistory()}>
+                        <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => handleMoveToSetting()}>
+                        <Icon name='setting' size={30} color={WhiteColor}/>
+                    </TouchableOpacity>
+                </View>
             </View>
             {children}
         </View>
@@ -34,6 +44,10 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: Platform.OS === "ios" ? getStatusBarHeight() : 0,
         backgroundColor: BgColor,
+    },
+    boxH: {
+        flexDirection: "row",
+        alignItems: "center",
     },
     titleContainer: {
         height: 50,
