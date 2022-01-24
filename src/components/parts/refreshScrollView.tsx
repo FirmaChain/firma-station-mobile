@@ -1,3 +1,4 @@
+import { WhiteColor } from "@/constants/theme";
 import React, { useState } from "react";
 import { RefreshControl, StyleSheet, ScrollView } from "react-native";
 
@@ -27,6 +28,7 @@ const RefreshScrollView = ({refreshFunc, children}:Props) => {
             contentContainerStyle={styles.refreshScrollView}
             refreshControl={
                 <RefreshControl 
+                    tintColor={WhiteColor}
                     refreshing={refreshing}
                     onRefresh={onRefresh}
                 />

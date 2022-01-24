@@ -6,11 +6,12 @@ import ArrowButton from "../button/arrowButton";
 
 const Header:  React.FC<{
         step: number,
+        bgColor?: string;
         onPressEvent: Function;
-    }> = ({step, onPressEvent}) => {
+    }> = ({step, bgColor = BoxDarkColor, onPressEvent}) => {
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {backgroundColor: bgColor}]}>
             <ArrowButton onPressEvent={onPressEvent}/>
             {step > 0 && 
             <View style={styles.stepBox}>
@@ -35,7 +36,6 @@ const styles = StyleSheet.create({
     container: {
         height: 50,
         width: ScreenWidth(),
-        backgroundColor: BoxDarkColor,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',

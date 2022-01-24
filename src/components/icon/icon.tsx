@@ -31,3 +31,9 @@ export const DownArrow = ({size, color}:Props) => {
         <AntDesignIcons name="caretdown" size={size} color={color} />
     )
 }
+
+export const UpEmptyArrow = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="up" size={size} color={color} />
+    )
+}

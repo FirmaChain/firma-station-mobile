@@ -10,3 +10,5 @@ export var LOADING_LOGO_3 = require("@/assets/images/ic-loding-step-3-wh-68-px.p
 
 export var ICON_HISTORY = require("@/assets/images/ic_history_bxnone_wh_32px.png");
 export var ICON_DOCUMENT = require("@/assets/images/ic_document_wh_32px.png");
+
+export var ARROW_ACCORDION = require("@/assets/images/ic-m-chevron-gy-24-px.png");

@@ -1,4 +1,5 @@
-import React from "react";
+import { CloseAccordion, OpenAccordion } from "@/util/animation";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Lato, PointColor, TextColor } from "../../constants/theme";
 
@@ -6,16 +7,22 @@ const SmallButton: React.FC<{
     title: string;
     onPressEvent: Function;
     size?: number;
+    height?: number;
     color?: string;
-}> = ({title, onPressEvent, size = 100, color = PointColor}) => {
-
+}> = ({title, onPressEvent, size = 100, height, color = PointColor}) => {
+    const [buttonHeight, setButtonHeight] = useState(42);
     const handleOnPress = (value?:any) => {
         onPressEvent && onPressEvent(value);
     }
 
+    useEffect(() => {
+        if(height === 0) return CloseAccordion(setButtonHeight);
+        return OpenAccordion(setButtonHeight, 42);
+    }, [height]);
+
     return (
         <TouchableOpacity onPress={()=>handleOnPress()}>
-            <Text style={[styles.button, {width: size, backgroundColor: color}]}>{title}</Text>
+            <Text style={[styles.button, {width: size, height: buttonHeight, lineHeight: buttonHeight, backgroundColor: color}]}>{title}</Text>
         </TouchableOpacity>
     )
 }
@@ -23,15 +30,13 @@ const SmallButton: React.FC<{
 export default SmallButton;
 
 const styles = StyleSheet.create({
-    
     button: {
+        height: 42,
         fontFamily: Lato,
         color: TextColor,
         textAlign: "center",
         fontSize: 16,
         fontWeight: "normal",
-        paddingVertical: 12,
-        paddingHorizontal: 25,
         overflow: "hidden",
         borderRadius: 4,
     },
