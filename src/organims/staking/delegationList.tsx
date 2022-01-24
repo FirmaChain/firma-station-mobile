@@ -1,36 +1,36 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { BoxColor, DisableColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
+import { BoxColor, DisableColor, Lato, PointLightColor, TextGrayColor } from "../../constants/theme";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
+import { StakeInfo } from "@/hooks/staking/hooks";
+import { ConvertAmount } from "@/util/common";
 
 interface Props {
-    validators: Array<any>;
+    delegations: Array<StakeInfo>;
     navigateValidator: Function;
 }
 
-const DelegationList = ({validators, navigateValidator}:Props) => {
+const DelegationList = ({delegations, navigateValidator}:Props) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>List 
-                    <Text style={{color: PointLightColor}}> 30</Text>
+                    <Text style={{color: PointLightColor}}> {delegations.length}</Text>
                 </Text>
             </View>
-            {validators.map((vd, index) => {
-                if(index < 5){
-                    return (
-                        <TouchableOpacity key={index} onPress={() => navigateValidator(vd)}>
-                            <View style={[styles.item]}>
-                                <MonikerSection validator={vd} />
-                                <DataSection title="Delegated" data="100.00 FCT" />
-                                <DataSection title="Reward" data="100.00 FCT" />
-                                <View style={{paddingBottom: 22}} />
-                                {index < 4 && <View style={styles.divider} />}
-                            </View>
-                        </TouchableOpacity>
-                    )
-                }
+            {delegations.map((value, index) => {
+                return (
+                    <TouchableOpacity key={index} onPress={() => navigateValidator(value.validatorAddress)}>
+                        <View style={[styles.item]}>
+                            <MonikerSection validator={value} />
+                            <DataSection title="Delegated" data={ConvertAmount(value.amount) + " FCT"} />
+                            <DataSection title="Reward" data={ConvertAmount(value.reward) + " FCT"} />
+                            <View style={{paddingBottom: 22}} />
+                            {index < delegations.length - 1  && <View style={styles.divider} />}
+                        </View>
+                    </TouchableOpacity>
+                )
             })}
         </View>
     )

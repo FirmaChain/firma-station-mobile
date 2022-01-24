@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from "react";
+import { convertNumber, resizeFontSize } from "@/util/common";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import SmallButton from "../../../components/button/smallButton";
 import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
-import { BorderColor, BoxColor, ContainerColor, DisableColor, Lato, PointColor, PointDarkColor, TextCatTitleColor, TextColor, TextLightGrayColor } from "../../../constants/theme";
+import { ButtonPointLightColor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor } from "../../../constants/theme";
 
 interface Props {
     reward: any;
@@ -12,29 +13,35 @@ interface Props {
 
 const RewardBox = ({fromVD, reward, transactionHandler}:Props) => {
     const [openModal, setOpenModal] = useState(false);
+    const [rewardTextSize, setRewardTextSize] = useState(28);
     
-    const rewardData = useMemo(() => {
-        return reward.data;
+    const stakingReward = useMemo(() => {
+        return convertNumber((reward.toFixed(2))).toLocaleString();
     }, [reward]);
     
     const handleWithdraw = (open:boolean) => {
         setOpenModal(open);
     }
 
+    useEffect(() => {
+        setRewardTextSize(resizeFontSize(reward, 28));
+    }, [reward]);
+    
+
     return (
         <View style={styles.rewardBox}>
             <View style={styles.boxV}>
-                <Text style={[styles.title, {marginBottom: 6}]}>{reward.title}</Text>
-                <Text style={styles.desc}>{rewardData.toFixed(2)}
+                <Text style={[styles.title, {marginBottom: 6}]}>Staking Reward</Text>
+                <Text style={[styles.desc, {fontSize: rewardTextSize}]}>{stakingReward}
                     <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
                 </Text>
             </View>
             <SmallButton
                 title={"Withdraw"}
-                size={130}
-                color={PointDarkColor}
+                size={125}
+                color={ButtonPointLightColor}
                 onPressEvent={() => handleWithdraw(true)}/>
-            <TransactionConfirmModal transactionHandler={transactionHandler} title={fromVD? "Withdraw" : "Withdraw All"} walletName={""} amount={rewardData} open={openModal} setOpenModal={handleWithdraw} />
+            <TransactionConfirmModal transactionHandler={transactionHandler} title={fromVD? "Withdraw" : "Withdraw All"} walletName={""} amount={reward} open={openModal} setOpenModal={handleWithdraw} />
         </View>
     )
 }

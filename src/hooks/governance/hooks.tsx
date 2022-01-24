@@ -1,9 +1,7 @@
+import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
 import { useEffect, useState } from "react";
 import { GOVERNANCE_LIST, PROPOSAL_DETAIL } from "../../constants/dummy";
 import { convertNumber } from "../../util/common";
-
-const data:any = GOVERNANCE_LIST.data;
-const proposal:any = PROPOSAL_DETAIL.data;
 
 export interface GovernanceState {
     list: Array<any>;
@@ -34,17 +32,19 @@ export const useGovernanceList = () => {
         list: [],
     });
 
-    useEffect(() => {
-        const list = data.proposals
-        .map((proposal:any) => {
-            return proposal;
-        })
-        setGovernanceList((prevState) => ({
-            ...prevState,
-            list,
-        }));
-    }, [])
-
+    useGovernmentQuery({
+        onCompleted: (data) =>{
+            const list = data.proposals
+            .map((proposal:any) => {
+                return proposal;
+            })
+            setGovernanceList((prevState) => ({
+                ...prevState,
+                list,
+            }));
+        }
+    })
+    
     return {
         governanceState,
     }
@@ -53,59 +53,62 @@ export const useGovernanceList = () => {
 export const useProposalData = (id:number) => {
     const [proposalState, setProposalState] = useState<ProposalState | null>(null);
 
-    useEffect(() => {
-        const classifiedData = (data:any) => {
-            if(data.proposal[0].content.changes) {
-                return {
-                    changes : data.proposal[0].content.changes
+    useProposalQuery({
+        proposalId: id.toString(),
+        onCompleted: (data) => {
+            const classifiedData = () => {
+                if(data.proposal[0].content.changes) {
+                    return {
+                        changes : data.proposal[0].content.changes
+                    }
+                }
+        
+                if(data.proposal[0].content.plan) {
+                    return {
+                        height: data.proposal[0].content.plan.height,
+                        version: data.proposal[0].content.plan.name,
+                        info: data.proposal[0].content.info,
+                    }
+                }
+        
+                if(data.proposal[0].content.recipient) {
+                    return {
+                        recipient: data.proposal[0].content.recipient,
+                        amount: data.proposal[0].content.amount[0].amount,
+                    }
                 }
             }
-    
-            if(data.proposal[0].content.plan) {
-                return {
-                    height: data.proposal[0].content.plan.height,
-                    version: data.proposal[0].content.plan.name,
-                    info: data.proposal[0].content.info,
-                }
+        
+            const calculateCurrentTurnout = () => {
+                const totalVotingPower = convertNumber(data.stakingPool[0].totalVotingPower);
+                const votes = data.proposalTallyResult[0];
+        
+                const totalVote = votes.yes + votes.no + votes.noWithVeto;
+        
+                return totalVote / totalVotingPower;
             }
-    
-            if(data.proposal[0].content.recipient) {
-                return {
-                    recipient: data.proposal[0].content.recipient,
-                    amount: data.proposal[0].content.amount[0].amount,
-                }
-            }
+        
+            setProposalState({
+                proposalId: data.proposal[0].proposalId,
+                title: data.proposal[0].title,
+                description: data.proposal[0].description,
+                status: data.proposal[0].status,
+                proposalType: data.proposal[0].content["@type"],
+                submitTime: data.proposal[0].submitTime,
+                classified: classifiedData(),
+                votingStartTime: data.proposal[0].votingStartTime,
+                votingEndTime: data.proposal[0].votingEndTime,
+                quorum: convertNumber(data.govParams[0].tallyParams.quorum),
+                currentTurnout: calculateCurrentTurnout(),
+                stakingPool: data.stakingPool[0],
+                proposalTally: data.proposalTallyResult[0],
+                proposalVote: data.proposalVote,
+                minDeposit: data.govParams[0].depositParams.min_deposit[0].amount,
+                proposalDeposit: data.proposal[0].proposalDeposits[0].amount,
+                depositPeriod: data.govParams[0].depositParams.max_deposit_period
+            })
         }
-    
-        const calculateCurrentTurnout = (data:any) => {
-            const totalVotingPower = convertNumber(data.stakingPool[0].totalVotingPower);
-            const votes = data.proposalTallyResult[0];
-    
-            const totalVote = votes.yes + votes.no + votes.noWithVeto;
-    
-            return totalVote / totalVotingPower;
-        }
-
-        setProposalState({
-            proposalId: proposal.proposal[0].proposalId,
-            title: proposal.proposal[0].title,
-            description: proposal.proposal[0].description,
-            status: proposal.proposal[0].status,
-            proposalType: proposal.proposal[0].content["@type"],
-            submitTime: proposal.proposal[0].submitTime,
-            classified: classifiedData(proposal),
-            votingStartTime: proposal.proposal[0].votingStartTime,
-            votingEndTime: proposal.proposal[0].votingEndTime,
-            quorum: convertNumber(proposal.govParams[0].tallyParams.quorum),
-            currentTurnout: calculateCurrentTurnout(proposal),
-            stakingPool: proposal.stakingPool[0],
-            proposalTally: proposal.proposalTallyResult[0],
-            proposalVote: proposal.proposalVote,
-            minDeposit: proposal.govParams[0].depositParams.min_deposit[0].amount,
-            proposalDeposit: proposal.proposal[0].proposalDeposits[0].amount,
-            depositPeriod: proposal.govParams[0].depositParams.max_deposit_period
-        })
-    }, [id])
+    })
 
     return {
         proposalState,

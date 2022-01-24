@@ -6,6 +6,7 @@ import ModalItems from "../../components/modal/modalItems";
 import { DownArrow } from "@/components/icon/icon";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
+import { StakeInfo } from "@/hooks/staking/hooks";
 
 interface Props {
     validators: Array<any>;
@@ -52,7 +53,7 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
                 return (
                     <TouchableOpacity key={index} onPress={() => navigateValidator(vd)}>
                         <View style={styles.item}>
-                            <MonikerSection validator={vd} />
+                            <MonikerSection validator={{avatarURL: vd.validatorAvatar, moniker: vd.validatorMoniker}} />
                             <DataSection title="Voting Power" data={vd.votingPowerPercent.toString() + '%'} />
                             <DataSection title="Commission" data={vd.commission.toString() + '%'} />
                             <DataSection 

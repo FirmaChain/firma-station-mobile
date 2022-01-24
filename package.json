@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@apollo/client": "^3.5.7",
+    "@apollo/client": "^3.4.16",
+    "@apollo/react-hooks": "^4.0.0",
     "@firmachain/firma-js": "^0.2.23",
     "@react-native-clipboard/clipboard": "^1.8.5",
     "@react-native-community/masked-view": "^0.1.11",
@@ -18,6 +19,7 @@
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/stack": "^6.0.11",
     "@tradle/react-native-http": "^2.0.1",
+    "apollo-boost": "^0.4.9",
     "assert": "^1.5.0",
     "asyncstorage-down": "^4.2.0",
     "browserify-zlib": "^0.1.4",
@@ -28,7 +30,7 @@
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
     "events": "^1.1.1",
-    "graphql": "^16.2.0",
+    "graphql": "^15.7.1",
     "https-browserify": "0.0.1",
     "moment": "^2.29.1",
     "path-browserify": "0.0.0",

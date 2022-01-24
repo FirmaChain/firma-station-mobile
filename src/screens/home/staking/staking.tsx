@@ -52,6 +52,11 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
         navigation.navigate(Screens.Validator, {validator: validator, address: address, walletName: walletName});
     }
 
+    const handleMoveToValidatorFromDelegation = (address:string) => {
+        const validator = validatorsState.validators.find((value) => value.validatorAddress === address);
+        handleMoveToValidator(validator);
+    }
+
     const handleRefresh = () => {
         setRefresh(true);
     }
@@ -83,7 +88,7 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
                             <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
                         </TouchableOpacity>
                     </View>
-                    {tab === 0 && <DelegationList delegations={stakingState.delegateList} navigateValidator={handleMoveToValidator}/>}
+                    {tab === 0 && <DelegationList delegations={stakingState.delegateList} navigateValidator={handleMoveToValidatorFromDelegation}/>}
                     {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
                 </ScrollView>
             </RefreshScrollView>

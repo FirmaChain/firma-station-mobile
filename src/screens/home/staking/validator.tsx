@@ -9,7 +9,6 @@ import ViewContainer from "../../../components/parts/containers/viewContainer";
 import { convertToFctNumber } from "../../../util/common";
 import { Screens, StackParamList } from "../../../navigators/stackNavigators";
 import RewardBox from "../../../organims/staking/parts/rewardBox";
-import { useOrganizedBalances } from "../../../hooks/wallet/useBalanceData";
 import DelegationBox from "../../../organims/staking/parts/delegationBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
@@ -29,8 +28,6 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
     const {navigation, route} = props;
     const {params} = route;
     const {validator, address, walletName} = params;
-
-    const { organizedReward } = useOrganizedBalances(address);
 
     const moniker = validator.validatorMoniker;
     const description = validator.validatorDetail;
@@ -106,7 +103,7 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
                         </View>
 
                         <DelegationBox handleDelegate={handleDelegate}/>
-                        <RewardBox reward={organizedReward} fromVD={true} transactionHandler={handleTransaction}/>
+                        <RewardBox reward={0} fromVD={true} transactionHandler={handleTransaction}/>
 
                         <PercentageBox aprApy={aprApy} dataArr={percentageData} />
                         <AddressBox title={"Operator address"} address={operatorAddress} />

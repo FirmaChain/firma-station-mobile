@@ -14,6 +14,7 @@ interface Props {
 
 const InfoSection = ({data}:Props) => {
     const convertClassified = (classified:any) => {
+        if(classified === undefined) return;
         if(classified.changes) {
             return (
                 <View style={[styles.boxH, styles.boxInfo]}>

@@ -3,7 +3,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Container from "../../../components/parts/containers/conatainer";
 import ViewContainer from "../../../components/parts/containers/viewContainer";
-import { useProposalData } from "../../../hooks/governance/useGovernaceData";
+import { useProposalData } from "../../../hooks/governance/hooks";
 import TitleSection from "../../../organims/governance/proposal/titleSection";
 import InfoSection from "../../../organims/governance/proposal/infoSection";
 import VotingSection from "../../../organims/governance/proposal/votingSection";

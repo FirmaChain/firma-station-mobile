@@ -1,5 +1,6 @@
 import { ForwardArrow } from "@/components/icon/icon";
 import { FIRMA_LOGO } from "@/constants/images";
+import { StakingValues } from "@/hooks/staking/hooks";
 import { convertNumber, convertToFctNumber, resizeFontSize } from "@/util/common";
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -8,12 +9,12 @@ import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGra
 
 interface Props {
     balance: number;
-    stakingBalances: any;
+    stakingValues: StakingValues;
     handleSend: Function;
     handleDelegate: Function;
 }
 
-const BalanceBox = ({balance, stakingBalances, handleSend, handleDelegate}:Props) => {
+const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) => {
     const [chainInfo, setChainInfo]:Array<any> = useState([]);
     const [balanceTextSize, setBalanceTextSize] = useState(28);
 
@@ -27,16 +28,16 @@ const BalanceBox = ({balance, stakingBalances, handleSend, handleDelegate}:Props
     }, [balance])
 
     const delegated = useMemo(() => {
-        return convertNumber((stakingBalances.delegated).toFixed(2)).toLocaleString();
-    }, [stakingBalances]);
+        return convertNumber((stakingValues.delegated).toFixed(2)).toLocaleString();
+    }, [stakingValues]);
 
     const undelegate = useMemo(() => {
-        return convertNumber((stakingBalances.undelegate).toFixed(2)).toLocaleString();
-    }, [stakingBalances]);
+        return convertNumber((stakingValues.undelegate).toFixed(2)).toLocaleString();
+    }, [stakingValues]);
 
     const reward = useMemo(() => {
-        return convertNumber((stakingBalances.stakingReward).toFixed(2)).toLocaleString();
-    }, [stakingBalances]);
+        return convertNumber((stakingValues.stakingReward).toFixed(2)).toLocaleString();
+    }, [stakingValues]);
     
     const exchangeData = useMemo(() => {
         return convertNumber((available * currentPrice).toFixed(2)).toLocaleString();
@@ -91,17 +92,17 @@ const BalanceBox = ({balance, stakingBalances, handleSend, handleDelegate}:Props
                 <View style={[styles.wrapperH, {flex: 3, justifyContent: "space-between", alignItems: "center" ,paddingTop: 18}]}>
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Delegated</Text>
-                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingBalances.delegated, 18)}]}>{delegated}</Text>
+                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingValues.delegated, 18)}]}>{delegated}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Undelegate</Text>
-                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingBalances.undelegate, 18)}]}>{undelegate}</Text>
+                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingValues.undelegate, 18)}]}>{undelegate}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Reward</Text>
-                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingBalances.stakingReward, 18)}]}>{reward}</Text>
+                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingValues.stakingReward, 18)}]}>{reward}</Text>
                     </View>
                 </View>
             </View>

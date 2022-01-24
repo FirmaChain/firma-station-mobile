@@ -5,21 +5,24 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface Props {
-    validator: any;
+    validator: {
+        avatarURL: string;
+        moniker: string;
+    };
 }
 
 const MonikerSection = ({validator}:Props) => {
   return (
     <View style={[styles.vdWrapperH, {alignItems: "center", paddingVertical: 10}]}>
         <View style={styles.moniikerWrapperH}>
-            {validator.validatorAvatar?
+            {validator.avatarURL?
             <Image
                 style={styles.avatar}
-                source={{uri: validator.validatorAvatar}}/>
+                source={{uri: validator.avatarURL}}/>
             :
             <Icon style={styles.icon} name="person" size={32} />
             }
-            <Text style={styles.moniker}>{validator.validatorMoniker}</Text>
+            <Text numberOfLines={1} ellipsizeMode='middle' style={styles.moniker}>{validator.moniker}</Text>
         </View>
         <ForwardArrow size={24} color={DarkGrayColor}/>
     </View>
@@ -39,6 +42,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
+        paddingRight: 20,
     },
     avatar: {
         width: 32,
@@ -49,6 +53,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     moniker: {
+        flex: 1,
         fontFamily: Lato,
         fontSize: 18,
         fontWeight: "600",
