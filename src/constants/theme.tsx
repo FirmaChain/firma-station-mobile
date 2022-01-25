@@ -4,7 +4,6 @@ export const Lato = 'Lato-Regular';
 export const BgColor = '#1c1c24';
 export const BoxColor = '#292932';
 export const BoxDarkColor = '#14141a';
-export const ContainerColor = 'dodgerblue';
 
 export const WhiteColor = '#fff';
 export const GrayColor = '#8d8d91';

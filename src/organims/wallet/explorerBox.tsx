@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Linking, StyleSheet, Text } from "react-native";
-import { ContainerColor, TextGrayColor } from "../../constants/theme";
+import { TextGrayColor } from "../../constants/theme";
 
 const ExplorerBox = () => {
 
@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         margin:20,
         borderRadius: 8,
-        backgroundColor: ContainerColor,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',

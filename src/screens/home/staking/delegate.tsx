@@ -7,7 +7,6 @@ import InputSetVertical from "../../../components/input/inputSetVertical";
 import Button from "../../../components/button/button";
 import ViewContainer from "../../../components/parts/containers/viewContainer";
 import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
-import { ContainerColor } from "../../../constants/theme";
 import Icon from "react-native-vector-icons/AntDesign";
 import ValidatorSelectModal from "../../../organims/staking/delegate/validatorSelectModal";
 
@@ -159,7 +158,6 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     title: {
-        color: ContainerColor,
         fontSize:16,
         marginBottom: 5,
     },
@@ -172,7 +170,6 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: ContainerColor,
         backgroundColor: '#fff',
         marginBottom: 5,
     },

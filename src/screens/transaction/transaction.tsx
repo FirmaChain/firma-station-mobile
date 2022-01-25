@@ -4,7 +4,7 @@ import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Screens, StackParamList } from "../../navigators/stackNavigators";
 import Button from "../../components/button/button";
-import { BgColor, ContainerColor } from "../../constants/theme";
+import { BgColor } from "../../constants/theme";
 import ViewContainer from "../../components/parts/containers/viewContainer";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Transaction>;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import CustomModal from "../../../components/modal/customModal";
-import { ContainerColor, TextColor } from "../../../constants/theme";
+import { TextColor } from "../../../constants/theme";
 import { decrypt, keyEncrypt } from "../../../util/keystore";
 import { getChain } from "../../../util/secureKeyChain";
 import { WalletNameValidationCheck } from "../../../util/validationCheck";
@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: ContainerColor,
         backgroundColor: '#fff',
         marginBottom: 5,
     },

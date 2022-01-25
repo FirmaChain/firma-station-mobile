@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { BoxColor, ContainerColor, DividerColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextGrayColor } from "../../../constants/theme";
+import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextGrayColor } from "../../../constants/theme";
 import { convertAmount } from "../../../util/common";
 
 interface Props {

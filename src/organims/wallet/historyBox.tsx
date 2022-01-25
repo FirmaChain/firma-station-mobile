@@ -1,7 +1,7 @@
 import { ForwardArrow } from "@/components/icon/icon";
 import React, { useMemo } from "react"
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, ContainerColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
 
 interface Props {
     history?: [any];

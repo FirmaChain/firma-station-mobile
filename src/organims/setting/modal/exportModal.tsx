@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, ContainerColor, GrayColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "../../../constants/theme";
+import { BoxColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "../../../constants/theme";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";

@@ -19,6 +19,7 @@ import DelegateScreen, { DelegateParams } from "../screens/home/staking/delegate
 import TransactionScreen from "../screens/transaction/transaction";
 import RecoverWalletScreen from "@/screens/welcome/recoverWallet";
 import StepRecoverScreen from "@/screens/createWallet/stepRecover";
+import DepositScreen, { DepositParams } from "@/screens/home/governance/deposit";
 
 export enum Screens {
     Welcome = 'Welcome',
@@ -41,6 +42,7 @@ export enum Screens {
     
     Governance = 'Governance',
     Proposal = "Proposal",
+    Deposit = "Deposit",
 
     Setting = 'Setting',
     ChangePassword = 'ChangePassword',
@@ -68,6 +70,7 @@ export type StackParamList = {
 
     Governance: undefined;
     Proposal: ProposalParams;
+    Deposit: DepositParams;
 
     Setting: SettingParams;
     ChangePassword: ChangePasswordParams;
@@ -175,6 +178,10 @@ const StackNavigator: React.FunctionComponent = () => {
                     options={{headerShown: false}}
                     name={Screens.Proposal}
                     component={ProposalScreen} />
+                <Stack.Screen
+                    options={{headerShown: false}}
+                    name={Screens.Deposit}
+                    component={DepositScreen} />
             </Stack.Group>
 
         </Stack.Navigator>

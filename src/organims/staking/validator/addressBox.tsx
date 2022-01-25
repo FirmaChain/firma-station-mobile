@@ -1,9 +1,6 @@
 import React from "react";
-import { Linking, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
-import { Copy } from "../../../components/icon/icon";
-import { BoxColor, ContainerColor, Lato, TextAddressColor, TextColor } from "../../../constants/theme";
-import Clipboard from "@react-native-clipboard/clipboard";
-import Toast from "react-native-toast-message";
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BoxColor, Lato, TextAddressColor, TextColor } from "../../../constants/theme";
 
 interface Props {
     title: string;

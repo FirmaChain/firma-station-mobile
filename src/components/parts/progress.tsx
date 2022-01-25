@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
 import { Animated, StyleSheet, View } from "react-native";
+import { fadeIn, fadeOut } from "@/util/animation";
 
 const Progress = () => {
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
@@ -9,22 +10,7 @@ const Progress = () => {
 
     const animated = [ fadeAnim_1, fadeAnim_2, fadeAnim_3 ];
 
-    const fadeIn = (value:Animated.Value) => {
-        Animated.timing(value, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
-    };
-
-    const fadeOut = (value:Animated.Value) => {
-        Animated.timing(value, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
-    };
-
+    
     useEffect(() => {
         let index = -1;
         let inverse = true;

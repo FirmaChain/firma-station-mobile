@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ContainerColor, TextColor, TextGrayColor } from "../../constants/theme";
+import { TextColor } from "../../constants/theme";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {
@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginHorizontal: 20,
         borderWidth: 1,
-        borderColor: ContainerColor,
         borderRadius: 8,
         justifyContent: 'center',
     },
