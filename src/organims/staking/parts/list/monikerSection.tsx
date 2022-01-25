@@ -1,6 +1,6 @@
 import React from 'react';
-import { ForwardArrow } from '@/components/icon/icon';
-import { DarkGrayColor, Lato, TextColor } from '@/constants/theme';
+import { ForwardArrow, Person } from '@/components/icon/icon';
+import { DarkGrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -20,7 +20,9 @@ const MonikerSection = ({validator}:Props) => {
                 style={styles.avatar}
                 source={{uri: validator.avatarURL}}/>
             :
-            <Icon style={styles.icon} name="person" size={32} />
+            <View style={styles.icon}>
+                <Person size={32} color={WhiteColor}/>
+            </View>
             }
             <Text numberOfLines={1} ellipsizeMode='middle' style={styles.moniker}>{validator.moniker}</Text>
         </View>

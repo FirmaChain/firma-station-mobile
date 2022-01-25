@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "../../../components/parts/containers/conatainer";
-import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../../constants/theme";
+import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "../../../constants/theme";
 import AddressBox from "../../../organims/staking/validator/addressBox";
 import PercentageBox from "../../../organims/staking/validator/percentageBox";
 import ViewContainer from "../../../components/parts/containers/viewContainer";
@@ -10,6 +10,7 @@ import { convertAmount, convertCurrent, convertPercentage, convertToFctNumber } 
 import { Screens, StackParamList } from "../../../navigators/stackNavigators";
 import DelegationBox from "../../../organims/staking/validator/delegationBox";
 import { getStakingFromvalidator } from "@/util/firma";
+import { Person } from "@/components/icon/icon";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -116,7 +117,13 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
                 <ViewContainer bgColor={BgColor}>
                     <ScrollView style={{backgroundColor: BoxColor}}>
                         <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20,}]}>
-                            <Image style={styles.avatar} source={{uri: validator.validatorAvatar}} />
+                            {validator.validatorAvatar?
+                            <Image style={styles.avatar} source={{uri: validator.validatorAvatar}}/>
+                            :
+                            <View style={styles.avatar}>
+                                <Person size={68} color={WhiteColor}/>
+                            </View>
+                            }
                             <View style={[styles.boxV, {flex: 1}]}>
                                 <Text style={styles.moniker}>{moniker}</Text>
                                 <Text style={styles.desc}>{description}</Text>

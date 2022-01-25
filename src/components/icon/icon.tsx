@@ -2,6 +2,7 @@ import React from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AntDesignIcons from "react-native-vector-icons/AntDesign";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface Props {
     size: number;
@@ -35,5 +36,11 @@ export const DownArrow = ({size, color}:Props) => {
 export const UpEmptyArrow = ({size, color}:Props) => {
     return (
         <AntDesignIcons name="up" size={size} color={color} />
+    )
+}
+
+export const Person = ({size, color}:Props) => {
+    return (
+        <Ionicons name="ios-person-circle-outline" size={size} color={color} />
     )
 }
