@@ -1,4 +1,4 @@
-import { convertNumber, resizeFontSize } from "@/util/common";
+import { convertCurrent, convertNumber, resizeFontSize } from "@/util/common";
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import SmallButton from "../../../components/button/smallButton";
@@ -16,7 +16,7 @@ const RewardBox = ({fromVD, reward, transactionHandler}:Props) => {
     const [rewardTextSize, setRewardTextSize] = useState(28);
     
     const stakingReward = useMemo(() => {
-        return convertNumber((reward.toFixed(2))).toLocaleString();
+        return convertCurrent(convertNumber((reward.toFixed(2))));
     }, [reward]);
     
     const handleWithdraw = (open:boolean) => {
@@ -24,7 +24,7 @@ const RewardBox = ({fromVD, reward, transactionHandler}:Props) => {
     }
 
     useEffect(() => {
-        setRewardTextSize(resizeFontSize(reward, 28));
+        setRewardTextSize(resizeFontSize(reward, 10000, 28));
     }, [reward]);
     
 

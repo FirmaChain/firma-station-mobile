@@ -4,7 +4,7 @@ import { BoxColor, DisableColor, Lato, PointLightColor, TextGrayColor } from "..
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
 import { StakeInfo } from "@/hooks/staking/hooks";
-import { ConvertAmount } from "@/util/common";
+import { convertAmount } from "@/util/common";
 
 interface Props {
     delegations: Array<StakeInfo>;
@@ -24,8 +24,8 @@ const DelegationList = ({delegations, navigateValidator}:Props) => {
                     <TouchableOpacity key={index} onPress={() => navigateValidator(value.validatorAddress)}>
                         <View style={[styles.item]}>
                             <MonikerSection validator={value} />
-                            <DataSection title="Delegated" data={ConvertAmount(value.amount) + " FCT"} />
-                            <DataSection title="Reward" data={ConvertAmount(value.reward) + " FCT"} />
+                            <DataSection title="Delegated" data={convertAmount(value.amount) + " FCT"} />
+                            <DataSection title="Reward" data={convertAmount(value.reward) + " FCT"} />
                             <View style={{paddingBottom: 22}} />
                             {index < delegations.length - 1  && <View style={styles.divider} />}
                         </View>

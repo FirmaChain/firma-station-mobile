@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "../../../components/parts/containers/conatainer";
-import { TextColor } from "../../../constants/theme";
+import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../../constants/theme";
 import AddressBox from "../../../organims/staking/validator/addressBox";
 import PercentageBox from "../../../organims/staking/validator/percentageBox";
 import ViewContainer from "../../../components/parts/containers/viewContainer";
-import { convertToFctNumber } from "../../../util/common";
+import { convertAmount, convertCurrent, convertPercentage, convertToFctNumber } from "../../../util/common";
 import { Screens, StackParamList } from "../../../navigators/stackNavigators";
-import RewardBox from "../../../organims/staking/parts/rewardBox";
-import DelegationBox from "../../../organims/staking/parts/delegationBox";
+import DelegationBox from "../../../organims/staking/validator/delegationBox";
+import { getStakingFromvalidator } from "@/util/firma";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -36,18 +36,26 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
     const operatorAddress = validator.validatorAddress;
     const accountAddress = validator.selfDelegateAddress;
 
-    const aprApy = {APR:(validator.APR * 100).toFixed(2),
-                    APY:(validator.APY * 100).toFixed(2)}
+    const [stakingState, setStakingState] = useState<any>({
+        available: 0,
+        delegated: 0,
+        undelegate: 0,
+        stakingReward: 0,
+    });
+
+    const APR = convertPercentage(validator.APR);
+    const APY = convertPercentage(validator.APY);
+
     const percentageData = [
         {
             row: [
                 {
-                    title: "Voting power",
+                    title: "Voting Power",
                     data: validator.votingPowerPercent,
                     amount: validator.votingPower,
                 },
                 {
-                    title: "Self-delegation",
+                    title: "Self-Delegation",
                     data: validator.selfPercent,
                     amount: convertToFctNumber(validator.self),
                 },
@@ -85,30 +93,47 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
         navigation.goBack();
     }
 
+    useEffect(() => {
+        async function handleDelegateState(){
+            const state = await getStakingFromvalidator(address, operatorAddress);
+            setStakingState({
+                available: convertAmount(state.available, false),
+                delegated: convertAmount(state.delegated, false),
+                undelegate: convertAmount(state.undelegate, false),
+                stakingReward: convertAmount(state.stakingReward, false),
+            });
+        }
+
+        handleDelegateState();
+    }, [validator]);
+    
+
     return (
         <Container
             titleOn={false}
+            bgColor={BoxColor}
             backEvent={handleBack}>
-                <ViewContainer>
-                    <ScrollView>
-                        <View style={[styles.boxH, {alignItems: "center", paddingVertical: 10, paddingHorizontal: 20}]}>
+                <ViewContainer bgColor={BgColor}>
+                    <ScrollView style={{backgroundColor: BoxColor}}>
+                        <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20,}]}>
                             <Image style={styles.avatar} source={{uri: validator.validatorAvatar}} />
                             <View style={[styles.boxV, {flex: 1}]}>
                                 <Text style={styles.moniker}>{moniker}</Text>
                                 <Text style={styles.desc}>{description}</Text>
+                                {website &&
                                 <TouchableOpacity onPress={()=>handleUrl(website)}>
                                     <Text style={styles.url}>{website}</Text>
                                 </TouchableOpacity>
+                                }
                             </View>
                         </View>
 
-                        <DelegationBox handleDelegate={handleDelegate}/>
-                        <RewardBox reward={0} fromVD={true} transactionHandler={handleTransaction}/>
-
-                        <PercentageBox aprApy={aprApy} dataArr={percentageData} />
-                        <AddressBox title={"Operator address"} address={operatorAddress} />
-                        <AddressBox title={"Account address"} address={accountAddress} />
-                        {/* <DelegationsBox delegations={delegations} /> */}
+                        <DelegationBox stakingState={stakingState} handleDelegate={handleDelegate} transactionHandler={handleTransaction}/>
+                        <View style={styles.infoBox}>
+                            <PercentageBox APR={APR} APY={APY} dataArr={percentageData} />
+                            <AddressBox title={"Operator address"} path={"validators"} address={operatorAddress} />
+                            <AddressBox title={"Account address"} path={"accounts"} address={accountAddress} />
+                        </View>
                     </ScrollView>
                 </ViewContainer>
         </Container>
@@ -116,33 +141,36 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
 }
 
 const styles = StyleSheet.create({
-    box: {
-    },
     boxH: {
         flexDirection: "row",
     },
     boxV: {
         alignItems: "flex-start",
     },
+    infoBox: {
+        backgroundColor: BgColor,
+        paddingTop: 30,
+    },
     avatar: {
-        width: 80,
-        height: 80,
+        width: 68,
+        height: 68,
         borderRadius: 50,
         overflow: "hidden",
         marginRight: 10,
     },
     moniker: {
         width: "100%",
-        fontSize: 18,
+        fontSize: 24,
+        fontFamily: Lato,
         fontWeight: "bold",
         color: TextColor,
-        paddingBottom: 10,
+        paddingBottom: 8,
     },
     desc: {
         width: "auto",
-        color: "#aaa",
-        fontSize: 12,
-        paddingBottom: 5,
+        color: TextDarkGrayColor,
+        fontSize: 16,
+        paddingBottom: 12,
     },
     content: {
         width: "100%",
@@ -152,9 +180,14 @@ const styles = StyleSheet.create({
     },
     url: {
         width: "100%",
-        color: TextColor,
-        fontSize: 12,
+        paddingVertical: 4,
+        paddingHorizontal: 12,
+        backgroundColor: DisableColor,
+        borderRadius: 4,
+        overflow: "hidden",
+        color: TextCatTitleColor,
+        fontSize: 14,
     },
 })
 
-export default ValidatorScreen;
+export default React.memo(ValidatorScreen);

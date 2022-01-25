@@ -1,68 +1,59 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Linking, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { Copy } from "../../../components/icon/icon";
-import { ContainerColor } from "../../../constants/theme";
+import { BoxColor, ContainerColor, Lato, TextAddressColor, TextColor } from "../../../constants/theme";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
 
 interface Props {
     title: string;
+    path: string;
     address: string;
 }
 
-const AddressBox = ({title, address}:Props) => {
-
-    const copyToClipboard = () => {
-        Clipboard.setString(address);
-
-        const msg = 'Copied ' + title;
-        
-        Toast.show({
-            type: 'info',
-            text1: msg,
-        });
+const AddressBox = ({title, path, address}:Props) => {
+    const openExplorer = (URL:string) => {
+        Linking.openURL('https://explorer-devnet.firmachain.org/' + path + "/" + URL);
     }
 
     return (
-        <View style={{paddingHorizontal: 20}}>
-            <TouchableOpacity onPress={() => copyToClipboard()}>
-                <View style={[styles.boxV, styles.borderBox]}>
-                    <View style={[styles.boxH, {width: "100%", justifyContent: "space-between"}]}>
-                        <Text style={styles.desc}>{title}</Text>
-                        <Copy size={13} />
-                    </View>
+        <View style={styles.container}>
+            <View style={[styles.box]}>
+                <Text style={styles.title}>{title}</Text>
+                <TouchableOpacity onPress={() => openExplorer(address)}>
                     <Text style={styles.content} numberOfLines={1} ellipsizeMode={"middle"}>{address}</Text>
-                </View>
-            </TouchableOpacity>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    boxH: {
-        flexDirection: "row",
+    container: {
+        paddingHorizontal: 20
     },
-    boxV: {
+    box: {
         alignItems: "flex-start",
-    },
-    borderBox: {
         paddingHorizontal: 20, 
         paddingVertical: 10, 
-        borderColor: ContainerColor, 
-        borderWidth: 1, 
         borderRadius: 8, 
-        marginVertical: 5
+        marginBottom: 16,
+        backgroundColor: BoxColor,
     },
-    desc: {
+    title: {
         width: "auto",
-        color: "#aaa",
-        fontSize: 12,
-        paddingBottom: 5,
+        fontFamily: Lato,
+        fontSize: 16,
+        fontWeight: "600",
+        color: TextColor,
+        opacity: .6,
+        paddingBottom: 8,
     },
     content: {
-        width: "100%",
-        color: "#1e1e1e",
-        fontSize: 14,
+        fontFamily: Lato,
+        fontSize: 16,
+        fontWeight: "normal",
+        color: TextAddressColor,
         paddingBottom: 5,
     },
 })

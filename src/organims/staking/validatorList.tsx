@@ -42,7 +42,7 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>List 
-                    <Text style={{color: PointLightColor}}> 30</Text>
+                    <Text style={{color: PointLightColor}}> {validators.length}</Text>
                 </Text>
                 <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
                     <Text style={[styles.title, {paddingRight: 4}]}>{sortItems[selected]}</Text>

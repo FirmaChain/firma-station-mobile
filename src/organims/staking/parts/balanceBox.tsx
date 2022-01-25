@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
-import { convertNumber, resizeFontSize } from "@/util/common";
+import { convertAmount, convertCurrent, convertNumber, resizeFontSize } from "@/util/common";
 import { StakingValues } from "@/hooks/staking/hooks";
 
 interface Props {
@@ -30,15 +30,14 @@ const BalanceBox = ({stakingValues}:Props) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.box}>
+            <View style={[styles.box, {flex: 3}]}>
                 {StakingValues.map((item, index) => {
                     return (
-                        <View key={index} style={styles.box}>
+                        <View key={index} style={[styles.box, {flex: 1}, (index < StakingValues.length - 1) && {borderRightColor: DisableColor, borderRightWidth: 1}]}>
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, {fontSize: resizeFontSize(item.data, 16)}]}>{convertNumber((item.data).toFixed(2)).toLocaleString()}</Text>
+                                <Text style={[styles.desc, {fontSize: resizeFontSize(item.data, 100000, 16)}]}>{convertAmount(item.data, false)}</Text>
                             </View>
-                            {index < StakingValues.length - 1 && <View style={styles.dividerV} />}
                         </View>
                     )
                 })}
@@ -59,13 +58,14 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     wrapper: {
+        width: "100%",
         height: 50,
         justifyContent: "space-between",
+        alignItems: "center",
     },
     dividerV: {
-        width: .5,
+        width: 1,
         height: 50,
-        marginLeft: 20,
         backgroundColor: DisableColor,
     },
     title: {

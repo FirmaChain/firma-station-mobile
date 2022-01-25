@@ -1,11 +1,12 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { ContainerColor } from "../../../constants/theme";
-import { ConvertAmount } from "../../../util/common";
+import { BoxColor, ContainerColor, DividerColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextGrayColor } from "../../../constants/theme";
+import { convertAmount } from "../../../util/common";
 
 interface Props {
-    aprApy: any;
-    dataArr: Array<any>
+    APR: string;
+    APY: string;
+    dataArr: Array<any>;
 }
 
 const cols = 2;
@@ -13,51 +14,92 @@ const marginHorizontal = 0;
 const marginVertical = 4;
 const width = (Dimensions.get('window').width / cols) - (marginHorizontal * (cols + 1));
 
-const PercentageBox = ({aprApy, dataArr}:Props) => {
+const PercentageBox = ({APR, APY, dataArr}:Props) => {
+
     return (
-        <View style={[styles.boxV, {paddingHorizontal: 20}]}>
-            <View style={[styles.borderBox, {width: "100%"}]}>
-                <Text style={styles.desc}>APR / <Text style={[styles.desc, {fontSize: 10}]}>APY</Text></Text>
-                <Text style={styles.content}>{aprApy.APR}% / <Text style={{fontSize: 12}}>{aprApy.APY}%</Text></Text>
+        <View style={[styles.container]}>
+            <View style={[styles.box, {paddingHorizontal: 20, paddingVertical: 18, marginBottom: 16}]}>
+                <View style={[styles.wrapperH, {flex: 1, justifyContent: "space-around"}]}>
+                    <Text style={styles.title}>APR</Text>
+                    <Text style={styles.data}>{APR} %</Text>
+                </View>
+                <View style={styles.divider} />
+                <View style={[styles.wrapperH, {flex: 1, justifyContent: "space-around"}]}>
+                    <Text style={[styles.title, {color: TextDarkGrayColor}]}>APY</Text>
+                    <Text style={[styles.data, {opacity: .6}]}>{APY} %</Text>
+                </View>
             </View>
-            <View style={styles.box}>
-                {dataArr.map((grid, index) => {
-                    return (
-                    <View key={index} style={[styles.boxH, {width: "100%"}]}>
-                        {grid.row.map((item:any, index:number) => {
-                            return (
-                            <View key={index} style={[styles.boxH, {flex: 1}]}>
-                                <View style={[styles.borderBox, {flex: 1}]}>
-                                    <Text style={styles.desc}>{item.title}</Text>
-                                    <Text style={styles.content}>{item.data}%</Text>
-                                    {item?.amount && <Text style={[styles.desc, {textAlign: "right"}]}>{ConvertAmount(item.amount, false)} FCT</Text>}
+
+            <View style={[styles.box, {paddingVertical: 24}]}>
+                <View style={styles.wrapBox}>
+                    {dataArr.map((grid, index) => {
+                        return (
+                        <View key={index} style={[styles.wrapperH, index < dataArr.length - 1 && {paddingBottom: 34}]}>
+                            {grid.row.map((item:any, index:number) => {
+                                return (
+                                <View key={index} style={[styles.wrapperH, {flex: 1, alignItems: "center"}]}>
+                                    <View style={[styles.wrapperV, {alignItems:"center", flex: 1}]}>
+                                        <Text style={[styles.title, {fontSize: 14, paddingBottom: 10}]}>{item.title}</Text>
+                                        <Text style={[styles.data, {fontSize: 22, paddingBottom: 6}]}>{item.data}%</Text>
+                                        {item?.amount && <Text style={styles.desc}>{convertAmount(item.amount, false)} FCT</Text>}
+                                    </View>
+                                    {(index < grid.row.length - 1) && <View style={[styles.divider, {height: 54}]}/>}
                                 </View>
-                                {(index < grid.row.length - 1) && <View style={{width: 10}}/>}
-                            </View>
-                            )
-                        })}
-                    </View>
-                    )
-                })}
+                                )
+                            })}
+                        </View>
+                        )
+                    })}
+                </View>
             </View>
-            
         </View>
     )
 }
 
 const styles = StyleSheet.create({
+    container: {
+        paddingHorizontal: 20,
+        marginBottom: 16,
+    },
     box: {
+        flexDirection: "row",
+        backgroundColor: BoxColor,
+        borderRadius: 8,
+    },
+    wrapBox: {
         flex: 1,
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "center",
         alignItems: "center",
     },
-    boxH: {
+    wrapperH: {
         flexDirection: "row",
     },
-    boxV: {
+    wrapperV: {
         alignItems: "flex-start",
+    },
+    divider: {
+        width: 1,
+        backgroundColor: DividerColor,
+    },
+    title: {
+        fontFamily: Lato,
+        fontWeight: "600",
+        fontSize: 16,
+        color: PointLightColor,
+    },
+    data: {
+        fontFamily: Lato,
+        fontWeight: "600",
+        fontSize: 18,
+        color: TextColor,
+    },
+    desc: {
+        fontFamily: Lato,
+        fontWeight: "normal",
+        fontSize: 13,
+        color: TextGrayColor,
     },
     borderBox: {
         width: width,
@@ -65,23 +107,7 @@ const styles = StyleSheet.create({
         marginBottom: marginVertical,
         marginLeft: marginHorizontal,
         marginRight: marginHorizontal,
-        borderColor: ContainerColor, 
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 10,
-    },
-    desc: {
-        width: "auto",
-        color: "#aaa",
-        fontSize: 12,
-        paddingBottom: 5,
-    },
-    content: {
-        width: "100%",
-        color: "#1e1e1e",
-        textAlign: "right",
-        fontSize: 16,
-        paddingBottom: 5,
+        alignItems: "center",
     },
 })
 

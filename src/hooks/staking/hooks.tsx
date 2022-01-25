@@ -1,11 +1,8 @@
 import { useValidatorsQuery } from "@/apollo/gqls";
-import { getBalanceFromAdr, getDelegateList, getStaking, getTotalReward, getUndelegateList } from "@/util/firma";
-import { useEffect, useMemo, useState } from "react";
-import { VALIDATOR_LIST } from "../../constants/dummy";
+import { getStaking } from "@/util/firma";
+import { useEffect, useState } from "react";
 import { convertNumber, convertToFctNumber, isValid } from "../../util/common";
 export const MINT_COIN_PER_BLOCK = 12.8629;
-
-const data = VALIDATOR_LIST.data;
 
 export interface ValidatorsState {
     totalVotingPower: number;
@@ -72,6 +69,22 @@ export const useStakingData = (address:string) => {
         stakingState: stakingState,
         setRefresh: setRefresh,
     }
+}
+
+export const useValidatorDescription = (delegations:Array<StakeInfo>, validators:Array<any>) => {
+    const result = delegations.map((value) => {
+        const desc = validators.find(val => val.validatorAddress === value.validatorAddress);
+        return {
+            validatorAddress: value.validatorAddress,
+            delegatorAddress: value.delegatorAddress,
+            amount: value.amount,
+            reward: value.reward,
+            moniker: desc.validatorMoniker,
+            avatarURL: desc.validatorAvatar,
+        }
+    })
+
+    return result;
 }
 
 export const useValidatorData = () => {

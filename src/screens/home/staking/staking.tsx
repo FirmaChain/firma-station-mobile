@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import RefreshScrollView from "@components/parts/refreshScrollView";
-import { StakingValues, useStakingData, useValidatorData } from "@hooks/staking/hooks";
+import { StakeInfo, StakingValues, useStakingData, useValidatorData, useValidatorDescription } from "@hooks/staking/hooks";
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from "@constants/theme";
 import { Screens, StackParamList } from "../../../navigators/stackNavigators";
 import ValidatorList from "../../../organims/staking/validatorList";
@@ -40,6 +40,8 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
     });
 
     useEffect(() => {
+        useValidatorDescription(stakingState.delegateList, validatorsState.validators);
+
         setStakingValues({
             available: stakingState.available,
             delegated: stakingState.delegated,
@@ -49,7 +51,12 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
     }, [stakingState]);
 
     const handleMoveToValidator = (validator:any) => {
-        navigation.navigate(Screens.Validator, {validator: validator, address: address, walletName: walletName});
+        navigation.navigate(Screens.Validator, 
+            {
+                validator: validator, 
+                address: address, 
+                walletName: walletName
+            });
     }
 
     const handleMoveToValidatorFromDelegation = (address:string) => {
@@ -88,7 +95,7 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
                             <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
                         </TouchableOpacity>
                     </View>
-                    {tab === 0 && <DelegationList delegations={stakingState.delegateList} navigateValidator={handleMoveToValidatorFromDelegation}/>}
+                    {tab === 0 && <DelegationList delegations={useValidatorDescription(stakingState.delegateList, validatorsState.validators)} navigateValidator={handleMoveToValidatorFromDelegation}/>}
                     {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
                 </ScrollView>
             </RefreshScrollView>
