@@ -139,6 +139,9 @@ export const useGovernmentQuery = ({ onCompleted }: IQueryParam) => {
           status
           description
           proposalType: proposal_type
+          depositEndTime: deposit_end_time
+          votingStartTime: voting_start_time
+          votingEndTime: voting_end_time
         }
       }
     `,

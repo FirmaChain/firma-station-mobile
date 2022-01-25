@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { StyleSheet, Text, View } from 'react-native';
-import { PROPOSAL_STATUS, STATUS_COLOR } from '../../../constants/common';
-import { TextGrayColor } from '../../../constants/theme';
+import { PROPOSAL_STATUS, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from '../../../constants/common';
+import { Lato, TextColor, TextGrayColor } from '../../../constants/theme';
 
 interface Props {
     data: {
@@ -12,43 +12,58 @@ interface Props {
 }
 
 const TitleSection = ({data}:Props) => {
+    const Data = useMemo(() => {
+        if(data) return {
+            id: data.id,
+            title: data.title,
+            status: data.status,
+        }
+        return {
+            id: 0,
+            title: '',
+            status: '',
+        }
+    }, [data]);
+
     return (
-        <View style={[styles.boxH, {alignItems: "flex-start", paddingHorizontal: 20}]}>
-            <Text style={styles.id}># {data.id}</Text>
-            <Text style={styles.proposalTitle}>{data.title}</Text>
-            <Text style={[styles.status, {backgroundColor: STATUS_COLOR[data.status]}]}>{PROPOSAL_STATUS[data.status]}</Text>
+        <View style={styles.container}>
+            <View style={styles.box}>
+                <Text style={
+                    [styles.status, 
+                    Data.status !== '' && {backgroundColor: STATUS_BACKGROUND_COLOR[Data.status], color: STATUS_COLOR[Data.status]}
+                    ]}>{PROPOSAL_STATUS[Data.status]}</Text>
+                <Text style={styles.title}>{Data.title}</Text>
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    boxH: {
-        flexDirection: "row",
+    container: {
+        paddingHorizontal: 20,
+        paddingTop: 32,
+        paddingBottom: 20,
     },
-    divier: {
-        height: 1,
-        backgroundColor: "#aaa",
-        marginVertical: 10,
-        marginHorizontal: 20,
-    },
-    id: {
-        fontSize: 14,
-        color: "#aaa",
-    },
-    proposalTitle: {
-        flex: 1,
-        fontSize: 16,
-        textAlign: "left",
-        marginHorizontal: 10,
+    box: {
+        alignItems: "flex-start",
     },
     status: {
-        width: 60,
-        fontSize: 8,
-        borderRadius: 4,
+        fontFamily: Lato,
+        fontWeight: "bold",
+        fontSize: 13,
+        borderRadius: 10,
         textAlign: "center",
         overflow: "hidden",
-        color: TextGrayColor,
-        padding: 5,
+        paddingHorizontal: 14,
+        paddingVertical: 5,
+        marginBottom: 10,
+    },
+    title: {
+        width: "100%",
+        fontFamily: Lato,
+        fontSize: 22,
+        fontWeight: "bold",
+        color: TextColor,
     },
 })
 

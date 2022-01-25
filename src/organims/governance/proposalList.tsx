@@ -1,8 +1,8 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PROPOSAL_STATUS, STATUS_COLOR } from "../../constants/common";
-import { ContainerColor, TextGrayColor } from "../../constants/theme";
-import { convertNumber } from "../../util/common";
+import { PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from "../../constants/common";
+import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
+import { convertNumber, convertTime } from "../../util/common";
 
 interface Props {
     proposals: Array<any>;
@@ -15,29 +15,55 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
         handleDetail && handleDetail(proposalId);
     }
 
+    const handlePeriodStatus = (proposal:any) => {
+        let period = '';
+        if(proposal.status === PROPOSAL_STATUS_DEPOSIT_PERIOD){
+            period = "Deposit ends : " + convertTime(proposal.depositEndTime, false);
+        } else {
+            period = "Voting ends : " + convertTime(proposal.votingEndTime, false);
+        }
+
+        return {
+            period: period,
+            dDay: getDDays(convertTime(proposal.depositEndTime, false)),
+        }
+    }
+
+    const getDDays = (date:string) => {
+        const period = new Date(date);
+        const today = new Date();
+
+        const gap = period.getTime() - today.getTime();
+        const result = Math.ceil(gap / (1000 * 60 * 60 * 24));
+
+        if(result > 1) return result + " days left";
+        if(result === 1) return result + " day left";
+        return "";
+    }
+
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Proposals</Text>
-            </View>
             <ScrollView>
                 {proposals.map((proposal, index) => {
+                    const periodState = handlePeriodStatus(proposal);
                     return (
                         <TouchableOpacity 
                             key={index} 
-                            style={[styles.list ,(index === (proposals.length -1) && {borderBottomWidth: 0})]} 
+                            style={styles.item} 
                             onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}>
-                            <View style={[styles.wrapperH, {alignItems: "flex-start"}]}>
-                                <View style={styles.wrapperV}>
+                                <View style={[styles.wrapperH, {paddingBottom: 10}]}>
                                     <Text style={styles.id}># {proposal.proposalId}</Text>
+                                    <Text style={[styles.status, {backgroundColor: STATUS_BACKGROUND_COLOR[proposal.status], color: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
                                 </View>
-                                <View style={[styles.wrapperV, {marginHorizontal: 10}]}>
-                                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.proposalTitle}>{proposal.title}</Text>
-                                    <Text style={styles.type} numberOfLines={1} ellipsizeMode="tail">{proposal.proposalType}</Text>
-                                    <Text style={[styles.status, {backgroundColor: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
-                                    <Text style={styles.desc} numberOfLines={3} ellipsizeMode="tail">{proposal.description}</Text>
+                                <View style={[styles.wrapperH, {paddingBottom: 10}]}>
+                                    <Text style={styles.title}>{proposal.title}</Text>
                                 </View>
-                            </View>
+                                <View style={styles.wrapperH}>
+                                    <Text style={[styles.period, {color: TextDisableColor}]}>
+                                        {periodState.period}
+                                    </Text>
+                                    <Text style={[styles.period, {color: TextCatTitleColor, fontWeight: "600"}]}>{periodState.dDay}</Text>
+                                </View>
                         </TouchableOpacity>
                     )
                 })}
@@ -50,39 +76,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginHorizontal: 20,
+        marginTop: 32,
         marginBottom: 20,
-        borderWidth: 1,
-        borderColor: ContainerColor,
-        borderRadius: 8,
         justifyContent: "center",
     },
-    header: {
-        height: 50,
+    item: {
         paddingHorizontal: 20,
-        borderTopLeftRadius: 7,
-        borderTopRightRadius: 7,
-        backgroundColor: ContainerColor,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-    title: {
-        color: TextGrayColor,
-        fontWeight: "bold"
-    },
-    list: {
-        padding: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        backgroundColor: "transparent",
-        borderBottomWidth: 1,
-        borderColor: "#ddd",
+        paddingTop: 22,
+        paddingBottom: 26,
+        backgroundColor: BoxColor,
+        borderRadius: 8,
+        marginBottom: 12,
     },
     wrapperH: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+    },
+    wrapperV: {
+        justifyContent: "flex-start"
     },
     descWrapperH: {
         width: "100%",
@@ -91,37 +103,32 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         paddingBottom: 5,
     },
-    wrapperV: {
-        justifyContent: "flex-start"
-    },
     id: {
-        fontSize: 14,
-        color: "#aaa",
+        fontFamily: Lato,
+        fontSize: 18,
+        fontWeight: "600",
+        color: TextDarkGrayColor,
     },
     status: {
-        width: 60,
-        fontSize: 8,
-        borderRadius: 4,
+        fontFamily: Lato,
+        fontWeight: "bold",
+        fontSize: 11,
+        borderRadius: 10,
         textAlign: "center",
         overflow: "hidden",
         color: TextGrayColor,
-        padding: 5,
-        marginBottom: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 3,
     },
-    proposalTitle: {
-        flex: 1,
-        fontSize: 14,
-        textAlign: "left",
-    },
-    type: {
-        fontSize: 12,
-        color: "#aaa",
+    title: {
+        fontFamily: Lato,
+        fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 5,
+        color: TextColor,
     },
-    desc: {
-        fontSize: 12,
-        color: "#aaa",
+    period: {
+        fontFamily: Lato,
+        fontSize: 14,
     },
 })
 

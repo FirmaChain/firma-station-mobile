@@ -1,30 +1,30 @@
 import React, { useMemo } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { BgColor, BorderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { convertAmount, convertNumber, convertPercentage } from "../../../util/common";
 import CaretUp from "react-native-vector-icons/Ionicons";
-import { ContainerColor } from "../../../constants/theme";
-import { ConvertAmount, convertPercentage, convertToFctNumber } from "../../../util/common";
 
 interface Props {
-    quorum: number;
-    stakingPool: string;
-    proposalTally: any;
+    data: any;
 }
 
-const cols = 2;
-const marginHorizontal = 4;
-const marginVertical = 4;
-const width = (Dimensions.get('window').width / cols) - (marginHorizontal * (cols + 1));
-
-const VotingPercentage = ({quorum, stakingPool, proposalTally}:Props) => {
-
+const VotingPercentage = ({data}:Props) => {
     const tally = useMemo(() => {
+        if(data.proposalTally)
+            return [
+                { title: "YES", vote: data.proposalTally.yes },
+                { title: "NO", vote: data.proposalTally.no },
+                { title: "NoWithVeto", vote: data.proposalTally.noWithVeto },
+                { title: "Abstain", vote: data.proposalTally.abstain }
+            ]
+
         return [
-            { title: "YES", vote: proposalTally.yes },
-            { title: "NO", vote: proposalTally.no },
-            { title: "NoWithVeto", vote: proposalTally.noWithVeto },
-            { title: "Abstain", vote: proposalTally.abstain }
+            { title: "YES", vote: 0 },
+            { title: "NO", vote: 0 },
+            { title: "NoWithVeto", vote: 0 },
+            { title: "Abstain", vote: 0 }
         ]
-    }, [proposalTally]);
+    }, [data]);
 
     const totalVote = () => {
         let total:number = 0;
@@ -36,17 +36,18 @@ const VotingPercentage = ({quorum, stakingPool, proposalTally}:Props) => {
     const votingColor = (vote:string) => {
         switch (vote) {
             case "YES":
-                return "#61c799";
+                return "#3dd598";
             case "NO":
-                return "#fc3d5b";
+                return "#ffc542";
             case "NoWithVeto":
-                return "#fd9c4a";
+                return "#de3d3d";
             case "Abstain":
-                return "#c637ff";
+                return "#92929d";
         }
     }
     
     const calculateRatio = (value:number, max:number|string) => {
+        if(value === 0) return 0;
         const ratio = Number(value) / Number(max);
         return ratio;
     }
@@ -55,30 +56,42 @@ const VotingPercentage = ({quorum, stakingPool, proposalTally}:Props) => {
         <View style={styles.wrapper}>
             <View style={styles.background}>
                 {tally.map((item, index) => {
-                    return (
-                        <View key={index} style={[styles.percentage, {backgroundColor: votingColor(item.title), flex: calculateRatio(item.vote, stakingPool)}]} />
-                    )
+                    if(item.title !== "Abstain"){
+                        return (
+                            <View key={index} 
+                            style={
+                                [styles.percentage, 
+                                {
+                                    backgroundColor: votingColor(item.title), 
+                                    flex: calculateRatio(item.vote, data.stakingPool), 
+                                    marginLeft: -10, 
+                                    paddingLeft: 10,
+                                    zIndex: 5 - index,
+                                }]} />
+                        )
+                    }
                 })}
             </View>
             <View style={styles.quorumWrapper}>
-                <View style={[styles.quorum, {flex: quorum}]}>
-                    <CaretUp name="caret-up" size={20} color={"#6679ff"} />
+                <View style={[styles.quorumLine, {left: convertNumber(data.quorum) + "%" }]} />
+                <View style={[styles.quorum, {left: convertNumber(data.quorum) + "%", marginLeft: -9 }]}>
+                    <CaretUp name="caret-up" size={20} color={WhiteColor} />
                 </View>
-                <View style={{flex: 100-quorum}}/>
             </View>
 
             <View style={[styles.box]}>
                 {tally.map((item, index) => {
+                    const odd = (index + 1) % 2;
                     return (
-                    <View key={index} style={[styles.borderBox]}>
-                        <View style={[styles.boxH, {justifyContent: "space-between"}]}>
-                            <View style={styles.boxH}>
-                                <View style={[styles.voteDot, {backgroundColor: votingColor(item.title)}]} />
-                                <Text style={styles.vote}>{item.title}</Text>
-                            </View>
-                            {item.title !== "Abstain" && <Text style={styles.content}>{convertPercentage(calculateRatio(item.vote, totalVote()))}%</Text>}
+                    <View key={index} style={[styles.voteBox, {marginRight: odd === 1? 11:0, marginBottom: 11}]}>
+                        <View style={[styles.boxH, {paddingBottom: 8}]}>
+                            <View style={[styles.voteDot, {backgroundColor: votingColor(item.title)}]} />
+                            <Text style={[styles.vote, {color: votingColor(item.title)}]}>{item.title}</Text>
                         </View>
-                        <Text style={[styles.content, {textAlign: "right"}]}>{ConvertAmount(item.vote)}</Text>
+                        <View style={styles.dataBox}>
+                            {item.title !== "Abstain" && <Text style={styles.percent}>{convertPercentage(calculateRatio(item.vote, totalVote())) + ' %'}</Text>}
+                            <Text style={[styles.amount, {textAlign: "right"}]}>{convertAmount(item.vote)}</Text>
+                        </View>
                     </View>
                     )
                 })}
@@ -91,28 +104,38 @@ const VotingPercentage = ({quorum, stakingPool, proposalTally}:Props) => {
 const styles = StyleSheet.create({
     wrapper: {
         width: "100%",
+        paddingTop: 25,
     },
     background: {
         flex: 100,
-        height: 10,
+        height: 12,
         flexDirection: "row",
         justifyContent: "flex-start",
-        backgroundColor: "#348bff",
+        backgroundColor: BorderColor,
         borderRadius: 8,
+        position: "relative",
         overflow: "hidden",
-        marginHorizontal: 20,
+    },
+    percentage: {
+        height: 12,
+        borderRadius: 8,
     },
     quorumWrapper: {
         flex: 100,
-        marginHorizontal: 20,
         flexDirection: "row",
         justifyContent: "flex-start",
+        marginBottom: 47,
     },
     quorum: {
+        position: "absolute",
         alignItems: "flex-end",
     },
-    percentage: {
-        height: 10
+    quorumLine: {
+        position: "absolute", 
+        top: -18, 
+        height: 25, 
+        width: 2, 
+        backgroundColor: WhiteColor, 
     },
     box: {
         flex: 1,
@@ -126,33 +149,42 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-start",
     },
-    borderBox: {
-        width: width,
-        height: 65,
-        justifyContent: "space-evenly",
-        marginTop: marginVertical,
-        marginBottom: marginVertical,
-        marginLeft: marginHorizontal,
-        marginRight: marginHorizontal,
-        borderColor: ContainerColor, 
-        borderWidth: 1,
+    voteBox: {
+        width: 142,
+        paddingVertical: 17,
         borderRadius: 8,
-        padding: 10,
+        backgroundColor: BgColor,
+        alignItems: "center",
     },
     vote: {
         width: "auto",
-        fontSize: 14,
+        fontFamily: Lato,
+        fontWeight: "600",
+        fontSize: 16,
     },
     voteDot: {
-        width: 10,
-        height: 10,
+        width: 8,
+        height: 8,
         borderRadius: 50,
+        marginRight: 4,
         overflow: "hidden",
-        marginRight: 10,
     },
-    content: {
-        color: "#1e1e1e",
-        fontSize: 14,
+    dataBox: {
+        height: 43,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    percent: {
+        fontFamily: Lato,
+        fontSize: 18,
+        fontWeight: "bold",
+        color: TextColor,
+        paddingBottom: 6,
+    },
+    amount: {
+        fontFamily: Lato,
+        fontSize: 12,
+        color: TextCatTitleColor,
     },
 })
 

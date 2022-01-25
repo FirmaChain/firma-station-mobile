@@ -1,4 +1,5 @@
 import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
+import { PROPOSAL_STATUS_DEPOSIT_PERIOD } from "@/constants/common";
 import { useEffect, useState } from "react";
 import { GOVERNANCE_LIST, PROPOSAL_DETAIL } from "../../constants/dummy";
 import { convertNumber } from "../../util/common";
@@ -82,7 +83,9 @@ export const useProposalData = (id:number) => {
             const calculateCurrentTurnout = () => {
                 const totalVotingPower = convertNumber(data.stakingPool[0].totalVotingPower);
                 const votes = data.proposalTallyResult[0];
-        
+                
+                if(votes === undefined) return 0;
+
                 const totalVote = votes.yes + votes.no + votes.noWithVeto;
         
                 return totalVote / totalVotingPower;

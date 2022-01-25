@@ -4,7 +4,7 @@ import { FirmaConfig } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
 import { convertNumber, convertToFctNumber } from "./common";
 
-const firmaSDK = new FirmaMobileSDK(FirmaConfig.DevNetConfig);
+const firmaSDK = new FirmaMobileSDK(FirmaConfig.TestNetConfig);
 
 export interface Wallet {
     name?: string;

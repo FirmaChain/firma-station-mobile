@@ -5,7 +5,8 @@ import { HttpLink } from "@apollo/client/link/http";
 
 // import { GRAPHQL_CONFIG } from "../config";
 
-const httpLink = new HttpLink({ uri: 'http://192.168.20.115:8080/v1/graphql'});
+// const httpLink = new HttpLink({ uri: 'http://192.168.20.115:8080/v1/graphql'});
+const httpLink = new HttpLink({ uri: 'https://explorer-testnet.firmachain.dev:8080/v1/graphql'});
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers = {} }) => ({
     headers: {
@@ -17,7 +18,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const client = new ApolloClient({
-  uri: "http://192.168.20.115:8080/v1/graphql",
+  uri: "https://explorer-testnet.firmachain.dev:8080/v1/graphql",
   link: concat(authMiddleware, httpLink),
   cache: new InMemoryCache({}),
 });
