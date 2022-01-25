@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'row',
         paddingHorizontal: 20,
+        paddingBottom: 18,
     },
     title: {
         fontFamily: Lato,

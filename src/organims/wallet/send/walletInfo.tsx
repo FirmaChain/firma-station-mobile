@@ -1,5 +1,5 @@
 import { BorderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import { convertToFctNumber } from "@/util/common";
+import { convertCurrent, convertToFctNumber } from "@/util/common";
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -11,7 +11,7 @@ interface Props {
 const WalletInfo = ({walletName, available}:Props) => {
 
     const availableBalance = useMemo(() => {
-        return convertToFctNumber(available).toLocaleString();
+        return convertCurrent(convertToFctNumber(available));
     }, [available]);
     
     

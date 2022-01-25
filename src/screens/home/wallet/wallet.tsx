@@ -102,4 +102,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default WalletScreen;
+export default React.memo(WalletScreen);

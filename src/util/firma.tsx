@@ -1,3 +1,4 @@
+import { StakingValues } from "@/hooks/staking/hooks";
 import { FirmaMobileSDK } from "@firmachain/firma-js"
 import { FirmaConfig } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
@@ -44,7 +45,6 @@ export const getAdrFromMnemonic = async(mnemonic:string) => {
 export const getBalanceFromAdr = async(address:string) => {
     try {
         let balance = await firmaSDK.Bank.getBalance(address);
-        
         return balance;
     } catch (error) {
         console.log('error : ' + error); 
@@ -68,7 +68,6 @@ const organizeWallet = async(wallet:FirmaWalletService) => {
         return result;
     } catch (error) {
         console.log('error : ' + error);
-        
     }
 }
 
@@ -76,11 +75,9 @@ export const sendToken = async(mnemonic:string, target:string, amount:number) =>
     try {
         let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
         let send = await firmaSDK.Bank.send(wallet, target, amount);
-
         return send;
     } catch (error) {
         console.log(error);
-        
     }
 }
 
@@ -95,6 +92,30 @@ export const getUndelegateList = async(address:string) => {
 
 export const getTotalReward = async(address:string) => {
     return await firmaSDK.Distribution.getTotalRewardInfo(address);
+}
+
+export const getStakingFromvalidator = async(address:string, validatorAddress:string) => {
+    const balance = await getBalanceFromAdr(address);
+
+    const totalReward = await getTotalReward(address);
+    const reward = totalReward.rewards.find((value) => value.validator_address === validatorAddress);
+
+    const delegateListOrigin = await getDelegateList(address);
+    const delegation = delegateListOrigin.find((value) => value.delegation.validator_address === validatorAddress);
+
+    const available = convertToFctNumber(convertNumber(balance));
+    const delegated = convertToFctNumber(delegation ? delegation.balance.amount : 0);
+    const undelegate = 0;
+    const stakingReward = convertToFctNumber(reward ? reward.amount : 0);
+
+    const values: StakingValues = {
+        available,
+        delegated,
+        undelegate,
+        stakingReward,
+    }
+
+    return values;
 }
 
 export const getStaking = async(address:string) => {

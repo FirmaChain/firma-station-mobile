@@ -7,7 +7,7 @@ import { getChain } from "../../util/secureKeyChain";
 import { WalletNameValidationCheck } from "../../util/validationCheck";
 import InputSetVertical from "../input/inputSetVertical";
 import Button from "../button/button";
-import { convertNumber } from "@/util/common";
+import { convertCurrent, convertNumber } from "@/util/common";
 
 interface Props {
     title: string,
@@ -79,7 +79,7 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
                         {amount > 0 &&
                         <View style={[styles.boxH, styles.receiptDesc, {borderTopWidth: 1, borderTopColor: BorderColor}]}>
                             <Text style={styles.itemTitle}>Amount</Text>
-                            <Text style={styles.itemBalance}>{convertNumber((amount)).toLocaleString()}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={styles.itemBalance}>{convertCurrent(convertNumber((amount)))}<Text style={styles.itemTitle}>  FCT</Text></Text>
                         </View>
                         }
                         <View style={[styles.boxH, styles.receiptDesc]}>

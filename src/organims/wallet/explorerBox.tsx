@@ -5,7 +5,7 @@ import { ContainerColor, TextGrayColor } from "../../constants/theme";
 const ExplorerBox = () => {
 
     const moveToExplorer = () => {
-        Linking.openURL('https://explorer-devnet.firmachain.org')
+        Linking.openURL('https://explorer-devnet.firmachain.org');
     }
 
     return (

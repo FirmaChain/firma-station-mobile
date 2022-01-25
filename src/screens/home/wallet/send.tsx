@@ -27,9 +27,6 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
     const {params} = route;
     const {walletName, available} = params;
 
-    console.log("available : ",available);
-    
-
     const [address, setAddress] = useState('');
     const [amount, setAmount] = useState(0);
     const [memo, setMemo] = useState('');
@@ -76,7 +73,14 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
                             active={address !== '' && amount > 0}
                             onPressEvent={handleSend}/>
                     </View>
-                    <TransactionConfirmModal transactionHandler={handleTransaction} title={"Send"} walletName={walletName} amount={amount} open={openTransactionModal} setOpenModal={handleTransactionModal} />
+                    {openTransactionModal && 
+                        <TransactionConfirmModal 
+                        transactionHandler={handleTransaction} 
+                        title={"Send"} 
+                        walletName={walletName} 
+                        amount={amount} 
+                        open={openTransactionModal} 
+                        setOpenModal={handleTransactionModal} />}
                 </View>
             </ViewContainer>
         </Container>

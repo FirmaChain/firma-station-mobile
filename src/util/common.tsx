@@ -9,7 +9,7 @@ export const convertCurrent = (amount: number) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export const ConvertAmount = (amount:string | number, isUfct:boolean = true) => {
+export const convertAmount = (amount:string | number, isUfct:boolean = true) => {
     if(isUfct) return convertCurrent(Number(convertToFctNumber(amount).toFixed(2)));
     return convertCurrent(Number(Number(amount).toFixed(2)));
 }
@@ -23,8 +23,10 @@ export const isValid = (data:any) => {
     return true;
 }
 
-export const convertTime = (time:string) => {
-    return moment(time).format("YYYY-MM-DD HH:mm:ss (UTC+0)");
+export const convertTime = (time:string, fulltime:boolean) => {
+    if(fulltime) return moment(time).format("YYYY-MM-DD HH:mm:ss (UTC+0)");
+
+    return moment(time).format("YYYY-MM-DD");
 }
 
 export const convertPercentage = (data: string | number) => {

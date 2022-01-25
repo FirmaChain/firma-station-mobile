@@ -64,8 +64,8 @@ const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (prop
                             <View style={styles.wrapperH}>
                                 <Text style={styles.title}>Enter seed phrase</Text>
                                 <TouchableOpacity style={{flexDirection: "row"}} onPress={()=>pasteFromClipboard()}>
-                                    <Text style={[styles.title,{paddingHorizontal: 5}]}>Paste</Text>
-                                    <Paste size={20} color={GrayColor} />
+                                    <Text style={[styles.title, styles.button]}>Paste</Text>
+                                    {/* <Paste size={20} color={GrayColor} /> */}
                                 </TouchableOpacity>
                             </View>
                             <View style={[styles.inputWrapper, {borderColor: focus? WhiteColor : 'transparent'}]}>
@@ -103,9 +103,16 @@ const styles = StyleSheet.create({
         alignContent: "center",
     },
     title: {
-        color: TextGrayColor,
+        color: TextColor,
         fontFamily: Lato,
-        fontSize: 16,
+        fontSize: 14,
+    },
+    button :{
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 4,
+        overflow: "hidden",
+        backgroundColor: "#0f3f92",
     },
     inputWrapper: {
         height: 200,
