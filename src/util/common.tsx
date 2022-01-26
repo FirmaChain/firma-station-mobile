@@ -1,21 +1,29 @@
 import moment from "moment";
 
-export const convertNumber = (data: string | number | undefined) => {
-    if(!Number(data)) return 0;
-    return Number(data);
+export const convertNumber = (value: string | number | undefined) => {
+    if(!Number(value)) return 0;
+    return Number(value);
 }
 
-export const convertCurrent = (amount: number) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+export const convertCurrent = (value: number) => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export const convertAmount = (amount:string | number, isUfct:boolean = true) => {
-    if(isUfct) return convertCurrent(Number(convertToFctNumber(amount).toFixed(2)));
-    return convertCurrent(Number(Number(amount).toFixed(2)));
+export const convertAmount = (value:string | number, isUfct:boolean = true) => {
+    if(isUfct) return convertCurrent(make2DecimalPlace(convertToFctNumber(value)));
+    return convertCurrent(make2DecimalPlace(value));
 }
 
-export const convertToFctNumber = (ufct: string | number) => {
-    return Number(ufct) / 1000000;
+export const convertToFctNumber = (value: string | number) => {
+    return Number(value) / 1000000;
+}
+
+export const make2DecimalPlace = (value: string | number) => {
+    const val = convertNumber(value) * 100;
+    const val2 = Math.floor(val);
+    const result = val2 / 100;
+
+    return result;
 }
 
 export const isValid = (data:any) => {
@@ -29,10 +37,10 @@ export const convertTime = (time:string, fulltime:boolean) => {
     return moment(time).format("YYYY-MM-DD");
 }
 
-export const convertPercentage = (data: string | number) => {
-    let percent = Number(data) * 100;
-    if(percent > 1000) return  convertCurrent(Number(Number(percent / 1000).toFixed(2))) + "K";
-    return  convertCurrent(Number((Number(data) * 100).toFixed(2)));
+export const convertPercentage = (value: string | number) => {
+    let percent = Number(value) * 100;
+    if(percent > 1000) return  convertCurrent(make2DecimalPlace(percent / 1000)) + "K";
+    return  convertCurrent(make2DecimalPlace(Number(value) * 100));
 }
 
 export const resizeFontSize = (amount:number, reference:number, initSize:number) => {  
@@ -40,5 +48,7 @@ export const resizeFontSize = (amount:number, reference:number, initSize:number)
     if(amount >= reference) fontSize = initSize - 3;
     if(amount >= reference * 10) fontSize = initSize - 4;
     if(amount >= reference * 100) fontSize = initSize - 5;
+    if(amount >= reference * 1000) fontSize = initSize - 7;
+    if(amount >= reference * 10000) fontSize = initSize - 9;
     return fontSize;
 }

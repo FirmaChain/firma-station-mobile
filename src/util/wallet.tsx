@@ -1,4 +1,6 @@
-import { encrypt, keyEncrypt } from "./keystore";
+import { AUTO_LOGIN_KEY_TEST, AUTO_LOGIN_NAME_TEST, BIO_AUTH_KEY_TEST, BIO_AUTH_NAME_TEST } from "@/constants/common";
+import { StringDecoder } from "string_decoder";
+import { decrypt, encrypt, keyEncrypt } from "./keystore";
 import { getChain, setChain } from "./secureKeyChain";
 
 const setWalletListArray = (list:string) => {
@@ -31,4 +33,42 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
         if(res) list += '/' + res.password;
     }).catch(error => console.log('error : ' + error));
     setChain('test_3', list);
+}
+
+export const getWalletWithAutoLogin = async() => {
+    let result = '';
+    await getChain(AUTO_LOGIN_NAME_TEST).then(res => {
+        if(res === false) return null;
+        result = decrypt(res.password, AUTO_LOGIN_KEY_TEST);
+    }).catch(error => {
+        console.log('error : ' + error);
+        return null;
+    })
+
+    return result;
+}
+
+export const setWalletWithAutoLogin = async(walletInfo:any) => {
+    const encWallet = encrypt(walletInfo, AUTO_LOGIN_KEY_TEST);
+    console.log(encWallet);
+    
+    setChain(AUTO_LOGIN_NAME_TEST, encWallet);
+}
+
+export const getMnemonicViaBioAuth = async() => {
+    let result = '';
+    await getChain(BIO_AUTH_NAME_TEST).then(res => {
+        if(res === false) return null;
+        result = decrypt(res.password, BIO_AUTH_KEY_TEST);
+    }).catch(error => {
+        console.log('error : ' + error);
+        return null;
+    })
+
+    return result;
+}
+
+export const setMnemonicViaBioAuth = async(mnemonic:string) => {
+    const encWallet = encrypt(mnemonic, BIO_AUTH_KEY_TEST);
+    setChain(BIO_AUTH_NAME_TEST, encWallet);
 }

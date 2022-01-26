@@ -8,22 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* firma_station_mobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* firma_station_mobileTests.m */; };
-		126FEEAA818441DCB9E99A48 /* ChakraPetch-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6D946377C6F148FAB8CC8617 /* ChakraPetch-Bold.ttf */; };
+		113B428EE04948C989F7ED3B /* ChakraPetch-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23B5975B5F7248F197AB3F9F /* ChakraPetch-Bold.ttf */; };
+		11D8042AE07849F9ABDE7AC3 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2A250FE03EA148D3A28C6693 /* Lato-Regular.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1909879C450442C1AA8B13E1 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2614DFF2D494D73B10E581B /* Lato-Regular.ttf */; };
-		30596C146CB04FB48F02E279 /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB95E91D91B643F9B6AF0AB7 /* Lato-Thin.ttf */; };
-		43D956EEA7F64DD180F8382E /* Lato-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61D4DE845A5143A7AC796CC8 /* Lato-Light.ttf */; };
-		55293E16CC3B4074900EB3A0 /* ChakraPetch-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABCC6198A5C54ADBA04D7414 /* ChakraPetch-SemiBold.ttf */; };
+		16D6EA5A711B46B7A919D4BF /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A38DBE3D94DA4A79BE298BDC /* Lato-Black.ttf */; };
+		19B8C960DB1D434F9A8C3286 /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4F7F39BCC9E4CBCA8E2ACE0 /* Lato-Thin.ttf */; };
+		3305A823E46442838B33FA8D /* ChakraPetch-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 843D7678BDF941D6AED539D2 /* ChakraPetch-SemiBold.ttf */; };
+		3D674CB51BA74AEEAF2E5259 /* ChakraPetch-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1E377FB0C1FD4E798A8FC06C /* ChakraPetch-Regular.ttf */; };
+		4FEBC30E56A74FFCBE5BC027 /* ChakraPetch-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F009AD80A66415EBBF40348 /* ChakraPetch-Medium.ttf */; };
 		6172F2D35A4C3AA820D92908 /* libPods-firma_station_mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6423831EA8574132BED9D8CC /* libPods-firma_station_mobile.a */; };
-		620959608C0342F381224B07 /* ChakraPetch-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 43531037602947EA8A7B1816 /* ChakraPetch-Regular.ttf */; };
-		6E149A7F26F14B8992090B50 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5AE66B4F09944FAF8BAFAC6B /* Lato-Bold.ttf */; };
 		7EF68E3733C33B6898317E18 /* libPods-firma_station_mobile-firma_station_mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABFE59519B596E51CEFDCCC0 /* libPods-firma_station_mobile-firma_station_mobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		9C32B4375A714466AB704E85 /* ChakraPetch-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16FE6E2741C440D901D48E0 /* ChakraPetch-Light.ttf */; };
-		C06B482C47424DC0859A2BD0 /* ChakraPetch-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5D3B094456B6457795A4B4A4 /* ChakraPetch-Medium.ttf */; };
-		E31FCDF2B5254D5CBF16D9DB /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1E3B7CD4A0B64C3893018E37 /* Lato-Black.ttf */; };
+		90929B688DE743ADB5B2B31B /* ChakraPetch-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6DF97051880B4B33B689AC80 /* ChakraPetch-Light.ttf */; };
+		9C50CCAFAE2B4750A4F02E71 /* Lato-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FC827B28C13040F0A02F84CE /* Lato-Light.ttf */; };
+		E970BC52036A4422BA733292 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F1C3D7E574C86A7B4ACE7 /* Lato-Bold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,23 +47,23 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = firma_station_mobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = firma_station_mobile/main.m; sourceTree = "<group>"; };
 		1D0AE47A65C8663E3B452821 /* Pods-firma_station_mobile-firma_station_mobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile-firma_station_mobileTests.release.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile-firma_station_mobileTests/Pods-firma_station_mobile-firma_station_mobileTests.release.xcconfig"; sourceTree = "<group>"; };
-		1E3B7CD4A0B64C3893018E37 /* Lato-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Black.ttf"; path = "../src/assets/fonts/Lato-Black.ttf"; sourceTree = "<group>"; };
-		43531037602947EA8A7B1816 /* ChakraPetch-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Regular.ttf"; path = "../src/assets/fonts/ChakraPetch-Regular.ttf"; sourceTree = "<group>"; };
-		5AE66B4F09944FAF8BAFAC6B /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../src/assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
-		5D3B094456B6457795A4B4A4 /* ChakraPetch-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Medium.ttf"; path = "../src/assets/fonts/ChakraPetch-Medium.ttf"; sourceTree = "<group>"; };
-		61D4DE845A5143A7AC796CC8 /* Lato-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Light.ttf"; path = "../src/assets/fonts/Lato-Light.ttf"; sourceTree = "<group>"; };
+		1E377FB0C1FD4E798A8FC06C /* ChakraPetch-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Regular.ttf"; path = "../src/assets/fonts/ChakraPetch-Regular.ttf"; sourceTree = "<group>"; };
+		23B5975B5F7248F197AB3F9F /* ChakraPetch-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Bold.ttf"; path = "../src/assets/fonts/ChakraPetch-Bold.ttf"; sourceTree = "<group>"; };
+		2A250FE03EA148D3A28C6693 /* Lato-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Regular.ttf"; path = "../src/assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
+		3F009AD80A66415EBBF40348 /* ChakraPetch-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Medium.ttf"; path = "../src/assets/fonts/ChakraPetch-Medium.ttf"; sourceTree = "<group>"; };
 		6423831EA8574132BED9D8CC /* libPods-firma_station_mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-firma_station_mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C97AB639B58BBB4B15BBE30 /* Pods-firma_station_mobile-firma_station_mobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile-firma_station_mobileTests.debug.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile-firma_station_mobileTests/Pods-firma_station_mobile-firma_station_mobileTests.debug.xcconfig"; sourceTree = "<group>"; };
-		6D946377C6F148FAB8CC8617 /* ChakraPetch-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Bold.ttf"; path = "../src/assets/fonts/ChakraPetch-Bold.ttf"; sourceTree = "<group>"; };
+		6DF97051880B4B33B689AC80 /* ChakraPetch-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Light.ttf"; path = "../src/assets/fonts/ChakraPetch-Light.ttf"; sourceTree = "<group>"; };
+		7B3F1C3D7E574C86A7B4ACE7 /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../src/assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = firma_station_mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A2614DFF2D494D73B10E581B /* Lato-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Regular.ttf"; path = "../src/assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
-		ABCC6198A5C54ADBA04D7414 /* ChakraPetch-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-SemiBold.ttf"; path = "../src/assets/fonts/ChakraPetch-SemiBold.ttf"; sourceTree = "<group>"; };
+		843D7678BDF941D6AED539D2 /* ChakraPetch-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-SemiBold.ttf"; path = "../src/assets/fonts/ChakraPetch-SemiBold.ttf"; sourceTree = "<group>"; };
+		A38DBE3D94DA4A79BE298BDC /* Lato-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Black.ttf"; path = "../src/assets/fonts/Lato-Black.ttf"; sourceTree = "<group>"; };
+		A4F7F39BCC9E4CBCA8E2ACE0 /* Lato-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Thin.ttf"; path = "../src/assets/fonts/Lato-Thin.ttf"; sourceTree = "<group>"; };
 		ABFE59519B596E51CEFDCCC0 /* libPods-firma_station_mobile-firma_station_mobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-firma_station_mobile-firma_station_mobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB95E91D91B643F9B6AF0AB7 /* Lato-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Thin.ttf"; path = "../src/assets/fonts/Lato-Thin.ttf"; sourceTree = "<group>"; };
 		C0A881CF5CF3F2B244570E2A /* Pods-firma_station_mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile.debug.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile.debug.xcconfig"; sourceTree = "<group>"; };
-		C16FE6E2741C440D901D48E0 /* ChakraPetch-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ChakraPetch-Light.ttf"; path = "../src/assets/fonts/ChakraPetch-Light.ttf"; sourceTree = "<group>"; };
 		D00AAFFCFCFDA5787532823F /* Pods-firma_station_mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile.release.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		FC827B28C13040F0A02F84CE /* Lato-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Light.ttf"; path = "../src/assets/fonts/Lato-Light.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,24 +126,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		667D373BD5DA45EB869CF505 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				6D946377C6F148FAB8CC8617 /* ChakraPetch-Bold.ttf */,
-				C16FE6E2741C440D901D48E0 /* ChakraPetch-Light.ttf */,
-				5D3B094456B6457795A4B4A4 /* ChakraPetch-Medium.ttf */,
-				43531037602947EA8A7B1816 /* ChakraPetch-Regular.ttf */,
-				ABCC6198A5C54ADBA04D7414 /* ChakraPetch-SemiBold.ttf */,
-				1E3B7CD4A0B64C3893018E37 /* Lato-Black.ttf */,
-				5AE66B4F09944FAF8BAFAC6B /* Lato-Bold.ttf */,
-				61D4DE845A5143A7AC796CC8 /* Lato-Light.ttf */,
-				A2614DFF2D494D73B10E581B /* Lato-Regular.ttf */,
-				BB95E91D91B643F9B6AF0AB7 /* Lato-Thin.ttf */,
-			);
-			name = Resources;
-			path = "";
-			sourceTree = "<group>";
-		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,7 +142,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				E233CBF5F47BEE60B243DCF8 /* Pods */,
-				667D373BD5DA45EB869CF505 /* Resources */,
+				A8514410A16546DB9012D2EF /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -174,6 +156,24 @@
 				00E356EE1AD99517003FC87E /* firma_station_mobileTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A8514410A16546DB9012D2EF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				23B5975B5F7248F197AB3F9F /* ChakraPetch-Bold.ttf */,
+				6DF97051880B4B33B689AC80 /* ChakraPetch-Light.ttf */,
+				3F009AD80A66415EBBF40348 /* ChakraPetch-Medium.ttf */,
+				1E377FB0C1FD4E798A8FC06C /* ChakraPetch-Regular.ttf */,
+				843D7678BDF941D6AED539D2 /* ChakraPetch-SemiBold.ttf */,
+				A38DBE3D94DA4A79BE298BDC /* Lato-Black.ttf */,
+				7B3F1C3D7E574C86A7B4ACE7 /* Lato-Bold.ttf */,
+				FC827B28C13040F0A02F84CE /* Lato-Light.ttf */,
+				2A250FE03EA148D3A28C6693 /* Lato-Regular.ttf */,
+				A4F7F39BCC9E4CBCA8E2ACE0 /* Lato-Thin.ttf */,
+			);
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		E233CBF5F47BEE60B243DCF8 /* Pods */ = {
@@ -284,16 +284,16 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				126FEEAA818441DCB9E99A48 /* ChakraPetch-Bold.ttf in Resources */,
-				9C32B4375A714466AB704E85 /* ChakraPetch-Light.ttf in Resources */,
-				C06B482C47424DC0859A2BD0 /* ChakraPetch-Medium.ttf in Resources */,
-				620959608C0342F381224B07 /* ChakraPetch-Regular.ttf in Resources */,
-				55293E16CC3B4074900EB3A0 /* ChakraPetch-SemiBold.ttf in Resources */,
-				E31FCDF2B5254D5CBF16D9DB /* Lato-Black.ttf in Resources */,
-				6E149A7F26F14B8992090B50 /* Lato-Bold.ttf in Resources */,
-				43D956EEA7F64DD180F8382E /* Lato-Light.ttf in Resources */,
-				1909879C450442C1AA8B13E1 /* Lato-Regular.ttf in Resources */,
-				30596C146CB04FB48F02E279 /* Lato-Thin.ttf in Resources */,
+				113B428EE04948C989F7ED3B /* ChakraPetch-Bold.ttf in Resources */,
+				90929B688DE743ADB5B2B31B /* ChakraPetch-Light.ttf in Resources */,
+				4FEBC30E56A74FFCBE5BC027 /* ChakraPetch-Medium.ttf in Resources */,
+				3D674CB51BA74AEEAF2E5259 /* ChakraPetch-Regular.ttf in Resources */,
+				3305A823E46442838B33FA8D /* ChakraPetch-SemiBold.ttf in Resources */,
+				16D6EA5A711B46B7A919D4BF /* Lato-Black.ttf in Resources */,
+				E970BC52036A4422BA733292 /* Lato-Bold.ttf in Resources */,
+				9C50CCAFAE2B4750A4F02E71 /* Lato-Light.ttf in Resources */,
+				11D8042AE07849F9ABDE7AC3 /* Lato-Regular.ttf in Resources */,
+				19B8C960DB1D434F9A8C3286 /* Lato-Thin.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
