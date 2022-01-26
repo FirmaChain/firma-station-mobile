@@ -41,7 +41,7 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
     
     const exchangeData = useMemo(() => {
         return convertCurrent(make2DecimalPlace((available * currentPrice)));
-    }, [currentPrice])
+    }, [currentPrice, available])
 
     const getChainInfo = async() => {
         await fetch('https://api.coingecko.com/api/v3/coins/firmachain')

@@ -1,47 +1,28 @@
 import { ForwardArrow } from "@/components/icon/icon";
+import { convertTime } from "@/util/common";
 import React, { useMemo } from "react"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
 
 interface Props {
-    history?: [any];
+    recentHistory: any;
 }
 
-const HistoryBox = ({history}:Props) => {
-
+const HistoryBox = ({recentHistory}:Props) => {
     const historyData = useMemo(() => {
-        if(history !== undefined) return history;
-        return [
-            {
-                block : 123123,
-                type : 'Send',
-                hash : '45CA3540A95F6D10E642560E3965159E564BABBAAB8C736950E649E30E772440',
-                result : 'Success',
-                time : '2022-01-06 13:02:00',
-            },
-            {
-                block : 123123,
-                type : 'Send',
-                hash : '45CA3540A95F6D10E642560E3965159E564BABBAAB8C736950E649E30E772440',
-                result : 'Success',
-                time : '2022-01-06 13:02:00',
-            },
-            {
-                block : 123123,
-                type : 'Send',
-                hash : '45CA3540A95F6D10E642560E3965159E564BABBAAB8C736950E649E30E772440',
-                result : 'Success',
-                time : '2022-01-06 13:02:00',
-            },
-            {
-                block : 123123,
-                type : 'Send',
-                hash : '45CA3540A95F6D10E642560E3965159E564BABBAAB8C736950E649E30E772440',
-                result : 'Success',
-                time : '2022-01-06 13:02:00',
-            },
-        ]
-    }, [history])
+        if(recentHistory !== undefined) return recentHistory;
+        return {
+            hash: '',
+            success: '',
+            type: '',
+            block: 0,    
+        }
+        
+    }, [recentHistory])
+
+    const moveToExplorer = (hash:string) => {
+        Linking.openURL('https://explorer-colosseum.firmachain.dev/transactions/' + hash);
+    }
 
     const handleHistory = () => {
 
@@ -56,14 +37,35 @@ const HistoryBox = ({history}:Props) => {
                         <ForwardArrow size={20} color={TextCatTitleColor}/>
                     </TouchableOpacity>
                 </View>
-                <View style={[styles.wrapperH, {justifyContent: "flex-start", alignItems: "center" ,paddingTop: 18}]}>
+                <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center" ,paddingTop: 18}]}>
                     <View style={styles.historyWrapper}>
-                        <Text style={[styles.chainName, {fontSize: 14}]}>Block</Text>
-                        <Text style={[styles.balance, {fontSize: 14}]}>123123</Text>
+                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Block</Text>
+                        <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.block}</Text>
                     </View>
                     <View style={styles.historyWrapper}>
-                        <Text style={[styles.chainName, {fontSize: 14}]}>Type</Text>
-                        <Text style={[styles.balance, {fontSize: 14}]}>Send</Text>
+                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Type</Text>
+                        <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.type}</Text>
+                    </View>
+                </View>
+                <View style={styles.wrapper}>
+                    <View style={styles.historyWrapper}>
+                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Hash</Text>
+                        <TouchableOpacity onPress={()=>moveToExplorer(historyData.hash)}>
+                            <Text 
+                                style={[styles.contentItem, {fontSize: 14}]}
+                                numberOfLines={1}
+                                ellipsizeMode="middle">{historyData.hash}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center"}]}>
+                    <View style={styles.historyWrapper}>
+                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Result</Text>
+                        <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.success}</Text>
+                    </View>
+                    <View style={styles.historyWrapper}>
+                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Time</Text>
+                        <Text style={[styles.contentItem, {fontSize: 14}]}>{convertTime(historyData.timestamp, false)}</Text>
                     </View>
                 </View>
             </View>
@@ -76,25 +78,6 @@ const styles = StyleSheet.create({
         height: "auto",
         paddingHorizontal: 20,
         marginBottom: 20,
-    },
-    title: {
-        fontFamily: Lato,
-        fontSize: 20,
-        fontWeight: "bold",
-        color: TextCatTitleColor,
-    },
-    balance: {
-        fontFamily: Lato,
-        fontSize: 14,
-        fontWeight: "normal",
-        color: TextColor,
-        paddingTop: 6,
-    },
-    chainName: {
-        fontFamily: Lato,
-        fontSize: 14,
-        fontWeight: "normal",
-        color: TextDarkGrayColor,
     },
     historyWrapper: {
         flex: 1,
@@ -110,6 +93,28 @@ const styles = StyleSheet.create({
     },
     wrapperH: {
         flexDirection: "row",
+    },
+    wrapper: {
+        paddingBottom: 20,
+    },
+    title: {
+        fontFamily: Lato,
+        fontSize: 20,
+        fontWeight: "bold",
+        color: TextCatTitleColor,
+    },
+    contentItem: {
+        fontFamily: Lato,
+        fontSize: 14,
+        fontWeight: "normal",
+        color: TextCatTitleColor,
+        paddingTop: 6,
+    },
+    contentTitle: {
+        fontFamily: Lato,
+        fontSize: 14,
+        fontWeight: "bold",
+        color: InputPlaceholderColor,
     },
 })
 

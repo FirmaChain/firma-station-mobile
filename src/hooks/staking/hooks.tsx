@@ -74,13 +74,21 @@ export const useStakingData = (address:string) => {
 export const useValidatorDescription = (delegations:Array<StakeInfo>, validators:Array<any>) => {
     const result = delegations.map((value) => {
         const desc = validators.find(val => val.validatorAddress === value.validatorAddress);
+
+        let moniker = '';
+        let avatar = '';
+        if(desc !== undefined){
+            moniker = desc.validatorMoniker;
+            avatar = desc.validatorAvatar;
+        }
+
         return {
             validatorAddress: value.validatorAddress,
             delegatorAddress: value.delegatorAddress,
             amount: value.amount,
             reward: value.reward,
-            moniker: desc.validatorMoniker,
-            avatarURL: desc.validatorAvatar,
+            moniker: moniker,
+            avatarURL: avatar,
         }
     })
 

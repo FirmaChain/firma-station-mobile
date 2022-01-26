@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import { BgColor } from "@/constants/theme";
@@ -9,7 +9,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import { StakingValues, useStakingData } from "@/hooks/staking/hooks";
-import { useBalanceData } from "@/hooks/wallet/hooks";
+import { useBalanceData, useHistoryData } from "@/hooks/wallet/hooks";
 import { convertNumber } from "@/util/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
@@ -31,7 +31,13 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
     const {address, walletName} = params;
     
     const {balance} = useBalanceData(address);
+    const {historyList} = useHistoryData(address);
     const {stakingState, setRefresh} = useStakingData(address);
+
+    const recentHistory = useMemo(() => {
+        if(historyList) return historyList.list[0];
+        return [];
+    }, [historyList]);
 
     const [stakingValues, setStakingValues] = useState<StakingValues>({
         available: 0,
@@ -54,7 +60,6 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
 
     const refreshData = async() => {
         setRefresh(true);
-        // await getBalance().catch((error) => console.log(error));
     }
 
     const handleTransaction = () => {
@@ -76,7 +81,7 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
                 <ScrollView>
                     <View style={styles.content}>
                         <BalanceBox balance={balance} stakingValues={stakingValues} handleSend={handleSend} handleDelegate={handleDelegate}/>
-                        <HistoryBox />
+                        <HistoryBox recentHistory={recentHistory}/>
                         <TransactionConfirmModal transactionHandler={handleTransaction} title="Withdraw" walletName={walletName} amount={stakingValues.stakingReward} open={openWithdrawModal} setOpenModal={setOpenWithdrawModal} />
                     </View>
                 </ScrollView>
