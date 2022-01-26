@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
-import { BgColor, BorderColor, BoxColor, Lato, TextColor, WhiteColor } from "../../constants/theme";
+import { Screens, StackParamList } from "../../navigators/appRoutes";
+import { BgColor, BoxColor, Lato, TextColor, WhiteColor } from "../../constants/theme";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DeleteWallet from "../../organims/setting/modal/deleteWallet";
 import { removeChain, setChain } from "../../util/secureKeyChain";
 import { getWalletList } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
+import { AUTO_LOGIN_NAME_TEST } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -48,7 +49,10 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
         {title: 'Export wallet with QR code', path: 'ExportQR'},
     ];
 
-    const moveToWelcome = () => {
+    const moveToWelcome = async() => {
+        await removeChain(AUTO_LOGIN_NAME_TEST)
+            .then(res => console.log(res))
+            .catch(error => console.log(error));
         navigation.reset({routes: [{name: 'Welcome'}]});
     }
 

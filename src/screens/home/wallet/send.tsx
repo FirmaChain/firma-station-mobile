@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { StyleSheet, Text, View } from "react-native";
-import Container from "../../../components/parts/containers/conatainer";
-import { Screens, StackParamList } from "../../../navigators/stackNavigators";
-import WalletInfo from "../../../organims/wallet/send/walletInfo";
-import SendInputBox from "../../../organims/wallet/send/sendInputBox";
-import Button from "../../../components/button/button";
-import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
-import ViewContainer from "../../../components/parts/containers/viewContainer";
+import { StyleSheet, View } from "react-native";
+import Container from "@/components/parts/containers/conatainer";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import WalletInfo from "@/organims/wallet/send/walletInfo";
+import SendInputBox from "@/organims/wallet/send/sendInputBox";
+import Button from "@/components/button/button";
+import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Screens, StackParamList } from "@/navigators/stackNavigators";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { BgColor, GrayColor, InputBgColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { BgColor, InputBgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { TextInput } from "react-native-gesture-handler";
-import { Paste } from "@/components/icon/icon";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Button from "@/components/button/button";
 import { recoverFromMnemonic } from "@/util/firma";

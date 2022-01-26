@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
+import { Screens, StackParamList } from "../../navigators/appRoutes";
 import { getChain } from "../../util/secureKeyChain";
 import { BgColor, InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
 import InputSetVertical from "../../components/input/inputSetVertical";
@@ -11,7 +11,7 @@ import Button from "../../components/button/button";
 import { getAdrFromMnemonic } from "@/util/firma";
 import CustomModal from "../../components/modal/customModal";
 import ModalItems from "../../components/modal/modalItems";
-import { getWalletList } from "@/util/wallet";
+import { getWalletList, setWalletViaAutoLogin } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { DownArrow } from "@/components/icon/icon";
@@ -53,9 +53,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
     }, [selected])
 
     const WalletList = async() => {
-        await getWalletList().then(res => {
-            console.log(res);
-            
+        await getWalletList().then(res => {            
             setItems(res);
         }).catch(error => {
             console.log('error : ' + error);
@@ -95,6 +93,8 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
         await getAdrFromMnemonic(walletInfo).then(res => {
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
+
+        await setWalletViaAutoLogin(adr + "|" + selectedWallet);
 
         navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: selectedWallet} }]});
     }

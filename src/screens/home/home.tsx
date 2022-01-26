@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
+import { Screens, StackParamList } from "../../navigators/appRoutes";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 import StakingIcon from "react-native-vector-icons/AntDesign";

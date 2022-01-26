@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { BgColor } from "../../../constants/theme";
-import { Screens, StackParamList } from "../../../navigators/stackNavigators";
+import { BgColor } from "@/constants/theme";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Screens, StackParamList } from "@/navigators/stackNavigators";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";

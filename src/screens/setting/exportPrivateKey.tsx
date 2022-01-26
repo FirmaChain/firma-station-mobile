@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Platform, StyleSheet, Text, View } from "react-native";
-import { getStatusBarHeight } from "react-native-status-bar-height";
+import { StyleSheet, View } from "react-native";
 import Button from "../../components/button/button";
-import Header from "../../components/header/header";
 import InputSetVertical from "../../components/input/inputSetVertical";
 import AlertModal from "../../components/modal/alertModal";
 import CustomModal from "../../components/modal/customModal";
-import TitleBar from "../../components/parts/titleBar";
 import { BgColor } from "../../constants/theme";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
+import { Screens, StackParamList } from "../../navigators/appRoutes";
 import { decrypt, keyEncrypt } from "../../util/keystore";
 import { getChain } from "../../util/secureKeyChain";
 import { PasswordValidationCheck } from "../../util/validationCheck";

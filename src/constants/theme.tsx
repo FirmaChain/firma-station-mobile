@@ -28,6 +28,7 @@ export const PointDarkColor = '#263fa1';
 export const BorderColor = '#696974';
 export const DisableColor = '#44444f';
 export const DividerColor = '#33333a';
+export const FailedColor = '#de3d3d';
 
 export const ButtonPointLightColor = '#5b75dc';
 export const AddressBoxColor = '#2741aa';

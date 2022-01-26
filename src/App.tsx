@@ -9,14 +9,14 @@ import { ApolloProvider, client } from "./apollo";
 export default function App() {
   return (
     <ApolloProvider client={client}>
+      <StatusBar
+        animated={true}
+        barStyle={'light-content'} />
       <NavigationContainer>
-        <StatusBar
-          animated={true}
-          barStyle={'light-content'} />
-        <StackNavigator />
-        <CustomToast />
-        {/* <Progress /> */}
+        <StackNavigator/>
       </NavigationContainer>
+      <CustomToast />
+      {/* <Progress /> */}
     </ApolloProvider>
   )
 }

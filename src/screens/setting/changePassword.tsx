@@ -8,9 +8,9 @@ import Button from "../../components/button/button";
 import InputSetVertical from "../../components/input/inputSetVertical";
 import AlertModal from "../../components/modal/alertModal";
 import { BgColor } from "../../constants/theme";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
-import { decrypt, encrypt, keyEncrypt } from "../../util/keystore";
-import { getChain, removeChain, setChain } from "../../util/secureKeyChain";
+import { Screens, StackParamList } from "../../navigators/appRoutes";
+import { decrypt, keyEncrypt } from "../../util/keystore";
+import { getChain, removeChain } from "../../util/secureKeyChain";
 import { PasswordValidationCheck } from "../../util/validationCheck";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;

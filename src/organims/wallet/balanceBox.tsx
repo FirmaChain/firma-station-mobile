@@ -1,7 +1,7 @@
 import { ForwardArrow } from "@/components/icon/icon";
 import { FIRMA_LOGO } from "@/constants/images";
 import { StakingValues } from "@/hooks/staking/hooks";
-import { convertCurrent, convertNumber, convertToFctNumber, resizeFontSize } from "@/util/common";
+import { convertCurrent, convertNumber, convertToFctNumber, make2DecimalPlace, resizeFontSize } from "@/util/common";
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SmallButton from "../../components/button/smallButton";
@@ -28,19 +28,19 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
     }, [balance])
 
     const delegated = useMemo(() => {
-        return convertCurrent(convertNumber((stakingValues.delegated).toFixed(2)));
+        return convertCurrent(make2DecimalPlace(stakingValues.delegated));
     }, [stakingValues]);
 
     const undelegate = useMemo(() => {
-        return convertCurrent(convertNumber((stakingValues.undelegate).toFixed(2)));
+        return convertCurrent(make2DecimalPlace((stakingValues.undelegate)));
     }, [stakingValues]);
 
     const reward = useMemo(() => {
-        return convertCurrent(convertNumber((stakingValues.stakingReward).toFixed(2)));
+        return convertCurrent(make2DecimalPlace((stakingValues.stakingReward)));
     }, [stakingValues]);
     
     const exchangeData = useMemo(() => {
-        return convertCurrent(convertNumber((available * currentPrice).toFixed(2)));
+        return convertCurrent(make2DecimalPlace((available * currentPrice)));
     }, [currentPrice])
 
     const getChainInfo = async() => {
@@ -65,9 +65,9 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
             <View style={styles.box}>
                 <Text style={styles.title}>Available</Text>
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 8, paddingBottom: 19}]}>
-                    <View style={styles.wrapperH}>
+                    <View style={[styles.wrapperH, {alignItems: "center"}]}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />
-                        <Text style={[styles.balance, {fontSize:balanceTextSize}]}>{convertCurrent(available)}
+                        <Text style={[styles.balance, {fontSize:balanceTextSize}]}>{convertCurrent(make2DecimalPlace(available))}
                             <Text style={styles.chainName}>   FCT</Text>
                         </Text>
                     </View>

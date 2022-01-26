@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
+import { Screens, StackParamList } from "../../navigators/appRoutes";
 import Button from "../../components/button/button";
 import { BgColor } from "../../constants/theme";
 import ViewContainer from "../../components/parts/containers/viewContainer";

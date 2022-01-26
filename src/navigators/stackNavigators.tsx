@@ -1,86 +1,49 @@
-import React from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import { Screens, StackParamList } from "./appRoutes";
+
 import WelcomeScreen from '../screens/welcome/welcome';
-import CreateStepOneScreen, { CreateStepOneParams } from '../screens/createWallet/stepOne';
-import CreateStepTwoScreen, { CreateStepTwoParams } from '../screens/createWallet/stepTwo';
-import CreateStepThreeScreen, { CreateStepThreeParams } from '../screens/createWallet/stepThree';
 import SelectWalletScreen from '../screens/welcome/selectWallet';
-import HomeScreen, { HomeParams } from "../screens/home/home";
-import SettingScreen, { SettingParams } from "../screens/setting/setting";
-import ChangePasswordScreen, { ChangePasswordParams } from "../screens/setting/changePassword";
-import ExportPrivateKeyScreen, { ExportPrivateKeyParams } from "../screens/setting/exportPrivateKey";
-import WalletScreen, { WalletParams } from "../screens/home/wallet/wallet";
-import ValidatorScreen, { ValidatorParams } from "../screens/home/staking/validator";
-import ProposalScreen, { ProposalParams } from "../screens/home/governance/proposal";
-import GovernanceScreen from "../screens/home/governance/governance";
-import StakingScreen, { StakingParams } from "../screens/home/staking/staking";
-import SendScreen, { SendParams } from "../screens/home/wallet/send";
-import DelegateScreen, { DelegateParams } from "../screens/home/staking/delegate";
-import TransactionScreen from "../screens/transaction/transaction";
 import RecoverWalletScreen from "@/screens/welcome/recoverWallet";
+
+import CreateStepOneScreen from '../screens/createWallet/stepOne';
+import CreateStepTwoScreen from '../screens/createWallet/stepTwo';
+import CreateStepThreeScreen from '../screens/createWallet/stepThree';
 import StepRecoverScreen from "@/screens/createWallet/stepRecover";
-import DepositScreen, { DepositParams } from "@/screens/home/governance/deposit";
 
-export enum Screens {
-    Welcome = 'Welcome',
-    CreateStepOne = 'CreateStepOne',
-    CreateStepTwo = 'CreateStepTwo',
-    CreateStepThree = 'CreateStepThree',
-    StepRecover = 'StepRecover',
-    SelectWallet = 'SelectWallet',
-    RecoverWallet = 'RecoverWallet',
+import HomeScreen from "../screens/home/home";
 
-    Home = 'Home',
-    Transaction = 'Transaction',
-    
-    Wallet = 'Wallet',
-    Send = 'Send',
+import WalletScreen from "../screens/home/wallet/wallet";
+import SendScreen from "../screens/home/wallet/send";
 
-    Staking = 'Staking',
-    Validator = 'Validator',
-    Delegate = 'Delegate',
-    
-    Governance = 'Governance',
-    Proposal = "Proposal",
-    Deposit = "Deposit",
+import StakingScreen from "../screens/home/staking/staking";
+import ValidatorScreen from "../screens/home/staking/validator";
+import DelegateScreen from "../screens/home/staking/delegate";
 
-    Setting = 'Setting',
-    ChangePassword = 'ChangePassword',
-    ExportPrivateKey = 'ExportPrivateKey',
-}
+import GovernanceScreen from "../screens/home/governance/governance";
+import ProposalScreen from "../screens/home/governance/proposal";
+import DepositScreen from "@/screens/home/governance/deposit";
 
-export type StackParamList = {
-    Welcome: undefined;
-    CreateStepOne: CreateStepOneParams;
-    CreateStepTwo: CreateStepTwoParams;
-    CreateStepThree: CreateStepThreeParams;
-    StepRecover: undefined;
-    SelectWallet: undefined;
-    RecoverWallet: undefined;
+import SettingScreen from "../screens/setting/setting";
+import ChangePasswordScreen from "../screens/setting/changePassword";
+import ExportPrivateKeyScreen from "../screens/setting/exportPrivateKey";
 
-    Home: HomeParams;
-    Transaction: undefined;
-
-    Wallet: WalletParams;
-    Send: SendParams;
-
-    Staking: StakingParams;
-    Validator: ValidatorParams;
-    Delegate: DelegateParams;
-
-    Governance: undefined;
-    Proposal: ProposalParams;
-    Deposit: DepositParams;
-
-    Setting: SettingParams;
-    ChangePassword: ChangePasswordParams;
-    ExportPrivateKey: ExportPrivateKeyParams;
-}
+import TransactionScreen from "../screens/transaction/transaction";
+import SplashScreen from "@/screens/splash";
 
 export const Stack = createStackNavigator<StackParamList>();
-const StackNavigator: React.FunctionComponent = () => {
+const StackNavigator: React.FunctionComponent = () => {  
     return (
-        <Stack.Navigator>
+        <Stack.Navigator
+            screenOptions={{
+                presentation: "card",
+            }}
+            initialRouteName={Screens.Splash}>
+            <Stack.Screen
+                options={{headerShown: false}}
+                name={Screens.Splash}
+                component={SplashScreen} />
+
             <Stack.Group>
                 <Stack.Screen
                     options={{headerShown: false}}
@@ -95,6 +58,18 @@ const StackNavigator: React.FunctionComponent = () => {
                     name={Screens.RecoverWallet}
                     component={RecoverWalletScreen} />
             </Stack.Group>
+
+            <Stack.Group>
+                <Stack.Screen
+                    options={{headerShown: false}}
+                    name={Screens.Home}
+                    component={HomeScreen} />
+                <Stack.Screen
+                    options={{headerShown: false}}
+                    name={Screens.Transaction}
+                    component={TransactionScreen} />
+            </Stack.Group>
+
             {/* Create Wallet */}
             <Stack.Group>
                 <Stack.Screen
@@ -113,17 +88,6 @@ const StackNavigator: React.FunctionComponent = () => {
                     options={{headerShown: false}}
                     name={Screens.StepRecover}
                     component={StepRecoverScreen} />
-            </Stack.Group>
-            
-            <Stack.Group>
-                <Stack.Screen
-                    options={{headerShown: false}}
-                    name={Screens.Home}
-                    component={HomeScreen} />
-                <Stack.Screen
-                    options={{headerShown: false}}
-                    name={Screens.Transaction}
-                    component={TransactionScreen} />
             </Stack.Group>
             
             {/* Setting */}

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Container from "../../../components/parts/containers/conatainer";
-import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "../../../constants/theme";
-import AddressBox from "../../../organims/staking/validator/addressBox";
-import PercentageBox from "../../../organims/staking/validator/percentageBox";
-import ViewContainer from "../../../components/parts/containers/viewContainer";
-import { convertAmount, convertCurrent, convertPercentage, convertToFctNumber } from "../../../util/common";
-import { Screens, StackParamList } from "../../../navigators/stackNavigators";
-import DelegationBox from "../../../organims/staking/validator/delegationBox";
+import Container from "@/components/parts/containers/conatainer";
+import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
+import AddressBox from "@/organims/staking/validator/addressBox";
+import PercentageBox from "@/organims/staking/validator/percentageBox";
+import ViewContainer from "@/components/parts/containers/viewContainer";
+import { convertAmount, convertCurrent, convertPercentage, convertToFctNumber } from "@/util/common";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import DelegationBox from "@/organims/staking/validator/delegationBox";
 import { getStakingFromvalidator } from "@/util/firma";
 import { Person } from "@/components/icon/icon";
 

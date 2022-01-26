@@ -1,15 +1,15 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import Button from "../../components/button/button";
-import InputSetVertical from "../../components/input/inputSetVertical";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
-import { PasswordValidationCheck, WalletNameValidationCheck } from "../../util/validationCheck";
+import Button from "@/components/button/button";
+import InputSetVertical from "@/components/input/inputSetVertical";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
 import { Wallet, createNewWallet, getAdrFromMnemonic } from "@/util/firma";
-import Container from "../../components/parts/containers/conatainer";
-import ViewContainer from "../../components/parts/containers/viewContainer";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
-import { setNewWallet } from "@/util/wallet";
+import { setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
 
 type CreateStepOneScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
@@ -105,6 +105,8 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
         await getAdrFromMnemonic(wallet.mnemonic).then(res => {
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
+
+        await setWalletWithAutoLogin(adr + "|" + walletName);
 
         navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: walletName} }]});
     }

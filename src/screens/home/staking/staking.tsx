@@ -4,11 +4,11 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import RefreshScrollView from "@components/parts/refreshScrollView";
 import { StakeInfo, StakingValues, useStakingData, useValidatorData, useValidatorDescription } from "@hooks/staking/hooks";
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from "@constants/theme";
-import { Screens, StackParamList } from "../../../navigators/stackNavigators";
-import ValidatorList from "../../../organims/staking/validatorList";
-import DelegationList from "../../../organims/staking/delegationList";
-import BalancesBox from "../../../organims/staking/parts/balanceBox";
-import RewardBox from "../../../organims/staking/parts/rewardBox";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import ValidatorList from "@/organims/staking/validatorList";
+import DelegationList from "@/organims/staking/delegationList";
+import BalancesBox from "@/organims/staking/parts/balanceBox";
+import RewardBox from "@/organims/staking/parts/rewardBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 

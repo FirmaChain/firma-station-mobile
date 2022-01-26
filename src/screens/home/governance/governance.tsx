@@ -1,11 +1,11 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import RefreshScrollView from "../../../components/parts/refreshScrollView";
-import { BgColor } from "../../../constants/theme";
-import { useGovernanceList } from "../../../hooks/governance/hooks";
-import { Screens, StackParamList } from "../../../navigators/stackNavigators";
-import ProposalList from "../../../organims/governance/proposalList";
+import RefreshScrollView from "@/components/parts/refreshScrollView";
+import { BgColor } from "@/constants/theme";
+import { useGovernanceList } from "@/hooks/governance/hooks";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import ProposalList from "@/organims/governance/proposalList";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governance>;
 

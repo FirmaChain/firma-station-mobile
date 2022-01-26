@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View } from "react-native";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
+import { Screens, StackParamList } from "../../navigators/appRoutes";
 import Button from "../../components/button/button";
 import Description from "../../organims/welcome/description";
 import { getChain } from "../../util/secureKeyChain";

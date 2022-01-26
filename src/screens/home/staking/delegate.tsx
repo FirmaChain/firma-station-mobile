@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Container from "../../../components/parts/containers/conatainer";
-import { Screens, StackParamList } from "../../../navigators/stackNavigators";
-import InputSetVertical from "../../../components/input/inputSetVertical";
-import Button from "../../../components/button/button";
-import ViewContainer from "../../../components/parts/containers/viewContainer";
-import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
+import Container from "@/components/parts/containers/conatainer";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import InputSetVertical from "@/components/input/inputSetVertical";
+import Button from "@/components/button/button";
+import ViewContainer from "@/components/parts/containers/viewContainer";
+import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import Icon from "react-native-vector-icons/AntDesign";
-import ValidatorSelectModal from "../../../organims/staking/delegate/validatorSelectModal";
+import ValidatorSelectModal from "@/organims/staking/delegate/validatorSelectModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 

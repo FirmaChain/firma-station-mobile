@@ -1,16 +1,14 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Button from "../../components/button/button";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
-import { encrypt, keyEncrypt } from "../../util/keystore";
-import { getChain, setChain } from "../../util/secureKeyChain";
+import Button from "@/components/button/button";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { getAdrFromMnemonic } from "@/util/firma";
-import Container from "../../components/parts/containers/conatainer";
-import ViewContainer from "../../components/parts/containers/viewContainer";
-import MnemonicQuiz from "../../organims/createWallet/stepThree/mnemonicQuiz";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
+import MnemonicQuiz from "@/organims/createWallet/stepThree/mnemonicQuiz";
 import { BgColor } from "@/constants/theme";
-import { setNewWallet } from "@/util/wallet";
+import { setNewWallet, setWalletViaAutoLogin } from "@/util/wallet";
 
 type CreateStepThreeScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -39,6 +37,7 @@ const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps>
         await getAdrFromMnemonic(wallet.mnemonic).then(res => {
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
+        await setWalletViaAutoLogin(adr + "|" + wallet.name);
 
         navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: wallet.name} }]});
     }

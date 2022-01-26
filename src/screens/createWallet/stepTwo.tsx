@@ -2,11 +2,11 @@ import { BgColor } from "@/constants/theme";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import Button from "../../components/button/button";
-import Container from "../../components/parts/containers/conatainer";
-import ViewContainer from "../../components/parts/containers/viewContainer";
-import { Screens, StackParamList } from "../../navigators/stackNavigators";
-import MnemonicGrid from "../../organims/createWallet/stepTwo/mnmonicGrid";
+import Button from "@/components/button/button";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import MnemonicGrid from "@/organims/createWallet/stepTwo/mnmonicGrid";
 
 type CreateStepTwoScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 
