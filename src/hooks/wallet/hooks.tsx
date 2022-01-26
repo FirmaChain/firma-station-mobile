@@ -67,6 +67,7 @@ export const useHistoryData = (address:string) => {
                     hash: value.transaction.hash,
                     success: convertResult(value.transaction.success),
                     type: convertMsgType(value.transaction.messages[0]["@type"]),
+                    timestamp: value.transaction.block.timestamp,
                     block: value.transaction.block.height,    
                 }
             })

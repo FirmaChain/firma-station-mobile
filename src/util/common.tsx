@@ -31,9 +31,10 @@ export const isValid = (data:any) => {
     return true;
 }
 
-export const convertTime = (time:string, fulltime:boolean) => {
+export const convertTime = (time:string, fulltime:boolean, addTime?:boolean) => {
+    if(time === undefined) return '';
     if(fulltime) return moment(time).format("YYYY-MM-DD HH:mm:ss (UTC+0)");
-
+    if(addTime)return moment(time).format("YYYY-MM-DD HH:mm:ss");
     return moment(time).format("YYYY-MM-DD");
 }
 

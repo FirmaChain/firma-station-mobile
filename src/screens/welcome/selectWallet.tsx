@@ -11,7 +11,7 @@ import Button from "../../components/button/button";
 import { getAdrFromMnemonic } from "@/util/firma";
 import CustomModal from "../../components/modal/customModal";
 import ModalItems from "../../components/modal/modalItems";
-import { getWalletList, setWalletViaAutoLogin } from "@/util/wallet";
+import { getWalletList, setWalletWithAutoLogin } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { DownArrow } from "@/components/icon/icon";
@@ -94,7 +94,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
 
-        await setWalletViaAutoLogin(adr + "|" + selectedWallet);
+        await setWalletWithAutoLogin(adr + "|" + selectedWallet);
 
         navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: selectedWallet} }]});
     }

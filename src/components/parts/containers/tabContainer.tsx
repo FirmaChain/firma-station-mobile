@@ -7,17 +7,18 @@ import { ICON_HISTORY } from "@/constants/images";
 
 interface Props {
     title: string;
-    navEvent: Function;
+    settingNavEvent: Function;
+    historyNavEvent: Function;
     children: JSX.Element;
 }
 
-const TabContainer = ({title, navEvent, children}:Props) => {
+const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props) => {
     const handleMoveToSetting = () => {
-        navEvent && navEvent();
+        settingNavEvent && settingNavEvent();
     }
 
     const handleMoveToHistory = () => {
-
+        historyNavEvent && historyNavEvent();
     }
 
     return (

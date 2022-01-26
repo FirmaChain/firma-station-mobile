@@ -6,9 +6,10 @@ import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, Te
 
 interface Props {
     recentHistory: any;
+    handleHistory: Function;
 }
 
-const HistoryBox = ({recentHistory}:Props) => {
+const HistoryBox = ({recentHistory, handleHistory}:Props) => {
     const historyData = useMemo(() => {
         if(recentHistory !== undefined) return recentHistory;
         return {
@@ -24,8 +25,8 @@ const HistoryBox = ({recentHistory}:Props) => {
         Linking.openURL('https://explorer-colosseum.firmachain.dev/transactions/' + hash);
     }
 
-    const handleHistory = () => {
-
+    const moveToHistory = () => {
+        handleHistory && handleHistory();
     }
 
     return (
@@ -33,7 +34,7 @@ const HistoryBox = ({recentHistory}:Props) => {
             <View style={styles.box}>
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center"}]}>
                     <Text style={styles.title}>Recent History</Text>
-                    <TouchableOpacity onPress={()=>handleHistory()}>
+                    <TouchableOpacity onPress={()=>moveToHistory()}>
                         <ForwardArrow size={20} color={TextCatTitleColor}/>
                     </TouchableOpacity>
                 </View>
@@ -65,7 +66,7 @@ const HistoryBox = ({recentHistory}:Props) => {
                     </View>
                     <View style={styles.historyWrapper}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Time</Text>
-                        <Text style={[styles.contentItem, {fontSize: 14}]}>{convertTime(historyData.timestamp, false)}</Text>
+                        <Text style={[styles.contentItem, {fontSize: 14}]}>{convertTime(historyData.timestamp, false, true)}</Text>
                     </View>
                 </View>
             </View>
