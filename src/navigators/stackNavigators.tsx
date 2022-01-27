@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Screens, StackParamList } from "./appRoutes";
 
@@ -29,24 +29,22 @@ import ChangePasswordScreen from "../screens/setting/changePassword";
 import ExportPrivateKeyScreen from "../screens/setting/exportPrivateKey";
 
 import TransactionScreen from "../screens/transaction/transaction";
-import SplashScreen from "@/screens/splash";
+import LoginCheckScreen from "@/screens/loginCheck";
+import HistoryScreen from "@/screens/home/history/history";
 
 export const Stack = createStackNavigator<StackParamList>();
 const StackNavigator: React.FunctionComponent = () => {  
     return (
-        <Stack.Navigator
-            screenOptions={{
-                presentation: "card",
-            }}
-            initialRouteName={Screens.Splash}>
+        <Stack.Navigator 
+            initialRouteName={Screens.LoginCheck}>
             <Stack.Screen
                 options={{headerShown: false}}
-                name={Screens.Splash}
-                component={SplashScreen} />
+                name={Screens.LoginCheck}
+                component={LoginCheckScreen} />
 
             <Stack.Group>
                 <Stack.Screen
-                    options={{headerShown: false}}
+                    options={{headerShown: false, animationEnabled: false}}
                     name={Screens.Welcome}
                     component={WelcomeScreen} />
                 <Stack.Screen
@@ -61,9 +59,15 @@ const StackNavigator: React.FunctionComponent = () => {
 
             <Stack.Group>
                 <Stack.Screen
-                    options={{headerShown: false}}
+                    options={{headerShown: false, animationEnabled: false}}
                     name={Screens.Home}
                     component={HomeScreen} />
+                
+                <Stack.Screen
+                    options={{headerShown: false}}
+                    name={Screens.Hisory}
+                    component={HistoryScreen} />
+
                 <Stack.Screen
                     options={{headerShown: false}}
                     name={Screens.Transaction}
@@ -147,7 +151,6 @@ const StackNavigator: React.FunctionComponent = () => {
                     name={Screens.Deposit}
                     component={DepositScreen} />
             </Stack.Group>
-
         </Stack.Navigator>
     );
 };

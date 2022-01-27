@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { FIRMA_SPLASH } from "@/constants/images";
 import { BgColor } from "@/constants/theme";
-import { getWalletViaAutoLogin } from "@/util/wallet";
+import { getWalletWithAutoLogin } from "@/util/wallet";
+import SplashScreen from "react-native-splash-screen";
+import Progress from "@/components/parts/progress";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
-interface SplashScreenProps {
+interface LoginCheckScreenProps {
     navigation: ScreenNavgationProps;
 }
 
-const SplashScreen: React.FunctionComponent<SplashScreenProps> = (props) => {
+const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props) => {
     const {navigation} = props;
 
     const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ const SplashScreen: React.FunctionComponent<SplashScreenProps> = (props) => {
 
     useEffect(() => {
         const getWalletForAutoLogin = async() => {
-            await getWalletViaAutoLogin()
+            await getWalletWithAutoLogin()
             .then(res => { 
                 if(res !== ""){
                     const result = res.split("|");
@@ -44,6 +45,7 @@ const SplashScreen: React.FunctionComponent<SplashScreenProps> = (props) => {
             } else {
                 navigation.reset({routes: [{name: Screens.Welcome}]});
             }
+            SplashScreen.hide();
         }
     }, [loading]);
     
@@ -51,7 +53,7 @@ const SplashScreen: React.FunctionComponent<SplashScreenProps> = (props) => {
     return (
         <ViewContainer bgColor={BgColor}>
             <View style={styles.container}>
-                <Image style={styles.splash}   source={FIRMA_SPLASH} />
+                <Progress />
             </View>
         </ViewContainer>
     )
@@ -63,10 +65,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    splash: {
-        maxWidth: 272,
-        resizeMode: "contain",
-    }
 })
 
-export default SplashScreen;
+export default LoginCheckScreen;

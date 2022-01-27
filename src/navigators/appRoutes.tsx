@@ -5,16 +5,15 @@ import { HomeParams } from "../screens/home/home";
 import { SettingParams } from "../screens/setting/setting";
 import { ChangePasswordParams } from "../screens/setting/changePassword";
 import { ExportPrivateKeyParams } from "../screens/setting/exportPrivateKey";
-import { WalletParams } from "../screens/home/wallet/wallet";
 import { ValidatorParams } from "../screens/home/staking/validator";
 import { ProposalParams } from "../screens/home/governance/proposal";
-import { StakingParams } from "../screens/home/staking/staking";
 import { SendParams } from "../screens/home/wallet/send";
 import { DelegateParams } from "../screens/home/staking/delegate";
 import { DepositParams } from "@/screens/home/governance/deposit";
+import { HistoryParams } from '@/screens/home/history/history';
 
 export enum Screens {
-    Splash = 'Splash',
+    LoginCheck = 'LoginCheck',
 
     Welcome = 'Welcome',
     CreateStepOne = 'CreateStepOne',
@@ -25,6 +24,7 @@ export enum Screens {
     RecoverWallet = 'RecoverWallet',
 
     Home = 'Home',
+    Hisory = 'History',
     Transaction = 'Transaction',
     
     Wallet = 'Wallet',
@@ -44,7 +44,7 @@ export enum Screens {
 }
 
 export type StackParamList = {
-    Splash: undefined;
+    LoginCheck: undefined;
 
     Welcome: undefined;
     CreateStepOne: CreateStepOneParams;
@@ -55,12 +55,13 @@ export type StackParamList = {
     RecoverWallet: undefined;
 
     Home: HomeParams;
+    History: HistoryParams;
     Transaction: undefined;
 
-    Wallet: WalletParams;
+    Wallet: undefined;
     Send: SendParams;
 
-    Staking: StakingParams;
+    Staking: undefined;
     Validator: ValidatorParams;
     Delegate: DelegateParams;
 
