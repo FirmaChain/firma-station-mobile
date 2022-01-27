@@ -1,4 +1,4 @@
-import { CloseAccordion, OpenAccordion } from "@/util/animation";
+import { LayoutAnim } from "@/util/animation";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Lato, PointColor, TextColor } from "../../constants/theme";
@@ -12,12 +12,13 @@ const SmallButton: React.FC<{
 }> = ({title, onPressEvent, size = 100, height, color = PointColor}) => {
     const [buttonHeight, setButtonHeight] = useState(42);
     const handleOnPress = (value?:any) => {
+        LayoutAnim();
         onPressEvent && onPressEvent(value);
     }
 
     useEffect(() => {
-        if(height === 0) return CloseAccordion(setButtonHeight);
-        return OpenAccordion(setButtonHeight, 42);
+        if(height === 0) return setButtonHeight(0);
+        return setButtonHeight(42);
     }, [height]);
 
     return (

@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "../../navigators/appRoutes";
-import { BgColor, BoxColor, Lato, TextColor, WhiteColor } from "../../constants/theme";
+import { BgColor, BoxColor, DisableColor, Lato, PointColor, PointDarkColor, PointLightColor, TextColor, WhiteColor } from "../../constants/theme";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DeleteWallet from "../../organims/setting/modal/deleteWallet";
 import { removeChain, setChain } from "../../util/secureKeyChain";
-import { getWalletList } from "@/util/wallet";
+import { getUseBioAuth, getWalletList, setUseBioAuth } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { AUTO_LOGIN_NAME_TEST } from "@/constants/common";
+import { getUniqueId } from "react-native-device-info";
+import { LayoutAnim } from "@/util/animation";
+import { WALLET_LIST } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -29,6 +31,13 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
     const wallet = walletName?walletName:'';
 
     const [openDelModal, setOpenDelModal] = useState(false);
+    const [useBio, setUseBio] = useState(false);
+
+    const handleBioAuth = (value:boolean) => {
+        LayoutAnim();
+        setUseBio(value);
+        setUseBioAuth(value);
+    }
 
     const handleMenus = (path:string) => {
         switch (path) {
@@ -44,13 +53,13 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
     }
 
     const settingList = [
-        {title: 'Change password', path: 'ChangePW'},
-        {title: 'Export private key', path: 'ExportPK'},
+        {title: 'Change Password', path: 'ChangePW'},
+        {title: 'Export Private key', path: 'ExportPK'},
         {title: 'Export wallet with QR code', path: 'ExportQR'},
     ];
 
     const moveToWelcome = async() => {
-        await removeChain(AUTO_LOGIN_NAME_TEST)
+        await removeChain(getUniqueId())
             .then(res => console.log(res))
             .catch(error => console.log(error));
         navigation.reset({routes: [{name: 'Welcome'}]});
@@ -69,20 +78,29 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
         await getWalletList().then(res => {
             let arr = res !== undefined? res : [];
             
-            if(arr.length > 0){
+            if(arr.length > 1){
                 arr.filter(item => item !== walletName).map((item, index) => {
                     newList += item + "/";
                 });
+                newList = newList.slice(0, -1);
             }
-            newList = newList.slice(0, -1);
 
-            setChain('test_3', newList);
+            setChain(WALLET_LIST, newList);
             handleDelModal(false);
             moveToWelcome();
         }).catch(error => {
             console.log(error)
         });
     }
+
+    useEffect(() => {
+        const getUseBioAuthState = async() => {
+            const result = await getUseBioAuth();
+            setUseBio(result);
+        }
+        getUseBioAuthState();
+    }, []);
+    
 
     const handleBack = () => {
         navigation.goBack();
@@ -94,6 +112,14 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <ScrollView style={{borderTopWidth: 1, borderTopColor: BgColor}}>
+                        <View style={styles.listItem}>
+                            <Text style={styles.itemTitle}>Use Bio Auth</Text>
+                            <TouchableOpacity onPress={()=>handleBioAuth(!useBio)}>
+                                <View style={[styles.radioWrapper, useBio?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
+                                    <View style={styles.radio} />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     {settingList.map((item, index) => {
                         return (
                         <TouchableOpacity key={index} onPress={()=>handleMenus(item.path)}>
@@ -146,6 +172,18 @@ const styles = StyleSheet.create({
     bottomButtonsBox: {
         paddingTop: 20,
     },
+    radioWrapper: {
+        width: 45,
+        borderRadius: 20,
+        justifyContent: "center",
+        padding: 3,
+    },
+    radio: {
+        width: 18,
+        height: 18,
+        borderRadius: 50,
+        backgroundColor: WhiteColor,
+    }
 })
 
 export default SettingScreen;

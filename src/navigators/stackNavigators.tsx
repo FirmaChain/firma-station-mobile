@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, HeaderStyleInterpolators, TransitionSpecs } from "@react-navigation/stack";
 import { Screens, StackParamList } from "./appRoutes";
 
 import WelcomeScreen from '../screens/welcome/welcome';
@@ -33,9 +33,13 @@ import LoginCheckScreen from "@/screens/loginCheck";
 import HistoryScreen from "@/screens/home/history/history";
 
 export const Stack = createStackNavigator<StackParamList>();
-const StackNavigator: React.FunctionComponent = () => {  
+const StackNavigator: React.FunctionComponent = () => {
     return (
         <Stack.Navigator 
+            screenOptions={{
+                animationEnabled: true,
+                animationTypeForReplace: "push",
+            }}
             initialRouteName={Screens.LoginCheck}>
             <Stack.Screen
                 options={{headerShown: false}}
@@ -153,6 +157,6 @@ const StackNavigator: React.FunctionComponent = () => {
             </Stack.Group>
         </Stack.Navigator>
     );
-};
+}
 
 export default StackNavigator;

@@ -5,7 +5,7 @@ import SmallButton from "@/components/button/smallButton";
 import { BgColor, BoxColor, DisableColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
 import { ARROW_ACCORDION } from "@/constants/images";
 import { resizeFontSize } from "@/util/common";
-import { CloseAccordion, degree, OpenAccordion, TurnToOpposite, TurnToOriginal } from "@/util/animation";
+import { degree, LayoutAnim, TurnToOpposite, TurnToOriginal } from "@/util/animation";
 import { StakingValues } from "@/hooks/staking/hooks";
 
 interface Props {
@@ -31,15 +31,16 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
     }
 
     const handleOpenAccordion = () => {
+        LayoutAnim();
         setOpenAccordion(!openAccordion);
     }
 
     useEffect(() => {
         if(openAccordion){
-            OpenAccordion(setAccordionHeight, 65);
+            setAccordionHeight(65);
             TurnToOpposite(arrowDeg);
         } else {
-            CloseAccordion(setAccordionHeight);
+            setAccordionHeight(0);
             TurnToOriginal(arrowDeg);
         }
     }, [openAccordion]);
