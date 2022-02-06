@@ -4,14 +4,15 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "../../navigators/appRoutes";
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, PointDarkColor, PointLightColor, TextColor, WhiteColor } from "../../constants/theme";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import DeleteWallet from "../../organims/setting/modal/deleteWallet";
 import { removeChain, setChain } from "../../util/secureKeyChain";
-import { getUseBioAuth, getWalletList, setUseBioAuth } from "@/util/wallet";
+import { getUseBioAuth, getWalletList, getWalletWithAutoLogin, setPasswordViaBioAuth, setUseBioAuth } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { getUniqueId } from "react-native-device-info";
 import { LayoutAnim } from "@/util/animation";
 import { WALLET_LIST } from "@/constants/common";
+import DeleteWallet from "../../organims/setting/modal/deleteWallet";
+import BioAuthOnModal from "@/organims/setting/modal/bioAuthOnModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -31,12 +32,22 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
     const wallet = walletName?walletName:'';
 
     const [openDelModal, setOpenDelModal] = useState(false);
+    const [openBioModal, setOpenBioModal] = useState(false);
     const [useBio, setUseBio] = useState(false);
 
     const handleBioAuth = (value:boolean) => {
+        if(value === false){
+            handleBioAuthState();
+        }
         LayoutAnim();
+        setOpenBioModal(value);
         setUseBio(value);
-        setUseBioAuth(value);
+    }
+
+    const closeBioModal = (open:boolean) => {
+        setOpenBioModal(open);
+        setUseBio(open);
+        handleBioAuthState();
     }
 
     const handleMenus = (path:string) => {
@@ -69,7 +80,7 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
         setOpenDelModal(open);
     }
 
-    const handleDeleteWallet = async(key:string) => {
+    const handleDeleteWallet = async() => {
         await removeChain(wallet)
             .then(res => console.log(res))
             .catch(error => console.log(error));
@@ -93,14 +104,36 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
         });
     }
 
+    const handleBioAuthState = async(password?:string) => {
+        if(password){
+            await setPasswordViaBioAuth(password);
+            setUseBioAuth(true);
+            setOpenBioModal(false);
+        } else {
+            let timestamp = 0;
+            await getWalletWithAutoLogin().then(res => {
+                if('') return null;
+                const result = JSON.parse(res);
+                timestamp = result.timestamp;
+            }).catch(error => {
+                console.log('error : ' + error);
+                return null;
+            })
+            await removeChain(getUniqueId + timestamp.toString())
+            .catch(error => console.log(error));
+
+            setUseBioAuth(false);
+        }
+    }
+
     useEffect(() => {
         const getUseBioAuthState = async() => {
             const result = await getUseBioAuth();
             setUseBio(result);
         }
+
         getUseBioAuthState();
     }, []);
-    
 
     const handleBack = () => {
         navigation.goBack();
@@ -148,6 +181,11 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
                         open={openDelModal} 
                         setOpenModal={handleDelModal}
                         deleteWallet={handleDeleteWallet}/>
+                    <BioAuthOnModal
+                        walletName={wallet}
+                        open={openBioModal}
+                        setOpenModal={closeBioModal}
+                        bioAuthhandler={handleBioAuthState}/>
                 </ScrollView>
             </ViewContainer>
         </Container>

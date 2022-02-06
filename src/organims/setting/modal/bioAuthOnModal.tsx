@@ -1,0 +1,113 @@
+import Button from "@/components/button/button";
+import InputSetVertical from "@/components/input/inputSetVertical";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import CustomModal from "../../../components/modal/customModal";
+import { Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
+import { decrypt, keyEncrypt } from "../../../util/keystore";
+import { getChain } from "../../../util/secureKeyChain";
+import { WalletNameValidationCheck } from "../../../util/validationCheck";
+
+interface Props {
+    walletName: string;
+    open: boolean;
+    setOpenModal: Function;
+    bioAuthhandler: Function;
+}
+
+const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props) => {
+    const bioAuthModalText = {
+        title: 'Use Bio Auth',
+        desc: 'Enter your password to turn on Bio Auth.',
+        confirmTitle: 'Confirm'
+    }
+    const [password, setPassword] = useState('');
+    const [active, setActive] = useState(false);
+
+    const handleInputChange = async(val:string) => {
+        setPassword(val);
+        if(val.length >= 10){
+            let nameCheck = await WalletNameValidationCheck(walletName);
+            if(nameCheck){
+                const key:string = keyEncrypt(walletName, val);
+                await getChain(walletName).then(res => {
+                    if(res){
+                        let w = decrypt(res.password, key);
+                        if(w.length > 0) {
+                            setActive(true);
+                        }
+                    }
+                }).catch(error => {
+                    console.log(error);
+                    setActive(false);
+                });
+            } 
+        }
+    }
+
+    const handleBioAuth = () => {
+        if(active === false) return;
+        bioAuthhandler && bioAuthhandler(password);
+    }
+
+    const handleModal = (open:boolean) => {
+        setOpenModal && setOpenModal(open);
+    }
+
+    useEffect(() => {
+        if(open === false){
+            setPassword('');
+            setActive(false);
+        } 
+    }, [open])
+
+    return (
+        <CustomModal
+            visible={open} 
+            handleOpen={handleModal}>
+                <View style={styles.modalTextContents}>
+                    <Text style={[styles.title, {fontWeight: "bold"}]}>{bioAuthModalText.title}</Text>
+                    <InputSetVertical
+                        title={bioAuthModalText.desc}
+                        placeholder={"Must be at least 10 characters"}
+                        secure={true}
+                        onChangeEvent={handleInputChange}/>
+                    <Button
+                        title={bioAuthModalText.confirmTitle}
+                        active={active}
+                        onPressEvent={handleBioAuth}/>
+                </View>
+        </CustomModal>
+    )
+}
+
+const styles = StyleSheet.create({
+    modalTextContents: {
+        width: "100%",
+        padding: 20,
+    },
+    title: {
+        fontFamily: Lato,
+        fontSize: 20,
+        color: TextCatTitleColor,
+        marginBottom: 15,
+    },
+    desc: {
+        fontFamily: Lato,
+        fontSize: 14,
+        color: TextColor,
+    },
+    modalPWBox: {
+        paddingVertical: 20,
+    },
+    input: {
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        borderRadius: 8,
+        borderWidth: 1,
+        backgroundColor: '#fff',
+        marginBottom: 5,
+    },
+})
+
+export default BioAuthOnModal;

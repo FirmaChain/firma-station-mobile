@@ -1,9 +1,10 @@
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { setNewWallet } from "@/util/wallet";
+import { getWalletWithAutoLogin, setNewWallet } from "@/util/wallet";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { getUniqueId } from "react-native-device-info";
 import Button from "../../components/button/button";
 import InputSetVertical from "../../components/input/inputSetVertical";
 import AlertModal from "../../components/modal/alertModal";
@@ -116,6 +117,20 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
         await removeChain(wallet)
             .then(res => console.log(res))
             .catch(error => console.log(error));
+        
+        let timestamp = 0;
+        await getWalletWithAutoLogin().then(res => {
+            if('') return null;
+            const result = JSON.parse(res);
+            timestamp = result.timestamp;
+        }).catch(error => {
+            console.log('error : ' + error);
+            return null;
+        })
+
+        await removeChain(getUniqueId + timestamp.toString())
+        .then(res => console.log(res))
+        .catch(error => console.log(error));
     }
 
     const createNewPassword = async() => {
