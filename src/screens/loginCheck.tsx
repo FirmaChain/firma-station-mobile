@@ -23,12 +23,12 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
     useEffect(() => {
         const getWalletForAutoLogin = async() => {
             await getWalletWithAutoLogin()
-            .then(res => { 
+            .then((res) => { 
                 if(res !== ""){
-                    const result = res.split("|");
+                    const result = JSON.parse(res);
                     setWallet({
-                        address: result[0],
-                        walletName: result[1],
+                        address: result.address,
+                        walletName: result.walletName,
                     })
                 }
                 setLoading(true);

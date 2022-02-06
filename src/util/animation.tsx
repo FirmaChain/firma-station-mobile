@@ -1,4 +1,4 @@
-import { Animated, LayoutAnimation, UIManager } from "react-native";
+import { Animated, LayoutAnimation, Platform, UIManager } from "react-native";
 
 export const fadeIn = (value:Animated.Value) => {
     Animated.timing(value, {
@@ -39,14 +39,11 @@ export const degree = (value:Animated.Value) => {
     })
 } 
 
-export const OpenAccordion = (handleHeight:Function, height:number) => {
-    UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    handleHeight(height);
+export const LayoutAnim = () => {
+    if (Platform.OS === 'android') {
+        if (UIManager.setLayoutAnimationEnabledExperimental) {
+          UIManager.setLayoutAnimationEnabledExperimental(true);
+        }
+    }
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 };
-
-export const CloseAccordion = (handleHeight:Function) => {
-    UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    handleHeight(0);
-}

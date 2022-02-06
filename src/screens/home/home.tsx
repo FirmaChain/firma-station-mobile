@@ -15,7 +15,6 @@ import { ICON_DOCUMENT } from "@/constants/images";
 import { useBalanceData, useHistoryData } from "@/hooks/wallet/hooks";
 import { useStakingData, useValidatorData } from "@/hooks/staking/hooks";
 import { useGovernanceList } from "@/hooks/governance/hooks";
-import { confirmViaBioAuth } from "@/util/bioAuth";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 

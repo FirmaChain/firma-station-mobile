@@ -34,10 +34,18 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
             <View style={styles.box}>
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center"}]}>
                     <Text style={styles.title}>Recent History</Text>
+                    {recentHistory !== undefined &&
                     <TouchableOpacity onPress={()=>moveToHistory()}>
                         <ForwardArrow size={20} color={TextCatTitleColor}/>
                     </TouchableOpacity>
+                    }
                 </View>
+                {recentHistory === undefined? 
+                <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "center", alignItems: "center" ,paddingTop: 18}]}>
+                    <Text style={[styles.contentItem, {fontSize: 14}]}>There's no history yet</Text>
+                </View>
+                :
+                <>
                 <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center" ,paddingTop: 18}]}>
                     <View style={styles.historyWrapper}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Block</Text>
@@ -69,6 +77,8 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{convertTime(historyData.timestamp, false, true)}</Text>
                     </View>
                 </View>
+                </>
+                }
             </View>
         </View>
     )

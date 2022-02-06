@@ -13,13 +13,20 @@ export interface Wallet {
     privatekey?: string;
 }
 
+export interface TransactionState {
+    walletName: string;
+    password: string;
+    targetAddress: string;
+    amount: number;
+}
+
 // Wallet
 export const createNewWallet = async() => {
     try {
         let wallet = await firmaSDK.Wallet.newWallet();
         return organizeWallet(wallet);
     } catch (error) {
-        console.log('error : ' + error);
+        console.log('createNewWallet error : ' + error);
     }
 }
 
@@ -28,7 +35,7 @@ export const recoverFromMnemonic = async(mnemonic:string) => {
         let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
         return wallet;
     } catch (error) {
-        console.log('error : ' + error);
+        console.log('recoverFromMnemonic error : ' + error);
     }
 }
 
@@ -38,16 +45,16 @@ export const getAdrFromMnemonic = async(mnemonic:string) => {
         let address = await wallet?.getAddress();
         return address;
     } catch (error) {
-        console.log('error : ' + error);
+        console.log('getAdrFromMnemonic error : ' + error);
     }
 }
 
-export const getBalanceFromAdr = async(address:string) => {
+export const getBalanceFromAdr = async(address:string) => {    
     try {
         let balance = await firmaSDK.Bank.getBalance(address);
         return balance;
     } catch (error) {
-        console.log('error : ' + error); 
+        console.log('getBalanceFromAdr error : ' + error); 
         return 0;
     }
 }
@@ -67,17 +74,17 @@ const organizeWallet = async(wallet:FirmaWalletService) => {
         }
         return result;
     } catch (error) {
-        console.log('error : ' + error);
+        console.log('organizeWallet error : ' + error);
     }
 }
 
-export const sendToken = async(mnemonic:string, target:string, amount:number) => {
+export const sendFCT = async(mnemonic:string, target:string, amount:number) => {
     try {
         let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
         let send = await firmaSDK.Bank.send(wallet, target, amount);
         return send;
     } catch (error) {
-        console.log(error);
+        console.log('sendToken error : ' + error);
     }
 }
 
