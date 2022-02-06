@@ -7,7 +7,6 @@ import { ApolloProvider, client } from "./apollo";
 // import Progress from "./components/parts/progress";
 
 export default function App() {
-
   LogBox.ignoreLogs(["[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"]);
 
   return (

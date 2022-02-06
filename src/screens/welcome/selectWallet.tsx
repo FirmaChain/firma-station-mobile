@@ -94,7 +94,10 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
 
-        await setWalletWithAutoLogin(adr + "|" + selectedWallet);
+        await setWalletWithAutoLogin(JSON.stringify({
+            walletName: selectedWallet,
+            address: adr,
+        }));
 
         navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: selectedWallet} }]});
     }

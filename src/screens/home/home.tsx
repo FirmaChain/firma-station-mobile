@@ -12,6 +12,10 @@ import GovernanceScreen from "./governance/governance";
 import { BoxDarkColor, GrayColor, WhiteColor } from "@/constants/theme";
 import { Image } from "react-native";
 import { ICON_DOCUMENT } from "@/constants/images";
+import { useBalanceData, useHistoryData } from "@/hooks/wallet/hooks";
+import { useStakingData, useValidatorData } from "@/hooks/staking/hooks";
+import { useGovernanceList } from "@/hooks/governance/hooks";
+import { confirmViaBioAuth } from "@/util/bioAuth";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -32,15 +36,52 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
     const {params} = route;
     const {address, walletName} = params;
 
+    const { balance } = useBalanceData(address);
+    const { historyList } = useHistoryData(address);
+    const { stakingState } = useStakingData(address);
+    const { validatorsState } = useValidatorData();
+    const { governanceState } = useGovernanceList();
+
+    const walletProps = {
+        state:{
+            address, 
+            walletName,
+            balance,
+            historyList,
+            stakingState,
+        }
+    }
+
+    const stakingProps = {
+        state:{
+            address, 
+            walletName,
+            stakingState,
+            validatorsState,
+        }
+    }
+
+    const governanceProps = {
+        state: {
+            address, 
+            walletName,
+            governanceState
+        }
+    }
+
     const [title, setTitle] = useState('Wallet');
 
     const moveToSetting = () => {
-        navigation.navigate(Screens.Setting, {walletName:walletName});
+        navigation.navigate(Screens.Setting, {walletName: walletName});
+    }
+
+    const moveToHistory = () => {
+        navigation.navigate(Screens.Hisory, {historyData: historyList});
     }
 
     useEffect(() => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        if(routeName === undefined) {
+        if(routeName === undefined){
             setTitle('Wallet');
         } else {
             setTitle(routeName);
@@ -50,7 +91,8 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
     return (
         <TabContainer
             title={title}
-            navEvent={moveToSetting}>
+            settingNavEvent={moveToSetting}
+            historyNavEvent={moveToHistory}>
             <Tab.Navigator 
                 screenOptions={{ 
                     headerShown: false, 
@@ -61,8 +103,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
                 initialRouteName="Wallet">
                 <Tab.Screen 
                     name={'Wallet'} 
-                    component={WalletScreen} 
-                    initialParams={{address: address, walletName: walletName}} 
+                    children={() => <WalletScreen {...walletProps} />}
                     options={{
                         tabBarIcon: ({focused}) => {
                             return <WalletIcon name={'ios-wallet-outline'} size={24} color={focused? WhiteColor : GrayColor}/>
@@ -70,8 +111,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
                     }}/>
                 <Tab.Screen 
                     name={'Staking'} 
-                    component={StakingScreen} 
-                    initialParams={{address: address, walletName: walletName}} 
+                    children={() => <StakingScreen {...stakingProps} />}
                     options={{
                         tabBarIcon:
                         ({focused}) => {
@@ -80,7 +120,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
                     }}/>
                 <Tab.Screen 
                     name={'Governance'} 
-                    component={GovernanceScreen} 
+                    children={() => <GovernanceScreen {...governanceProps} />}
                     options={{
                         tabBarIcon: ({focused}) => {
                             return <Image style={{width: 24, height: 24, opacity: focused? 1: .6}} source={ICON_DOCUMENT}/>

@@ -1,34 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import RefreshScrollView from "@components/parts/refreshScrollView";
-import { StakeInfo, StakingValues, useStakingData, useValidatorData, useValidatorDescription } from "@hooks/staking/hooks";
+import { StakingValues, useValidatorDescription } from "@hooks/staking/hooks";
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from "@constants/theme";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import ValidatorList from "@/organims/staking/validatorList";
 import DelegationList from "@/organims/staking/delegationList";
 import BalancesBox from "@/organims/staking/parts/balanceBox";
 import RewardBox from "@/organims/staking/parts/rewardBox";
+import { useNavigation } from "@react-navigation/native";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
-export type StakingParams = {
-    address: string;
-    walletName: string;
-}
-
 interface Props {
-    route: {params: StakingParams};
-    navigation: ScreenNavgationProps;
+    state: any
 }
 
 const StakingScreen: React.FunctionComponent<Props> = (props) => {
-    const {navigation, route} = props;
-    const {params} = route;
-    const {address, walletName} = params;
+    const navigation:ScreenNavgationProps = useNavigation();
 
-    const { validatorsState } = useValidatorData();
-    const { stakingState, setRefresh } = useStakingData(address);
+    const {state} = props;
+    const {address, 
+        walletName,
+        stakingState,
+        validatorsState,} = state;
 
     const [tab, setTab] = useState(0);
     
@@ -60,12 +55,8 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
     }
 
     const handleMoveToValidatorFromDelegation = (address:string) => {
-        const validator = validatorsState.validators.find((value) => value.validatorAddress === address);
+        const validator = validatorsState.validators.find((value:any) => value.validatorAddress === address);
         handleMoveToValidator(validator);
-    }
-
-    const handleRefresh = () => {
-        setRefresh(true);
     }
 
     const handleTransaction = () => {
@@ -74,31 +65,28 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
 
     return (
         <View style={styles.container}>
-            <RefreshScrollView
-                refreshFunc={handleRefresh}>
-                <ScrollView>
-                    <View style={styles.box}>
-                        <RewardBox reward={stakingValues.stakingReward} transactionHandler={handleTransaction}/>
-                        <BalancesBox stakingValues={stakingValues}/>
-                    </View>
+            <ScrollView>
+                <View style={styles.box}>
+                    <RewardBox reward={stakingValues.stakingReward} transactionHandler={handleTransaction}/>
+                    <BalancesBox stakingValues={stakingValues}/>
+                </View>
 
-                    <View style={styles.tabBox}>
-                        <TouchableOpacity 
-                            style={[styles.tab, {borderBottomColor: tab === 0? WhiteColor:'transparent'}]}
-                            onPress={()=>setTab(0)}>
-                            <Text style={tab === 0?styles.tabTitleActive:styles.tabTitleInactive}>My Delegations</Text>
-                        </TouchableOpacity>
+                <View style={styles.tabBox}>
+                    <TouchableOpacity 
+                        style={[styles.tab, {borderBottomColor: tab === 0? WhiteColor:'transparent'}]}
+                        onPress={()=>setTab(0)}>
+                        <Text style={tab === 0?styles.tabTitleActive:styles.tabTitleInactive}>My Delegations</Text>
+                    </TouchableOpacity>
 
-                        <TouchableOpacity 
-                            style={[styles.tab, {borderBottomColor: tab === 1? WhiteColor:'transparent'}]}
-                            onPress={()=>setTab(1)}>
-                            <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
-                        </TouchableOpacity>
-                    </View>
-                    {tab === 0 && <DelegationList delegations={useValidatorDescription(stakingState.delegateList, validatorsState.validators)} navigateValidator={handleMoveToValidatorFromDelegation}/>}
-                    {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
-                </ScrollView>
-            </RefreshScrollView>
+                    <TouchableOpacity 
+                        style={[styles.tab, {borderBottomColor: tab === 1? WhiteColor:'transparent'}]}
+                        onPress={()=>setTab(1)}>
+                        <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
+                    </TouchableOpacity>
+                </View>
+                {tab === 0 && <DelegationList delegations={useValidatorDescription(stakingState.delegateList, validatorsState.validators)} navigateValidator={handleMoveToValidatorFromDelegation}/>}
+                {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
+            </ScrollView>
         </View>
     )
 }

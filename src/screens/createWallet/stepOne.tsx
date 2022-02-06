@@ -100,15 +100,9 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
     }
 
     const onCompleteRecoverWallet = async() => {
-        await setNewWallet(walletName, password, wallet.mnemonic);
-        let adr = null;
-        await getAdrFromMnemonic(wallet.mnemonic).then(res => {
-            if(res !== undefined) adr = res;
-        }).catch(error => console.log('error : ' + error));
+        const address = await setNewWallet(walletName, password, wallet.mnemonic);
 
-        await setWalletWithAutoLogin(adr + "|" + walletName);
-
-        navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: walletName} }]});
+        navigation.reset({routes: [{name: 'Home', params: {address: address, walletName: walletName} }]});
     }
 
     const handleBack = () => {

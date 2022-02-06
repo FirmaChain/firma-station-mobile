@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import RefreshScrollView from "@/components/parts/refreshScrollView";
 import { BgColor } from "@/constants/theme";
 import AddressBox from "@/organims/wallet/addressBox";
 import BalanceBox from "@/organims/wallet/balanceBox";
@@ -8,31 +7,23 @@ import HistoryBox from "@/organims/wallet/historyBox";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
-import { StakingValues, useStakingData } from "@/hooks/staking/hooks";
-import { useBalanceData, useHistoryData } from "@/hooks/wallet/hooks";
-import { convertNumber } from "@/util/common";
+import { StakingValues } from "@/hooks/staking/hooks";
+import { useNavigation } from "@react-navigation/native";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
-export type WalletParams = {
-    address: string;
-    walletName: string;
-}
-
 interface Props {
-    route: {params: WalletParams};
-    navigation: ScreenNavgationProps;
+    state: any;
 }
 
 const WalletScreen: React.FunctionComponent<Props> = (props) => {
-    const {navigation, route} = props;
-    const {params} = route;
-
-    const {address, walletName} = params;
-    
-    const {balance} = useBalanceData(address);
-    const {historyList} = useHistoryData(address);
-    const {stakingState, setRefresh} = useStakingData(address);
+    const navigation: ScreenNavgationProps = useNavigation();
+    const {state} = props;
+    const {address, 
+            walletName,
+            balance,
+            historyList,
+            stakingState,} = state;
 
     const recentHistory = useMemo(() => {
         if(historyList) return historyList.list[0];
@@ -55,15 +46,16 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
         });
     }, [stakingState]);
     
-
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false);
 
-    const refreshData = async() => {
-        setRefresh(true);
-    }
-
     const handleTransaction = () => {
-        navigation.navigate(Screens.Transaction);
+        const transactionState = {
+            state: {
+                type: "withdrawall",
+                address: address
+            }
+        }
+        navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
     const handleSend = () => {
@@ -71,21 +63,23 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
     }
 
     const handleDelegate = () => {
-        navigation.navigate(Screens.Staking, {address: address, walletName: walletName});
+        navigation.navigate(Screens.Staking);
+    }
+
+    const handleHistory = () => {
+        navigation.navigate(Screens.Hisory, {historyData: historyList});
     }
 
     return (
         <View style={styles.container}>
             <AddressBox address={address} />
-            <RefreshScrollView refreshFunc={refreshData}>
-                <ScrollView>
-                    <View style={styles.content}>
-                        <BalanceBox balance={balance} stakingValues={stakingValues} handleSend={handleSend} handleDelegate={handleDelegate}/>
-                        <HistoryBox recentHistory={recentHistory}/>
-                        <TransactionConfirmModal transactionHandler={handleTransaction} title="Withdraw" walletName={walletName} amount={stakingValues.stakingReward} open={openWithdrawModal} setOpenModal={setOpenWithdrawModal} />
-                    </View>
-                </ScrollView>
-            </RefreshScrollView>
+            <ScrollView>
+                <View style={styles.content}>
+                    <BalanceBox balance={balance} stakingValues={stakingValues} handleSend={handleSend} handleDelegate={handleDelegate}/>
+                    <HistoryBox handleHistory={handleHistory} recentHistory={recentHistory}/>
+                    <TransactionConfirmModal transactionHandler={handleTransaction} title="Withdraw" walletName={walletName} amount={stakingValues.stakingReward} open={openWithdrawModal} setOpenModal={setOpenWithdrawModal} />
+                </View>
+            </ScrollView>
         </View>
     )
 }

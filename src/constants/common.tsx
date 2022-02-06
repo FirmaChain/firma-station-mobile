@@ -2,12 +2,8 @@ interface IKeyValue {
     [key: string]: string;
 }
 
-export const BIO_AUTH_NAME_TEST = "BIO_AUTH_NAME_TEST";
-export const BIO_AUTH_KEY_TEST = "BIO_AUTH_KEY_TEST";
-
-export const AUTO_LOGIN_NAME_TEST = "AUTO_LOGIN_NAME_TEST";
-export const AUTO_LOGIN_KEY_TEST = "AUTO_LOGIN_KEY_TEST";
-
+export const WALLET_LIST = "FIRMA_WALLET_LIST_1";
+export const USE_BIO_AUTH = "USE_BIO_AUTH";
 export const RECOVER_INFO_MESSAGE = "Generate QR code from setting menu of\nFirma Station desktop or extionsion";
 
 export const PROPOSAL_STATUS: IKeyValue = {

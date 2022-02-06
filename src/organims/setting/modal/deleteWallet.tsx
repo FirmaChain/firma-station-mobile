@@ -24,11 +24,8 @@ const DeleteWallet = ({walletName, open, setOpenModal, deleteWallet}: Props) => 
 
     const handleInputChange = async(val:string) => {
         setPassword(val);
-
         if(val.length >= 10){
             let nameCheck = await WalletNameValidationCheck(walletName);
-            
-            // id+pw의 조합이 맞다면 지갑 정보를 가져온다.
             if(nameCheck){
                 const key:string = keyEncrypt(walletName, val);
                 await getChain(walletName).then(res => {

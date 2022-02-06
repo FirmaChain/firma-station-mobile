@@ -7,6 +7,7 @@ import Description from "../../organims/welcome/description";
 import { getChain } from "../../util/secureKeyChain";
 import { BgColor, DisableColor, Lato, TextGrayColor } from "../../constants/theme";
 import ViewContainer from "@/components/parts/containers/viewContainer";
+import { WALLET_LIST } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -33,7 +34,7 @@ const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = (props) => {
     }
 
     const isWalletExist = async() => {
-        await getChain('test_3').then(res => {
+        await getChain(WALLET_LIST).then(res => {
             if(res === false) return setWalletExist(false);
             return setWalletExist(true);
         }).catch(error => {

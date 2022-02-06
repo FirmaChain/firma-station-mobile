@@ -32,6 +32,7 @@ const SendInputBox = ({address, amount, memo}:Props) => {
             <InputSetVertical
                 title="Amount"
                 message=""
+                numberOnly={true}
                 validation={true}
                 placeholder="0 FCT"
                 onChangeEvent={handleAmount}/>

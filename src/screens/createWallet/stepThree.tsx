@@ -8,7 +8,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import MnemonicQuiz from "@/organims/createWallet/stepThree/mnemonicQuiz";
 import { BgColor } from "@/constants/theme";
-import { setNewWallet, setWalletViaAutoLogin } from "@/util/wallet";
+import { setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
 
 type CreateStepThreeScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -31,15 +31,9 @@ const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps>
     
     const onCompleteCreateWallet = async() => {
         setConfirm(false);
+        const address = await setNewWallet(wallet.name, wallet.password, wallet.mnemonic);
 
-        await setNewWallet(wallet.name, wallet.password, wallet.mnemonic);
-        let adr = null;
-        await getAdrFromMnemonic(wallet.mnemonic).then(res => {
-            if(res !== undefined) adr = res;
-        }).catch(error => console.log('error : ' + error));
-        await setWalletViaAutoLogin(adr + "|" + wallet.name);
-
-        navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: wallet.name} }]});
+        navigation.reset({routes: [{name: 'Home', params: {address: address, walletName: wallet.name} }]});
     }
 
     const handleBack = () => {

@@ -12,7 +12,7 @@ const VotingPercentage = ({data}:Props) => {
     const tally = useMemo(() => {
         if(data.proposalTally)
             return [
-                { title: "YES", vote: data.proposalTally.yes },
+                { title: "YES", vote: data.proposalTally.yes},
                 { title: "NO", vote: data.proposalTally.no },
                 { title: "NoWithVeto", vote: data.proposalTally.noWithVeto },
                 { title: "Abstain", vote: data.proposalTally.abstain }
@@ -47,7 +47,7 @@ const VotingPercentage = ({data}:Props) => {
     }
     
     const calculateRatio = (value:number, max:number|string) => {
-        if(value === 0) return 0;
+        if(value === 0 || max === 0 || max === undefined) return 0;
         const ratio = Number(value) / Number(max);
         return ratio;
     }
@@ -63,7 +63,7 @@ const VotingPercentage = ({data}:Props) => {
                                 [styles.percentage, 
                                 {
                                     backgroundColor: votingColor(item.title), 
-                                    flex: calculateRatio(item.vote, data.stakingPool), 
+                                    flex: calculateRatio(item.vote, data.totalVotingPower), 
                                     marginLeft: -10, 
                                     paddingLeft: 10,
                                     zIndex: 5 - index,
