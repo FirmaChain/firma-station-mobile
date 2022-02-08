@@ -78,14 +78,10 @@ const organizeWallet = async(wallet:FirmaWalletService) => {
     }
 }
 
-export const sendFCT = async(mnemonic:string, target:string, amount:number) => {
-    try {
-        let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
-        let send = await firmaSDK.Bank.send(wallet, target, amount);
-        return send;
-    } catch (error) {
-        console.log('sendToken error : ' + error);
-    }
+export const sendFCT = async(mnemonic:string, target:string, amount:number, memo?:string) => {
+    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+    let send = await firmaSDK.Bank.send(wallet, target, amount, {memo: memo});
+    return send;
 }
 
 // Staking
@@ -123,6 +119,13 @@ export const getStakingFromvalidator = async(address:string, validatorAddress:st
     }
 
     return values;
+}
+
+export const delegate = async(mnemonic:string, address:string, amount:number) => {
+    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+    let result = await firmaSDK.Staking.delegate(wallet, address, amount);
+
+    return result;
 }
 
 export const getStaking = async(address:string) => {

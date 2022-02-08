@@ -44,3 +44,16 @@ export const Person = ({size, color}:Props) => {
         <Ionicons name="ios-person-circle-outline" size={size} color={color} />
     )
 }
+
+export const SuccessCircle = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="checkcircleo" size={size} color={color} />
+    )
+}
+
+export const FailCircle = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="closecircleo" size={size} color={color} />
+    )
+}
+

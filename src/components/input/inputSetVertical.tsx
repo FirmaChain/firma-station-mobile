@@ -5,13 +5,14 @@ import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, Te
 const InputSetVertical: React.FC<{
     title: string;
     message?: string;
+    initVal?: string;
     numberOnly?: boolean;
     validation?: boolean;
     placeholder: string;
     secure?: boolean;
     onChangeEvent: Function;
-}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, onChangeEvent}) => {
-    const [val, setVal] = useState('');
+}> = ({title, message, initVal = '', numberOnly = false, validation, placeholder, secure = false, onChangeEvent}) => {
+    const [val, setVal] = useState(initVal);
     const [focus, setFocus] = useState(false);
 
     const handleInputChange = (value: string) => {

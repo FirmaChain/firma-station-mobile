@@ -55,6 +55,20 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
     return adr;
 }
 
+export const getWallet = async(name:string, password:string) => {
+    const walletKey:string = keyEncrypt(name, password);
+    let result;
+    await getChain(name).then(res => {
+        if(res === false) return null;
+        result = decrypt(res.password, walletKey); 
+    }).catch(error => {
+        console.log(error);
+        return null;
+    })
+    
+    return result;
+}
+
 export const getWalletWithAutoLogin = async() => {
     let result = '';
     await getChain(UNIQUE_ID).then(res => {

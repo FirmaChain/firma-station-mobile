@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, View } from "react-native";
-import Container from "@/components/parts/containers/conatainer";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
+import Container from "@/components/parts/containers/conatainer";
 import WalletInfo from "@/organims/wallet/send/walletInfo";
 import SendInputBox from "@/organims/wallet/send/sendInputBox";
 import Button from "@/components/button/button";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
+import { TRANSACTION_TYPE } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
 export type SendParams = {
     walletName: string;
-    available: number;
+    address: string;
 }
 
 interface Props {
@@ -25,17 +26,26 @@ interface Props {
 const SendScreen: React.FunctionComponent<Props> = (props) => {
     const {navigation, route} = props;
     const {params} = route;
-    const {walletName, available} = params;
+    const {walletName, address} = params;
 
-    const [address, setAddress] = useState('');
-    const [amount, setAmount] = useState(0);
-    const [memo, setMemo] = useState('');
+    const [targetAddress, setTargetAddress] = useState('');
+    const [amount, setAmount] = useState(0);   
+    const [memo, setMemo] = useState(null);
 
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
 
-    const handleTransaction = () => {
+    const handleTransaction = (password:string) => {
         handleTransactionModal(false);
-        navigation.navigate(Screens.Transaction);
+
+        const transactionState = {
+            type: TRANSACTION_TYPE["SEND"],
+            walletName: walletName,
+            password: password,
+            targetAddress : targetAddress,
+            amount: amount,
+            memo: memo,
+        }
+        navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
     const handleTransactionModal = (open:boolean) => {
@@ -47,13 +57,7 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
     }
 
     const handleSend = async() => {
-        if(address === '' || amount <= 0) return;
-        // let result = await sendToken(
-        //     "owner pottery smile evolve pig base lady dismiss badge purchase divide royal medal buffalo miss carbon kiwi gate draft mouse yard reunion thank wage", 
-        //     "firma1sftckrgmrf5skqhj5jpvzv6222p2lzgcdgk4hs", 
-        //     amount);
-        // console.log(result);
-        
+        if(targetAddress === '' || amount <= 0) return;
         handleTransactionModal(true);
     }
 
@@ -64,8 +68,8 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
                     <View>
-                        <WalletInfo walletName={walletName} available={available} />
-                        <SendInputBox address={setAddress} amount={setAmount} memo={setMemo} />
+                        <WalletInfo walletName={walletName} address={address} />
+                        <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} />
                     </View>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
@@ -75,12 +79,13 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
                     </View>
                     {openTransactionModal && 
                         <TransactionConfirmModal 
-                        transactionHandler={handleTransaction} 
-                        title={"Send"} 
-                        walletName={walletName} 
-                        amount={amount} 
-                        open={openTransactionModal} 
-                        setOpenModal={handleTransactionModal} />}
+                            transactionHandler={handleTransaction} 
+                            title={"Send"} 
+                            walletName={walletName} 
+                            amount={amount} 
+                            open={openTransactionModal} 
+                            setOpenModal={handleTransactionModal} />
+                    }
                 </View>
             </ViewContainer>
         </Container>

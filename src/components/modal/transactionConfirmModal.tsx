@@ -8,11 +8,13 @@ import { WalletNameValidationCheck } from "../../util/validationCheck";
 import InputSetVertical from "../input/inputSetVertical";
 import Button from "../button/button";
 import { convertCurrent, convertNumber } from "@/util/common";
+import { getPasswordViaBioAuth, getUseBioAuth, getWallet } from "@/util/wallet";
+import { confirmViaBioAuth } from "@/util/bioAuth";
 
 interface Props {
     title: string,
     walletName: string;
-    amount?: number;
+    amount: number;
     open: boolean;
     setOpenModal: Function;
     transactionHandler: Function; 
@@ -26,6 +28,7 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
 
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
+    const [useBio, setUseBio] = useState(false);
 
     const handleInputChange = async(val:string) => {
         setPassword(val);
@@ -52,11 +55,28 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
         }
     }
 
-    const handleTransaction = () => {
+    const handleTransaction = async() => {
         if(active === false) return;
+
+        let passwordFromBio = '';
+        if(useBio){
+            const auth = await confirmViaBioAuth();
+            if(auth){
+                await getPasswordViaBioAuth().then(res => {
+                    passwordFromBio = res;
+                }).catch(error => console.log(error));
+            } else {
+                return;
+            }
+        }
+        
+        const result = useBio? passwordFromBio : password;
+        
+        transactionHandler && transactionHandler(result);
         handleModal(false);
-        transactionHandler && transactionHandler();
     }
+
+
 
     const handleModal = (open:boolean) => {
         setOpenModal && setOpenModal(open);
@@ -68,6 +88,16 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
             setActive(false);
         }
     }, [open])
+
+
+    useEffect(() => {
+        const getUseBioAuthState = async() => {
+            const result = await getUseBioAuth();
+            setActive(result);
+            setUseBio(result);
+        }
+        getUseBioAuthState();
+    }, []);
 
     return (
         <CustomModal
@@ -88,6 +118,7 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
                         </View>
                     </View>
                     <View style={styles.modalPWBox}>
+                        {!useBio &&
                         <InputSetVertical
                             title="Password"
                             message=""
@@ -95,11 +126,12 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
                             secure={true}
                             placeholder="Muse be at least 10 characters"
                             onChangeEvent={handleInputChange}/>
+                        }
+                        <Button
+                            title={signMoalText.confirmTitle}
+                            active={active}
+                            onPressEvent={handleTransaction}/>
                     </View>
-                    <Button
-                        title={signMoalText.confirmTitle}
-                        active={active}
-                        onPressEvent={handleTransaction}/>
                 </View>
         </CustomModal>
     )
