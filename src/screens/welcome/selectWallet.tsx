@@ -11,7 +11,7 @@ import Button from "../../components/button/button";
 import { getAdrFromMnemonic } from "@/util/firma";
 import CustomModal from "../../components/modal/customModal";
 import ModalItems from "../../components/modal/modalItems";
-import { getWalletList, setWalletWithAutoLogin } from "@/util/wallet";
+import { getUseBioAuth, getWalletList, setBioAuth, setPasswordViaBioAuth, setWalletWithAutoLogin } from "@/util/wallet";
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { DownArrow } from "@/components/icon/icon";
@@ -30,6 +30,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
     const [openModal, setOpenModal] = useState(false);
     const [selectedWallet, setSelectedWallet] = useState('');
     const [pwValidation, setPwValidation] = useState(false);
+    const [password, setPassword] = useState('');
     const [walletInfo, setWalletInfo] = useState('');
 
     const passwordText = {
@@ -61,6 +62,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
     }
 
     const onChangePassword = (value: string) => {
+        setPassword(value);
         PasswordCheck(value);
     }
 
@@ -95,11 +97,13 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
         }).catch(error => console.log('error : ' + error));
 
         await setWalletWithAutoLogin(JSON.stringify({
-            walletName: selectedWallet,
+            name: selectedWallet,
             address: adr,
         }));
 
-        navigation.reset({routes: [{name: 'Home', params: {address: adr, walletName: selectedWallet} }]});
+        setBioAuth(password);
+
+        navigation.reset({routes: [{name: 'Home'}]});
     }
 
     useEffect(() => {

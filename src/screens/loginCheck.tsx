@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 import { getWalletWithAutoLogin } from "@/util/wallet";
-import SplashScreen from "react-native-splash-screen";
 import Progress from "@/components/parts/progress";
+import { AppContext } from "@/util/context";
+import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -15,10 +16,10 @@ interface LoginCheckScreenProps {
 }
 
 const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props) => {
+    const { dispatchEvent, wallet } = useContext(AppContext);
     const {navigation} = props;
 
     const [loading, setLoading] = useState(false);
-    const [wallet, setWallet]:Array<any> = useState(null);
 
     useEffect(() => {
         const getWalletForAutoLogin = async() => {
@@ -26,9 +27,9 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
             .then((res) => { 
                 if(res !== ""){
                     const result = JSON.parse(res);
-                    setWallet({
+                    dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
                         address: result.address,
-                        walletName: result.walletName,
+                        name: result.name,
                     })
                 }
                 setLoading(true);
@@ -41,11 +42,10 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
     useEffect(() => {
         if(loading){
             if(wallet){
-                navigation.reset({routes: [{name: Screens.Home, params: {address: wallet.address, walletName: wallet.walletName}}]});
+                navigation.reset({routes: [{name: Screens.Home}]});
             } else {
                 navigation.reset({routes: [{name: Screens.Welcome}]});
             }
-            SplashScreen.hide();
         }
     }, [loading]);
     

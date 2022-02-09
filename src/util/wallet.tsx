@@ -56,6 +56,8 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
 }
 
 export const getWallet = async(name:string, password:string) => {
+    console.log(name, password);
+    
     const walletKey:string = keyEncrypt(name, password);
     let result;
     await getChain(name).then(res => {
@@ -111,6 +113,13 @@ export const getUseBioAuth = async() => {
     })
     
     return result;
+}
+
+export const setBioAuth = async(password:string) => {
+    const result = await getUseBioAuth();
+    if(result){
+        await setPasswordViaBioAuth(password);
+    }
 }
 
 export const getPasswordViaBioAuth = async() => {

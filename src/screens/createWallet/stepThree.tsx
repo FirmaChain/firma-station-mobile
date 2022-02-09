@@ -1,14 +1,15 @@
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Button from "@/components/button/button";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { getAdrFromMnemonic } from "@/util/firma";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import MnemonicQuiz from "@/organims/createWallet/stepThree/mnemonicQuiz";
 import { BgColor } from "@/constants/theme";
-import { setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
+import { setBioAuth, setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
+import { AppContext } from "@/util/context";
+import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
 type CreateStepThreeScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -22,18 +23,29 @@ interface CreateStepThreeScreenProps {
 }
 
 const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps> = (props) => {
-    // const {navigation} = props;
     const {navigation, route} = props;
     const {params} = route;
     const {wallet} = params;
+
+    const {dispatchEvent} = useContext(AppContext);
 
     const [confirm, setConfirm] = useState(false);
     
     const onCompleteCreateWallet = async() => {
         setConfirm(false);
         const address = await setNewWallet(wallet.name, wallet.password, wallet.mnemonic);
+        await setWalletWithAutoLogin(JSON.stringify({
+            name: wallet.name,
+            address: address,
+        }));
 
-        navigation.reset({routes: [{name: 'Home', params: {address: address, walletName: wallet.name} }]});
+        setBioAuth(wallet.password);
+
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
+            name: wallet.name,
+            address: address,
+        });
+        navigation.reset({routes: [{name: 'Home'}]});
     }
 
     const handleBack = () => {

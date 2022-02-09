@@ -1,6 +1,6 @@
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { getWalletWithAutoLogin, setNewWallet } from "@/util/wallet";
+import { getWalletWithAutoLogin, setBioAuth, setNewWallet } from "@/util/wallet";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -140,6 +140,8 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
                 setIsModalOpen(true);
             })
             .catch(error => console.log(error))
+        
+        setBioAuth(newPW);
     }
 
     const handleModalOpen = (open:boolean) => {

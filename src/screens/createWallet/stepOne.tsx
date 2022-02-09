@@ -1,15 +1,18 @@
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
-import { Wallet, createNewWallet, getAdrFromMnemonic } from "@/util/firma";
+import { Wallet, createNewWallet } from "@/util/firma";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
-import { setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
+import { setBioAuth, setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
+import Progress from "@/components/parts/progress";
+import { AppContext } from "@/util/context";
+import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
 type CreateStepOneScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
@@ -26,6 +29,8 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
     const {navigation, route} = props;
     const {params} = route;
     const {wallet = null} = params;
+
+    const {dispatchEvent} = useContext(AppContext);
 
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
@@ -92,17 +97,26 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
                 mnemonic: result?.mnemonic,
                 privatekey: result?.privateKey,
             }
-
             navigation.navigate(Screens.CreateStepTwo, {wallet: wallet});
         } catch (error) {
-            
         }
     }
 
     const onCompleteRecoverWallet = async() => {
         const address = await setNewWallet(walletName, password, wallet.mnemonic);
+        await setWalletWithAutoLogin(JSON.stringify({
+            name: walletName,
+            address: address,
+        }));
 
-        navigation.reset({routes: [{name: 'Home', params: {address: address, walletName: walletName} }]});
+        setBioAuth(password);
+
+        dispatchEvent &&dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
+            name: walletName,
+            address: address,
+        });
+
+        navigation.reset({routes: [{name: 'Home'}]});
     }
 
     const handleBack = () => {
@@ -110,6 +124,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
     }
 
     return (
+        <>
         <Container
             title={wallet? "Recover Wallet" : "New Wallet"}
             step={wallet? 0 : 1}
@@ -147,8 +162,8 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
                     </View>
                 </View>
             </ViewContainer>
-
         </Container>
+        </>
     )
 }
 
