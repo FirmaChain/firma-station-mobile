@@ -1,31 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
+import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
 import CustomModal from "../../../components/modal/customModal";
-import ModalItems from "../../../components/modal/modalItems";
+import { StakeInfo } from "@/hooks/staking/hooks";
 
 interface Props {
-    list: Array<any>;
+    list: Array<StakeInfo>;
     open: boolean;
     setOpenModal: Function;
     setValue: Function;
 }
 
 const ValidatorSelectModal = ({list, open, setOpenModal, setValue}:Props) => {
-    const [selected, setSelected] = useState(-1);
+    const [selected, setSelected] = useState('');
 
     const handleOpenModal = (open:boolean) => {
         setOpenModal && setOpenModal(open);
     }
 
-    const handleSelectWallet = (index:number) => {
-        setValue(index);
-        setSelected(index);
+    const handleSelectWallet = (address:string) => {
+        setValue(address);
+        setSelected(address);
         handleOpenModal(false);
     }
 
     return (
         <CustomModal visible={open} handleOpen={handleOpenModal}>
-            <ModalItems initVal={selected} data={list} onPressEvent={handleSelectWallet}/>
+            <ModalItemsForValidator initVal={selected} data={list} onPressEvent={handleSelectWallet}/>
         </CustomModal>
     )
 }

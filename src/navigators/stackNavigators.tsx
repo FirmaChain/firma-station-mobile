@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator, HeaderStyleInterpolators, TransitionSpecs } from "@react-navigation/stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import { Screens, StackParamList } from "./appRoutes";
 
 import WelcomeScreen from '../screens/welcome/welcome';
@@ -139,7 +139,6 @@ const StackNavigator: React.FunctionComponent = () => {
                     name={Screens.Delegate}
                     component={DelegateScreen} />
             </Stack.Group>
-
 
             <Stack.Group>
                 <Stack.Screen

@@ -17,7 +17,7 @@ import { PasswordValidationCheck } from "../../util/validationCheck";
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;
 
 export type ChangePasswordParams = {
-    walletName?: string;
+    walletName: string;
 }
 
 interface ChangePasswordProps {
@@ -29,7 +29,6 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     const {navigation, route} = props;
     const {params} = route;
     const {walletName} = params;
-    const wallet = walletName?walletName:'';
 
     // 0: need to password confirm
     // 1: changed password
@@ -87,8 +86,8 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }
 
     const changeNewPassword = async() => {
-        const key:string = keyEncrypt(wallet, currentPW);
-        await getChain(wallet).then(res => {
+        const key:string = keyEncrypt(walletName, currentPW);
+        await getChain(walletName).then(res => {
             if(res){
                 let w = decrypt(res.password, key.toString());
                 if(w.length > 0) {
@@ -114,7 +113,7 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }, [mnemonic])
 
     const removeCurrentPassword = async() => {
-        await removeChain(wallet)
+        await removeChain(walletName)
             .then(res => console.log(res))
             .catch(error => console.log(error));
         
@@ -134,7 +133,7 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }
 
     const createNewPassword = async() => {
-        await setNewWallet(wallet, newPW, mnemonic)
+        await setNewWallet(walletName, newPW, mnemonic)
             .then(res => {
                 console.log(res);
                 setStatus(1);

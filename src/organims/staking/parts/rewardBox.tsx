@@ -41,7 +41,7 @@ const RewardBox = ({fromVD, reward, transactionHandler}:Props) => {
                 size={125}
                 color={ButtonPointLightColor}
                 onPressEvent={() => handleWithdraw(true)}/>
-            <TransactionConfirmModal transactionHandler={transactionHandler} title={fromVD? "Withdraw" : "Withdraw All"} walletName={""} amount={reward} open={openModal} setOpenModal={handleWithdraw} />
+            <TransactionConfirmModal transactionHandler={transactionHandler} title={fromVD? "Withdraw" : "Withdraw All"} amount={reward} open={openModal} setOpenModal={handleWithdraw} />
         </View>
     )
 }

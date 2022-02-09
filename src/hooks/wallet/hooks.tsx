@@ -16,30 +16,26 @@ export interface HistoryState {
 }
 
 export const useBalanceData = (address:string) => {
-    const [refresh, setRefresh] = useState(true);
-    const [barrier, setBarrier] = useState(false);
-
     const [balance, setBalance] = useState(0);
-
+    
     async function getBalance() {
+        if(address === '' || address === undefined) return;
         await getBalanceFromAdr(address).then(res => setBalance(convertNumber(res)));
-        setRefresh(false);
     }
 
     useEffect(() => {
-        if(barrier) return;
-
+        getBalance();
         const interval = setInterval(() => {
-            setBarrier(false);
-            clearInterval(interval);
+            getBalance();
         }, 5000);
 
-      getBalance();
-    }, [refresh]);
+        return() => {
+            clearInterval(interval);
+        }
+    }, []);
 
     return {
         balance,
-        setRefresh
     }
 }
 
@@ -47,7 +43,8 @@ export const useHistoryData = (address:string) => {
     const [historyList, setHistoryList] = useState<HistoryState>({
         list: [],
     });
-
+    if(address === '' || address === undefined) return {historyList};
+    
     const convertMsgType = (type:string) => {
         const value = type.replace("Msg","").split(".");
         const result = value.pop();

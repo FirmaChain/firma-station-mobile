@@ -35,9 +35,6 @@ export interface StakingValues {
 }
 
 export const useStakingData = (address:string) => {
-    const [refresh, setRefresh] = useState(true);
-    const [barrier, setBarrier] = useState(false);
-
     const [stakingState, setStakingState] = useState<StakingState>({
         available: 0,
         delegated: 0,
@@ -48,26 +45,23 @@ export const useStakingData = (address:string) => {
     });
 
     useEffect(() => {
-        if(barrier) return;
-
+        if(address === '' || address === undefined) return;
         const interval = setInterval(() => {
-            setBarrier(false);
-            clearInterval(interval);
+            getStaking(address).then((res:StakingState) => {
+                if(res) {
+                    setStakingState(res);
+                }
+            })
         }, 5000);
 
-
-        setBarrier(true);
-        getStaking(address).then((res:StakingState) => {
-            if(res) {
-                setStakingState(res);
-            }
-        })
-        setRefresh(false);
-    }, [refresh]);
+        return() => {
+            clearTimeout(interval);
+        }
+        
+    }, []);
 
     return { 
         stakingState: stakingState,
-        setRefresh: setRefresh,
     }
 }
 
@@ -194,7 +188,6 @@ export const useValidatorData = () => {
             });
         
             const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
-            // const validators = validatorsList;
         
             setValidatorsState((prevState) => ({
                 ...prevState,

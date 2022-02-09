@@ -8,6 +8,7 @@ import { getChain } from "../../util/secureKeyChain";
 import { BgColor, DisableColor, Lato, TextGrayColor } from "../../constants/theme";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { WALLET_LIST } from "@/constants/common";
+import SplashScreen from "react-native-splash-screen";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -43,6 +44,7 @@ const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = (props) => {
     }
 
     useEffect(() => {
+        SplashScreen.hide();
         isWalletExist();
         return () => {
             setWalletExist(false);

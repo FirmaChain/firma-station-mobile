@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "../../navigators/appRoutes";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 import StakingIcon from "react-native-vector-icons/AntDesign";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import TabContainer from "../../components/parts/containers/tabContainer";
 import WalletScreen from "./wallet/wallet";
 import StakingScreen from "./staking/staking";
@@ -15,36 +15,29 @@ import { ICON_DOCUMENT } from "@/constants/images";
 import { useBalanceData, useHistoryData } from "@/hooks/wallet/hooks";
 import { useStakingData, useValidatorData } from "@/hooks/staking/hooks";
 import { useGovernanceList } from "@/hooks/governance/hooks";
+import SplashScreen from "react-native-splash-screen";
+import { AppContext } from "@/util/context";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
-export type HomeParams = {
-    address: string;
-    walletName: string;
-}
-
-interface HomeScreenProps {
-    route: {params: HomeParams};
-    navigation: ScreenNavgationProps;
+interface Props {
+    route: {}
 }
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
-    const {navigation, route} = props;
-    const {params} = route;
-    const {address, walletName} = params;
+const HomeScreen: React.FunctionComponent<Props> = (props) => {
+    const navigation:ScreenNavgationProps = useNavigation();
+    const { wallet } = useContext(AppContext);
 
-    const { balance } = useBalanceData(address);
-    const { historyList } = useHistoryData(address);
-    const { stakingState } = useStakingData(address);
+    const { balance } = useBalanceData(wallet.address);
+    const { historyList } = useHistoryData(wallet.address);
+    const { stakingState } = useStakingData(wallet.address);
     const { validatorsState } = useValidatorData();
     const { governanceState } = useGovernanceList();
 
     const walletProps = {
         state:{
-            address, 
-            walletName,
             balance,
             historyList,
             stakingState,
@@ -53,8 +46,6 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
 
     const stakingProps = {
         state:{
-            address, 
-            walletName,
             stakingState,
             validatorsState,
         }
@@ -62,8 +53,6 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
 
     const governanceProps = {
         state: {
-            address, 
-            walletName,
             governanceState
         }
     }
@@ -71,7 +60,7 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
     const [title, setTitle] = useState('Wallet');
 
     const moveToSetting = () => {
-        navigation.navigate(Screens.Setting, {walletName: walletName});
+        navigation.navigate(Screens.Setting);
     }
 
     const moveToHistory = () => {
@@ -79,13 +68,17 @@ const HomeScreen: React.FunctionComponent<HomeScreenProps> = (props) => {
     }
 
     useEffect(() => {
-        const routeName = getFocusedRouteNameFromRoute(route);
+        const routeName = getFocusedRouteNameFromRoute(props.route);
         if(routeName === undefined){
             setTitle('Wallet');
         } else {
             setTitle(routeName);
         }
-    }, [getFocusedRouteNameFromRoute(route)]);
+    }, [getFocusedRouteNameFromRoute(props.route)]);
+
+    useEffect(() => {
+        SplashScreen.hide();
+    }, []);
 
     return (
         <TabContainer

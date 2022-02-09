@@ -17,7 +17,7 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
 export type ExportPrivateKeyParams = {
-    walletName?: string;
+    walletName: string;
 }
 
 interface ExportPrivateKeyProps {
@@ -29,7 +29,6 @@ const ExportPrivateKeyScreen: React.FunctionComponent<ExportPrivateKeyProps> = (
     const {navigation, route} = props;
     const {params} = route;
     const {walletName} = params;
-    const wallet = walletName?walletName:'';
 
     // 0: need to password confirm
     // 1: export privatekey
@@ -56,8 +55,8 @@ const ExportPrivateKeyScreen: React.FunctionComponent<ExportPrivateKeyProps> = (
     }
 
     const getMnemonicFromChain = async() => {
-        const key:string = keyEncrypt(wallet, password);
-        await getChain(wallet).then(res => {
+        const key:string = keyEncrypt(walletName, password);
+        await getChain(walletName).then(res => {
             if(res){
                 let w = decrypt(res.password, key.toString());
                 if(w.length > 0) {

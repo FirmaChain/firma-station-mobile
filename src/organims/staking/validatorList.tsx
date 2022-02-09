@@ -7,6 +7,7 @@ import { DownArrow } from "@/components/icon/icon";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
 import { StakeInfo } from "@/hooks/staking/hooks";
+import { convertPercentage } from "@/util/common";
 
 interface Props {
     validators: Array<any>;
@@ -58,7 +59,7 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
                             <DataSection title="Commission" data={vd.commission.toString() + '%'} />
                             <DataSection 
                                 title="APY/APR" 
-                                data={(vd.APY * 100).toFixed(2).toString() + '% / ' + (vd.APR * 100).toFixed(2).toString() + '%'} />
+                                data={convertPercentage(vd.APY) + '% / ' + convertPercentage(vd.APR) + '%'} />
                             <DataSection title="Uptime" data={vd.condition.toString() + '%'} />
                             <View style={{paddingBottom: 22}} />
                             {index < validators.length - 1 && <View style={styles.divider} />}

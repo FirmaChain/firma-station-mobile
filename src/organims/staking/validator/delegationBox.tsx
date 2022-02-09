@@ -7,6 +7,7 @@ import { ARROW_ACCORDION } from "@/constants/images";
 import { resizeFontSize } from "@/util/common";
 import { degree, LayoutAnim, TurnToOpposite, TurnToOriginal } from "@/util/animation";
 import { StakingValues } from "@/hooks/staking/hooks";
+import { TRANSACTION_TYPE } from "@/constants/common";
 
 interface Props {
     stakingState: StakingValues;
@@ -26,8 +27,9 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
         handleDelegate(type);
     }
 
-    const handleWithdraw = (open:boolean) => {
-        setOpenModal(open);
+    const handleWithdraw = (password:string) => {
+        setOpenModal(false);
+        transactionHandler(password);
     }
 
     const handleOpenAccordion = () => {
@@ -77,7 +79,7 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
                         title={"Withdraw"}
                         size={122}
                         color={DisableColor}
-                        onPressEvent={() => handleWithdraw(true)}/>
+                        onPressEvent={() => setOpenModal(true)}/>
                 </View>
             </View>
 
@@ -105,7 +107,7 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
                     <Animated.Image style={[styles.icon_arrow, {transform: [{rotate: degree(arrowDeg)}]}]} source={ARROW_ACCORDION} />
                 </TouchableOpacity>
             </View>
-            <TransactionConfirmModal transactionHandler={transactionHandler} title={"Withdraw"} walletName={""} amount={100} open={openModal} setOpenModal={handleWithdraw} />
+            <TransactionConfirmModal transactionHandler={transactionHandler} title={"Withdraw"} amount={stakingState.stakingReward} open={openModal} setOpenModal={handleWithdraw} />
         </View>
     )
 }

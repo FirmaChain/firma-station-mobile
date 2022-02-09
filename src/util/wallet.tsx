@@ -43,7 +43,7 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
     }).catch(error => console.log('error : ' + error));
 
     await setWalletWithAutoLogin(JSON.stringify({
-        walletName: name,
+        name: name,
         address: adr,
     }));
 

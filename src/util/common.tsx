@@ -40,8 +40,19 @@ export const convertTime = (time:string, fulltime:boolean, addTime?:boolean) => 
 
 export const convertPercentage = (value: string | number) => {
     let percent = Number(value) * 100;
-    if(percent > 1000) return  convertCurrent(make2DecimalPlace(percent / 1000)) + "K";
-    return  convertCurrent(make2DecimalPlace(Number(value) * 100));
+    
+    let result = convertCurrent(make2DecimalPlace(percent));
+    if (percent >= 1e3 && percent < 1e6) {
+        result = convertCurrent(make2DecimalPlace(percent / 1e3)) + "K";
+    } else if (percent >= 1e6 && percent < 1e9) {
+        result = convertCurrent(make2DecimalPlace(percent / 1e6)) + "M";
+    } else if (percent >= 1e9 && percent < 1e12) {
+        result = convertCurrent(make2DecimalPlace(percent / 1e9)) + "B";
+    } else if (percent >= 1e12) {
+        result = convertCurrent(make2DecimalPlace(percent / 1e12)) + "T";
+    }
+    
+    return  result;
 }
 
 export const resizeFontSize = (amount:number, reference:number, initSize:number) => {  
