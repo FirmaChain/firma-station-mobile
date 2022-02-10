@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -10,23 +10,18 @@ import TransactionConfirmModal from "@/components/modal/transactionConfirmModal"
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 import { TRANSACTION_TYPE } from "@/constants/common";
+import { AppContext } from "@/util/context";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
-export type SendParams = {
-    walletName: string;
-    address: string;
-}
-
 interface Props {
-    route: {params: SendParams};
     navigation: ScreenNavgationProps;
 }
 
 const SendScreen: React.FunctionComponent<Props> = (props) => {
-    const {navigation, route} = props;
-    const {params} = route;
-    const {walletName, address} = params;
+    const {navigation} = props;
+
+    const {wallet} = useContext(AppContext);
 
     const [targetAddress, setTargetAddress] = useState('');
     const [amount, setAmount] = useState(0);   
@@ -39,7 +34,6 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
 
         const transactionState = {
             type: TRANSACTION_TYPE["SEND"],
-            walletName: walletName,
             password: password,
             targetAddress : targetAddress,
             amount: amount,
@@ -68,20 +62,19 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
                     <View>
-                        <WalletInfo walletName={walletName} address={address} />
+                        <WalletInfo address={wallet.address} />
                         <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} />
                     </View>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
                             title="Send"
-                            active={address !== '' && amount > 0}
+                            active={wallet.address !== '' && amount > 0}
                             onPressEvent={handleSend}/>
                     </View>
                     {openTransactionModal && 
                         <TransactionConfirmModal 
                             transactionHandler={handleTransaction} 
                             title={"Send"} 
-                            walletName={walletName} 
                             amount={amount} 
                             open={openTransactionModal} 
                             setOpenModal={handleTransactionModal} />

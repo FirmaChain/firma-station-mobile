@@ -9,7 +9,6 @@ interface Props {
 }
 
 const SendInputBox = ({address, amount, memo}:Props) => {
-
     const handleAddress = (value:string) => {
         address(value);
     }
@@ -21,6 +20,7 @@ const SendInputBox = ({address, amount, memo}:Props) => {
     const handleMemo = (value:string) => {
         memo(value);
     }
+
     return (
         <View>
             <InputSetVertical

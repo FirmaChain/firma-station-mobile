@@ -69,7 +69,7 @@ const StackNavigator: React.FunctionComponent = () => {
                 
                 <Stack.Screen
                     options={{headerShown: false}}
-                    name={Screens.Hisory}
+                    name={Screens.History}
                     component={HistoryScreen} />
 
                 <Stack.Screen

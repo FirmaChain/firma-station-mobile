@@ -7,7 +7,6 @@ import { ValidatorParams } from "../screens/home/staking/validator";
 import { ProposalParams } from "../screens/home/governance/proposal";
 import { DelegateParams } from "../screens/home/staking/delegate";
 import { DepositParams } from "@/screens/home/governance/deposit";
-import { HistoryParams } from '@/screens/home/history/history';
 import { TransactionParams } from '@/screens/transaction/transaction';
 
 export enum Screens {
@@ -22,7 +21,7 @@ export enum Screens {
     RecoverWallet = 'RecoverWallet',
 
     Home = 'Home',
-    Hisory = 'History',
+    History = 'History',
     Transaction = 'Transaction',
     
     Wallet = 'Wallet',
@@ -53,7 +52,7 @@ export type StackParamList = {
     RecoverWallet: undefined;
 
     Home: undefined;
-    History: HistoryParams;
+    History: undefined;
     Transaction: TransactionParams;
 
     Wallet: undefined;

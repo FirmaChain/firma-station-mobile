@@ -1,18 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "../../constants/theme";
 
 const InputSetVertical: React.FC<{
     title: string;
     message?: string;
-    initVal?: string;
     numberOnly?: boolean;
     validation?: boolean;
     placeholder: string;
     secure?: boolean;
     onChangeEvent: Function;
-}> = ({title, message, initVal = '', numberOnly = false, validation, placeholder, secure = false, onChangeEvent}) => {
-    const [val, setVal] = useState(initVal);
+}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, onChangeEvent}) => {
+    const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 
     const handleInputChange = (value: string) => {

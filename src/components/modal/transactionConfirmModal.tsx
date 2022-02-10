@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CustomModal from "./customModal";
 import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
@@ -10,21 +10,23 @@ import Button from "../button/button";
 import { convertCurrent, convertNumber } from "@/util/common";
 import { getPasswordViaBioAuth, getUseBioAuth, getWallet } from "@/util/wallet";
 import { confirmViaBioAuth } from "@/util/bioAuth";
+import { AppContext } from "@/util/context";
 
 interface Props {
     title: string,
-    walletName: string;
     amount: number;
     open: boolean;
     setOpenModal: Function;
     transactionHandler: Function; 
 }
 
-const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenModal, transactionHandler}: Props) => {
+const TransactionConfirmModal = ({title, amount = 0, open, setOpenModal, transactionHandler}: Props) => {
     const signMoalText = {
         title: title,
         confirmTitle: 'Confirm'
     }
+
+    const {wallet} = useContext(AppContext);
 
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
@@ -34,11 +36,11 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
         setPassword(val);
 
         if(val.length >= 10){
-            let nameCheck = await WalletNameValidationCheck(walletName);
+            let nameCheck = await WalletNameValidationCheck(wallet.name);
         
             if(nameCheck){
-                const key:string = keyEncrypt(walletName, val);
-                await getChain(walletName).then(res => {
+                const key:string = keyEncrypt(wallet.name, val);
+                await getChain(wallet.name).then(res => {
                     if(res){
                         let w = decrypt(res.password, key);
                         if(w.length > 0) {
@@ -76,28 +78,24 @@ const TransactionConfirmModal = ({title, walletName, amount = 0, open, setOpenMo
         handleModal(false);
     }
 
-
-
     const handleModal = (open:boolean) => {
         setOpenModal && setOpenModal(open);
     }
 
+    const getUseBioAuthState = async() => {
+        const result = await getUseBioAuth();
+        setActive(result);
+        setUseBio(result);
+    }
+
     useEffect(() => {
-        if(open === false){
+        if(open){
+            getUseBioAuthState();
+        } else {
             setPassword('');
             setActive(false);
         }
     }, [open])
-
-
-    useEffect(() => {
-        const getUseBioAuthState = async() => {
-            const result = await getUseBioAuth();
-            setActive(result);
-            setUseBio(result);
-        }
-        getUseBioAuthState();
-    }, []);
 
     return (
         <CustomModal

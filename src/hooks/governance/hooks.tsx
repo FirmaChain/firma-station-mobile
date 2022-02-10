@@ -1,7 +1,5 @@
 import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
-import { PROPOSAL_STATUS_DEPOSIT_PERIOD } from "@/constants/common";
-import { useEffect, useState } from "react";
-import { GOVERNANCE_LIST, PROPOSAL_DETAIL } from "../../constants/dummy";
+import { useState } from "react";
 import { convertNumber } from "../../util/common";
 
 export interface GovernanceState {

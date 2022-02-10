@@ -5,7 +5,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 import { getWalletWithAutoLogin } from "@/util/wallet";
-import Progress from "@/components/parts/progress";
 import { AppContext } from "@/util/context";
 import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
@@ -19,7 +18,7 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
     const { dispatchEvent, wallet } = useContext(AppContext);
     const {navigation} = props;
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getWalletForAutoLogin = async() => {
@@ -32,7 +31,7 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
                         name: result.name,
                     })
                 }
-                setLoading(true);
+                setLoading(false);
             })
             .catch(error => console.log(error))
         }
@@ -40,20 +39,21 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
     }, []);
 
     useEffect(() => {
-        if(loading){
+        if(!loading){
             if(wallet){
                 navigation.reset({routes: [{name: Screens.Home}]});
             } else {
                 navigation.reset({routes: [{name: Screens.Welcome}]});
+                dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], loading);
             }
+        } else {
+            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], loading);
         }
     }, [loading]);
     
-
     return (
         <ViewContainer bgColor={BgColor}>
             <View style={styles.container}>
-                <Progress />
             </View>
         </ViewContainer>
     )

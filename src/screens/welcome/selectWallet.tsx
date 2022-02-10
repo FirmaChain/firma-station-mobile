@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Screens, StackParamList } from "../../navigators/appRoutes";
@@ -15,6 +15,8 @@ import { getUseBioAuth, getWalletList, setBioAuth, setPasswordViaBioAuth, setWal
 import Container from "../../components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { DownArrow } from "@/components/icon/icon";
+import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
+import { AppContext } from "@/util/context";
 
 type SelectWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -24,6 +26,8 @@ interface SelectWalletScreenProps {
 
 const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (props) => {
     const {navigation} = props;
+
+    const {dispatchEvent} = useContext(AppContext);
 
     const [items, setItems]:Array<any> = useState([]);
     const [selected, setSelected] = useState(-1);
@@ -100,6 +104,11 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
             name: selectedWallet,
             address: adr,
         }));
+        
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
+            name: selectedWallet,
+            address: adr,
+        });
 
         setBioAuth(password);
 

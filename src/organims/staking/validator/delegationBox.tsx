@@ -29,7 +29,9 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
 
     const handleWithdraw = (password:string) => {
         setOpenModal(false);
-        transactionHandler(password);
+        if(password){
+            transactionHandler(password);
+        }
     }
 
     const handleOpenAccordion = () => {

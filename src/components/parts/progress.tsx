@@ -10,27 +10,18 @@ const Progress = () => {
     const fadeAnim_3 = useRef(new Animated.Value(0)).current;
 
     const animated = [ fadeAnim_1, fadeAnim_2, fadeAnim_3 ];
-
-    const createTimerText = (time:number) => {
-        let min:string|number = parseInt((time/60).toString());
-        let sec:string|number = time%60;
-
-        if(min < 10) min = "0" + min.toString();
-        if(sec < 10) sec = "0" + sec.toString();
-
-        return min + " : " + sec;
-    }
     
     useEffect(() => {
         let index = -1;
         let inverse = true;
         const timer = setInterval(() => {
-            if(index <= -1 || index >= 3) inverse = !inverse;
             if(inverse && index < 3) index = index + 1;
             if(!inverse && index >= 0) index = index - 1;
 
             if(inverse && (index >= 0  && index < 3)) fadeIn(animated[index]);
             if(!inverse && (index >= 0 && index < 3)) fadeOut(animated[index]);
+
+            if(index <= -1 || index >= 3) inverse = !inverse;
         }, 300);
 
         return () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "../../navigators/appRoutes";
@@ -13,23 +13,14 @@ import { LayoutAnim } from "@/util/animation";
 import { WALLET_LIST } from "@/constants/common";
 import DeleteWallet from "../../organims/setting/modal/deleteWallet";
 import BioAuthOnModal from "@/organims/setting/modal/bioAuthOnModal";
+import { AppContext } from "@/util/context";
+import { useNavigation } from "@react-navigation/native";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
-export type SettingParams = {
-    walletName?: string;
-}
-
-interface SettingProps {
-    route: {params: SettingParams};
-    navigation: ScreenNavgationProps;
-}
-
-const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
-    const {navigation, route} = props;
-    const {params} = route;
-    const {walletName} = params;
-    const wallet = walletName?walletName:'';
+const SettingScreen: React.FunctionComponent = () => {
+    const navigation:ScreenNavgationProps = useNavigation();
+    const {wallet} = useContext(AppContext);
 
     const [openDelModal, setOpenDelModal] = useState(false);
     const [openBioModal, setOpenBioModal] = useState(false);
@@ -53,10 +44,10 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
     const handleMenus = (path:string) => {
         switch (path) {
             case "ChangePW":
-                navigation.navigate(Screens.ChangePassword, {walletName: walletName});
+                navigation.navigate(Screens.ChangePassword, {walletName: wallet.name});
                 break;
             case "ExportPK":
-                navigation.navigate(Screens.ExportPrivateKey, {walletName: walletName});
+                navigation.navigate(Screens.ExportPrivateKey, {walletName: wallet.name});
                 break;
             default:
                 break;
@@ -90,7 +81,7 @@ const SettingScreen: React.FunctionComponent<SettingProps> = (props) => {
             let arr = res !== undefined? res : [];
             
             if(arr.length > 1){
-                arr.filter(item => item !== walletName).map((item, index) => {
+                arr.filter(item => item !== wallet.name).map((item, index) => {
                     newList += item + "/";
                 });
                 newList = newList.slice(0, -1);
