@@ -7,13 +7,16 @@ import InputSetVertical from "@/components/input/inputSetVertical";
 import Button from "@/components/button/button";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
-import Icon from "react-native-vector-icons/AntDesign";
 import ValidatorSelectModal from "@/organims/staking/delegate/validatorSelectModal";
+import WalletInfo from "@/organims/wallet/send/walletInfo";
+import { KeyValue, TRANSACTION_TYPE } from "@/constants/common";
+import { DownArrow } from "@/components/icon/icon";
+import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
 export type DelegateParams = {
-    type: string;
+    state: any;
 }
 
 interface DelegateScreenProps {
@@ -24,23 +27,30 @@ interface DelegateScreenProps {
 const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => {
     const {navigation, route} = props;
     const {params} = route;
-    const {type} = params;
+    const {state} = params;
 
     const [amount, setAmount] = useState(0);
     const [status, setStatus] = useState(0);
     const [openSignModal, setOpenSignModal] = useState(false);
 
-    const [selectVD, setSelectVD] = useState("");
+    const [selectOperatorAddressSrc, setSelectOperatorAddressSrc] = useState("");
+    const [selectValidatorMoniker, setSelectValidatorMoniker] = useState("");
+    const [selectDelegationAmount, setSelectDelegationAmount] = useState(0);
     const [openSelectModal, setOpenSelectModal] = useState(false);
 
-    const dummyValList = [
-        "VALIDATOR 1",
-        "VALIDATOR 2",
-        "VALIDATOR 3",
-    ]
+    const handleTransaction = (password:string) => {
+        let transactionState:KeyValue = {
+            type: TRANSACTION_TYPE[state.type.toUpperCase()],
+            password: password,
+            operatorAddressDst : state.operatorAddress,
+            amount: amount,
+        }
 
-    const handleTransaction = () => {
-        navigation.navigate(Screens.Transaction);
+        if(state.type === "Redelegate"){
+            transactionState['operatorAddressSrc'] = selectOperatorAddressSrc;
+        }
+
+        navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
     const handleAmount = (value:number) => {
@@ -53,7 +63,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     }
 
     const ClassifyByType = () => {
-        switch (type) {
+        switch (state.type) {
             case "Delegate":
             case "Undelegate":
                 return delegate();
@@ -65,10 +75,6 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const delegate = () => {
         return (
             <View style={styles.conatainer}>
-                <View style={[styles.boxH, {paddingVertical: 20}]}>
-                    <Text>Available</Text>
-                    <Text>123.00 FCT</Text>
-                </View>
                 <InputSetVertical
                     title="Amount"
                     numberOnly={true}
@@ -82,18 +88,16 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const redelegate = () => {
         return (
             <View>
-                <View style={styles.conatainer}>
-                    <View style={[styles.boxH, {paddingVertical: 20}]}>
-                        <View style={styles.selectBox}>
-                            <Text style={styles.title}>Source Validator</Text>
-                            <TouchableOpacity style={styles.select} onPress={()=>handleSelectModal(true)}>
-                                <Text style={[styles.selectTitle]}>{selectVD === ""? "Select..." : selectVD}</Text>
-                                <Icon name="caretdown" size={15} />
-                            </TouchableOpacity>
-                        </View>
+                <View style={[styles.conatainer, {marginBottom: 13}]}>
+                    <View style={styles.selectBox}>
+                        <Text style={styles.title}>Source Validator</Text>
+                        <TouchableOpacity style={styles.select} onPress={() => handleSelectModal(true)}>
+                            <Text style={[styles.selectTitle, selectOperatorAddressSrc === "" &&{color: InputPlaceholderColor}]}>{selectOperatorAddressSrc === ""? "Select..." : selectValidatorMoniker}</Text>
+                            <DownArrow size={10} color={InputPlaceholderColor} />
+                        </TouchableOpacity>
                     </View>
                 </View>
-                {selectVD !== "" && delegate()}
+                {selectOperatorAddressSrc !== "" && delegate()}
             </View>
         )
     }
@@ -108,8 +112,11 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
         if(open === false) setStatus(status - 1);
     }
 
-    const handleSelectValidator = (value:number) => {
-        setSelectVD(dummyValList[value]);
+    const handleSelectValidator = (address:string) => {
+        setSelectOperatorAddressSrc(address);
+        const selectedValidator = state.delegations.find((item:any) => item.validatorAddress === address);
+        setSelectValidatorMoniker(selectedValidator.moniker);
+        setSelectDelegationAmount(selectedValidator.amount);
     }
 
     const handleSelectModal = (open:boolean) => {
@@ -120,15 +127,31 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
         setOpenSignModal(status > 0);
     }, [status])
 
+    useEffect(() => {
+        if(state){
+            if(state.type === "Undelegate"){
+                const amount = state.delegations.find((item:any) => item.validatorAddress === state.operatorAddress).amount;
+                setSelectDelegationAmount(amount);
+            }
+        }
+    }, [state.type]);
+
     return (
         <Container
-            title={type}
+            title={state.type}
             backEvent={handleBack}>
                 <ViewContainer>
                     <>
+                    <View style={{paddingHorizontal: 20}}>
+                        {state.type === "Delegate"?
+                        <WalletInfo address={state.address}/>
+                        :
+                        <WalletInfo available={Number(selectDelegationAmount)}/>
+                        }
+                    </View>
                     {ClassifyByType()}
-                    <TransactionConfirmModal transactionHandler={handleTransaction} title={type} walletName={""} amount={amount} open={openSignModal} setOpenModal={handleSignModal} />
-                    <ValidatorSelectModal list={dummyValList} open={openSelectModal} setOpenModal={handleSelectModal} setValue={handleSelectValidator}/> 
+                    <TransactionConfirmModal transactionHandler={handleTransaction} title={state.type} amount={amount} open={openSignModal} setOpenModal={handleSignModal} />
+                    <ValidatorSelectModal list={state.delegations.filter((item:any) => item.validatorAddress !== state.operatorAddress)} open={openSelectModal} setOpenModal={handleSelectModal} setValue={handleSelectValidator}/> 
                     <View style={styles.buttonBox}>
                         <Button
                             title={"Next"}
@@ -152,29 +175,29 @@ const styles = StyleSheet.create({
     buttonBox: {
         flex: 1,
         justifyContent: "flex-end",
+        paddingHorizontal: 20,
     },
-
     selectBox: {
         width: "100%",
     },
     title: {
-        fontSize:16,
+        fontFamily: Lato,
+        fontSize: 16,
+        color: TextGrayColor,
         marginBottom: 5,
     },
     select: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: 'space-between',
-        height: 50,
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        borderRadius: 8,
-        borderWidth: 1,
-        backgroundColor: '#fff',
+        padding: 12,
+        backgroundColor: InputBgColor,
         marginBottom: 5,
     },
     selectTitle: {
+        fontFamily: Lato,
         fontSize:14,
+        color: TextColor,
     },
 })
 

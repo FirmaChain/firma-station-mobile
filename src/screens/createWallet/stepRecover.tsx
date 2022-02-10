@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -10,6 +10,8 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import Button from "@/components/button/button";
 import { recoverFromMnemonic } from "@/util/firma";
 import Toast from "react-native-toast-message";
+import { AppContext } from "@/util/context";
+import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
 type StepRecoverScreenNavigationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
@@ -19,6 +21,7 @@ interface StepRecoverScreenProps {
 
 const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (props) => {
     const {navigation} = props;
+    const {dispatchEvent} = useContext(AppContext);
 
     const [focus, setFocus] = useState(false);
     const [activeRecover, setActiveRecover] = useState(false);
@@ -39,10 +42,13 @@ const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (prop
 
     const handleRecoverViaSeed = async() => {
         const wallet = await recoverFromMnemonic(mnemonic);
-        if(wallet === undefined) return Toast.show({
-            type: 'error',
-            text1: 'Check your mnemonic again.',
-          });
+        if(wallet === undefined){
+            return Toast.show({
+                type: 'error',
+                text1: 'Check your mnemonic again.',
+            });
+        }
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         navigation.navigate(Screens.CreateStepOne, {wallet: wallet});
     }
 

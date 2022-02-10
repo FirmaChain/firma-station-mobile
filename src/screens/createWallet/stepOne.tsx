@@ -94,6 +94,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
     }
 
     const onCreateWalletAndMoveToStepTwo = async() => {
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         try {
             const result = await createNewWallet();
             const wallet: Wallet = {
@@ -102,12 +103,15 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
                 mnemonic: result?.mnemonic,
                 privatekey: result?.privateKey,
             }
+
             navigation.navigate(Screens.CreateStepTwo, {wallet: wallet});
         } catch (error) {
+            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
         }
     }
 
     const onCompleteRecoverWallet = async() => {
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         const address = await setNewWallet(walletName, password, wallet.mnemonic);
         await setWalletWithAutoLogin(JSON.stringify({
             name: walletName,
@@ -115,7 +119,6 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
         }));
 
         setBioAuth(password);
-
         dispatchEvent &&dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
             name: walletName,
             address: address,

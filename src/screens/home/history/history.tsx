@@ -1,29 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Linking, Platform, StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { BgColor, BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { HistoryState } from "@/hooks/wallet/hooks";
+import { useHistoryData } from "@/hooks/wallet/hooks";
 import { convertTime } from "@/util/common";
 import { ForwardArrow } from "@/components/icon/icon";
+import { useNavigation } from "@react-navigation/native";
+import { AppContext } from "@/util/context";
 
-type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Hisory>;
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
-export type HistoryParams = {
-    historyData: HistoryState;
-}
+const HistoryScreen: React.FunctionComponent = () => {
+    const navigation:ScreenNavgationProps = useNavigation();
+    const { wallet } = useContext(AppContext);
 
-interface Props {
-    route: {params: HistoryParams};
-    navigation: ScreenNavgationProps;
-}
-
-const HistoryScreen: React.FunctionComponent<Props> = (props) => {
-    const {navigation, route} = props;
-    const {params} = route;
-    const {historyData} = params;
+    const { historyList } = useHistoryData(wallet.address);
 
     const [pagination, setPagination] = useState(10);
 
@@ -51,7 +45,7 @@ const HistoryScreen: React.FunctionComponent<Props> = (props) => {
                         }
                     }}>
                     <View style={styles.container}>
-                            {historyData !== undefined && historyData.list.map((value:any, index) => {
+                            {historyList !== undefined && historyList.list.map((value:any, index) => {
                                 if(index < pagination){
                                     return (
                                         <View key={index} style={styles.box}>

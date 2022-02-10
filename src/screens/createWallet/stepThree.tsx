@@ -32,6 +32,7 @@ const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps>
     const [confirm, setConfirm] = useState(false);
     
     const onCompleteCreateWallet = async() => {
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         setConfirm(false);
         const address = await setNewWallet(wallet.name, wallet.password, wallet.mnemonic);
         await setWalletWithAutoLogin(JSON.stringify({

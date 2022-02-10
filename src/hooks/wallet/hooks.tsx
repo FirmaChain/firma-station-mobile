@@ -11,8 +11,16 @@ export interface BalanceState {
     reward: number;
 }
 
-export interface HistoryState {
+export interface HistoryListState {
     list: Array<any>;
+}
+
+export interface HistoryState {
+    hash: any;
+    success: string;
+    type: string | undefined;
+    timestamp: any;
+    block: any;
 }
 
 export const useBalanceData = (address:string) => {
@@ -40,9 +48,11 @@ export const useBalanceData = (address:string) => {
 }
 
 export const useHistoryData = (address:string) => {
-    const [historyList, setHistoryList] = useState<HistoryState>({
+    const [historyList, setHistoryList] = useState<HistoryListState>({
         list: [],
     });
+    const [recentHistory, setRecentHistory] = useState<HistoryState>();
+
     if(address === '' || address === undefined) return {historyList};
     
     const convertMsgType = (type:string) => {
@@ -56,17 +66,21 @@ export const useHistoryData = (address:string) => {
         return "Failed"
     }
 
-    useHistoryByAddressQuery({
+    const {startPolling, stopPolling } = useHistoryByAddressQuery({
         address: `{${address}}`,
         onCompleted:(data) => {
-            const list = data.messagesByAddress.map((value:any) => {
-                return {
+            const list = data.messagesByAddress.map((value:any, index:number) => {
+                const result = {
                     hash: value.transaction.hash,
                     success: convertResult(value.transaction.success),
                     type: convertMsgType(value.transaction.messages[0]["@type"]),
                     timestamp: value.transaction.block.timestamp,
                     block: value.transaction.block.height,    
                 }
+
+                if(index === 0) setRecentHistory(result);
+
+                return result;
             })
             setHistoryList((prevState) => ({
                 ...prevState,
@@ -75,5 +89,14 @@ export const useHistoryData = (address:string) => {
         }
     });
 
-    return {historyList}
+    const handleHisotyPolling = (polling:boolean) => {
+        if(polling) return startPolling(3000);
+        return stopPolling();
+    }
+
+    return {
+        historyList, 
+        recentHistory,
+        handleHisotyPolling,
+    }
 }

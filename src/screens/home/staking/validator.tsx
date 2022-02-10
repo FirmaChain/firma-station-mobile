@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
@@ -6,18 +6,20 @@ import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, Te
 import AddressBox from "@/organims/staking/validator/addressBox";
 import PercentageBox from "@/organims/staking/validator/percentageBox";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { convertAmount, convertCurrent, convertPercentage, convertToFctNumber } from "@/util/common";
+import { convertAmount, convertPercentage, convertToFctNumber } from "@/util/common";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import DelegationBox from "@/organims/staking/validator/delegationBox";
-import { getStakingFromvalidator } from "@/util/firma";
+import { getStakingFromvalidator as getStakingFromValidator } from "@/util/firma";
 import { Person } from "@/components/icon/icon";
+import { StakeInfo, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
+import { CONTEXT_ACTIONS_TYPE, KeyValue, TRANSACTION_TYPE } from "@/constants/common";
+import { AppContext } from "@/util/context";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
 export type ValidatorParams = {
-    validator: any;
-    address: string;
-    walletName: string;
+    validatorAddress: string;
+    delegations: Array<StakeInfo>;
 }
 
 interface ValidatorScreenProps {
@@ -28,14 +30,10 @@ interface ValidatorScreenProps {
 const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) => {
     const {navigation, route} = props;
     const {params} = route;
-    const {validator, address, walletName} = params;
+    const {validatorAddress, delegations} = params;
 
-    const moniker = validator.validatorMoniker;
-    const description = validator.validatorDetail;
-    const website = validator.validatorWebsite;
-
-    const operatorAddress = validator.validatorAddress;
-    const accountAddress = validator.selfDelegateAddress;
+    const {wallet, dispatchEvent} = useContext(AppContext);
+    const {validatorState} = useValidatorDataFromAddress(validatorAddress);
 
     const [stakingState, setStakingState] = useState<any>({
         available: 0,
@@ -44,46 +42,25 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
         stakingReward: 0,
     });
 
-    const APR = convertPercentage(validator.APR);
-    const APY = convertPercentage(validator.APY);
-
-    const percentageData = [
-        {
-            row: [
-                {
-                    title: "Voting Power",
-                    data: validator.votingPowerPercent,
-                    amount: validator.votingPower,
-                },
-                {
-                    title: "Self-Delegation",
-                    data: validator.selfPercent,
-                    amount: convertToFctNumber(validator.self),
-                },
-            ]
-        },
-        {
-            row: [
-                {
-                    title: "Commission",
-                    data: validator.commission,
-                },
-                {
-                    title: "Uptime",
-                    data: validator.condition,
-                },
-            ]
-        }
-    ]
-
-    // const delegations = validator.delegations;
+    const [validator, setValidator]:Array<any> = useState(null);
 
     const handleDelegate = (type:string) => {
-        navigation.navigate(Screens.Delegate, {type:type});
+        let delegateState:KeyValue = {
+            type: type,
+            operatorAddress: validatorAddress,
+            delegations: delegations,
+        }
+
+        navigation.navigate(Screens.Delegate, {state: delegateState});
     }
 
-    const handleTransaction = () => {
-        navigation.navigate(Screens.Transaction);
+    const handleWithdraw = (password:string) => {
+        const transactionState = {
+            type: TRANSACTION_TYPE["WITHDRAW"],
+            password: password,
+            operatorAddress : validatorAddress,
+        }
+        navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
     const handleUrl = (url:string) => {
@@ -94,54 +71,103 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
         navigation.goBack();
     }
 
+    const handleDelegateState = async() => {
+        const state = await getStakingFromValidator(wallet.address, validatorAddress);
+
+        setStakingState({
+            available: convertAmount(state.available, false),
+            delegated: convertAmount(state.delegated, false),
+            undelegate: convertAmount(state.undelegate, false),
+            stakingReward: convertAmount(state.stakingReward, false),
+        });
+    }
+
     useEffect(() => {
-        async function handleDelegateState(){
-            const state = await getStakingFromvalidator(address, operatorAddress);
-            setStakingState({
-                available: convertAmount(state.available, false),
-                delegated: convertAmount(state.delegated, false),
-                undelegate: convertAmount(state.undelegate, false),
-                stakingReward: convertAmount(state.stakingReward, false),
-            });
-        }
-
         handleDelegateState();
-    }, [validator]);
-    
+        const interval = setInterval(() => {
+            handleDelegateState();
+        }, 5000);
 
+        return() => {
+            clearInterval(interval);
+        }
+    }, []);
+
+    useEffect(() => {
+        if(validatorState !== undefined){
+            setValidator({
+                avatar: validatorState.validatorAvatar,
+                moniker: validatorState.validatorMoniker,
+                description: validatorState.validatorDetail,
+                website: validatorState.validatorWebsite,
+
+                operatorAddress: validatorState.validatorAddress,
+                accountAddress: validatorState.selfDelegateAddress,
+
+                APR: convertPercentage(validatorState.APR),
+                APY: convertPercentage(validatorState.APY),
+                percentageData: [
+                    {row: [{
+                        title: "Voting Power",
+                        data: validatorState.votingPowerPercent,
+                        amount: validatorState.votingPower,
+                    },{
+                        title: "Self-Delegation",
+                        data: validatorState.selfPercent,
+                        amount: convertToFctNumber(validatorState.self),
+                    }]},
+                    {row: [{
+                        title: "Commission",
+                        data: validatorState.commission,
+                    },{
+                        title: "Uptime",
+                        data: validatorState.condition,
+                    }]}
+                ]
+            })
+
+            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        } else {
+            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        }
+    }, [validatorState])
+    
     return (
         <Container
             titleOn={false}
             bgColor={BoxColor}
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
-                    <ScrollView style={{backgroundColor: BoxColor}}>
-                        <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20,}]}>
-                            {validator.validatorAvatar?
-                            <Image style={styles.avatar} source={{uri: validator.validatorAvatar}}/>
-                            :
-                            <View style={styles.avatar}>
-                                <Person size={68} color={WhiteColor}/>
-                            </View>
-                            }
-                            <View style={[styles.boxV, {flex: 1}]}>
-                                <Text style={styles.moniker}>{moniker}</Text>
-                                <Text style={styles.desc}>{description}</Text>
-                                {website &&
-                                <TouchableOpacity onPress={()=>handleUrl(website)}>
-                                    <Text style={styles.url}>{website}</Text>
-                                </TouchableOpacity>
+                    <>
+                    {validator && 
+                        <ScrollView style={{backgroundColor: BoxColor}}>
+                            <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20,}]}>
+                                {validator.avatar?
+                                <Image style={styles.avatar} source={{uri: validator.avatar}}/>
+                                :
+                                <View style={styles.avatar}>
+                                    <Person size={68} color={WhiteColor}/>
+                                </View>
                                 }
+                                <View style={[styles.boxV, {flex: 1}]}>
+                                    <Text style={styles.moniker}>{validator.moniker}</Text>
+                                    <Text style={styles.desc}>{validator.description}</Text>
+                                    {validator.website &&
+                                    <TouchableOpacity onPress={()=>handleUrl(validator.website)}>
+                                        <Text style={styles.url}>{validator.website}</Text>
+                                    </TouchableOpacity>
+                                    }
+                                </View>
                             </View>
-                        </View>
-
-                        <DelegationBox stakingState={stakingState} handleDelegate={handleDelegate} transactionHandler={handleTransaction}/>
-                        <View style={styles.infoBox}>
-                            <PercentageBox APR={APR} APY={APY} dataArr={percentageData} />
-                            <AddressBox title={"Operator address"} path={"validators"} address={operatorAddress} />
-                            <AddressBox title={"Account address"} path={"accounts"} address={accountAddress} />
-                        </View>
-                    </ScrollView>
+                            <DelegationBox stakingState={stakingState} handleDelegate={handleDelegate} transactionHandler={handleWithdraw}/>
+                            <View style={styles.infoBox}>
+                                <PercentageBox APR={validator.APR} APY={validator.APY} dataArr={validator.percentageData} />
+                                <AddressBox title={"Operator address"} path={"validators"} address={validator.operatorAddress} />
+                                <AddressBox title={"Account address"} path={"accounts"} address={validator.accountAddress} />
+                            </View>
+                        </ScrollView>
+                    }
+                    </>
                 </ViewContainer>
         </Container>
     )
@@ -197,4 +223,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default React.memo(ValidatorScreen);
+export default ValidatorScreen;

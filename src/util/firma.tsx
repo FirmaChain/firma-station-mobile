@@ -128,6 +128,29 @@ export const delegate = async(mnemonic:string, address:string, amount:number) =>
     return result;
 }
 
+export const redelegate = async(mnemonic:string, srcAddress:string, dstAddress:string, amount:number) => {
+    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+    let result = await firmaSDK.Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
+        fee: 30000,
+        gas: 30000,
+      });
+    return result;
+}
+
+export const undelegate = async(mnemonic:string, address:string, amount:number) => {
+    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+    let result = await firmaSDK.Staking.undelegate(wallet, address, amount);
+
+    return result;
+}
+
+export const withdrawRewards = async (mnemonic:string, address:string) => {
+    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+    const result = await firmaSDK.Distribution.withdrawAllRewards(wallet, address);
+
+    return result;
+};
+
 export const getStaking = async(address:string) => {
     const balance = await getBalanceFromAdr(address);
     const available = convertToFctNumber(convertNumber(balance));

@@ -5,11 +5,7 @@ import { fadeIn, fadeOut } from "@/util/animation";
 import { TRANSACTION_PROCESS_TEXT } from "@/constants/common";
 import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 
-interface Props {
-    transaction?: boolean;
-}
-
-const ProgressTransaction = ({transaction = false}:Props) => {
+const ProgressTransaction = () => {
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
     const fadeAnim_2 = useRef(new Animated.Value(0)).current;
     const fadeAnim_3 = useRef(new Animated.Value(0)).current;
@@ -58,19 +54,17 @@ const ProgressTransaction = ({transaction = false}:Props) => {
     return (
         <View style={styles.container}>
             <View style={styles.background}/>
-            <View style={[styles.box, transaction?{height: 250, justifyContent: "flex-start"}:{justifyContent: "center"}]}>
+            <View style={[styles.box, {height: 250, justifyContent: "flex-start"}]}>
                 <View>
-                    <Animated.Image style={[transaction?styles.logo:styles.logoSmall, {opacity: 1}]} source={LOADING_LOGO_0} />
-                    <Animated.Image style={[transaction?styles.logo:styles.logoSmall, {opacity: fadeAnim_1}]} source={LOADING_LOGO_1} />
-                    <Animated.Image style={[transaction?styles.logo:styles.logoSmall, {opacity: fadeAnim_2}]} source={LOADING_LOGO_2} />
-                    <Animated.Image style={[transaction?styles.logo:styles.logoSmall, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
+                    <Animated.Image style={[styles.logo, {opacity: 1}]} source={LOADING_LOGO_0} />
+                    <Animated.Image style={[styles.logo, {opacity: fadeAnim_1}]} source={LOADING_LOGO_1} />
+                    <Animated.Image style={[styles.logo, {opacity: fadeAnim_2}]} source={LOADING_LOGO_2} />
+                    <Animated.Image style={[styles.logo, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
                 </View>
-                {transaction &&
                 <View style={styles.counterBox}>
                     <Text style={styles.notice}>{TRANSACTION_PROCESS_TEXT}</Text>
                     <Text style={styles.counter}>{createTimerText(counter)}</Text>
                 </View>
-                }
             </View>
         </View>
     )

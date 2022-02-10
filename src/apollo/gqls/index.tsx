@@ -129,6 +129,67 @@ export const useValidatorsQuery = ({ onCompleted }: IQueryParam) => {
   );
 };
 
+export const useValidatorFromAddressQuery = ({ onCompleted, address }: IQueryParam) => {
+  return useQuery(
+    gql`
+      query {
+        stakingPool: staking_pool(limit: 1, order_by: { height: desc }) {
+          bondedTokens: bonded_tokens
+        }
+        average_block_time_per_day {
+          average_time
+        }
+        average_block_time_per_hour {
+          average_time
+        }
+        average_block_time_per_minute {
+          average_time
+        }
+        validator(
+          where: { validator_info: { operator_address: { _eq: ${address} } } }
+        ) {
+          validatorStatuses: validator_statuses(order_by: { height: desc }, limit: 1) {
+            status
+            jailed
+            height
+          }
+          validatorSigningInfos: validator_signing_infos(order_by: { height: desc }, limit: 1) {
+            missedBlocksCounter: missed_blocks_counter
+          }
+          validatorInfo: validator_info {
+            operatorAddress: operator_address
+            selfDelegateAddress: self_delegate_address
+          }
+          validatorVotingPowers: validator_voting_powers(offset: 0, limit: 1, order_by: { height: desc }) {
+            votingPower: voting_power
+          }
+          validatorCommissions: validator_commissions(order_by: { height: desc }, limit: 1) {
+            commission
+          }
+          delegations {
+            amount
+            delegatorAddress: delegator_address
+          }
+          validatorSigningInfos: validator_signing_infos(order_by: { height: desc }, limit: 1) {
+            missedBlocksCounter: missed_blocks_counter
+          }
+          validator_descriptions {
+            avatar_url
+            moniker
+            details
+            website
+          }
+        }
+        slashingParams: slashing_params(order_by: { height: desc }, limit: 1) {
+          params
+        }
+      }
+    `,
+    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+  );
+};
+
+
 export const useGovernmentQuery = ({ onCompleted }: IQueryParam) => {
   return useQuery(
     gql`

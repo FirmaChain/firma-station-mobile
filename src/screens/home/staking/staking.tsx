@@ -18,14 +18,13 @@ interface Props {
 
 const StakingScreen: React.FunctionComponent<Props> = (props) => {
     const navigation:ScreenNavgationProps = useNavigation();
-
+    
     const {state} = props;
-    const {address, 
-        walletName,
-        stakingState,
+    const {stakingState,
         validatorsState,} = state;
 
     const [tab, setTab] = useState(0);
+    const [delegations, setDelegations]:Array<any> = useState();
     
     const [stakingValues, setStakingValues] = useState<StakingValues>({
         available: 0,
@@ -35,7 +34,7 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
     });
 
     useEffect(() => {
-        useValidatorDescription(stakingState.delegateList, validatorsState.validators);
+        setDelegations(useValidatorDescription(stakingState.delegateList, validatorsState.validators));
 
         setStakingValues({
             available: stakingState.available,
@@ -43,23 +42,16 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
             undelegate: stakingState.undelegate,
             stakingReward: stakingState.stakingReward,
         });
-    }, [stakingState]);
+    }, [state]);
 
-    const handleMoveToValidator = (validator:any) => {
-        navigation.navigate(Screens.Validator, 
-            {
-                validator: validator, 
-                address: address, 
-                walletName: walletName
-            });
+    const handleMoveToValidator = (address:string) => {
+        navigation.navigate(Screens.Validator, {
+            validatorAddress: address,
+            delegations: delegations,
+        });
     }
 
-    const handleMoveToValidatorFromDelegation = (address:string) => {
-        const validator = validatorsState.validators.find((value:any) => value.validatorAddress === address);
-        handleMoveToValidator(validator);
-    }
-
-    const handleTransaction = () => {
+    const handleWithdrawAll = () => {
 
     }
 
@@ -67,7 +59,7 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.box}>
-                    <RewardBox reward={stakingValues.stakingReward} transactionHandler={handleTransaction}/>
+                    <RewardBox reward={stakingValues.stakingReward} transactionHandler={handleWithdrawAll}/>
                     <BalancesBox stakingValues={stakingValues}/>
                 </View>
 
@@ -84,7 +76,7 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
                         <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
                     </TouchableOpacity>
                 </View>
-                {tab === 0 && <DelegationList delegations={useValidatorDescription(stakingState.delegateList, validatorsState.validators)} navigateValidator={handleMoveToValidatorFromDelegation}/>}
+                {tab === 0 && <DelegationList delegations={delegations} navigateValidator={handleMoveToValidator}/>}
                 {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
             </ScrollView>
         </View>
@@ -135,4 +127,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default React.memo(StakingScreen);
+export default StakingScreen;

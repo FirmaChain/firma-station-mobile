@@ -1,12 +1,15 @@
 import { BgColor } from "@/constants/theme";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useCallback, useContext } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 import Button from "@/components/button/button";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import MnemonicGrid from "@/organims/createWallet/stepTwo/mnmonicGrid";
+import { useFocusEffect } from "@react-navigation/native";
+import { AppContext } from "@/util/context";
+import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
 type CreateStepTwoScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 
@@ -20,10 +23,11 @@ interface CreateStepTwoScreenProps {
 }
 
 const CreateStepTwoScreen: React.FunctionComponent<CreateStepTwoScreenProps> = (props) => {
-    // const {navigation} = props;
     const {navigation, route} = props;
     const {params} = route;
     const {wallet} = params;
+
+    const {dispatchEvent} = useContext(AppContext);
 
     const onMoveToStepThree = () => {
         navigation.navigate(Screens.CreateStepThree, {wallet: wallet});
@@ -32,6 +36,12 @@ const CreateStepTwoScreen: React.FunctionComponent<CreateStepTwoScreenProps> = (
     const handleBack = () => {
         navigation.goBack();
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        }, [])
+    )
 
     return (
         <Container
