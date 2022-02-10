@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { BoxColor, DisableColor, Lato, PointLightColor, TextGrayColor } from "../../constants/theme";
 import MonikerSection from "./parts/list/monikerSection";
@@ -16,10 +16,10 @@ const DelegationList = ({delegations, navigateValidator}:Props) => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>List 
-                    <Text style={{color: PointLightColor}}> {delegations.length}</Text>
+                    {delegations && <Text style={{color: PointLightColor}}> {delegations.length}</Text>}
                 </Text>
             </View>
-            {delegations.map((value, index) => {
+            {delegations && delegations.map((value, index) => {
                 return (
                     <TouchableOpacity key={index} onPress={() => navigateValidator(value.validatorAddress)}>
                         <View style={[styles.item]}>

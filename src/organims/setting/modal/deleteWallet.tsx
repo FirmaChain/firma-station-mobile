@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { PLACEHOLDER_FOR_PASSWORD, SETTING_DELETE_WALLET_TEXT } from "@/constants/common";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import CustomModal from "../../../components/modal/customModal";
-import { TextColor } from "../../../constants/theme";
-import { decrypt, keyEncrypt } from "../../../util/keystore";
-import { getChain } from "../../../util/secureKeyChain";
-import { WalletNameValidationCheck } from "../../../util/validationCheck";
+import CustomModal from "@/components/modal/customModal";
+import { TextColor } from "@/constants/theme";
+import { decrypt, keyEncrypt } from "@/util/keystore";
+import { getChain } from "@/util/secureKeyChain";
+import { WalletNameValidationCheck } from "@/util/validationCheck";
 
 interface Props {
     walletName: string;
@@ -14,11 +15,6 @@ interface Props {
 }
 
 const DeleteWallet = ({walletName, open, setOpenModal, deleteWallet}: Props) => {
-    const delAlertText = {
-        title: 'Delete wallet',
-        desc: 'Are you sure you want to delete this wallet?\nYour wallet cannot be recovered without seed phrase.',
-        confirmTitle: 'Delete'
-    }
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
@@ -40,6 +36,8 @@ const DeleteWallet = ({walletName, open, setOpenModal, deleteWallet}: Props) => 
                     setActive(false);
                 });
             } 
+        } else {
+            setActive(false);
         }
     }
 
@@ -64,20 +62,20 @@ const DeleteWallet = ({walletName, open, setOpenModal, deleteWallet}: Props) => 
             visible={open} 
             handleOpen={handleDelModal}>
                 <View style={styles.modalTextContents}>
-                    <Text style={styles.title}>{delAlertText.title}</Text>
-                    <Text style={styles.desc}>{delAlertText.desc}</Text>
+                    <Text style={styles.title}>{SETTING_DELETE_WALLET_TEXT.title}</Text>
+                    <Text style={styles.desc}>{SETTING_DELETE_WALLET_TEXT.desc}</Text>
                     <View style={styles.modalPWBox}>
                         <Text style={[styles.title, {fontSize: 14}]}>Password</Text>
                         <TextInput 
                             style={styles.input}
-                            placeholder={"Must be at least 10 characters"}
+                            placeholder={PLACEHOLDER_FOR_PASSWORD}
                             secureTextEntry={true}
                             autoCapitalize = 'none'
                             value={password}
                             onChangeText={text => handleInputChange(text)}/>
                     </View>
                     <TouchableOpacity disabled={!active} style={[styles.delButton, {opacity: active? 1 : 0.3}]} onPress={() => handleDeleteWallet()}>
-                        <Text style={{color: '#fff', fontSize: 16, fontWeight: '600'}}>{delAlertText.confirmTitle}</Text>
+                        <Text style={{color: '#fff', fontSize: 16, fontWeight: '600'}}>{SETTING_DELETE_WALLET_TEXT.confirmTitle}</Text>
                     </TouchableOpacity>
                 </View>
         </CustomModal>

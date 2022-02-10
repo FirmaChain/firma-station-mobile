@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Screens, StackParamList } from "../../navigators/appRoutes";
-import { BgColor, BoxColor, DisableColor, Lato, PointColor, PointDarkColor, PointLightColor, TextColor, WhiteColor } from "../../constants/theme";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { BgColor, BoxColor, DisableColor, Lato, PointColor, PointDarkColor, PointLightColor, TextColor, WhiteColor } from "@/constants/theme";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { removeChain, setChain } from "../../util/secureKeyChain";
+import { removeChain, setChain } from "@/util/secureKeyChain";
 import { getUseBioAuth, getWalletList, getWalletWithAutoLogin, setPasswordViaBioAuth, setUseBioAuth } from "@/util/wallet";
-import Container from "../../components/parts/containers/conatainer";
+import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { getUniqueId } from "react-native-device-info";
 import { LayoutAnim } from "@/util/animation";
 import { WALLET_LIST } from "@/constants/common";
-import DeleteWallet from "../../organims/setting/modal/deleteWallet";
+import DeleteWallet from "@/organims/setting/modal/deleteWallet";
 import BioAuthOnModal from "@/organims/setting/modal/bioAuthOnModal";
 import { AppContext } from "@/util/context";
 import { useNavigation } from "@react-navigation/native";
@@ -168,12 +168,12 @@ const SettingScreen: React.FunctionComponent = () => {
                         </TouchableOpacity>
                     </View>
                     <DeleteWallet 
-                        walletName={wallet} 
+                        walletName={wallet.name} 
                         open={openDelModal} 
                         setOpenModal={handleDelModal}
                         deleteWallet={handleDeleteWallet}/>
                     <BioAuthOnModal
-                        walletName={wallet}
+                        walletName={wallet.name}
                         open={openBioModal}
                         setOpenModal={closeBioModal}
                         bioAuthhandler={handleBioAuthState}/>

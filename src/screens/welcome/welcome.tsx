@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View } from "react-native";
-import { Screens, StackParamList } from "../../navigators/appRoutes";
-import Button from "../../components/button/button";
-import Description from "../../organims/welcome/description";
-import { getChain } from "../../util/secureKeyChain";
-import { BgColor, DisableColor, Lato, TextGrayColor } from "../../constants/theme";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import Description from "@/organims/welcome/description";
+import Button from "@/components/button/button";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { WALLET_LIST } from "@/constants/common";
+import { getChain } from "@/util/secureKeyChain";
+import { BgColor, DisableColor, Lato, TextGrayColor } from "@/constants/theme";
+import { WALLET_LIST, WELCOME_DESCRIPTION } from "@/constants/common";
 import SplashScreen from "react-native-splash-screen";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
@@ -19,7 +19,8 @@ interface WelcomeScreenProps {
 const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = (props) => {
     const {navigation} = props;
     const Title: string = 'CONNECT';
-    const Desc: string = 'Use seed phrases to create\nnew wallets or restore existing wallets.';
+    const Desc: string = WELCOME_DESCRIPTION;
+
     const [walletExist, setWalletExist] = useState(false);
 
     function handleCreateStepOne(){

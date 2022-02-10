@@ -10,7 +10,6 @@ import { convertTime } from "@/util/common";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { BgColor, Lato } from "@/constants/theme";
 import VotingSection from "@/organims/governance/proposal/votingSection";
-import Voting from "@/organims/governance/proposal/voting";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Proposal>;
 
@@ -33,11 +32,7 @@ const ProposalScreen: React.FunctionComponent<ProposalScreenProps> = (props) => 
     const [titleData, setTitleData] = useState<any>(null);
     const [descData, setDescData] = useState<any>(null);
     const [voteData, setVoteData] = useState<any>(null);
-    const proposalStatus = useMemo(() => {
-        if(proposalState) return proposalState.status;
-        return '';
-    }, [proposalState]);
-    
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -48,14 +43,6 @@ const ProposalScreen: React.FunctionComponent<ProposalScreenProps> = (props) => 
         date.setDate(date.getDate() + periodToDay);
         
         return convertTime(date.toString(), true);;
-    }
-
-    const handleDeposit = () => {
-        navigation.navigate(Screens.Deposit, {proposalId: 0});
-    }
-
-    const handleTransaction = () => {
-        navigation.navigate(Screens.Transaction);
     }
 
     useEffect(() => {
@@ -95,14 +82,11 @@ const ProposalScreen: React.FunctionComponent<ProposalScreenProps> = (props) => 
             title="Proposal"
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <>
                 <ScrollView>
                     <TitleSection data={titleData} />
                     <DescriptionSection data={descData} />
                     <VotingSection data={voteData} />
                 </ScrollView>
-                <Voting status={proposalStatus} transactionHandler={handleTransaction} depositHandler={handleDeposit}/>
-                </>
             </ViewContainer>
         </Container>
     )

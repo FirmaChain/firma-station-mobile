@@ -1,5 +1,6 @@
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
+import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS, PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_PASSWORD_CONFIRM, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 import { getWalletWithAutoLogin, setBioAuth, setNewWallet } from "@/util/wallet";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
@@ -48,17 +49,17 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
 
     const currentPasswordTextObj = {
         title: "Current password",
-        placeholder: "Must be at least 10 characters",
+        placeholder: PLACEHOLDER_FOR_PASSWORD,
     }
 
     const newPasswordTextObj = {
         title: "New password",
-        placeholder: "Must be at least 10 characters",
+        placeholder: PLACEHOLDER_FOR_PASSWORD,
     }
 
     const confirmPasswordTextObj = {
         title: "Confirm new password",
-        placeholder: "Confirm your password",
+        placeholder: PLACEHOLDER_FOR_PASSWORD_CONFIRM,
     }
 
     const handleCurrentPassword = (value: string) => {
@@ -67,7 +68,7 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
 
     const handleNewPassword = (value: string) => {
         const result = PasswordValidationCheck(value);
-        var msg = result? '' : 'Password must be longer than 10 characters';
+        var msg = result? '' : PLACEHOLDER_FOR_PASSWORD;
         if(value.length === 0) msg = '';
         setNewPW(value);
         setNewPwValidation(result);
@@ -76,7 +77,7 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
 
     const handleConfirmPassword = (value: string) => {
         var result = value === newPW;
-        var msg = result? '' : 'Password does not match';
+        var msg = result? '' : WARNING_PASSWORD_NOT_MATCH;
         if(value.length === 0){
             msg = '';
             result = false;
@@ -190,7 +191,7 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
                             handleOpen={handleModalOpen}
                             isSingleButton={true}
                             title={status === 0?'Wrong password':'Change password'}
-                            desc={status === 0?'Please check your current password.':'Successfully changed your password.'}/>
+                            desc={status === 0?PASSWORD_CHANGE_FAIL:PASSWORD_CHANGE_SUCCESS}/>
                     </View>
                 </ViewContainer>
         </Container>

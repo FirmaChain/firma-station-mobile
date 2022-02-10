@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useContext, useEffect, useState } from "react";
 import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Screens, StackParamList } from "../../navigators/appRoutes";
-import { BgColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "../../constants/theme";
-import ViewContainer from "../../components/parts/containers/viewContainer";
-import Progress from "@/components/parts/progress";
-import { TRANSACTION_TYPE } from "@/constants/common";
-import { delegate, sendFCT } from "@/util/firma";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+
+import ViewContainer from "@/components/parts/containers/viewContainer";
+import ProgressTransaction from "@/components/parts/progressTransaction";
 import Button from "@/components/button/button";
 import { FailCircle, SuccessCircle } from "@/components/icon/icon";
+
+import { BgColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
+import { TRANSACTION_TYPE } from "@/constants/common";
+
+import { delegate, redelegate, sendFCT, undelegate, withdrawRewards } from "@/util/firma";
 import { getWallet } from "@/util/wallet";
+import { AppContext } from "@/util/context";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Transaction>;
 
@@ -26,6 +30,8 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
     const {navigation, route} = props;
     const {params} = route;
     const {state} = params;
+
+    const {wallet} = useContext(AppContext);
 
     const [transactionResult, setTransactionResult]:any = useState(null);
     const [mnemonic, setMnemonic] = useState('');
@@ -46,7 +52,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
 
     useEffect(() => {
         const getMnemonic = async() => {
-            await getWallet(state.walletName, state.password).then(res => {if(res)setMnemonic(res)});
+            await getWallet(wallet.name, state.password).then(res => {if(res)setMnemonic(res)});
         }
         getMnemonic();
     }, []);
@@ -70,7 +76,49 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     })
                     break;
                 case TRANSACTION_TYPE["DELEGATE"]:
-                    await delegate(mnemonic, state.operatorAddress, state.amount)
+                    await delegate(mnemonic, state.operatorAddressDst, state.amount)
+                    .then(res => {
+                        setTransactionResult({
+                            code: res.code,
+                            result: res.transactionHash})
+                        console.log("RESULT : ", res);})
+                    .catch(error => {
+                        console.log("ERROR : ", error.toString());
+                        setTransactionResult({
+                            code: -1,
+                            result: error.toString()})
+                    })
+                    break;
+                case TRANSACTION_TYPE["REDELEGATE"]:
+                    await redelegate(mnemonic, state.operatorAddressSrc, state.operatorAddressDst, state.amount)
+                    .then(res => {
+                        setTransactionResult({
+                            code: res.code,
+                            result: res.transactionHash})
+                        console.log("RESULT : ", res);})
+                    .catch(error => {
+                        console.log("ERROR : ", error.toString());
+                        setTransactionResult({
+                            code: -1,
+                            result: error.toString()})
+                    })
+                    break;
+                case TRANSACTION_TYPE["UNDELEGATE"]:
+                    await undelegate(mnemonic, state.operatorAddressDst, state.amount)
+                    .then(res => {
+                        setTransactionResult({
+                            code: res.code,
+                            result: res.transactionHash})
+                        console.log("RESULT : ", res);})
+                    .catch(error => {
+                        console.log("ERROR : ", error.toString());
+                        setTransactionResult({
+                            code: -1,
+                            result: error.toString()})
+                    })
+                    break;
+                case TRANSACTION_TYPE["WITHDRAW"]:
+                    await withdrawRewards(mnemonic, state.operatorAddress)
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
@@ -118,7 +166,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     </View>
                 </View>
                 :
-                <Progress />
+                <ProgressTransaction/>
                 }
         </ViewContainer>
     )

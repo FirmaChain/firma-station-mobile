@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from "react";
 import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { PLACEHOLDER_FOR_PASSWORD, SETTING_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
+import { StyleSheet, Text, View } from "react-native";
 import CustomModal from "../../../components/modal/customModal";
 import { Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
 import { decrypt, keyEncrypt } from "../../../util/keystore";
@@ -16,11 +17,6 @@ interface Props {
 }
 
 const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props) => {
-    const bioAuthModalText = {
-        title: 'Use Bio Auth',
-        desc: 'Enter your password to turn on Bio Auth.',
-        confirmTitle: 'Confirm'
-    }
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
@@ -36,12 +32,15 @@ const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props)
                         if(w.length > 0) {
                             setActive(true);
                         }
+                        
                     }
                 }).catch(error => {
                     console.log(error);
                     setActive(false);
                 });
             } 
+        } else {
+            setActive(false);
         }
     }
 
@@ -66,14 +65,14 @@ const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props)
             visible={open} 
             handleOpen={handleModal}>
                 <View style={styles.modalTextContents}>
-                    <Text style={[styles.title, {fontWeight: "bold"}]}>{bioAuthModalText.title}</Text>
+                    <Text style={[styles.title, {fontWeight: "bold"}]}>{SETTING_BIO_AUTH_MODAL_TEXT.title}</Text>
                     <InputSetVertical
-                        title={bioAuthModalText.desc}
-                        placeholder={"Must be at least 10 characters"}
+                        title={SETTING_BIO_AUTH_MODAL_TEXT.desc}
+                        placeholder={PLACEHOLDER_FOR_PASSWORD}
                         secure={true}
                         onChangeEvent={handleInputChange}/>
                     <Button
-                        title={bioAuthModalText.confirmTitle}
+                        title={SETTING_BIO_AUTH_MODAL_TEXT.confirmTitle}
                         active={active}
                         onPressEvent={handleBioAuth}/>
                 </View>

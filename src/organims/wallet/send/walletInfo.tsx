@@ -1,29 +1,26 @@
 import { BorderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import { convertAmount, convertNumber } from "@/util/common";
-import { getBalanceFromAdr } from "@/util/firma";
+import { useBalanceData } from "@/hooks/wallet/hooks";
+import { convertAmount } from "@/util/common";
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
-    walletName: string;
-    address: string;
+    address?: string;
+    available?: number;
 }
 
-const WalletInfo = ({walletName, address}:Props) => {
-
-    const [available, setAvailable] = useState(0);
+const WalletInfo = ({address = '', available = 0}:Props) => {
+    const {balance} = useBalanceData(address);
+    const [availableValue, setAvailableValue] = useState(balance);
 
     const availableBalance = useMemo(() => {
-        return convertAmount(available);
-    }, [available]);
+        return convertAmount(availableValue);
+    }, [availableValue]);
 
     useEffect(() => {
-        const getAvailable = async() => {
-            const balance = await getBalanceFromAdr(address);
-            setAvailable(convertNumber(balance));
-        }
-        getAvailable();
-    }, []);
+        if(available !== 0) return setAvailableValue(available);
+        return setAvailableValue(balance);
+    }, [balance, available])
     
     return (
         <View style={styles.boxH}>

@@ -1,18 +1,23 @@
-import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useContext, useState } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { Wallet, createNewWallet } from "@/util/firma";
 import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
-import { Wallet, createNewWallet } from "@/util/firma";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { BgColor } from "@/constants/theme";
+import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
 import { setBioAuth, setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
-import Progress from "@/components/parts/progress";
+import { BgColor } from "@/constants/theme";
 import { AppContext } from "@/util/context";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
+import { CONTEXT_ACTIONS_TYPE, 
+    PLACEHOLDER_FOR_PASSWORD, 
+    PLACEHOLDER_FOR_PASSWORD_CONFIRM, 
+    PLACEHOLDER_FOR_WALLET_NAME, 
+    WARNING_PASSWORD_IS_TOO_SHORT, 
+    WARNING_PASSWORD_NOT_MATCH, 
+    WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
 
 type CreateStepOneScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
@@ -46,22 +51,22 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
 
     const walletNameText = {
         title : 'Wallet name',
-        placeholder: 'Enter 5-20 alphanumeric characters'
+        placeholder: PLACEHOLDER_FOR_WALLET_NAME
     }
     const passwordText = {
         title : 'Password',
-        placeholder: 'Must be at least 10 characters'
+        placeholder: PLACEHOLDER_FOR_PASSWORD
     }
     const confirmPasswordText = {
         title : 'Confirm password',
-        placeholder: 'Confirm your password'
+        placeholder: PLACEHOLDER_FOR_PASSWORD_CONFIRM
     }
 
     const onChangeWalletName = async(value: string) => {
         let result = (value.length >= 5 && value.length <= 20);
         let nameCheck = await WalletNameValidationCheck(value);
         
-        let msg = result && !nameCheck? '' : nameCheck?  `"${value}" is already exists` : 'name must be between 5 and 20 characters';
+        let msg = result && !nameCheck? '' : nameCheck?  `"${value}" is already exists` : WARNING_WALLET_NAME_IS_TOO_SHORT;
         if(value.length === 0) msg = '';
         setWalletName(value);
         setNameValidation(result && !nameCheck);
@@ -70,7 +75,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
 
     const onChangePassword = (value: string) => {
         const result = PasswordValidationCheck(value);
-        var msg = result? '' : 'Password must be longer than 10 characters';
+        var msg = result? '' : WARNING_PASSWORD_IS_TOO_SHORT;
         if(value.length === 0) msg = '';
         setPassword(value);
         setPwValidation(result);
@@ -79,7 +84,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
 
     const onChangeConfirmPassword = (value: string) => {
         var result = value === password;
-        var msg = result? '' : 'Password does not match';
+        var msg = result? '' : WARNING_PASSWORD_NOT_MATCH;
         if(value.length === 0){
             msg = '';
             result = false;

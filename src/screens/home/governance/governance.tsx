@@ -15,9 +15,7 @@ interface Props {
 const GovernanceScreen: React.FunctionComponent<Props> = (props) => {
     const navigation:ScreenNavgationProps = useNavigation();
     const {state} = props;
-    const {address, 
-            walletName,
-            governanceState,} = state;
+    const {governanceState} = state;
 
 
     const handleMoveToDetail = (proposalId:number) => {

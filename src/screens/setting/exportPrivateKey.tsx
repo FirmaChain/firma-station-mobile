@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, View } from "react-native";
-import Button from "../../components/button/button";
-import InputSetVertical from "../../components/input/inputSetVertical";
-import AlertModal from "../../components/modal/alertModal";
-import CustomModal from "../../components/modal/customModal";
-import { BgColor } from "../../constants/theme";
-import { Screens, StackParamList } from "../../navigators/appRoutes";
-import { decrypt, keyEncrypt } from "../../util/keystore";
-import { getChain } from "../../util/secureKeyChain";
-import { PasswordValidationCheck } from "../../util/validationCheck";
-import ExportModal from "../../organims/setting/modal/exportModal";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import Button from "@/components/button/button";
+import InputSetVertical from "@/components/input/inputSetVertical";
+import AlertModal from "@/components/modal/alertModal";
+import CustomModal from "@/components/modal/customModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
+import { decrypt, keyEncrypt } from "@/util/keystore";
+import { getChain } from "@/util/secureKeyChain";
+import { PasswordValidationCheck } from "@/util/validationCheck";
+import ExportModal from "@/organims/setting/modal/exportModal";
+import { BgColor } from "@/constants/theme";
+import { PLACEHOLDER_FOR_PASSWORD, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -42,7 +43,7 @@ const ExportPrivateKeyScreen: React.FunctionComponent<ExportPrivateKeyProps> = (
 
     const currentPasswordTextObj = {
         title: "Current password",
-        placeholder: "Must be at least 10 characters",
+        placeholder: PLACEHOLDER_FOR_PASSWORD,
     }
 
     const handlePassword = (value: string) => {
@@ -117,7 +118,7 @@ const ExportPrivateKeyScreen: React.FunctionComponent<ExportPrivateKeyProps> = (
                             handleOpen={handleModalOpen}
                             isSingleButton={true}
                             title={'Wrong password'}
-                            desc={'Please check your current password.'}/>
+                            desc={WARNING_PASSWORD_NOT_MATCH}/>
 
                         <CustomModal
                             visible={status === 1 && isModalOpen}

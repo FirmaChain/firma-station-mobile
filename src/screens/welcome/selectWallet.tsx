@@ -1,21 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { Screens, StackParamList } from "../../navigators/appRoutes";
-import { getChain } from "../../util/secureKeyChain";
-import { BgColor, InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
-import InputSetVertical from "../../components/input/inputSetVertical";
-import { WalletNameValidationCheck } from "../../util/validationCheck";
-import { decrypt, keyEncrypt } from "../../util/keystore";
-import Button from "../../components/button/button";
-import { getAdrFromMnemonic } from "@/util/firma";
-import CustomModal from "../../components/modal/customModal";
-import ModalItems from "../../components/modal/modalItems";
-import { getUseBioAuth, getWalletList, setBioAuth, setPasswordViaBioAuth, setWalletWithAutoLogin } from "@/util/wallet";
-import Container from "../../components/parts/containers/conatainer";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import InputSetVertical from "@/components/input/inputSetVertical";
+import Button from "@/components/button/button";
+import CustomModal from "@/components/modal/customModal";
+import ModalItems from "@/components/modal/modalItems";
+import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { DownArrow } from "@/components/icon/icon";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
+import { CONTEXT_ACTIONS_TYPE, PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
+import { BgColor, InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { getWalletList, setBioAuth, setWalletWithAutoLogin } from "@/util/wallet";
+import { getChain } from "@/util/secureKeyChain";
+import { WalletNameValidationCheck } from "@/util/validationCheck";
+import { getAdrFromMnemonic } from "@/util/firma";
+import { decrypt, keyEncrypt } from "@/util/keystore";
 import { AppContext } from "@/util/context";
 
 type SelectWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
@@ -39,7 +39,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
 
     const passwordText = {
         title : 'Password',
-        placeholder: 'Must be at least 10 characters',
+        placeholder: PLACEHOLDER_FOR_PASSWORD,
     }
 
     const handleOpenModal = (open:boolean) => {

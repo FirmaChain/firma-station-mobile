@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";

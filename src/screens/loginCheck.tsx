@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 import { getWalletWithAutoLogin } from "@/util/wallet";

@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Screens, StackParamList } from "../../navigators/appRoutes";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 import StakingIcon from "react-native-vector-icons/AntDesign";
-import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
-import TabContainer from "../../components/parts/containers/tabContainer";
+import { getFocusedRouteNameFromRoute, useFocusEffect, useNavigation } from "@react-navigation/native";
+import TabContainer from "@/components/parts/containers/tabContainer";
 import WalletScreen from "./wallet/wallet";
 import StakingScreen from "./staking/staking";
 import GovernanceScreen from "./governance/governance";
@@ -17,6 +17,7 @@ import { useStakingData, useValidatorData } from "@/hooks/staking/hooks";
 import { useGovernanceList } from "@/hooks/governance/hooks";
 import SplashScreen from "react-native-splash-screen";
 import { AppContext } from "@/util/context";
+import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -28,18 +29,18 @@ const Tab = createBottomTabNavigator();
 
 const HomeScreen: React.FunctionComponent<Props> = (props) => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const { wallet } = useContext(AppContext);
+    const { wallet, dispatchEvent } = useContext(AppContext);
 
     const { balance } = useBalanceData(wallet.address);
-    const { historyList } = useHistoryData(wallet.address);
-    const { stakingState } = useStakingData(wallet.address);
-    const { validatorsState } = useValidatorData();
+    const { recentHistory, handleHisotyPolling } = useHistoryData(wallet.address);
+    const { validatorsState, handleValidatorsPolling } = useValidatorData();
+    const { stakingState, getStakingComplete } = useStakingData(wallet.address);
     const { governanceState } = useGovernanceList();
 
     const walletProps = {
         state:{
             balance,
-            historyList,
+            recentHistory,
             stakingState,
         }
     }
@@ -64,9 +65,9 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
     }
 
     const moveToHistory = () => {
-        navigation.navigate(Screens.Hisory, {historyData: historyList});
+        navigation.navigate(Screens.History);
     }
-
+    
     useEffect(() => {
         const routeName = getFocusedRouteNameFromRoute(props.route);
         if(routeName === undefined){
@@ -76,9 +77,25 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
         }
     }, [getFocusedRouteNameFromRoute(props.route)]);
 
+    useFocusEffect(
+        useCallback(() => {
+            handleHisotyPolling && handleHisotyPolling(true);
+            handleValidatorsPolling && handleValidatorsPolling(true);
+            return () => {
+                handleHisotyPolling && handleHisotyPolling(false);
+                handleValidatorsPolling && handleValidatorsPolling(false);
+            }
+        }, [])
+    )
+
     useEffect(() => {
-        SplashScreen.hide();
-    }, []);
+        if(validatorsState.validators.length === 0 || getStakingComplete === false){
+            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        } else {
+            SplashScreen.hide();
+            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        }
+    }, [validatorsState, getStakingComplete])
 
     return (
         <TabContainer

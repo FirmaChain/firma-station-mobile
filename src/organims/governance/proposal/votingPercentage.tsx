@@ -150,7 +150,9 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
     },
     voteBox: {
-        width: 142,
+        flex: 1,
+        minWidth: 122,
+        maxWidth: 142,
         paddingVertical: 17,
         borderRadius: 8,
         backgroundColor: BgColor,

@@ -4,13 +4,43 @@ export interface KeyValue {
 
 export const WALLET_LIST = "FIRMA_WALLET_LIST_1";
 export const USE_BIO_AUTH = "USE_BIO_AUTH";
-export const RECOVER_INFO_MESSAGE = "Generate QR code from setting menu of\nFirma Station desktop or extionsion";
 
 export const CONTEXT_ACTIONS_TYPE: KeyValue = {
     LOADING: "LOADING_PROGRESS",
     WALLET: "WALLET_INFO",
 }
 
+export const WELCOME_DESCRIPTION = "Use seed phrases to create\nnew wallets or restore existing wallets.";
+
+export const RECOVER_INFO_MESSAGE = "Generate QR code from setting menu of\nFirma Station desktop or extionsion";
+
+export const PLACEHOLDER_FOR_WALLET_NAME = "Enter 5-20 alphanumeric characters";
+export const PLACEHOLDER_FOR_PASSWORD = "Must be at least 10 characters";
+export const PLACEHOLDER_FOR_PASSWORD_CONFIRM = "Confirm your password";
+
+export const WARNING_WALLET_NAME_IS_TOO_SHORT = "name must be between 5 and 20 characters";
+export const WARNING_PASSWORD_IS_TOO_SHORT = "Password must be longer than 10 characters";
+export const WARNING_PASSWORD_NOT_MATCH = "Password does not match";
+
+export const PASSWORD_CHANGE_SUCCESS = "Successfully changed your password.";
+export const PASSWORD_CHANGE_FAIL = "Please check your current password.";
+
+export const TRANSACTION_PROCESS_TEXT = "This transaction is in process.";
+
+// setting
+export const SETTING_BIO_AUTH_MODAL_TEXT = {
+    title: 'Use Bio Auth',
+    desc: 'Enter your password to turn on Bio Auth.',
+    confirmTitle: 'Confirm'
+}
+
+export const SETTING_DELETE_WALLET_TEXT = {
+    title: 'Delete wallet',
+    desc: 'Are you sure you want to delete this wallet?\nYour wallet cannot be recovered without seed phrase.',
+    confirmTitle: 'Delete'
+}
+
+// transaction
 export const TRANSACTION_TYPE: KeyValue = {
     SEND: "TRANSACTION_SEND",
     DELEGATE: "TRANSACTION_DELEGATE",
@@ -19,8 +49,7 @@ export const TRANSACTION_TYPE: KeyValue = {
     WITHDRAW: "TRANSACTION_WITHDRAW",
 }
 
-export const TRANSACTION_PROCESS_TEXT = "This transaction is in process.";
-
+// proposal
 export const PROPOSAL_STATUS: KeyValue = {
     PROPOSAL_STATUS_DEPOSIT_PERIOD: "DEPOSIT PERIOD",
     PROPOSAL_STATUS_VOTING_PERIOD: "VOTING PERIOD",
