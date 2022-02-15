@@ -1,10 +1,8 @@
-import { StakeInfo } from "@/hooks/staking/hooks";
-import MonikerSection from "@/organims/staking/parts/list/monikerSection";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, ScrollView, Text, Image, View } from "react-native";
-import Radio from "react-native-vector-icons/MaterialCommunityIcons";
-import { BorderColor, Lato, TextColor, WhiteColor } from "../../constants/theme";
-import { Person } from "../icon/icon";
+import { StakeInfo } from "@/hooks/staking/hooks";
+import { BorderColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
+import { Person, Radio } from "../icon/icon";
 
 interface Props {
     initVal: string;
@@ -35,7 +33,7 @@ const ModalItemsForValidator = ({initVal, data, onPressEvent}:Props) => {
                             </View>
                         }
                         <Text style={styles.moniker}>{item.moniker}</Text>
-                        <Radio name={item.validatorAddress === selected? "radiobox-marked" : "radiobox-blank"} size={20} color={WhiteColor} />
+                        <Radio size={20} color={WhiteColor} active={item.validatorAddress === selected} />
                     </Pressable>
                 )
             })}

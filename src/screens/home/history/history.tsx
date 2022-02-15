@@ -10,6 +10,7 @@ import { convertTime } from "@/util/common";
 import { ForwardArrow } from "@/components/icon/icon";
 import { useNavigation } from "@react-navigation/native";
 import { AppContext } from "@/util/context";
+import { EXPLORER_URL } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
@@ -22,7 +23,7 @@ const HistoryScreen: React.FunctionComponent = () => {
     const [pagination, setPagination] = useState(10);
 
     const moveToExplorer = (hash:string) => {
-        Linking.openURL('https://explorer-colosseum.firmachain.dev/transactions/' + hash);
+        Linking.openURL(EXPLORER_URL + '/transactions/' + hash);
     }
 
     const handleBack = () => {
@@ -48,34 +49,34 @@ const HistoryScreen: React.FunctionComponent = () => {
                             {historyList !== undefined && historyList.list.map((value:any, index) => {
                                 if(index < pagination){
                                     return (
-                                        <View key={index} style={styles.box}>
-                                            <View style={styles.wrapperH}>
-                                                <View style={{flex: 2}}>
-                                                    <View style={[styles.wrapperH, {alignItems: "center", paddingBottom: 15}]}>
-                                                        <Text style={[styles.contentTitle, {fontSize: 10, fontWeight: "normal"}]}>{convertTime(value.timestamp, false, true)}</Text>
+                                        <TouchableOpacity key={index} onPress={()=>moveToExplorer(value.hash)}>
+                                            <View style={styles.box}>
+                                                <View style={styles.wrapperH}>
+                                                    <View style={{flex: 2}}>
+                                                        <View style={[styles.wrapperH, {alignItems: "center", paddingBottom: 15}]}>
+                                                            <Text style={[styles.contentTitle, {fontSize: 10, fontWeight: "normal"}]}>{convertTime(value.timestamp, false, true)}</Text>
+                                                        </View>
+                                                        <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center", paddingLeft: 10}]}>
+                                                            <View style={styles.historyWrapper}>
+                                                                <Text style={[styles.contentTitle, {fontSize: 14}]}>Block</Text>
+                                                                <Text style={[styles.contentItem, {fontSize: 14}]}>{value.block}</Text>
+                                                            </View>
+                                                            <View style={styles.historyWrapper}>
+                                                                <Text style={[styles.contentTitle, {fontSize: 14}]}>Type</Text>
+                                                                <Text style={[styles.contentItem, {fontSize: 14}]}>{value.type}</Text>
+                                                            </View>
+                                                            <View style={styles.historyWrapper}>
+                                                                <Text style={[styles.contentTitle, {fontSize: 14}]}>Result</Text>
+                                                                <Text style={[styles.contentItem, {fontSize: 14}]}>{value.success}</Text>
+                                                            </View>
+                                                        </View>
                                                     </View>
-                                                    <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center", paddingLeft: 10}]}>
-                                                        <View style={styles.historyWrapper}>
-                                                            <Text style={[styles.contentTitle, {fontSize: 14}]}>Block</Text>
-                                                            <Text style={[styles.contentItem, {fontSize: 14}]}>{value.block}</Text>
-                                                        </View>
-                                                        <View style={styles.historyWrapper}>
-                                                            <Text style={[styles.contentTitle, {fontSize: 14}]}>Type</Text>
-                                                            <Text style={[styles.contentItem, {fontSize: 14}]}>{value.type}</Text>
-                                                        </View>
-                                                        <View style={styles.historyWrapper}>
-                                                            <Text style={[styles.contentTitle, {fontSize: 14}]}>Result</Text>
-                                                            <Text style={[styles.contentItem, {fontSize: 14}]}>{value.success}</Text>
-                                                        </View>
+                                                    <View style={{justifyContent: "center"}}>
+                                                            <ForwardArrow size={20} color={TextCatTitleColor}/>
                                                     </View>
-                                                </View>
-                                                <View style={{justifyContent: "center"}}>
-                                                    <TouchableOpacity onPress={()=>moveToExplorer(value.hash)}>
-                                                        <ForwardArrow size={20} color={TextCatTitleColor}/>
-                                                    </TouchableOpacity>
                                                 </View>
                                             </View>
-                                        </View>
+                                        </TouchableOpacity>
                                     )
                                 }
                             })}

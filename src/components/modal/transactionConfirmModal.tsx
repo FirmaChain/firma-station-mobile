@@ -7,20 +7,21 @@ import { getChain } from "../../util/secureKeyChain";
 import { WalletNameValidationCheck } from "../../util/validationCheck";
 import InputSetVertical from "../input/inputSetVertical";
 import Button from "../button/button";
-import { convertCurrent, convertNumber } from "@/util/common";
-import { getPasswordViaBioAuth, getUseBioAuth, getWallet } from "@/util/wallet";
+import { convertAmount } from "@/util/common";
+import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { AppContext } from "@/util/context";
 
 interface Props {
     title: string,
     amount: number;
+    fee: number;
     open: boolean;
     setOpenModal: Function;
     transactionHandler: Function; 
 }
 
-const TransactionConfirmModal = ({title, amount = 0, open, setOpenModal, transactionHandler}: Props) => {
+const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal, transactionHandler}: Props) => {
     const signMoalText = {
         title: title,
         confirmTitle: 'Confirm'
@@ -43,7 +44,7 @@ const TransactionConfirmModal = ({title, amount = 0, open, setOpenModal, transac
                 await getChain(wallet.name).then(res => {
                     if(res){
                         let w = decrypt(res.password, key);
-                        if(w.length > 0) {
+                        if(w !== null) {
                             setActive(true);
                         } else {
                             setActive(false);
@@ -54,6 +55,8 @@ const TransactionConfirmModal = ({title, amount = 0, open, setOpenModal, transac
                     setActive(false);
                 });
             } 
+        } else {
+            setActive(false);
         }
     }
 
@@ -99,7 +102,7 @@ const TransactionConfirmModal = ({title, amount = 0, open, setOpenModal, transac
 
     return (
         <CustomModal
-            visible={open} 
+            visible={open}
             handleOpen={handleModal}>
                 <View style={styles.modalTextContents}>
                     <View style={styles.receiptBox}>
@@ -107,12 +110,12 @@ const TransactionConfirmModal = ({title, amount = 0, open, setOpenModal, transac
                         {amount > 0 &&
                         <View style={[styles.boxH, styles.receiptDesc, {borderTopWidth: 1, borderTopColor: BorderColor}]}>
                             <Text style={styles.itemTitle}>Amount</Text>
-                            <Text style={styles.itemBalance}>{convertCurrent(convertNumber((amount)))}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={styles.itemBalance}>{convertAmount(amount, false)}<Text style={styles.itemTitle}>  FCT</Text></Text>
                         </View>
                         }
                         <View style={[styles.boxH, styles.receiptDesc]}>
                             <Text style={styles.itemTitle}>Fee</Text>
-                            <Text style={styles.itemBalance}>{Number(0.20).toFixed(2)}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={styles.itemBalance}>{Number(fee / 1000000).toFixed(6)}<Text style={styles.itemTitle}>  FCT</Text></Text>
                         </View>
                     </View>
                     <View style={styles.modalPWBox}>

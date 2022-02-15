@@ -90,7 +90,7 @@ export const useHistoryData = (address:string) => {
     });
 
     const handleHisotyPolling = (polling:boolean) => {
-        if(polling) return startPolling(3000);
+        if(polling) return startPolling(10000);
         return stopPolling();
     }
 

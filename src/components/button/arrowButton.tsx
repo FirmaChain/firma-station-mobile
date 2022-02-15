@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { WhiteColor } from "../../constants/theme";
+import { BackArrow } from "../icon/icon";
 
 interface Props {
     onPressEvent: Function;
@@ -9,8 +9,8 @@ interface Props {
 
 const ArrowButton = ({onPressEvent}:Props) => {
     return (
-        <TouchableOpacity activeOpacity={0.5} onPress={() => onPressEvent()}>
-            <Icon name="arrow-back-ios" color={WhiteColor} size={25} />
+        <TouchableOpacity activeOpacity={0.5} onPress={() => onPressEvent()} style={{paddingRight: 15}}>
+            <BackArrow size={25} color={WhiteColor} />
         </TouchableOpacity>
     );
 };

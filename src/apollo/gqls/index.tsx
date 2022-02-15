@@ -24,7 +24,7 @@ export const useBlockDataQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -47,7 +47,7 @@ export const useVotingPowerQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -67,7 +67,7 @@ export const useTokenomicsQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -125,7 +125,7 @@ export const useValidatorsQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -185,7 +185,7 @@ export const useValidatorFromAddressQuery = ({ onCompleted, address }: IQueryPar
         }
       }
     `,
-    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -206,7 +206,7 @@ export const useGovernmentQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -249,7 +249,7 @@ export const useProposalQuery = ({ onCompleted, proposalId }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 3000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -275,7 +275,7 @@ export const useHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) 
     `,
     {
       onCompleted,
-      pollInterval: 3000,
+      pollInterval: 10000,
       notifyOnNetworkStatusChange: true,
       variables: {
         address,
@@ -308,7 +308,7 @@ export const useTransferHistoryByAddressQuery = ({ onCompleted, address }: IQuer
     `,
     {
       onCompleted,
-      pollInterval: 3000,
+      pollInterval: 10000,
       notifyOnNetworkStatusChange: true,
       variables: {
         address,
@@ -335,7 +335,7 @@ export const useAvataURLFromAddress = ({ onCompleted, address }: IQueryParam) =>
     `,
     {
       onCompleted,
-      pollInterval: 3000,
+      pollInterval: 10000,
       notifyOnNetworkStatusChange: true,
       variables: {
         limit: 99999,

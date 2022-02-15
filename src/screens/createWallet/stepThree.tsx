@@ -7,7 +7,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import MnemonicQuiz from "@/organims/createWallet/stepThree/mnemonicQuiz";
 import { BgColor } from "@/constants/theme";
-import { setBioAuth, setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
+import { setBioAuth, setNewWallet, setPasswordForEstimateGas, setWalletWithAutoLogin } from "@/util/wallet";
 import { AppContext } from "@/util/context";
 import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
@@ -40,6 +40,7 @@ const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps>
             address: address,
         }));
 
+        await setPasswordForEstimateGas(wallet.password);
         setBioAuth(wallet.password);
 
         dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {

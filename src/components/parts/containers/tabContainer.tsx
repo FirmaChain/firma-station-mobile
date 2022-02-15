@@ -1,9 +1,9 @@
 import React from "react";
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { BgColor, Lato, TextColor, WhiteColor } from "../../../constants/theme";
-import Icon from 'react-native-vector-icons/AntDesign';
+import { BgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { ICON_HISTORY } from "@/constants/images";
+import { Setting } from "@/components/icon/icon";
 
 interface Props {
     title: string;
@@ -26,12 +26,12 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props)
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>{title}</Text>
                 <View style={styles.boxH}>
-                    <TouchableOpacity style={{marginRight: 20}} onPress={() => handleMoveToHistory()}>
+                    <TouchableOpacity style={{marginRight: 15}} onPress={() => handleMoveToHistory()}>
                         <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => handleMoveToSetting()}>
-                        <Icon name='setting' size={30} color={WhiteColor}/>
+                        <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
                 </View>
             </View>

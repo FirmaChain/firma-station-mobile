@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, ScrollView, Text } from "react-native";
-import Radio from 'react-native-vector-icons/MaterialCommunityIcons';
 import { BorderColor, Lato, TextColor, WhiteColor } from "../../constants/theme";
+import { Radio } from "../icon/icon";
 
 interface Props {
     initVal: number;
@@ -23,7 +23,7 @@ const ModalItems = ({initVal, data, onPressEvent}:Props) => {
                 return(
                     <Pressable key={index} style={styles.modalContentBox} onPress={() => handleSelect(index)}>
                         <Text style={styles.itemTitle}>{item}</Text>
-                        <Radio name={index === selected? 'radiobox-marked' : 'radiobox-blank'} size={20} color={WhiteColor} />
+                        <Radio size={20} color={WhiteColor} active={index === selected} />
                     </Pressable>
                 )
             })}

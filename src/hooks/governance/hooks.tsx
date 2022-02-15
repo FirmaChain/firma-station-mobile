@@ -31,7 +31,7 @@ export const useGovernanceList = () => {
         list: [],
     });
 
-    useGovernmentQuery({
+    const {startPolling, stopPolling } = useGovernmentQuery({
         onCompleted: (data) =>{
             const list = data.proposals
             .map((proposal:any) => {
@@ -43,9 +43,16 @@ export const useGovernanceList = () => {
             }));
         }
     })
+
+    const handleGovernanceListPolling = (polling:boolean) => {
+        if(polling) return startPolling(10000);
+        return stopPolling();
+    }
+
     
     return {
         governanceState,
+        handleGovernanceListPolling,
     }
 }
 

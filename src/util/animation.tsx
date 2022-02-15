@@ -45,5 +45,8 @@ export const LayoutAnim = () => {
           UIManager.setLayoutAnimationEnabledExperimental(true);
         }
     }
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 };
+
+export const SpringAnim = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+}

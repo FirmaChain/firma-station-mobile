@@ -37,8 +37,19 @@ const StackNavigator: React.FunctionComponent = () => {
     return (
         <Stack.Navigator 
             screenOptions={{
-                animationEnabled: true,
-                animationTypeForReplace: "push",
+                gestureDirection: "horizontal",
+                cardStyleInterpolator: ({current, layouts}) => {
+                    return {
+                        cardStyle: {
+                            transform: [{
+                                translateX: current.progress.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [layouts.screen.width, 0],
+                                }),
+                            },],
+                        }
+                    }
+                }
             }}
             initialRouteName={Screens.LoginCheck}>
             <Stack.Screen

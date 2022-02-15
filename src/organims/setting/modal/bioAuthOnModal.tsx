@@ -29,10 +29,11 @@ const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props)
                 await getChain(walletName).then(res => {
                     if(res){
                         let w = decrypt(res.password, key);
-                        if(w.length > 0) {
+                        if(w !== null) {
                             setActive(true);
+                        } else {
+                            setActive(false);
                         }
-                        
                     }
                 }).catch(error => {
                     console.log(error);

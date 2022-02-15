@@ -2,7 +2,7 @@
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { BgColor, BoxColor, BoxDarkColor } from "../../../constants/theme";
+import { BoxDarkColor } from "../../../constants/theme";
 import Header from "../../header/header";
 import TitleBar from "../titleBar";
 

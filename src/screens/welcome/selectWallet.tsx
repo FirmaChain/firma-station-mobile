@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, Keyboard } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import InputSetVertical from "@/components/input/inputSetVertical";
@@ -11,7 +11,7 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import { DownArrow } from "@/components/icon/icon";
 import { CONTEXT_ACTIONS_TYPE, PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import { BgColor, InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import { getWalletList, setBioAuth, setWalletWithAutoLogin } from "@/util/wallet";
+import { getWalletList, setBioAuth, setPasswordForEstimateGas, setWalletWithAutoLogin } from "@/util/wallet";
 import { getChain } from "@/util/secureKeyChain";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
@@ -79,7 +79,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
                 await getChain(selectedWallet).then(res => {
                     if(res){
                         let w = decrypt(res.password, key.toString());
-                        if(w.length > 0) {
+                        if(w !== null) {
                             setPwValidation(true);
                             setWalletInfo(w);
                         } else {
@@ -91,6 +91,8 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
                     setPwValidation(false);
                 });
             } 
+        } else {
+            setPwValidation(false);
         }
     }
 
@@ -105,6 +107,8 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
             address: adr,
         }));
         
+        await setPasswordForEstimateGas(password);
+
         dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
             name: selectedWallet,
             address: adr,
@@ -137,7 +141,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
             title="Select wallet"
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <View style={styles.contentBox}>
+                <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>
                     <View style={styles.Box}>
                         <View style={styles.walletContainer}>
                             <Text style={styles.title}>Wallet</Text>
@@ -160,7 +164,7 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
                     <View style={styles.buttonBox}>
                         <Button title='Next' active={pwValidation} onPressEvent={onSelectWalletAndMoveToMain} />
                     </View>
-                </View>
+                </Pressable>
             </ViewContainer>
         </Container>
     )

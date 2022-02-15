@@ -14,6 +14,7 @@ import { PasswordValidationCheck } from "@/util/validationCheck";
 import ExportModal from "@/organims/setting/modal/exportModal";
 import { BgColor } from "@/constants/theme";
 import { PLACEHOLDER_FOR_PASSWORD, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
+import { getPrivateKeyFromMnemonic } from "@/util/firma";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -60,7 +61,7 @@ const ExportPrivateKeyScreen: React.FunctionComponent<ExportPrivateKeyProps> = (
         await getChain(walletName).then(res => {
             if(res){
                 let w = decrypt(res.password, key.toString());
-                if(w.length > 0) {
+                if(w !== null) {
                     setMnemonic(w);
                     setIsModalOpen(false);
                 } else {
@@ -73,15 +74,16 @@ const ExportPrivateKeyScreen: React.FunctionComponent<ExportPrivateKeyProps> = (
     }
 
     useEffect(() => {
-        const getPrivatekeyFromMnemonic = async() => {
+        const getPrivatekey = async() => {
             if(mnemonic !== ''){
-                setPrivatekey('PRIVATE KEY');
+                await getPrivateKeyFromMnemonic(mnemonic)
+                .then(res => {if(res) setPrivatekey(res)});
                 setStatus(1);
                 setIsModalOpen(true);
             }
         }
 
-        getPrivatekeyFromMnemonic();
+        getPrivatekey();
     }, [mnemonic])
 
     const handleModalOpen = (open:boolean) => {

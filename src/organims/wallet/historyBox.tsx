@@ -1,4 +1,5 @@
 import { ForwardArrow } from "@/components/icon/icon";
+import { EXPLORER_URL } from "@/constants/common";
 import { convertTime } from "@/util/common";
 import React, { useMemo } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -22,24 +23,23 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
     }, [recentHistory])
 
     const moveToExplorer = (hash:string) => {
-        Linking.openURL('https://explorer-colosseum.firmachain.dev/transactions/' + hash);
+        Linking.openURL(EXPLORER_URL + '/transactions/' + hash);
     }
 
     const moveToHistory = () => {
+        if(recentHistory === undefined) return;
         handleHistory && handleHistory();
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.box}>
-                <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center"}]}>
+                <TouchableOpacity style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center"}]} onPress={()=>moveToHistory()}>
                     <Text style={styles.title}>Recent History</Text>
                     {recentHistory !== undefined &&
-                    <TouchableOpacity onPress={()=>moveToHistory()}>
-                        <ForwardArrow size={20} color={TextCatTitleColor}/>
-                    </TouchableOpacity>
+                    <ForwardArrow size={20} color={TextCatTitleColor}/>
                     }
-                </View>
+                </TouchableOpacity>
                 {recentHistory === undefined? 
                 <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "center", alignItems: "center" ,paddingTop: 18}]}>
                     <Text style={[styles.contentItem, {fontSize: 14}]}>There's no history yet</Text>

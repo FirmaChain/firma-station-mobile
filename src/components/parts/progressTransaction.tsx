@@ -27,27 +27,24 @@ const ProgressTransaction = () => {
     useEffect(() => {
         let index = -1;
         let inverse = true;
+        let count = 0;
         const timer = setInterval(() => {
-            if(index <= -1 || index >= 3) inverse = !inverse;
+            count = count + 5;
+            if(count === 10){
+                setCounter(counter => counter + 1);
+                count = 0;
+            }
             if(inverse && index < 3) index = index + 1;
             if(!inverse && index >= 0) index = index - 1;
 
             if(inverse && (index >= 0  && index < 3)) fadeIn(animated[index]);
             if(!inverse && (index >= 0 && index < 3)) fadeOut(animated[index]);
+
+            if(index <= -1 || index >= 3) inverse = !inverse;
         }, 500);
 
-        let count = 0;
-        const queuedTimer = setInterval(() => {
-            count = count + 1;
-            if(count === 10){
-                setCounter(counter => counter + 1);
-                count = 0;
-            }
-        }, 100);
-    
         return () => {
             clearInterval(timer);
-            clearInterval(queuedTimer);
         };
     }, []);
 

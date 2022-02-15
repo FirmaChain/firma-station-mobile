@@ -9,12 +9,12 @@ import { getUseBioAuth, getWalletList, getWalletWithAutoLogin, setPasswordViaBio
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { getUniqueId } from "react-native-device-info";
-import { LayoutAnim } from "@/util/animation";
 import { WALLET_LIST } from "@/constants/common";
 import DeleteWallet from "@/organims/setting/modal/deleteWallet";
 import BioAuthOnModal from "@/organims/setting/modal/bioAuthOnModal";
 import { AppContext } from "@/util/context";
 import { useNavigation } from "@react-navigation/native";
+import { checkBioMetrics } from "@/util/bioAuth";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -26,11 +26,10 @@ const SettingScreen: React.FunctionComponent = () => {
     const [openBioModal, setOpenBioModal] = useState(false);
     const [useBio, setUseBio] = useState(false);
 
-    const handleBioAuth = (value:boolean) => {
+    const handleBioAuth = async(value:boolean) => {
         if(value === false){
             handleBioAuthState();
         }
-        LayoutAnim();
         setOpenBioModal(value);
         setUseBio(value);
     }
@@ -57,7 +56,6 @@ const SettingScreen: React.FunctionComponent = () => {
     const settingList = [
         {title: 'Change Password', path: 'ChangePW'},
         {title: 'Export Private key', path: 'ExportPK'},
-        {title: 'Export wallet with QR code', path: 'ExportQR'},
     ];
 
     const moveToWelcome = async() => {
@@ -72,7 +70,7 @@ const SettingScreen: React.FunctionComponent = () => {
     }
 
     const handleDeleteWallet = async() => {
-        await removeChain(wallet)
+        await removeChain(wallet.name)
             .then(res => console.log(res))
             .catch(error => console.log(error));
 

@@ -1,10 +1,10 @@
 import React from "react";
 import Clipboard from "@react-native-clipboard/clipboard";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { ScreenWidth } from "../../../util/getScreenSize";
-import { BgColor, BoxColor, GrayColor, Lato, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
-import { Copy } from "@/components/icon/icon";
+import { BgColor, BoxColor, Lato, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import Toast from "react-native-toast-message";
+import TextButton from "@/components/button/textButton";
 
 const MnemonicGrid: React.FC<{
     mnemonic: string;
@@ -29,12 +29,9 @@ const MnemonicGrid: React.FC<{
 
     return (
         <View style={styles.conatainer}>
-            <TouchableOpacity onPress={() => handleMnemonicToClipboard()}>
-                <View style={styles.copyIconWrapper}>
-                    <Text style={styles.copyText}>Press to copy</Text>
-                    <Copy size={15} color={GrayColor} />
-                </View>
-            </TouchableOpacity>
+            <View style={styles.copyIconWrapper}>
+                <TextButton title={"Press to copy"} onPressEvent={handleMnemonicToClipboard} />
+            </View>
             <View style={[styles.box, styles.mnemonicContainer]}>
                 {mnemonicArr.map((item, index) => {
                     return (

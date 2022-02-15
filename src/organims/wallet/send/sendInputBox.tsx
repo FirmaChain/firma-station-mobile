@@ -1,3 +1,4 @@
+import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAddress";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import InputSetVertical from "../../../components/input/inputSetVertical";
@@ -23,7 +24,7 @@ const SendInputBox = ({address, amount, memo}:Props) => {
 
     return (
         <View>
-            <InputSetVertical
+            <InputSetVerticalForAddress
                 title="To address"
                 message=""
                 validation={true}

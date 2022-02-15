@@ -44,16 +44,19 @@ export const useStakingData = (address:string) => {
         delegateList: [],
     });
     const [getStakingComplete, setGetStakingComplete] = useState(false);
+    const [polling, setPolling] = useState(true);
 
     useEffect(() => {
         if(address === '' || address === undefined) return;
         const interval = setInterval(() => {
-            getStaking(address).then((res:StakingState) => {
-                if(res) {
-                    setStakingState(res);
-                    setGetStakingComplete(true);
-                }
-            })
+            if(polling){
+                getStaking(address).then((res:StakingState) => {
+                    if(res) {
+                        setStakingState(res);
+                        setGetStakingComplete(true);
+                    }
+                })
+            }
         }, 5000);
 
         return() => {
@@ -61,9 +64,14 @@ export const useStakingData = (address:string) => {
         }
     }, []);
 
+    const handleStakingPolling = (state:boolean) => {
+        setPolling(state)
+    }
+
     return { 
         stakingState,
         getStakingComplete,
+        handleStakingPolling,
     }
 }
 
@@ -121,7 +129,7 @@ export const useValidatorData = () => {
     });
 
     const handleValidatorsPolling = (polling:boolean) => {
-        if(polling) return startPolling(3000);
+        if(polling) return startPolling(10000);
         return stopPolling();
     }
 

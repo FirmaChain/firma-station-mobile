@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BgColor, BorderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { convertAmount, convertNumber, convertPercentage } from "../../../util/common";
-import CaretUp from "react-native-vector-icons/Ionicons";
+import { CaretUp } from "@/components/icon/icon";
 
 interface Props {
     data: any;
@@ -75,7 +75,7 @@ const VotingPercentage = ({data}:Props) => {
             <View style={styles.quorumWrapper}>
                 <View style={[styles.quorumLine, {left: convertNumber(data.quorum) + "%" }]} />
                 <View style={[styles.quorum, {left: convertNumber(data.quorum) + "%", marginLeft: -9 }]}>
-                    <CaretUp name="caret-up" size={20} color={WhiteColor} />
+                    <CaretUp size={20} color={WhiteColor} />
                 </View>
             </View>
 

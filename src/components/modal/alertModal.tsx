@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, TouchableOpacity, StyleSheet, Text, View } from "react-native";
-import { BoxColor, Lato, PointColor, TextCatTitleColor, TextColor, } from "../../constants/theme";
+import { BoxColor, Lato, PointColor, TextCatTitleColor, TextColor } from "../../constants/theme";
 
 interface Props {
     visible: boolean;
@@ -28,6 +28,7 @@ const AlertModal = ({visible, handleOpen, isSingleButton = false, title, desc, c
             <Modal
                 animationType="fade"
                 transparent={true}
+                onRequestClose={closeModal}
                 visible={visible}>
                     <View style={styles.modalContainer}>
                         <View style={styles.deem}/>
@@ -39,7 +40,7 @@ const AlertModal = ({visible, handleOpen, isSingleButton = false, title, desc, c
                             <View style={styles.buttonBox}>
                                 <TouchableOpacity 
                                     style={isSingleButton?
-                                        [styles.button, {padding: 15, borderBottomEndRadius: 4, borderBottomStartRadius: 4}]:
+                                        [styles.button, {padding: 17, borderBottomEndRadius: 4, borderBottomStartRadius: 4}]:
                                         [styles.button, {borderBottomLeftRadius: 4}]} 
                                     onPress={()=>closeModal()}>
                                     <Text style={styles.buttonTitle}>{isSingleButton? 'OK':'Cancel'}</Text>

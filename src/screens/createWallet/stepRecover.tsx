@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor, InputBgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
@@ -12,6 +12,7 @@ import { recoverFromMnemonic } from "@/util/firma";
 import Toast from "react-native-toast-message";
 import { AppContext } from "@/util/context";
 import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
+import TextButton from "@/components/button/textButton";
 
 type StepRecoverScreenNavigationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
@@ -41,14 +42,15 @@ const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (prop
     }
 
     const handleRecoverViaSeed = async() => {
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         const wallet = await recoverFromMnemonic(mnemonic);
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
         if(wallet === undefined){
             return Toast.show({
                 type: 'error',
                 text1: 'Check your mnemonic again.',
             });
         }
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         navigation.navigate(Screens.CreateStepOne, {wallet: wallet});
     }
 
@@ -65,13 +67,10 @@ const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (prop
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>
-                        <View style={{flex: 2}}>
+                        <Pressable onPress={() => Keyboard.dismiss()} style={{flex: 2}}>
                             <View style={styles.wrapperH}>
                                 <Text style={styles.title}>Enter seed phrase</Text>
-                                <TouchableOpacity style={{flexDirection: "row"}} onPress={()=>pasteFromClipboard()}>
-                                    <Text style={[styles.title, styles.button]}>Paste</Text>
-                                    {/* <Paste size={20} color={GrayColor} /> */}
-                                </TouchableOpacity>
+                                <TextButton title={"Paste"} onPressEvent={pasteFromClipboard} />
                             </View>
                             <View style={[styles.inputWrapper, {borderColor: focus? WhiteColor : 'transparent'}]}>
                                 <TextInput
@@ -80,11 +79,11 @@ const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (prop
                                     value={mnemonic}
                                     selectionColor={WhiteColor}
                                     keyboardType="url"
-                                    onChangeText={text=>handleMnemonic(text)} 
+                                    onChangeText={text => handleMnemonic(text)} 
                                     onFocus={()=>setFocus(true)}
                                     onBlur={()=>setFocus(false)}/>
                             </View>
-                        </View>
+                        </Pressable>
                         <View style={{flex: 1, justifyContent: "flex-end"}}>
                             <Button
                                 title="Recover"
@@ -111,13 +110,6 @@ const styles = StyleSheet.create({
         color: TextColor,
         fontFamily: Lato,
         fontSize: 14,
-    },
-    button :{
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 4,
-        overflow: "hidden",
-        backgroundColor: "#0f3f92",
     },
     inputWrapper: {
         height: 200,

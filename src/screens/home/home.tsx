@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -12,12 +12,7 @@ import GovernanceScreen from "./governance/governance";
 import { BoxDarkColor, GrayColor, WhiteColor } from "@/constants/theme";
 import { Image } from "react-native";
 import { ICON_DOCUMENT } from "@/constants/images";
-import { useBalanceData, useHistoryData } from "@/hooks/wallet/hooks";
-import { useStakingData, useValidatorData } from "@/hooks/staking/hooks";
-import { useGovernanceList } from "@/hooks/governance/hooks";
 import SplashScreen from "react-native-splash-screen";
-import { AppContext } from "@/util/context";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -29,34 +24,6 @@ const Tab = createBottomTabNavigator();
 
 const HomeScreen: React.FunctionComponent<Props> = (props) => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const { wallet, dispatchEvent } = useContext(AppContext);
-
-    const { balance } = useBalanceData(wallet.address);
-    const { recentHistory, handleHisotyPolling } = useHistoryData(wallet.address);
-    const { validatorsState, handleValidatorsPolling } = useValidatorData();
-    const { stakingState, getStakingComplete } = useStakingData(wallet.address);
-    const { governanceState } = useGovernanceList();
-
-    const walletProps = {
-        state:{
-            balance,
-            recentHistory,
-            stakingState,
-        }
-    }
-
-    const stakingProps = {
-        state:{
-            stakingState,
-            validatorsState,
-        }
-    }
-
-    const governanceProps = {
-        state: {
-            governanceState
-        }
-    }
 
     const [title, setTitle] = useState('Wallet');
 
@@ -79,23 +46,9 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
 
     useFocusEffect(
         useCallback(() => {
-            handleHisotyPolling && handleHisotyPolling(true);
-            handleValidatorsPolling && handleValidatorsPolling(true);
-            return () => {
-                handleHisotyPolling && handleHisotyPolling(false);
-                handleValidatorsPolling && handleValidatorsPolling(false);
-            }
+            SplashScreen.hide();
         }, [])
     )
-
-    useEffect(() => {
-        if(validatorsState.validators.length === 0 || getStakingComplete === false){
-            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
-        } else {
-            SplashScreen.hide();
-            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
-        }
-    }, [validatorsState, getStakingComplete])
 
     return (
         <TabContainer
@@ -112,7 +65,7 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
                 initialRouteName="Wallet">
                 <Tab.Screen 
                     name={'Wallet'} 
-                    children={() => <WalletScreen {...walletProps} />}
+                    children={() => <WalletScreen />}
                     options={{
                         tabBarIcon: ({focused}) => {
                             return <WalletIcon name={'ios-wallet-outline'} size={24} color={focused? WhiteColor : GrayColor}/>
@@ -120,7 +73,7 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
                     }}/>
                 <Tab.Screen 
                     name={'Staking'} 
-                    children={() => <StakingScreen {...stakingProps} />}
+                    children={() => <StakingScreen />}
                     options={{
                         tabBarIcon:
                         ({focused}) => {
@@ -129,7 +82,7 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
                     }}/>
                 <Tab.Screen 
                     name={'Governance'} 
-                    children={() => <GovernanceScreen {...governanceProps} />}
+                    children={() => <GovernanceScreen />}
                     options={{
                         tabBarIcon: ({focused}) => {
                             return <Image style={{width: 24, height: 24, opacity: focused? 1: .6}} source={ICON_DOCUMENT}/>

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import React from "react";
+import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import StackNavigator from "./navigators/stackNavigators";
 import CustomToast from "./components/toast/customToast";
 import { LogBox, StatusBar } from "react-native";
 import { ApolloProvider, client } from "./apollo";
 import { AppContext, DispatchContext } from "./util/context";
-import { CONTEXT_ACTIONS_TYPE } from "./constants/common";
 import Progress from "./components/parts/progress";
 // import Progress from "./components/parts/progress";
 
@@ -20,11 +19,11 @@ export default function App() {
         animated={true}
         barStyle={'light-content'} />
       <AppContext.Provider value={{dispatchEvent, isLoading, wallet}}>
-        <NavigationContainer>
+        <NavigationContainer theme={DarkTheme}>
           <StackNavigator/>
         </NavigationContainer>
-        <CustomToast />
         {isLoading && <Progress />}
+        <CustomToast />
       </AppContext.Provider>
       
     </ApolloProvider>

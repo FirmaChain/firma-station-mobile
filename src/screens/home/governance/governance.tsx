@@ -1,26 +1,31 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BgColor } from "@/constants/theme";
 import ProposalList from "@/organims/governance/proposalList";
+import { useGovernanceList } from "@/hooks/governance/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governance>;
 
-interface Props {
-    state: any
-}
-
-const GovernanceScreen: React.FunctionComponent<Props> = (props) => {
+const GovernanceScreen: React.FunctionComponent = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const {state} = props;
-    const {governanceState} = state;
 
+    const { governanceState, handleGovernanceListPolling } = useGovernanceList();
 
     const handleMoveToDetail = (proposalId:number) => {
         navigation.navigate(Screens.Proposal, {proposalId: proposalId});
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            handleGovernanceListPolling && handleGovernanceListPolling(true);
+            return () => {
+                handleGovernanceListPolling && handleGovernanceListPolling(false);
+            }
+        }, [])
+    )
 
     return (
         <View style={styles.container}>
