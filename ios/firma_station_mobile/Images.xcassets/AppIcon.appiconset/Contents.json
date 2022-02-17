@@ -1,41 +1,49 @@
 {
   "images" : [
     {
+      "filename" : "ic-loding-step-3-wh-40-px@2x.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
+      "filename" : "ic-loding-step-3-wh-60-px.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
+      "filename" : "ic-loding-step-3-wh-58.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
+      "filename" : "ic-loding-step-3-wh-87.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
+      "filename" : "ic-loding-step-3-wh-80.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
+      "filename" : "ic-loding-step-3-wh-120.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
+      "filename" : "ic-loding-step-3-wh-121.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
+      "filename" : "ic-loding-step-3-wh-180.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"

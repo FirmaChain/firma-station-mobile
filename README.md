@@ -25,7 +25,7 @@ How to build and run firma-station-mobile
 4. Install the following modules.
 <pre>
   <code>
-  yarn add react-native-gesture-handler react-navigation react-native-safe-area-context react-native-screens @react-native-community/masked-view @react-navigation/native @react-navigation/stack @react-native-clipboard/clipboard react-native-status-bar-height react-native-iphone-x-helper react-native-toast-message asyncstorage-down moment @react-navigation/bottom-tabs crypto-js@3.3.0 react-native-keychain @apollo/client graphql
+  yarn add react-native-gesture-handler react-navigation react-native-safe-area-context react-native-screens @react-native-community/masked-view @react-navigation/native @react-navigation/stack @react-native-clipboard/clipboard react-native-status-bar-height react-native-iphone-x-helper react-native-toast-message asyncstorage-down moment @react-navigation/bottom-tabs crypto-js@3.3.0 react-native-keychain @apollo/client@3.4.16 @apollo/react-hooks@4.0.0 graphql@15.7.1 apollo-boost@0.4.9 react-native-biometrics react-native-device-info react-native-camera react-native-qrcode-scanner react-native-permissions react-native-svg react-native-qrcode-svg
   </code>
 </pre>
 <pre>
@@ -33,6 +33,7 @@ How to build and run firma-station-mobile
   yarn add --dev babel-plugin-module-resolver
   yarn add react-native-vector-icons
   yarn add --dev @types/react-native-vector-icons
+  npm i react-native-splash-screen --save
   </code>
 </pre>
 

@@ -4,9 +4,12 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, '11.0'
 
 target 'firma_station_mobile' do
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  
   config = use_native_modules!
-
+  
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
