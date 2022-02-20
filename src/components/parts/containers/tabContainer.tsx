@@ -26,11 +26,11 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props)
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>{title}</Text>
                 <View style={styles.boxH}>
-                    <TouchableOpacity style={{marginRight: 15}} onPress={() => handleMoveToHistory()}>
+                    <TouchableOpacity style={{marginRight: 10, paddingVertical: 10}} onPress={() => handleMoveToHistory()}>
                         <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => handleMoveToSetting()}>
+                    <TouchableOpacity style={{paddingVertical: 10}} onPress={() => handleMoveToSetting()}>
                         <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
                 </View>

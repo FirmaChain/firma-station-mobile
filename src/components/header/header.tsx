@@ -40,12 +40,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        paddingHorizontal: 20,
     },
     stepBox: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
+        paddingHorizontal: 20,
     },
     stepText: {
         fontFamily: Lato,

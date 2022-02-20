@@ -1,5 +1,9 @@
 import moment from "moment";
 
+export const wait = (timeout:number) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
 export const convertNumber = (value: string | number | undefined) => {
     if(!Number(value)) return 0;
     return Number(value);
@@ -57,10 +61,9 @@ export const convertPercentage = (value: string | number) => {
 
 export const resizeFontSize = (amount:number, reference:number, initSize:number) => {  
     let fontSize = initSize;
-    if(amount >= reference) fontSize = initSize - 3;
-    if(amount >= reference * 10) fontSize = initSize - 4;
-    if(amount >= reference * 100) fontSize = initSize - 5;
-    if(amount >= reference * 1000) fontSize = initSize - 7;
-    if(amount >= reference * 10000) fontSize = initSize - 9;
+    if(amount >= reference) fontSize = initSize - 2;
+    if(amount >= reference * 10) fontSize = initSize - 3;
+    if(amount >= reference * 100) fontSize = initSize - 4;
+    if(amount >= reference * 1000) fontSize = initSize - 5;
     return fontSize;
 }

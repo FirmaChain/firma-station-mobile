@@ -1,5 +1,5 @@
 import Clipboard from "@react-native-clipboard/clipboard";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "../../constants/theme";
 import TextButton from "../button/textButton";
@@ -13,8 +13,9 @@ const InputSetVerticalForAddress: React.FC<{
     validation?: boolean;
     placeholder: string;
     secure?: boolean;
+    resetValues?: boolean;
     onChangeEvent: Function;
-}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, onChangeEvent}) => {
+}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, resetValues = false, onChangeEvent}) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
     const [openModal, setOpenModal] = useState(false);
@@ -34,6 +35,10 @@ const InputSetVerticalForAddress: React.FC<{
         handleInputChange(copied);
     }
 
+    useEffect(() => {
+        if(resetValues) handleInputChange('');
+    }, [resetValues])
+    
     return (
         <View style={styles.viewContainer}>
             <View style={styles.textContainer}>

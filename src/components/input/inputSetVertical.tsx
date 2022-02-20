@@ -9,8 +9,9 @@ const InputSetVertical: React.FC<{
     validation?: boolean;
     placeholder: string;
     secure?: boolean;
+    resetValues?: boolean;
     onChangeEvent: Function;
-}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, onChangeEvent}) => {
+}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, resetValues = false, onChangeEvent}) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 
@@ -18,6 +19,10 @@ const InputSetVertical: React.FC<{
         setVal(value);
         onChangeEvent && onChangeEvent(value);
     }
+
+    useEffect(() => {
+        if(resetValues) handleInputChange('');
+    }, [resetValues])
     
     return (
         <View style={styles.viewContainer}>

@@ -1,5 +1,6 @@
 import { USE_BIO_AUTH, WALLET_LIST } from "@/constants/common";
 import { getUniqueId } from "react-native-device-info";
+import { confirmViaBioAuth } from "./bioAuth";
 import { getAdrFromMnemonic } from "./firma";
 import { decrypt, encrypt, keyEncrypt } from "./keystore";
 import { getChain, setChain } from "./secureKeyChain";
@@ -47,6 +48,8 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
         address: adr,
     }));
 
+    await setPasswordForEstimateGas(password);
+
     const useBioAuth = await getUseBioAuth();
     if(useBioAuth){
         await setPasswordViaBioAuth(password);
@@ -56,10 +59,8 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
 }
 
 export const getWallet = async(name:string, password:string) => {
-    console.log(name, password);
-    
     const walletKey:string = keyEncrypt(name, password);
-    let result;
+    let result = '';
     await getChain(name).then(res => {
         if(res === false) return null;
         result = decrypt(res.password, walletKey); 
@@ -97,10 +98,6 @@ export const setWalletWithAutoLogin = async(walletInfo:string) => {
     setChain(UNIQUE_ID, encWallet);
 }
 
-export const setUseBioAuth = (state:boolean) => {
-    setChain(USE_BIO_AUTH, state.toString());
-}
-
 export const getUseBioAuth = async() => {
     let result = false;
     await getChain(USE_BIO_AUTH).then(res => {
@@ -135,6 +132,8 @@ export const getPasswordViaBioAuth = async() => {
 
     let result = '';
     await getChain(UNIQUE_ID + timestamp.toString()).then(res => {
+        console.log(res);
+        
         if(res === false) return null;
         result = decrypt(res.password, UNIQUE_ID + timestamp.toString());
     }).catch(error => {
@@ -158,4 +157,42 @@ export const setPasswordViaBioAuth = async(password:string) => {
 
     const encWallet = encrypt(password, UNIQUE_ID + timestamp.toString());
     setChain(UNIQUE_ID + timestamp.toString(), encWallet);
+}
+
+export const getPasswordForEstimateGas = async() => {
+    let timestamp = 0;
+    await getWalletWithAutoLogin().then(res => {
+        if('') return null;
+        const result = JSON.parse(res);
+        timestamp = result.timestamp;
+    }).catch(error => {
+        console.log('error : ' + error);
+        return null;
+    })
+
+    let result = '';
+    await getChain(timestamp.toString() + UNIQUE_ID).then(res => {
+        if(res === false) return null;
+        result = decrypt(res.password, timestamp.toString() + UNIQUE_ID);
+    }).catch(error => {
+        console.log('error : ' + error);
+        return null;
+    })
+
+    return result;
+}
+
+export const setPasswordForEstimateGas = async(password:string) => {
+    let timestamp = 0;
+    await getWalletWithAutoLogin().then(res => {
+        if('') return null;
+        const result = JSON.parse(res);
+        timestamp = result.timestamp;
+    }).catch(error => {
+        console.log('error : ' + error);
+        return null;
+    })
+
+    const encWallet = encrypt(password, timestamp.toString() + UNIQUE_ID);
+    setChain(timestamp.toString() + UNIQUE_ID, encWallet);
 }

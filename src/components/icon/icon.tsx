@@ -100,3 +100,15 @@ export const FailCircle = ({size, color}:Props) => {
     )
 }
 
+export const SortASC = ({size, color}:Props) => {
+    return (
+        <MaterialCommunityIcons name="sort-ascending" size={size} color={color} />
+    )
+}
+
+export const SortDESC = ({size, color}:Props) => {
+    return (
+        <MaterialCommunityIcons name="sort-descending" size={size} color={color} />
+    )
+}
+

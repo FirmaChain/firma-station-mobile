@@ -25,7 +25,7 @@ const SmallButton: React.FC<{
         <TouchableOpacity 
             disabled={!active}
             style={[styles.button, 
-                {width: size, 
+                {maxWidth: size, 
                 height: buttonHeight, 
                 backgroundColor: active?color:DisableColor}]} 
             onPress={()=>handleOnPress()}>
@@ -38,6 +38,9 @@ export default SmallButton;
 
 const styles = StyleSheet.create({
     button: {
+        flex: 1,
+        width: "100%",
+        minWidth: 100,
         height: 42,
         overflow: "hidden",
         borderRadius: 4,

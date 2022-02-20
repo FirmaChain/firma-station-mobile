@@ -46,7 +46,7 @@ export const encrypt = (originalMessage: string, pass: string): string => {
     }
 };
 
-export const decrypt = (encryptMessage: string, pass: string): string => {
+export const decrypt = (encryptMessage: string, pass: string): any => {
     try {
         const salt = CryptoJS.enc.Hex.parse(encryptMessage.substr(0, 32));
         
@@ -64,9 +64,10 @@ export const decrypt = (encryptMessage: string, pass: string): string => {
             mode: CryptoJS.mode.CBC,
         }).toString(CryptoJS.enc.Utf8);
 
+        if(decrypted === '') return null;
         return decrypted;
     } catch (error) {
         console.log(error);
-        return "";
+        return null;
     }
 };

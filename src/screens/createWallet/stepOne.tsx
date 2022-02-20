@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Pressable, Keyboard } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { Wallet, createNewWallet } from "@/util/firma";
@@ -8,9 +8,10 @@ import InputSetVertical from "@/components/input/inputSetVertical";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
-import { setBioAuth, setNewWallet, setWalletWithAutoLogin } from "@/util/wallet";
+import { setBioAuth, setNewWallet, setPasswordForEstimateGas, setWalletWithAutoLogin } from "@/util/wallet";
 import { BgColor } from "@/constants/theme";
 import { AppContext } from "@/util/context";
+import Toast from "react-native-toast-message";
 import { CONTEXT_ACTIONS_TYPE, 
     PLACEHOLDER_FOR_PASSWORD, 
     PLACEHOLDER_FOR_PASSWORD_CONFIRM, 
@@ -97,11 +98,18 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
         dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         try {
             const result = await createNewWallet();
+            if(result === undefined){
+                dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+                return Toast.show({
+                    type: 'error',
+                    text1: 'Wallet creation failed. Please try again.',
+                });
+            }
             const wallet: Wallet = {
                 name: walletName,
                 password: password,
-                mnemonic: result?.mnemonic,
-                privatekey: result?.privateKey,
+                mnemonic: result.mnemonic,
+                privatekey: result.privateKey,
             }
 
             navigation.navigate(Screens.CreateStepTwo, {wallet: wallet});
@@ -117,7 +125,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
             name: walletName,
             address: address,
         }));
-
+        await setPasswordForEstimateGas(password);
         setBioAuth(password);
         dispatchEvent &&dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
             name: walletName,
@@ -139,7 +147,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
             backEvent={handleBack}>
 
             <ViewContainer bgColor={BgColor}>
-                <View style={styles.contentBox}>
+                <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>
                     <ScrollView>
                         <InputSetVertical 
                             title={walletNameText.title}
@@ -168,7 +176,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
                             active={confirm && nameValidation} 
                             onPressEvent={wallet? onCompleteRecoverWallet : onCreateWalletAndMoveToStepTwo} />
                     </View>
-                </View>
+                </Pressable>
             </ViewContainer>
         </Container>
         </>

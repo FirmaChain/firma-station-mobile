@@ -1,21 +1,18 @@
 import React from "react";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { StyleSheet, Text, View } from "react-native";
-import { ScreenWidth } from "../../../util/getScreenSize";
-import { BgColor, BoxColor, Lato, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
+import { ScreenWidth } from "@/util/getScreenSize";
+import { BgColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import Toast from "react-native-toast-message";
 import TextButton from "@/components/button/textButton";
+import WarnContainer from "@/components/parts/containers/warnContainer";
+import { MNEMONIC_WARN_MESSAGE } from "@/constants/common";
 
 const MnemonicGrid: React.FC<{
     mnemonic: string;
 }> = ({mnemonic}) => {
 
     const mnemonicArr = mnemonic.split(' ');
-    const warning = {
-        msg_first: `If you lose your seed phrase it's `,
-        accrent: `gone forever.`,
-        msg_last: `Station doesn't store any data.`,
-    }
 
     const handleMnemonicToClipboard = () => {
         Clipboard.setString(mnemonic);
@@ -39,13 +36,8 @@ const MnemonicGrid: React.FC<{
                     )
                 })}
             </View>
-
-            <View style={styles.wranContainer}>
-                <Text style={styles.warnText}>{warning.msg_first}
-                    <Text style={[styles.warnText, {fontWeight: 'bold'}]}>{warning.accrent}</Text>
-                </Text>
-                <Text style={styles.warnText}>{warning.msg_last}</Text>
-            </View>
+            
+            <WarnContainer text={MNEMONIC_WARN_MESSAGE} />
         </View>
     )
 }
@@ -93,17 +85,4 @@ const styles = StyleSheet.create({
         fontSize: 12,
         overflow: 'hidden',
     },
-    wranContainer: {
-        fontFamily: Lato,
-        backgroundColor: BoxColor,
-        borderRadius: 4,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        overflow: 'hidden',
-    },
-    warnText: {
-        fontSize: 14,
-        lineHeight: 20,
-        color: TextWarnColor,
-    }
 })
