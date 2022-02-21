@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
@@ -8,9 +8,9 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import ValidatorSelectModal from "@/organims/staking/delegate/validatorSelectModal";
 import WalletInfo from "@/organims/wallet/send/walletInfo";
-import { AUTO_ENTERED_AMOUNT_TEXT, CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
+import { AUTO_ENTERED_AMOUNT_TEXT, CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, REDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
 import { DownArrow, QuestionCircle, Radio } from "@/components/icon/icon";
-import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import { AppContext } from "@/util/context";
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from "@/util/firma";
 import WarnContainer from "@/components/parts/containers/warnContainer";
@@ -48,6 +48,9 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const [openSignModal, setOpenSignModal] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
 
+    const autoList = ["max", "50%", "25%", "10%"];
+    const [openAutoModal, setOpenAutoModal] = useState(false);
+
     const [autoActive, setAutoActive] = useState(false);
     const [autoAmount, setAutoAmount] = useState(0);
     const [activeQuestion, setActiveQuestion] = useState(false);
@@ -56,6 +59,17 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const [selectValidatorMoniker, setSelectValidatorMoniker] = useState("");
     const [selectDelegationAmount, setSelectDelegationAmount] = useState(0);
     const [openSelectModal, setOpenSelectModal] = useState(false);
+
+    const noticeText = useMemo(() => {
+        switch (state.type) {
+            case "Redelegate":
+                return REDELEGATE_NOTICE_TEXT;
+            case "Undelegate":
+                return UNDELEGATE_NOTICE_TEXT;
+            default:
+                return "";
+        }
+    }, [state.type])
 
     const handleTransaction = (password:string) => {
         let transactionState:KeyValue = {
@@ -109,6 +123,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                     forcedValue={autoAmount.toString()}
                     resetValues={resetInputValues}
                     onChangeEvent={handleAmount}/>
+                
                 <View style={styles.radioBox}>
                     <TouchableOpacity style={styles.radioBox} onPress={() => setAutoActive(!autoActive)}>
                         <Radio active={autoActive} size={20} color={WhiteColor} />
@@ -120,14 +135,14 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                         </TouchableOpacity>
                     }
                 </View>
-                {state.type === "Undelegate" &&
-                <View style={{paddingVertical: 15}}>
-                    <WarnContainer text={UNDELEGATE_NOTICE_TEXT} />
-                </View>
-                }
                 {activeQuestion &&
                 <View style={{paddingVertical: 15}}>
-                    <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} />
+                    <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
+                </View>
+                }
+                {(state.type === "Undelegate" || state.type === "Redelegate")&&
+                <View style={{paddingVertical: 15}}>
+                    <WarnContainer text={noticeText} />
                 </View>
                 }
             </View>
@@ -140,7 +155,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                 <View style={[styles.conatainer, {marginBottom: 13}]}>
                     <View style={styles.selectBox}>
                         <Text style={styles.title}>Source Validator</Text>
-                        <TouchableOpacity style={styles.select} onPress={() => handleSelectModal(true)}>
+                        <TouchableOpacity style={[styles.select]} onPress={() => handleSelectModal(true)}>
                             <Text style={[styles.selectTitle, selectOperatorAddressSrc === "" &&{color: InputPlaceholderColor}]}>{selectOperatorAddressSrc === ""? "Select..." : selectValidatorMoniker}</Text>
                             <DownArrow size={10} color={InputPlaceholderColor} />
                         </TouchableOpacity>
@@ -198,6 +213,14 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
 
     const handleSelectModal = (open:boolean) => {
         setOpenSelectModal(open);
+    }
+
+    const handleSelectAutoDelegateAmount = (value:number) => {
+        console.log(value);
+    }
+
+    const handleSelectAutoDelegateModal = (open:boolean) => {
+        setOpenAutoModal(open);
     }
 
     useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "../../constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, PointColor, PointLightColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "../../constants/theme";
 
 const InputSetVertical: React.FC<{
     title: string;
@@ -9,9 +9,11 @@ const InputSetVertical: React.FC<{
     validation?: boolean;
     placeholder: string;
     secure?: boolean;
+    accent?: boolean;
+    forcedValue?: string;
     resetValues?: boolean;
     onChangeEvent: Function;
-}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, resetValues = false, onChangeEvent}) => {
+}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 
@@ -23,14 +25,18 @@ const InputSetVertical: React.FC<{
     useEffect(() => {
         if(resetValues) handleInputChange('');
     }, [resetValues])
-    
+
+    useEffect(() => {
+        if(forcedValue !== '') handleInputChange(forcedValue);
+    }, [forcedValue])
+
     return (
         <View style={styles.viewContainer}>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>{title}</Text>
             </View>
             <TextInput
-                style={[styles.input, {borderColor: focus? WhiteColor : 'transparent'}]}
+                style={[styles.input, accent? {borderColor: PointLightColor} : {borderColor: focus? WhiteColor : 'transparent'}]}
                 placeholder={placeholder}
                 placeholderTextColor={InputPlaceholderColor}
                 secureTextEntry={secure}

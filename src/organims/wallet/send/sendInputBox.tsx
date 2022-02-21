@@ -1,4 +1,5 @@
 import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAddress";
+import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import InputSetVertical from "../../../components/input/inputSetVertical";
@@ -7,10 +8,11 @@ interface Props {
     address: any;
     amount: any;
     memo: any;
+    limitAmount: number;
     reset: boolean;
 }
 
-const SendInputBox = ({address, amount, memo, reset}:Props) => {
+const SendInputBox = ({address, amount, memo, limitAmount, reset}:Props) => {
     const handleAddress = (value:string) => {
         address(value);
     }
@@ -32,12 +34,10 @@ const SendInputBox = ({address, amount, memo, reset}:Props) => {
                 placeholder="Address"
                 resetValues={reset}
                 onChangeEvent={handleAddress}/>
-            <InputSetVertical
+            <InputSetVerticalForAmount
                 title="Amount"
-                message=""
-                numberOnly={true}
-                validation={true}
                 placeholder="0 FCT"
+                limitValue={limitAmount}
                 resetValues={reset}
                 onChangeEvent={handleAmount}/>
             <InputSetVertical

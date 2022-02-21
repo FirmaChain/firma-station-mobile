@@ -1,19 +1,24 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ExclamationCircle } from "@/components/icon/icon";
+import { ExclamationCircle, QuestionCircle } from "@/components/icon/icon";
 import { BoxColor, Lato, TextWarnColor } from "@/constants/theme";
 
 interface Props {
     bgColor?: string;
     text: string;
+    question?: boolean;
 }
 
-const WarnContainer = ({bgColor = BoxColor, text}:Props) => {
+const WarnContainer = ({bgColor = BoxColor, text, question = false}:Props) => {
     return (
         <View style={[styles.wranContainer, {backgroundColor: bgColor}]}>
             <View style={styles.box}>
                 <View style={{height: 20, justifyContent: "center"}}>
+                    {question? 
+                    <QuestionCircle size={15} color={TextWarnColor} />
+                    :
                     <ExclamationCircle size={15} color={TextWarnColor} />
+                    }
                 </View>
                 <Text style={styles.warnText}>{text}</Text>
             </View>
