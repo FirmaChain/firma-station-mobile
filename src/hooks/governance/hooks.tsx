@@ -1,5 +1,5 @@
 import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { convertNumber } from "../../util/common";
 
 export interface GovernanceState {
@@ -30,8 +30,9 @@ export const useGovernanceList = () => {
     const [governanceState, setGovernanceList] = useState<GovernanceState>({
         list: [],
     });
+    const [getGovernanceComplete, setGovernanceComplete] = useState(false);
 
-    const {startPolling, stopPolling } = useGovernmentQuery({
+    const { startPolling } = useGovernmentQuery({
         onCompleted: (data) =>{
             const list = data.proposals
             .map((proposal:any) => {
@@ -41,17 +42,17 @@ export const useGovernanceList = () => {
                 ...prevState,
                 list,
             }));
+            setGovernanceComplete(true);
         }
     })
 
-    const handleGovernanceListPolling = (polling:boolean) => {
-        if(polling) return startPolling(10000);
-        return stopPolling();
+    const handleGovernanceListPolling = () => {
+        return startPolling(0);
     }
 
-    
     return {
         governanceState,
+        getGovernanceComplete,
         handleGovernanceListPolling,
     }
 }
@@ -59,7 +60,7 @@ export const useGovernanceList = () => {
 export const useProposalData = (id:number) => {
     const [proposalState, setProposalState] = useState<ProposalState | null>(null);
 
-    useProposalQuery({
+    const {startPolling } = useProposalQuery({
         proposalId: id.toString(),
         onCompleted: (data) => {
             const classifiedData = () => {
@@ -118,7 +119,13 @@ export const useProposalData = (id:number) => {
         }
     })
 
+    const handleProposalPolling = () => {
+        return startPolling(0);
+    }
+
+
     return {
         proposalState,
+        handleProposalPolling,
     }
 }

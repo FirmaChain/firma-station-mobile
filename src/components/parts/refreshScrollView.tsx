@@ -1,34 +1,43 @@
 import { WhiteColor } from "@/constants/theme";
-import React, { useState } from "react";
-import { RefreshControl, StyleSheet, ScrollView } from "react-native";
+import { wait } from "@/util/common";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useRef, useState } from "react";
+import { RefreshControl, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 
 interface Props {
-    refreshFunc?: Function;
+    scrollEndFunc?: Function;
+    refreshFunc: Function;
+    background?: string;
     children: JSX.Element;
 }
 
-const wait = () => {
-    return new Promise(resolve => setTimeout(resolve));
-}
 
-const RefreshScrollView = ({refreshFunc, children}:Props) => {
-
+const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparent", children}:Props) => {
     const [refreshing, setRefreshing] = useState(false);
+    const scrollRef = useRef<ScrollView|null>(null);
 
     const onRefresh = () => {
         setRefreshing(true);
-        wait().then(() => {
-            refreshFunc && refreshFunc();
+        refreshFunc && refreshFunc();
+        wait(1500).then(() => {
             setRefreshing(false)
         });
     }
 
+    useFocusEffect(
+        useCallback(() => {
+            scrollRef.current?.scrollTo({ y: 0, animated: false});
+        },[])
+    )
+
     return (
         <ScrollView
-            contentContainerStyle={styles.refreshScrollView}
+            ref={scrollRef}
+            onScrollEndDrag={(event:NativeSyntheticEvent<NativeScrollEvent>) => scrollEndFunc && scrollEndFunc(event)}
             refreshControl={
                 <RefreshControl 
                     tintColor={WhiteColor}
+                    style={{backgroundColor: background}}
                     refreshing={refreshing}
                     onRefresh={onRefresh}
                 />
@@ -37,11 +46,5 @@ const RefreshScrollView = ({refreshFunc, children}:Props) => {
         </ScrollView>
     )
 }
-
-const styles = StyleSheet.create({
-    refreshScrollView :{
-        flex: 1,
-    }
-})
 
 export default RefreshScrollView;

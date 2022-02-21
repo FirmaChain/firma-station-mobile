@@ -1,4 +1,4 @@
-import { useHistoryByAddressQuery } from "@/apollo/gqls";
+import { useCurrentHistoryByAddressQuery, useHistoryByAddressQuery } from "@/apollo/gqls";
 import { getBalanceFromAdr } from "@/util/firma";
 import { useEffect, useState } from "react";
 import { convertNumber } from "../../util/common";
@@ -33,17 +33,11 @@ export const useBalanceData = (address:string) => {
 
     useEffect(() => {
         getBalance();
-        const interval = setInterval(() => {
-            getBalance();
-        }, 5000);
-
-        return() => {
-            clearInterval(interval);
-        }
     }, []);
 
     return {
         balance,
+        getBalance,
     }
 }
 
@@ -66,10 +60,10 @@ export const useHistoryData = (address:string) => {
         return "Failed"
     }
 
-    const {startPolling, stopPolling } = useHistoryByAddressQuery({
+    const {startPolling: startHistoryPoling } = useHistoryByAddressQuery({
         address: `{${address}}`,
         onCompleted:(data) => {
-            const list = data.messagesByAddress.map((value:any, index:number) => {
+            const list = data.messagesByAddress.map((value:any) => {
                 const result = {
                     hash: value.transaction.hash,
                     success: convertResult(value.transaction.success),
@@ -77,9 +71,6 @@ export const useHistoryData = (address:string) => {
                     timestamp: value.transaction.block.timestamp,
                     block: value.transaction.block.height,    
                 }
-
-                if(index === 0) setRecentHistory(result);
-
                 return result;
             })
             setHistoryList((prevState) => ({
@@ -89,14 +80,41 @@ export const useHistoryData = (address:string) => {
         }
     });
 
-    const handleHisotyPolling = (polling:boolean) => {
-        if(polling) return startPolling(10000);
-        return stopPolling();
+    const {startPolling: startCurrentHistoryPolling, stopPolling: stopCurrentHistoryPolling} = useCurrentHistoryByAddressQuery({
+        address: `{${address}}`,
+        onCompleted:(data) => {
+            const history = data.messagesByAddress.map((value:any) => {
+                const result = {
+                    hash: value.transaction.hash,
+                    success: convertResult(value.transaction.success),
+                    type: convertMsgType(value.transaction.messages[0]["@type"]),
+                    timestamp: value.transaction.block.timestamp,
+                    block: value.transaction.block.height,    
+                }
+                return result;
+            })
+            setRecentHistory(history[0]);
+        }
+    });
+
+    const handleHisotyPolling = () => {
+        return startHistoryPoling(0);
+    }
+
+    const handleCurrentHistoryPolling = (polling: boolean) => {
+        if(polling) return startCurrentHistoryPolling(30000);
+        return stopCurrentHistoryPolling();
+    }
+
+    const handleCurrentHistoryState = () => {
+        startCurrentHistoryPolling(0);
     }
 
     return {
         historyList, 
         recentHistory,
+        handleCurrentHistoryState,
         handleHisotyPolling,
+        handleCurrentHistoryPolling,
     }
 }

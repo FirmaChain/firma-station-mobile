@@ -10,6 +10,7 @@ import { convertTime } from "@/util/common";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { BgColor, Lato } from "@/constants/theme";
 import VotingSection from "@/organims/governance/proposal/votingSection";
+import RefreshScrollView from "@/components/parts/refreshScrollView";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Proposal>;
 
@@ -27,7 +28,7 @@ const ProposalScreen: React.FunctionComponent<ProposalScreenProps> = (props) => 
     const {params} = route;
     const {proposalId} = params;
 
-    const { proposalState } = useProposalData(proposalId);
+    const { proposalState, handleProposalPolling } = useProposalData(proposalId);
 
     const [titleData, setTitleData] = useState<any>(null);
     const [descData, setDescData] = useState<any>(null);
@@ -82,11 +83,14 @@ const ProposalScreen: React.FunctionComponent<ProposalScreenProps> = (props) => 
             title="Proposal"
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <ScrollView>
+                <RefreshScrollView
+                    refreshFunc={handleProposalPolling}>
+                    <>
                     <TitleSection data={titleData} />
                     <DescriptionSection data={descData} />
                     <VotingSection data={voteData} />
-                </ScrollView>
+                    </>
+                </RefreshScrollView>
             </ViewContainer>
         </Container>
     )

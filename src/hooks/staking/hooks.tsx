@@ -1,8 +1,8 @@
-import { useValidatorFromAddressQuery, useValidatorsQuery } from "@/apollo/gqls";
-import { getStaking } from "@/util/firma";
+import { useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
+import { getDelegations, getStaking } from "@/util/firma";
 import { useEffect, useState } from "react";
-import { convertNumber, convertToFctNumber, isValid } from "../../util/common";
-export const MINT_COIN_PER_BLOCK = 12.8629;
+import { convertNumber, convertToFctNumber } from "@/util/common";
+import { BLOCKS_PER_YEAR } from "@/constants/common";
 
 export interface ValidatorsState {
     totalVotingPower: number;
@@ -23,15 +23,68 @@ export interface StakingState {
     delegated: number;
     undelegate: number;
     stakingReward: number;
-    stakingRewardList: Array<any>;
-    delegateList: Array<StakeInfo>;
 }
 
-export interface StakingValues {
-    available: number;
-    delegated: number;
-    undelegate: number;
-    stakingReward: number;
+export const useDelegationData = (address:string) => {
+    const [delegationState, setDelegationState] = useState<Array<StakeInfo>>([]);
+    const [delegationList, setDelegationList] = useState<Array<StakeInfo>>();
+    const [validatorsDescList, setValidatorsDescList] = useState<Array<any>>();
+    const [delegationPolling, setDelegationPolling] = useState(false);
+
+    const {startPolling } = useValidatorsDescriptionQuery({
+        onCompleted:(data) => {
+            setValidatorsDescList(data.validator);
+        }
+    });
+
+    const handleDelegationPolling = (polling:boolean) => {
+        if(polling){
+            handleDelegationState();
+            setDelegationPolling(true);
+        } else {
+            setDelegationPolling(false);
+        }
+    }
+
+    const handleDelegationState = () => {
+        startPolling(0);
+        getDelegations(address).then((res:Array<StakeInfo>) => {
+            if(res) {
+                setDelegationList(res);
+            }
+        })
+
+        setDelegation();
+    }
+
+    const setDelegation = () => {
+        if(delegationList !== undefined && validatorsDescList !== undefined){
+            setDelegationState(useValidatorDescription(delegationList, validatorsDescList));
+        }
+    }
+
+
+    useEffect(() => {
+        let timer = setInterval(() => {
+            if(delegationPolling){
+                handleDelegationState();
+            }
+        }, 30000);
+        return () => {
+            clearInterval(timer);
+        }
+    })
+
+    useEffect(() => {
+        setDelegation();
+    }, [delegationList, validatorsDescList])
+
+    return {
+        delegationState,
+        handleDelegationState,
+        handleDelegationPolling,
+    }
+
 }
 
 export const useStakingData = (address:string) => {
@@ -40,62 +93,54 @@ export const useStakingData = (address:string) => {
         delegated: 0,
         undelegate: 0,
         stakingReward: 0,
-        stakingRewardList: [],
-        delegateList: [],
     });
-    const [getStakingComplete, setGetStakingComplete] = useState(false);
-    const [polling, setPolling] = useState(true);
+    const [getStakingComplete, setStakingComplete] = useState(false);
+
+    const getStakingState = () => {
+        getStaking(address).then((res:StakingState) => {
+            if(res) {
+                setStakingState(res);
+                setStakingComplete(true);
+            }
+        })
+    }
+
+    const updateStakingState = (available: number, stakingReward: number) => {
+        setStakingState((prevState) => ({
+            ...prevState,
+            available,
+            stakingReward,
+        }))
+    }
 
     useEffect(() => {
         if(address === '' || address === undefined) return;
-        const interval = setInterval(() => {
-            if(polling){
-                getStaking(address).then((res:StakingState) => {
-                    if(res) {
-                        setStakingState(res);
-                        setGetStakingComplete(true);
-                    }
-                })
-            }
-        }, 5000);
-
-        return() => {
-            clearTimeout(interval);
-        }
+        getStakingState();
     }, []);
-
-    const handleStakingPolling = (state:boolean) => {
-        setPolling(state)
-    }
 
     return { 
         stakingState,
         getStakingComplete,
-        handleStakingPolling,
+        getStakingState,
+        updateStakingState,
     }
 }
 
 export const useValidatorDescription = (delegations:Array<StakeInfo>, validators:Array<any>) => {
     const result = delegations.map((value) => {
-        const desc = validators.find(val => val.validatorAddress === value.validatorAddress);
-
-        let moniker = '';
-        let avatar = '';
-        if(desc !== undefined){
-            moniker = desc.validatorMoniker;
-            avatar = desc.validatorAvatar;
-        }
-
+        const desc = validators.find(val => val.validatorInfo.operatorAddress === value.validatorAddress);
+        
+        const validatorDescription = organizeValidatorDescription(desc);
         return {
             validatorAddress: value.validatorAddress,
             delegatorAddress: value.delegatorAddress,
             amount: value.amount,
             reward: value.reward,
-            moniker: moniker,
-            avatarURL: avatar,
+            moniker: validatorDescription.validatorMoniker,
+            avatarURL: validatorDescription.validatorAvatar,
         }
     })
-
+    
     return result;
 }
 
@@ -105,9 +150,8 @@ export const useValidatorData = () => {
         validators: [],
     });
 
-    const {startPolling, stopPolling } = useValidatorsQuery({
+    const {startPolling } = useValidatorsQuery({
         onCompleted:(data) => {
-            
             const stakingData = organizeStakingData(data);
             const validatorsList = data.validator
             .filter((validator: any) => {
@@ -128,9 +172,8 @@ export const useValidatorData = () => {
         }
     });
 
-    const handleValidatorsPolling = (polling:boolean) => {
-        if(polling) return startPolling(10000);
-        return stopPolling();
+    const handleValidatorsPolling = () => {
+        return startPolling(0);
     }
 
     return {
@@ -142,7 +185,7 @@ export const useValidatorData = () => {
 export const useValidatorDataFromAddress = (address:string) => {
     const [validatorState, setValidatorState]:Array<any> = useState();
 
-    useValidatorFromAddressQuery({
+    const {startPolling } = useValidatorFromAddressQuery({
         address: address.toString(),
         onCompleted:(data) => {
             const stakingData = organizeStakingData(data);
@@ -157,9 +200,36 @@ export const useValidatorDataFromAddress = (address:string) => {
         }
     });
 
+    const handleValidatorPolling = () => {
+        return startPolling(0);
+    }
+
+
     return {
         validatorState,
+        handleValidatorPolling,
     };
+}
+
+const organizeValidatorDescription = (validator: any) => {
+    let validatorMoniker = "";
+    let validatorAvatar = "";
+    let validatorDetail = "";
+    let validatorWebsite = "";
+
+    if (validator !== undefined) {
+        validatorMoniker = validator.validator_descriptions[0].moniker;
+        validatorAvatar = validator.validator_descriptions[0].avatar_url;
+        validatorDetail = validator.validator_descriptions[0].details;
+        validatorWebsite = validator.validator_descriptions[0].website;
+    }
+
+    return {
+        validatorMoniker,
+        validatorAvatar,
+        validatorDetail,
+        validatorWebsite,
+    }
 }
 
 const organizeStakingData = (data:any) => {
@@ -181,7 +251,10 @@ const organizeStakingData = (data:any) => {
     const totalVotingPower = convertToFctNumber(data.stakingPool[0].bondedTokens);
     const { signed_blocks_window } = slashingParams;
 
-    const mintCoinPerDay = (86400 / averageBlockTime) * MINT_COIN_PER_BLOCK;
+    const inflation = convertNumber(data.inflation[0].value);
+    const totalSupply = convertToFctNumber(data.supply[0].coins.filter((v: any) => v.denom === "ufct")[0].amount);
+
+    const mintCoinPerDay = (86400 / averageBlockTime) * ((inflation * totalSupply) / BLOCKS_PER_YEAR);
     const mintCoinPerYear = mintCoinPerDay * 365;
 
     return {
@@ -193,18 +266,12 @@ const organizeStakingData = (data:any) => {
 
 const organizeValidatorData = (validator:any, stakingData:any) => {
     const validatorAddress = validator.validatorInfo.operatorAddress;
-        
-    let validatorMoniker = "";
-    let validatorAvatar = "";
-    let validatorDetail = "";
-    let validatorWebsite = "";
 
-    if (isValid(validator.validator_descriptions[0])) {
-        validatorMoniker = validator.validator_descriptions[0].moniker;
-        validatorAvatar = validator.validator_descriptions[0].avatar_url;
-        validatorDetail = validator.validator_descriptions[0].details;
-        validatorWebsite = validator.validator_descriptions[0].website;
-    }
+    const validatorDescription = organizeValidatorDescription(validator);
+    let validatorMoniker = validatorDescription.validatorMoniker;
+    let validatorAvatar = validatorDescription.validatorAvatar;
+    let validatorDetail = validatorDescription.validatorDetail;
+    let validatorWebsite = validatorDescription.validatorWebsite;
 
     const selfDelegateAddress = validator.validatorInfo.selfDelegateAddress;
     const votingPower = validator.validatorVotingPowers[0].votingPower;

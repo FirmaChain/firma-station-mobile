@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { BoxColor, DisableColor, Lato, PointLightColor, TextGrayColor } from "../../constants/theme";
+import { BgColor, BoxColor, DisableColor, Lato, PointLightColor, TextGrayColor } from "../../constants/theme";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
 import { StakeInfo } from "@/hooks/staking/hooks";
@@ -27,7 +27,6 @@ const DelegationList = ({delegations, navigateValidator}:Props) => {
                             <DataSection title="Delegated" data={convertAmount(value.amount) + " FCT"} />
                             <DataSection title="Reward" data={convertAmount(value.reward) + " FCT"} />
                             <View style={{paddingBottom: 22}} />
-                            {index < delegations.length - 1  && <View style={styles.divider} />}
                         </View>
                     </TouchableOpacity>
                 )
@@ -42,18 +41,25 @@ const styles = StyleSheet.create({
         overflow: "hidden",
         justifyContent: 'center',
         marginBottom: 20,
+        paddingHorizontal: 20,
+        backgroundColor: BoxColor,
     },
     header: {
         height: 48,
         paddingHorizontal: 20,
-        backgroundColor: BoxColor,
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8,
+        marginBottom: 5,
+        backgroundColor: BgColor,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
     item : {
         paddingTop: 22,
-        backgroundColor: BoxColor,
+        backgroundColor: BgColor,
+        marginVertical: 5,
+        borderRadius: 8,
     },
     title: {
         flex: 2,

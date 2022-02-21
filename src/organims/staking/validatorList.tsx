@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
+import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
 import CustomModal from "../../components/modal/customModal";
 import ModalItems from "../../components/modal/modalItems";
 import { DownArrow } from "@/components/icon/icon";
@@ -14,20 +14,20 @@ interface Props {
 }
 
 const ValidatorList = ({validators, navigateValidator}:Props) => {
-    const sortItems = ['Voting Power', 'Commission', 'APY/APR'];
+    const sortItems = ['Commision', 'Voting Power', 'Uptime'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
 
     useMemo(() => {
         switch (selected) {
         case 0:
-            return validators.sort((a, b) => (b.votingPower - a.votingPower));
+            return validators.sort((a, b) => (a.commission - b.commission));
         case 1:
-            return validators.sort((a, b) => (b.commission - a.commission));
+            return validators.sort((a, b) => (b.votingPower - a.votingPower));
         case 2:
-            return validators.sort((a, b) => (b.APR - a.APR));
+            return validators.sort((a, b) => (b.condition - a.condition));
         }
-    }, [selected])
+    }, [selected, validators])
 
     const handleOpenModal = (open:boolean) => {
         setOpenModal(open);
@@ -44,10 +44,12 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
                 <Text style={styles.title}>List 
                     <Text style={{color: PointLightColor}}> {validators.length}</Text>
                 </Text>
-                <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                    <Text style={[styles.title, {paddingRight: 4}]}>{sortItems[selected]}</Text>
-                    <DownArrow size={12} color={GrayColor} />
-                </TouchableOpacity>
+                <View style={{flexDirection: "row", alignItems: "center"}}>
+                    <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
+                        <Text style={[styles.sortItem, {paddingRight: 4}]}>{sortItems[selected]}</Text>
+                        <DownArrow size={12} color={GrayColor} />
+                    </TouchableOpacity>
+                </View>
             </View>
             {validators.map((vd, index) => {
                 return (
@@ -61,7 +63,6 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
                                 data={convertPercentage(vd.APY) + '% / ' + convertPercentage(vd.APR) + '%'} />
                             <DataSection title="Uptime" data={vd.condition.toString() + '%'} />
                             <View style={{paddingBottom: 22}} />
-                            {index < validators.length - 1 && <View style={styles.divider} />}
                         </View>
                     </TouchableOpacity>
                 )
@@ -78,18 +79,26 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         overflow: "hidden",
         justifyContent: 'center',
+        marginBottom: 20,
+        paddingHorizontal: 20,
+        backgroundColor: BoxColor,
     },
     header: {
         height: 48,
         paddingHorizontal: 20,
-        backgroundColor: BoxColor,
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8,
+        marginBottom: 5,
+        backgroundColor: BgColor,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
     },
     item : {
         paddingTop: 22,
-        backgroundColor: BoxColor,
+        backgroundColor: BgColor,
+        marginVertical: 5,
+        borderRadius: 8,
     },
     title: {
         fontFamily: Lato,
@@ -101,10 +110,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     sortItem: {
-        color: TextCatTitleColor,
+        color: GrayColor,
         fontFamily: Lato,
-        fontSize: 10,
-        fontWeight: 'bold'
+        fontSize: 16,
     },
 
     moniikerWrapperH: {

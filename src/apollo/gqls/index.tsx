@@ -24,7 +24,7 @@ export const useBlockDataQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -47,7 +47,7 @@ export const useVotingPowerQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -67,7 +67,33 @@ export const useTokenomicsQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+  );
+};
+
+export const useValidatorsDescriptionQuery = ({ onCompleted }: IQueryParam) => {
+  return useQuery(
+    gql`
+      query {
+        validator {
+          validatorInfo: validator_info {
+            operatorAddress: operator_address
+            selfDelegateAddress: self_delegate_address
+          }
+          delegations {
+            amount
+            delegatorAddress: delegator_address
+          }
+          validator_descriptions {
+            avatar_url
+            moniker
+            details
+            website
+          }
+        }
+      }
+    `,
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -123,17 +149,23 @@ export const useValidatorsQuery = ({ onCompleted }: IQueryParam) => {
         slashingParams: slashing_params(order_by: { height: desc }, limit: 1) {
           params
         }
+        inflation {
+          value
+        }
+        supply {
+          coins
+        }
       }
     `,
-    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
 export const useValidatorFromAddressQuery = ({ onCompleted, address }: IQueryParam) => {
   return useQuery(
     gql`
-      query {
-        stakingPool: staking_pool(limit: 1, order_by: { height: desc }) {
+      {
+        stakingPool: staking_pool(limit: 1, order_by: {height: desc}) {
           bondedTokens: bonded_tokens
         }
         average_block_time_per_day {
@@ -145,32 +177,30 @@ export const useValidatorFromAddressQuery = ({ onCompleted, address }: IQueryPar
         average_block_time_per_minute {
           average_time
         }
-        validator(
-          where: { validator_info: { operator_address: { _eq: ${address} } } }
-        ) {
-          validatorStatuses: validator_statuses(order_by: { height: desc }, limit: 1) {
+        validator(where: {validator_info: {operator_address: {_eq: ${address}}}}) {
+          validatorStatuses: validator_statuses(order_by: {height: desc}, limit: 1) {
             status
             jailed
             height
           }
-          validatorSigningInfos: validator_signing_infos(order_by: { height: desc }, limit: 1) {
+          validatorSigningInfos: validator_signing_infos(order_by: {height: desc}, limit: 1) {
             missedBlocksCounter: missed_blocks_counter
           }
           validatorInfo: validator_info {
             operatorAddress: operator_address
             selfDelegateAddress: self_delegate_address
           }
-          validatorVotingPowers: validator_voting_powers(offset: 0, limit: 1, order_by: { height: desc }) {
+          validatorVotingPowers: validator_voting_powers(offset: 0, limit: 1, order_by: {height: desc}) {
             votingPower: voting_power
           }
-          validatorCommissions: validator_commissions(order_by: { height: desc }, limit: 1) {
+          validatorCommissions: validator_commissions(order_by: {height: desc}, limit: 1) {
             commission
           }
           delegations {
             amount
             delegatorAddress: delegator_address
           }
-          validatorSigningInfos: validator_signing_infos(order_by: { height: desc }, limit: 1) {
+          validatorSigningInfos: validator_signing_infos(order_by: {height: desc}, limit: 1) {
             missedBlocksCounter: missed_blocks_counter
           }
           validator_descriptions {
@@ -180,12 +210,18 @@ export const useValidatorFromAddressQuery = ({ onCompleted, address }: IQueryPar
             website
           }
         }
-        slashingParams: slashing_params(order_by: { height: desc }, limit: 1) {
+        slashingParams: slashing_params(order_by: {height: desc}, limit: 1) {
           params
+        }
+        inflation {
+          value
+        }
+        supply {
+          coins
         }
       }
     `,
-    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -206,7 +242,7 @@ export const useGovernmentQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
@@ -249,7 +285,41 @@ export const useProposalQuery = ({ onCompleted, proposalId }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 10000, notifyOnNetworkStatusChange: true }
+    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+  );
+};
+
+
+export const useCurrentHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) => {
+  return useQuery(
+    gql`
+      query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
+        messagesByAddress: messages_by_address(
+          limit: 1,
+          args: { addresses: $address, types: $types, limit: $limit, offset: $offset }
+        ) {
+          transaction {
+            height
+            hash
+            success
+            messages
+            block {
+              height
+              timestamp
+            }
+          }
+        }
+      }
+    `,
+    {
+      onCompleted,
+      pollInterval: 0,
+      notifyOnNetworkStatusChange: true,
+      variables: {
+        address,
+        limit: 99999,
+      },
+    }
   );
 };
 
@@ -275,7 +345,7 @@ export const useHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) 
     `,
     {
       onCompleted,
-      pollInterval: 10000,
+      pollInterval: 0,
       notifyOnNetworkStatusChange: true,
       variables: {
         address,
@@ -284,6 +354,7 @@ export const useHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) 
     }
   );
 };
+
 
 export const useTransferHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) => {
   return useQuery(
@@ -308,7 +379,7 @@ export const useTransferHistoryByAddressQuery = ({ onCompleted, address }: IQuer
     `,
     {
       onCompleted,
-      pollInterval: 10000,
+      pollInterval: 0,
       notifyOnNetworkStatusChange: true,
       variables: {
         address,
@@ -335,7 +406,7 @@ export const useAvataURLFromAddress = ({ onCompleted, address }: IQueryParam) =>
     `,
     {
       onCompleted,
-      pollInterval: 10000,
+      pollInterval: 0,
       notifyOnNetworkStatusChange: true,
       variables: {
         limit: 99999,

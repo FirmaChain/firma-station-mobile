@@ -1,20 +1,20 @@
 import { ForwardArrow } from "@/components/icon/icon";
+import { COINGECKO } from "@/constants/common";
 import { FIRMA_LOGO } from "@/constants/images";
-import { StakingValues } from "@/hooks/staking/hooks";
-import { convertCurrent, convertNumber, convertToFctNumber, make2DecimalPlace, resizeFontSize } from "@/util/common";
+import { StakingState } from "@/hooks/staking/hooks";
+import { convertAmount, convertCurrent, convertToFctNumber, make2DecimalPlace, resizeFontSize } from "@/util/common";
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SmallButton from "../../components/button/smallButton";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
 
 interface Props {
-    balance: number;
-    stakingValues: StakingValues;
+    stakingValues: StakingState;
     handleSend: Function;
-    handleDelegate: Function;
+    handleStaking: Function;
 }
 
-const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) => {
+const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
     const [chainInfo, setChainInfo]:Array<any> = useState([]);
     const [balanceTextSize, setBalanceTextSize] = useState(28);
 
@@ -24,8 +24,8 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
     }, [chainInfo]);
 
     const available = useMemo(() => {
-        return convertToFctNumber(balance);
-    }, [balance])
+        return stakingValues.available;
+    }, [stakingValues])
 
     const delegated = useMemo(() => {
         return convertCurrent(make2DecimalPlace(stakingValues.delegated));
@@ -40,11 +40,11 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
     }, [stakingValues]);
     
     const exchangeData = useMemo(() => {
-        return convertCurrent(make2DecimalPlace((available * currentPrice)));
+        return convertCurrent(make2DecimalPlace((convertToFctNumber(available) * currentPrice)));
     }, [currentPrice, available])
 
     const getChainInfo = async() => {
-        await fetch('https://api.coingecko.com/api/v3/coins/firmachain')
+        await fetch(COINGECKO)
         .then((res) => res.json())
         .then((resJson) => {
             setChainInfo(resJson);
@@ -67,12 +67,13 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 8, paddingBottom: 19}]}>
                     <View style={[styles.wrapperH, {alignItems: "center"}]}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />
-                        <Text style={[styles.balance, {fontSize:balanceTextSize}]}>{convertCurrent(make2DecimalPlace(available))}
+                        <Text style={[styles.balance, {fontSize:balanceTextSize}]}>{convertAmount(available)}
                             <Text style={styles.chainName}>   FCT</Text>
                         </Text>
                     </View>
                     <SmallButton
                         title="Send"
+                        active={available > 0}
                         onPressEvent={handleSend}/>
                 </View>
                 <View style={styles.divider} />
@@ -82,12 +83,12 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
                 </View>
             </View>
 
-            <View style={[styles.box, {marginVertical: 16, paddingHorizontal: 0}]}>
-                <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center",paddingHorizontal: 20}]}>
+            <TouchableOpacity style={[styles.box, {marginVertical: 16, paddingHorizontal: 0}]} 
+                    onPress={()=>handleStaking()}>
+                <View 
+                    style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center",paddingHorizontal: 20}]} >
                     <Text style={styles.title}>Staking</Text>
-                    <TouchableOpacity onPress={()=>handleDelegate()}>
-                        <ForwardArrow size={20} color={TextCatTitleColor}/>
-                    </TouchableOpacity>
+                    <ForwardArrow size={20} color={TextCatTitleColor}/>
                 </View>
                 <View style={[styles.wrapperH, {flex: 3, justifyContent: "space-between", alignItems: "center" ,paddingTop: 18}]}>
                     <View style={styles.stakingWrapper}>
@@ -105,7 +106,7 @@ const BalanceBox = ({balance, stakingValues, handleSend, handleDelegate}:Props) 
                         <Text style={[styles.balance, {fontSize: resizeFontSize(stakingValues.stakingReward, 100000, 18)}]}>{reward}</Text>
                     </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         </View>
     )
 }

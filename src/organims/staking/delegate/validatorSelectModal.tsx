@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
 import CustomModal from "../../../components/modal/customModal";
@@ -9,9 +9,10 @@ interface Props {
     open: boolean;
     setOpenModal: Function;
     setValue: Function;
+    resetValues: boolean;
 }
 
-const ValidatorSelectModal = ({list, open, setOpenModal, setValue}:Props) => {
+const ValidatorSelectModal = ({list, open, setOpenModal, setValue, resetValues}:Props) => {
     const [selected, setSelected] = useState('');
 
     const handleOpenModal = (open:boolean) => {
@@ -24,6 +25,10 @@ const ValidatorSelectModal = ({list, open, setOpenModal, setValue}:Props) => {
         handleOpenModal(false);
     }
 
+    useEffect(() => {
+        handleSelectWallet('');
+    }, [resetValues])
+    
     return (
         <CustomModal visible={open} handleOpen={handleOpenModal}>
             <ModalItemsForValidator initVal={selected} data={list} onPressEvent={handleSelectWallet}/>

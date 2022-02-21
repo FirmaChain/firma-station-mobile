@@ -2,14 +2,13 @@ import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
 import { convertAmount, convertCurrent, convertNumber, resizeFontSize } from "@/util/common";
-import { StakingValues } from "@/hooks/staking/hooks";
+import { StakingState } from "@/hooks/staking/hooks";
 
 interface Props {
-    stakingValues: StakingValues;
+    stakingValues: StakingState;
 }
 
 const BalanceBox = ({stakingValues}:Props) => {
-
     const available = useMemo(() => {
         return stakingValues.available;
     }, [stakingValues])
@@ -23,9 +22,9 @@ const BalanceBox = ({stakingValues}:Props) => {
     }, [stakingValues]);
 
     const StakingValues = [
-        {title: "Available", data: available},
-        {title: "Delegated", data: delegated},
-        {title: "Undelegated", data: undelegate},
+        {title: "Available", data: available, ufct: true},
+        {title: "Delegated", data: delegated, ufct: false},
+        {title: "Undelegated", data: undelegate, ufct: false},
     ]
 
     return (
@@ -36,7 +35,7 @@ const BalanceBox = ({stakingValues}:Props) => {
                         <View key={index} style={[styles.box, {flex: 1}, (index < StakingValues.length - 1) && {borderRightColor: DisableColor, borderRightWidth: 1}]}>
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, {fontSize: resizeFontSize(item.data, 100000, 16)}]}>{convertAmount(item.data, false)}</Text>
+                                <Text style={[styles.desc, {fontSize: resizeFontSize(item.data, 10000, 16)}]}>{convertAmount(item.data, item.ufct)}</Text>
                             </View>
                         </View>
                     )
@@ -48,7 +47,7 @@ const BalanceBox = ({stakingValues}:Props) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        paddingVertical: 20,
         backgroundColor: BoxColor,
         borderRadius: 8,
     },

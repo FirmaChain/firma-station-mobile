@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
-import { Linking, Platform, StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
+import { Linking, Platform, StyleSheet, Text, View, TouchableOpacity, ScrollView, RefreshControl, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { BgColor, BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
+import { BgColor, BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, WhiteColor } from "@/constants/theme";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { useHistoryData } from "@/hooks/wallet/hooks";
@@ -10,7 +10,8 @@ import { convertTime } from "@/util/common";
 import { ForwardArrow } from "@/components/icon/icon";
 import { useNavigation } from "@react-navigation/native";
 import { AppContext } from "@/util/context";
-import { EXPLORER_URL } from "@/constants/common";
+import { EXPLORER } from "@/constants/common";
+import RefreshScrollView from "@/components/parts/refreshScrollView";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
@@ -18,12 +19,26 @@ const HistoryScreen: React.FunctionComponent = () => {
     const navigation:ScreenNavgationProps = useNavigation();
     const { wallet } = useContext(AppContext);
 
-    const { historyList } = useHistoryData(wallet.address);
+    const { historyList, handleHisotyPolling } = useHistoryData(wallet.address);
 
     const [pagination, setPagination] = useState(10);
 
+    const refreshStates = () => {
+        handleHisotyPolling && handleHisotyPolling();
+    }
+
+    const onScrollEnd = (event:NativeSyntheticEvent<NativeScrollEvent>) => {
+        if(Platform.OS === 'ios' && event.nativeEvent.targetContentOffset){
+            if(event.nativeEvent.contentOffset.y > event.nativeEvent.targetContentOffset.y) 
+            setPagination(pagination => pagination + 5);
+        } else {
+            if(event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
+            setPagination(pagination => pagination + 5);
+        }
+    }
+
     const moveToExplorer = (hash:string) => {
-        Linking.openURL(EXPLORER_URL + '/transactions/' + hash);
+        Linking.openURL(EXPLORER + '/transactions/' + hash);
     }
 
     const handleBack = () => {
@@ -35,16 +50,9 @@ const HistoryScreen: React.FunctionComponent = () => {
             title="History"
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <ScrollView
-                    onScrollEndDrag={(event) => {
-                        if(Platform.OS === 'ios' && event.nativeEvent.targetContentOffset){
-                            if(event.nativeEvent.contentOffset.y > event.nativeEvent.targetContentOffset.y) 
-                            setPagination(pagination => pagination + 5);
-                        } else {
-                            if(event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
-                            setPagination(pagination => pagination + 5);
-                        }
-                    }}>
+                <RefreshScrollView
+                    scrollEndFunc={onScrollEnd}
+                    refreshFunc={refreshStates}>
                     <View style={styles.container}>
                             {historyList !== undefined && historyList.list.map((value:any, index) => {
                                 if(index < pagination){
@@ -81,7 +89,7 @@ const HistoryScreen: React.FunctionComponent = () => {
                                 }
                             })}
                     </View>
-                </ScrollView>
+                </RefreshScrollView>
             </ViewContainer>
         </Container>
     )
