@@ -1,19 +1,26 @@
+import React, { useContext, useState } from "react";
+import { Keyboard, Pressable, StyleSheet, View } from "react-native";
+import { getUniqueId } from "react-native-device-info";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { StackNavigationProp } from "@react-navigation/stack";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS, PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_PASSWORD_CONFIRM, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
-import { getWalletWithAutoLogin, setBioAuth, setNewWallet } from "@/util/wallet";
-import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { getUniqueId } from "react-native-device-info";
-import Button from "../../components/button/button";
-import InputSetVertical from "../../components/input/inputSetVertical";
-import AlertModal from "../../components/modal/alertModal";
-import { BgColor } from "../../constants/theme";
-import { Screens, StackParamList } from "../../navigators/appRoutes";
-import { decrypt, keyEncrypt } from "../../util/keystore";
-import { getChain, removeChain } from "../../util/secureKeyChain";
-import { PasswordValidationCheck } from "../../util/validationCheck";
+import Button from "@/components/button/button";
+import InputSetVertical from "@/components/input/inputSetVertical";
+import AlertModal from "@/components/modal/alertModal";
+import { getChain, removeChain, setChain } from "@/util/secureKeyChain";
+import { AppContext } from "@/util/context";
+import { decrypt, keyEncrypt } from "@/util/keystore";
+import { PasswordValidationCheck } from "@/util/validationCheck";
+import { getWalletList, getWalletWithAutoLogin, setBioAuth, setNewWallet } from "@/util/wallet";
+import { BgColor } from "@/constants/theme";
+import { CONTEXT_ACTIONS_TYPE, 
+    PASSWORD_CHANGE_FAIL, 
+    PASSWORD_CHANGE_SUCCESS, 
+    PLACEHOLDER_FOR_PASSWORD, 
+    PLACEHOLDER_FOR_PASSWORD_CONFIRM, 
+    WALLET_LIST, 
+    WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;
 
@@ -31,12 +38,14 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     const {params} = route;
     const {walletName} = params;
 
+    const {dispatchEvent} = useContext(AppContext);
+
     // 0: need to password confirm
     // 1: changed password
     const [status, setStatus] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [currentPW, setCurrentPW] = useState('');
+    const [pwValidation, setPwValidation] = useState(false);
     const [newPW, setNewPW] = useState('');
 
     const [mnemonic, setMnemonic] = useState('');
@@ -62,8 +71,26 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
         placeholder: PLACEHOLDER_FOR_PASSWORD_CONFIRM,
     }
 
-    const handleCurrentPassword = (value: string) => {
-        setCurrentPW(value);
+    const handleCurrentPassword = async(value: string) => {
+        if(value.length >= 10){
+            const key:string = keyEncrypt(walletName, value);
+            await getChain(walletName).then(res => {
+                if(res){
+                    let w = decrypt(res.password, key.toString());
+                    if(w !== null) {
+                        setMnemonic(w);
+                        setPwValidation(true);
+                    } else {
+                        setPwValidation(false);
+                    }
+                }
+            }).catch(error => {
+                console.log(error);
+                setPwValidation(false);
+            });
+        } else {
+            setPwValidation(false);
+        }
     }
 
     const handleNewPassword = (value: string) => {
@@ -87,31 +114,11 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }
 
     const changeNewPassword = async() => {
-        const key:string = keyEncrypt(walletName, currentPW);
-        await getChain(walletName).then(res => {
-            if(res){
-                let w = decrypt(res.password, key.toString());
-                if(w.length > 0) {
-                    setMnemonic(w);
-                    setIsModalOpen(false);
-                } else {
-                    setIsModalOpen(true);
-                }
-            }
-        }).catch(error => {
-            console.log(error);
-        });
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        await removeCurrentPassword();
+        await createNewPassword();
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);          
     }
-
-    useEffect(() => {
-        const changePassword = async() => {
-            if(mnemonic !== ''){
-                await removeCurrentPassword();
-                await createNewPassword();          
-            }
-        }
-        changePassword();
-    }, [mnemonic])
 
     const removeCurrentPassword = async() => {
         await removeChain(walletName)
@@ -134,14 +141,32 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }
 
     const createNewPassword = async() => {
+        let newList:string = '';
+        await getWalletList().then(res => {
+            let arr = res !== undefined? res : [];
+            
+            if(arr.length > 1){
+                arr.filter(item => item !== walletName).map((item) => {
+                    newList += item + "/";
+                });
+                newList = newList.slice(0, -1);
+            }
+
+            if(newList === ''){
+                removeChain(WALLET_LIST);
+            } else {
+                setChain(WALLET_LIST, newList);
+            }
+        }).catch(error => {
+            console.log(error)
+        });
+
         await setNewWallet(walletName, newPW, mnemonic)
-            .then(res => {
-                console.log(res);
+            .then(() => {
                 setStatus(1);
                 setIsModalOpen(true);
             })
             .catch(error => console.log(error))
-        
         setBioAuth(newPW);
     }
 
@@ -160,8 +185,7 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
             backEvent={handleGoBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>
-                        <View style={styles.contents}>
-                            {/* <Text style={styles.wallet}>{wallet}</Text> */}
+                        <Pressable style={styles.contents} onPress={() => Keyboard.dismiss()}>
                             <InputSetVertical
                                 title={currentPasswordTextObj.title}
                                 placeholder={currentPasswordTextObj.placeholder} 
@@ -182,16 +206,17 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
                                 validation={confirmPwValidation}
                                 secure={true}
                                 onChangeEvent={handleConfirmPassword} />
-                        </View>
+                        </Pressable>
                         <View style={styles.buttonBox}>
-                            <Button title='Change' active={confirmPwValidation} onPressEvent={changeNewPassword} />
+                            <Button title='Change' active={pwValidation && confirmPwValidation} onPressEvent={changeNewPassword} />
                         </View>
                         <AlertModal
                             visible={isModalOpen}
                             handleOpen={handleModalOpen}
-                            isSingleButton={true}
                             title={status === 0?'Wrong password':'Change password'}
-                            desc={status === 0?PASSWORD_CHANGE_FAIL:PASSWORD_CHANGE_SUCCESS}/>
+                            desc={status === 0?PASSWORD_CHANGE_FAIL:PASSWORD_CHANGE_SUCCESS}
+                            confirmTitle={"OK"}
+                            type={status === 0?"ERROR":"CONFIRM"}/>
                     </View>
                 </ViewContainer>
         </Container>

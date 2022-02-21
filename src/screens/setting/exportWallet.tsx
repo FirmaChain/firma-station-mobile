@@ -131,9 +131,10 @@ const ExportWalletScreen: React.FunctionComponent<ExportWalletProps> = (props) =
                         <AlertModal
                             visible={status === 0 && isModalOpen}
                             handleOpen={handleModalOpen}
-                            isSingleButton={true}
                             title={'Wrong password'}
-                            desc={WARNING_PASSWORD_NOT_MATCH}/>
+                            desc={WARNING_PASSWORD_NOT_MATCH}
+                            confirmTitle={"OK"}
+                            type={"ERROR"}/>
 
                         <CustomModal
                             visible={status === 1 && isModalOpen}

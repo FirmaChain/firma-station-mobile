@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import Button from "@/components/button/button";
@@ -16,9 +16,9 @@ import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndeleg
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import { useDelegationData } from "@/hooks/staking/hooks";
 import { useFocusEffect } from "@react-navigation/native";
-import Toast from "react-native-toast-message";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
+import AlertModal from "@/components/modal/alertModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
@@ -48,8 +48,8 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const [openSignModal, setOpenSignModal] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
 
-    const autoList = ["max", "50%", "25%", "10%"];
-    const [openAutoModal, setOpenAutoModal] = useState(false);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alertDescription, setAlertDescription] = useState('');
 
     const [autoActive, setAutoActive] = useState(false);
     const [autoAmount, setAutoAmount] = useState(0);
@@ -67,7 +67,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
             case "Undelegate":
                 return UNDELEGATE_NOTICE_TEXT;
             default:
-                return "";
+                return [];
         }
     }, [state.type])
 
@@ -130,7 +130,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                         <Text style={[styles.title, {paddingLeft: 5, marginBottom: 0, color: WhiteColor}]}>{state.type === "Delegate"? "Auto":"All"}</Text>
                     </TouchableOpacity>
                     {state.type === "Delegate" &&
-                        <TouchableOpacity style={{paddingLeft: 10}} onPressIn={()=>setActiveQuestion(true)} onPressOut={()=>setActiveQuestion(false)}>
+                        <TouchableOpacity style={{paddingLeft: 10, paddingBottom: 10}} onPressIn={()=>setActiveQuestion(true)} onPressOut={()=>setActiveQuestion(false)}>
                             <QuestionCircle size={20} color={TextGrayColor}/>
                         </TouchableOpacity>
                     }
@@ -141,9 +141,14 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                 </View>
                 }
                 {(state.type === "Undelegate" || state.type === "Redelegate")&&
-                <View style={{paddingVertical: 15}}>
-                    <WarnContainer text={noticeText} />
-                </View>
+                
+                noticeText.map(value => {
+                    return (
+                        <View style={{paddingVertical: 5}}>
+                            <WarnContainer text={value} />
+                        </View>
+                    )
+                })
                 }
             </View>
         )
@@ -190,13 +195,15 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
             setStatus(status + 1);
         } catch (error) {
             console.log(error); 
-
-            Toast.show({
-                type: 'error',
-                text1: 'Error, please try again',
-            });
+            setAlertDescription(String(error));
+            setIsAlertModalOpen(true);
         }
         dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+    }
+
+
+    const handleModalOpen = (open:boolean) => {
+        setIsAlertModalOpen(open);
     }
 
     const handleSignModal = (open:boolean) => {
@@ -213,14 +220,6 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
 
     const handleSelectModal = (open:boolean) => {
         setOpenSelectModal(open);
-    }
-
-    const handleSelectAutoDelegateAmount = (value:number) => {
-        console.log(value);
-    }
-
-    const handleSelectAutoDelegateModal = (open:boolean) => {
-        setOpenAutoModal(open);
     }
 
     useEffect(() => {
@@ -264,20 +263,30 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
             title={state.type}
             backEvent={handleBack}>
                 <ViewContainer>
-                    <Pressable style={{flex: 1}} onPress={() => Keyboard.dismiss()}>
+                    <>
+                    <ScrollView>
                         <View style={{paddingHorizontal: 20}}>
                             <WalletInfo available={state.type === "Delegate"? balance : Number(selectDelegationAmount)}/>
                         </View>
                         {ClassifyByType()}
                         <TransactionConfirmModal transactionHandler={handleTransaction} title={state.type} amount={amount} fee={getFeesFromGas(gas)} open={openSignModal} setOpenModal={handleSignModal} />
                         <ValidatorSelectModal list={delegationState.filter((item:any) => item.validatorAddress !== state.operatorAddress)} open={openSelectModal} setOpenModal={handleSelectModal} setValue={handleSelectValidator} resetValues={resetRedelegateValues}/> 
-                        <View style={styles.buttonBox}>
-                            <Button
-                                title={"Next"}
-                                active={Number(amount) > 0}
-                                onPressEvent={handleNext}/>
-                        </View>
-                    </Pressable>
+                    </ScrollView>
+                    <View style={[styles.buttonBox, {flex: 1, minHeight: 60}]}>
+                        <Button
+                            title={"Next"}
+                            active={Number(amount) > 0}
+                            onPressEvent={handleNext}/>
+                    </View>
+
+                    <AlertModal
+                        visible={isAlertModalOpen}
+                        handleOpen={handleModalOpen}
+                        title={"Failed"}
+                        desc={alertDescription}
+                        confirmTitle={"OK"}
+                        type={"ERROR"}/>
+                    </>
                 </ViewContainer>
         </Container>
     )
@@ -318,6 +327,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
+        marginBottom: 10,
     }
 })
 

@@ -1,26 +1,20 @@
 import React from "react";
 import { Modal, TouchableOpacity, StyleSheet, Text, View } from "react-native";
-import { BoxColor, Lato, PointColor, TextCatTitleColor, TextColor } from "../../constants/theme";
+import { BoxColor, FailedColor, Lato, PointColor, TextCatTitleColor, TextColor } from "../../constants/theme";
 
 interface Props {
     visible: boolean;
     handleOpen: Function;
-    isSingleButton?: boolean;
     title: string;
     desc: string;
-    confirmTitle?: string;
-    onConfirmEvent?: Function;
+    confirmTitle: string;
+    type: string;
 }
 
-const AlertModal = ({visible, handleOpen, isSingleButton = false, title, desc, confirmTitle, onConfirmEvent}:Props) => {
+const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type}:Props) => {
 
     const closeModal = () => {
         handleOpen && handleOpen(false);
-    }
-
-    const handleConfirm = () => {
-        onConfirmEvent && onConfirmEvent();
-        closeModal();
     }
 
     return (
@@ -39,20 +33,10 @@ const AlertModal = ({visible, handleOpen, isSingleButton = false, title, desc, c
                             </View>
                             <View style={styles.buttonBox}>
                                 <TouchableOpacity 
-                                    style={isSingleButton?
-                                        [styles.button, {padding: 17, borderBottomEndRadius: 4, borderBottomStartRadius: 4}]:
-                                        [styles.button, {borderBottomLeftRadius: 4}]} 
+                                    style={[styles.button, {backgroundColor: type === "ERROR"? FailedColor:PointColor, padding: 17, borderBottomEndRadius: 4, borderBottomStartRadius: 4}]} 
                                     onPress={()=>closeModal()}>
-                                    <Text style={styles.buttonTitle}>{isSingleButton? 'OK':'Cancel'}</Text>
-                                </TouchableOpacity>
-                                {isSingleButton === false && 
-                                <>
-                                <View style={{width: 1, height: '100%', backgroundColor: '#fff'}}/>
-                                <TouchableOpacity style={[styles.button, {borderBottomRightRadius: 8}]} onPress={()=>handleConfirm()}>
                                     <Text style={styles.buttonTitle}>{confirmTitle}</Text>
                                 </TouchableOpacity>
-                                </>
-                                }
                             </View>
                         </View>
                     </View>
