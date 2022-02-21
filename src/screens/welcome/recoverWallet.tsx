@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { BgColor, BoxColor, Lato, TextWarnColor } from "@/constants/theme";
+import { BgColor } from "@/constants/theme";
 import Button from "@/components/button/button";
-import { RECOVER_INFO_MESSAGE } from "@/constants/common";
+import { CONTEXT_ACTIONS_TYPE, RECOVER_INFO_MESSAGE } from "@/constants/common";
+import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
+import { AppContext } from "@/util/context";
+import { recoverFromMnemonic } from "@/util/firma";
+import Toast from "react-native-toast-message";
+import WarnContainer from "@/components/parts/containers/warnContainer";
 
 type RecoverWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -17,12 +22,34 @@ interface RecoverWalletScreenProps {
 const RecoverWalletScreen: React.FunctionComponent<RecoverWalletScreenProps> = (props) => {
     const {navigation} = props;
 
+    const {dispatchEvent} = useContext(AppContext);
+
+    const [active, setActive] = useState(false);
+
     const handleBack = () => {
         navigation.goBack();
     }
 
+    const recoverWalletViaQR = async(mnemonic: string) => {
+
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        const wallet = await recoverFromMnemonic(mnemonic);
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        if(wallet === undefined){
+            return Toast.show({
+                type: 'error',
+                text1: 'Check your mnemonic again.',
+            });
+        }
+        navigation.navigate(Screens.CreateStepOne, {wallet: wallet});
+    }
+
     const handleRecoverViaSeed = () => {
         navigation.navigate(Screens.StepRecover);
+    }
+
+    const handleRecoverViaQR = (value:boolean) => {
+        setActive(value);
     }
 
     return (
@@ -43,12 +70,11 @@ const RecoverWalletScreen: React.FunctionComponent<RecoverWalletScreenProps> = (
                                 title="Scan QR code"
                                 active={true}
                                 border={true}
-                                onPressEvent={handleRecoverViaSeed}/>
+                                onPressEvent={() => handleRecoverViaQR(true)}/>
                         </View>
 
-                        <View style={styles.wranContainer}>
-                            <Text style={styles.warnText}>{RECOVER_INFO_MESSAGE}</Text>
-                        </View>
+                        <WarnContainer text={RECOVER_INFO_MESSAGE}/>
+                        <QRCodeScannerModal visible={active} handleOpen={handleRecoverViaQR} ReaderHandler={recoverWalletViaQR} />
                     </View>
                 </ViewContainer>
         </Container>
@@ -58,19 +84,6 @@ const RecoverWalletScreen: React.FunctionComponent<RecoverWalletScreenProps> = (
 const styles = StyleSheet.create({
     container: {
         padding: 20
-    },
-    wranContainer: {
-        fontFamily: Lato,
-        backgroundColor: BoxColor,
-        borderRadius: 4,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        overflow: 'hidden',
-    },
-    warnText: {
-        fontSize: 14,
-        lineHeight: 20,
-        color: TextWarnColor,
     }
 })
 

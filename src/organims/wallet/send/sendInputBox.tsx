@@ -7,9 +7,10 @@ interface Props {
     address: any;
     amount: any;
     memo: any;
+    reset: boolean;
 }
 
-const SendInputBox = ({address, amount, memo}:Props) => {
+const SendInputBox = ({address, amount, memo, reset}:Props) => {
     const handleAddress = (value:string) => {
         address(value);
     }
@@ -29,6 +30,7 @@ const SendInputBox = ({address, amount, memo}:Props) => {
                 message=""
                 validation={true}
                 placeholder="Address"
+                resetValues={reset}
                 onChangeEvent={handleAddress}/>
             <InputSetVertical
                 title="Amount"
@@ -36,12 +38,14 @@ const SendInputBox = ({address, amount, memo}:Props) => {
                 numberOnly={true}
                 validation={true}
                 placeholder="0 FCT"
+                resetValues={reset}
                 onChangeEvent={handleAmount}/>
             <InputSetVertical
                 title="Memo"
                 message=""
                 validation={true}
                 placeholder="Memo"
+                resetValues={reset}
                 onChangeEvent={handleMemo}/>
         </View>
     )
