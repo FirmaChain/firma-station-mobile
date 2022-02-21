@@ -2,7 +2,7 @@ import { CreateStepOneParams } from '../screens/createWallet/stepOne';
 import { CreateStepTwoParams } from '../screens/createWallet/stepTwo';
 import { CreateStepThreeParams } from '../screens/createWallet/stepThree';
 import { ChangePasswordParams } from "../screens/setting/changePassword";
-import { ExportPrivateKeyParams } from "../screens/setting/exportPrivateKey";
+import { ExportWalletParams } from "../screens/setting/exportWallet";
 import { ValidatorParams } from "../screens/home/staking/validator";
 import { ProposalParams } from "../screens/home/governance/proposal";
 import { DelegateParams } from "../screens/home/staking/delegate";
@@ -37,7 +37,7 @@ export enum Screens {
 
     Setting = 'Setting',
     ChangePassword = 'ChangePassword',
-    ExportPrivateKey = 'ExportPrivateKey',
+    ExportWallet = 'ExportPrivateKey',
 }
 
 export type StackParamList = {
@@ -68,5 +68,5 @@ export type StackParamList = {
 
     Setting: undefined;
     ChangePassword: ChangePasswordParams;
-    ExportPrivateKey: ExportPrivateKeyParams;
+    ExportPrivateKey: ExportWalletParams;
 }

@@ -26,7 +26,7 @@ import DepositScreen from "@/screens/home/governance/deposit";
 
 import SettingScreen from "../screens/setting/setting";
 import ChangePasswordScreen from "../screens/setting/changePassword";
-import ExportPrivateKeyScreen from "../screens/setting/exportPrivateKey";
+import ExportWalletScreen from "../screens/setting/exportWallet";
 
 import TransactionScreen from "../screens/transaction/transaction";
 import LoginCheckScreen from "@/screens/loginCheck";
@@ -121,8 +121,8 @@ const StackNavigator: React.FunctionComponent = () => {
                     component={ChangePasswordScreen} />
                 <Stack.Screen
                     options={{headerShown: false}}
-                    name={Screens.ExportPrivateKey}
-                    component={ExportPrivateKeyScreen} />
+                    name={Screens.ExportWallet}
+                    component={ExportWalletScreen} />
             </Stack.Group>
 
             <Stack.Group>

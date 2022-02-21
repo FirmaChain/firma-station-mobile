@@ -2,19 +2,19 @@ import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { BgColor, BoxColor, DisableColor, Lato, PointColor, PointDarkColor, PointLightColor, TextColor, WhiteColor } from "@/constants/theme";
+import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { removeChain, setChain } from "@/util/secureKeyChain";
-import { getUseBioAuth, getWalletList, getWalletWithAutoLogin, setPasswordViaBioAuth, setUseBioAuth } from "@/util/wallet";
+import { getUseBioAuth, getWalletList, getWalletWithAutoLogin, setPasswordViaBioAuth } from "@/util/wallet";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { getUniqueId } from "react-native-device-info";
-import { WALLET_LIST } from "@/constants/common";
+import { USE_BIO_AUTH, WALLET_LIST } from "@/constants/common";
 import DeleteWallet from "@/organims/setting/modal/deleteWallet";
 import BioAuthOnModal from "@/organims/setting/modal/bioAuthOnModal";
 import { AppContext } from "@/util/context";
 import { useNavigation } from "@react-navigation/native";
-import { checkBioMetrics } from "@/util/bioAuth";
+import { confirmViaBioAuth } from "@/util/bioAuth";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -46,7 +46,8 @@ const SettingScreen: React.FunctionComponent = () => {
                 navigation.navigate(Screens.ChangePassword, {walletName: wallet.name});
                 break;
             case "ExportPK":
-                navigation.navigate(Screens.ExportPrivateKey, {walletName: wallet.name});
+            case "ExportMN":
+                navigation.navigate(Screens.ExportWallet, {walletName: wallet.name, type: path});
                 break;
             default:
                 break;
@@ -56,6 +57,7 @@ const SettingScreen: React.FunctionComponent = () => {
     const settingList = [
         {title: 'Change Password', path: 'ChangePW'},
         {title: 'Export Private key', path: 'ExportPK'},
+        {title: 'Export Mnemonic', path: 'ExportMN'},
     ];
 
     const moveToWelcome = async() => {
@@ -95,8 +97,14 @@ const SettingScreen: React.FunctionComponent = () => {
 
     const handleBioAuthState = async(password?:string) => {
         if(password){
-            await setPasswordViaBioAuth(password);
-            setUseBioAuth(true);
+            confirmViaBioAuth().then(res => {
+                if(res){
+                    setPasswordViaBioAuth(password);
+                    setChain(USE_BIO_AUTH, "true");
+                } else {
+                    handleBioAuth(false);
+                }
+            });
             setOpenBioModal(false);
         } else {
             let timestamp = 0;
@@ -110,8 +118,7 @@ const SettingScreen: React.FunctionComponent = () => {
             })
             await removeChain(getUniqueId + timestamp.toString())
             .catch(error => console.log(error));
-
-            setUseBioAuth(false);
+            setChain(USE_BIO_AUTH, "false");
         }
     }
 
