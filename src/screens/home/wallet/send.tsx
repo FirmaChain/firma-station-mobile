@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Keyboard, Pressable, StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -12,6 +12,8 @@ import { BgColor } from "@/constants/theme";
 import { CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE } from "@/constants/common";
 import { AppContext } from "@/util/context";
 import { getEstimateGasSend, getFeesFromGas } from "@/util/firma";
+import { useBalanceData } from "@/hooks/wallet/hooks";
+import { useFocusEffect } from "@react-navigation/native";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
@@ -23,6 +25,8 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
     const {navigation} = props;
 
     const {wallet, dispatchEvent} = useContext(AppContext);
+    const {balance, getBalance} = useBalanceData(wallet.address);
+
 
     const [targetAddress, setTargetAddress] = useState('');
     const [amount, setAmount] = useState(0);
@@ -68,6 +72,12 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
         handleTransactionModal(true);
     }
 
+    useFocusEffect(
+        useCallback(() => {
+            getBalance();
+        }, [])
+    )
+
     return (
         <Container
             title="Send"
@@ -75,8 +85,8 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
                     <Pressable onPress={() => Keyboard.dismiss()}>
-                        <WalletInfo address={wallet.address} />
-                        <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} reset={resetInputValues}/>
+                        <WalletInfo available={balance} />
+                        <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} limitAmount={balance} reset={resetInputValues}/>
                     </Pressable>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button

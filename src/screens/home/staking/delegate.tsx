@@ -3,21 +3,22 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import InputSetVertical from "@/components/input/inputSetVertical";
 import Button from "@/components/button/button";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import ValidatorSelectModal from "@/organims/staking/delegate/validatorSelectModal";
 import WalletInfo from "@/organims/wallet/send/walletInfo";
-import { CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
-import { DownArrow } from "@/components/icon/icon";
-import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { AUTO_ENTERED_AMOUNT_TEXT, CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
+import { DownArrow, QuestionCircle, Radio } from "@/components/icon/icon";
+import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import { AppContext } from "@/util/context";
-import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas, undelegate } from "@/util/firma";
+import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from "@/util/firma";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import { useDelegationData } from "@/hooks/staking/hooks";
 import { useFocusEffect } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
+import { useBalanceData } from "@/hooks/wallet/hooks";
+import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
@@ -38,12 +39,18 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const {wallet, dispatchEvent} = useContext(AppContext);
     const { delegationState, handleDelegationState } = useDelegationData(wallet.address);
 
+    const {balance, getBalance} = useBalanceData(wallet.address);
+
     const [amount, setAmount] = useState(0);
     const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
     const [status, setStatus] = useState(0);
     const [resetInputValues, setInputResetValues] = useState(false);
     const [openSignModal, setOpenSignModal] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
+
+    const [autoActive, setAutoActive] = useState(false);
+    const [autoAmount, setAutoAmount] = useState(0);
+    const [activeQuestion, setActiveQuestion] = useState(false);
 
     const [selectOperatorAddressSrc, setSelectOperatorAddressSrc] = useState("");
     const [selectValidatorMoniker, setSelectValidatorMoniker] = useState("");
@@ -94,16 +101,34 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const delegate = () => {
         return (
             <View style={styles.conatainer}>
-                <InputSetVertical
+                <InputSetVerticalForAmount
                     title="Amount"
-                    numberOnly={true}
                     placeholder="0"
-                    validation={true}
+                    accent={autoActive}
+                    limitValue={state.type === "Delegate"? balance : Number(selectDelegationAmount)}
+                    forcedValue={autoAmount.toString()}
                     resetValues={resetInputValues}
                     onChangeEvent={handleAmount}/>
-                
+                <View style={styles.radioBox}>
+                    <TouchableOpacity style={styles.radioBox} onPress={() => setAutoActive(!autoActive)}>
+                        <Radio active={autoActive} size={20} color={WhiteColor} />
+                        <Text style={[styles.title, {paddingLeft: 5, marginBottom: 0, color: WhiteColor}]}>{state.type === "Delegate"? "Auto":"All"}</Text>
+                    </TouchableOpacity>
+                    {state.type === "Delegate" &&
+                        <TouchableOpacity style={{paddingLeft: 10}} onPressIn={()=>setActiveQuestion(true)} onPressOut={()=>setActiveQuestion(false)}>
+                            <QuestionCircle size={20} color={TextGrayColor}/>
+                        </TouchableOpacity>
+                    }
+                </View>
                 {state.type === "Undelegate" &&
-                <WarnContainer text={UNDELEGATE_NOTICE_TEXT} />
+                <View style={{paddingVertical: 15}}>
+                    <WarnContainer text={UNDELEGATE_NOTICE_TEXT} />
+                </View>
+                }
+                {activeQuestion &&
+                <View style={{paddingVertical: 15}}>
+                    <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} />
+                </View>
                 }
             </View>
         )
@@ -176,6 +201,19 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     }
 
     useEffect(() => {
+        if(autoActive){
+            switch (state.type) {
+                case "Delegate":
+                    setAutoAmount(balance - 100000);
+                    break;
+                default:
+                    setAutoAmount(Number(selectDelegationAmount));
+                    break;
+            }
+        }
+    }, [autoActive])
+
+    useEffect(() => {
         setOpenSignModal(status > 0);
     }, [status])
 
@@ -191,6 +229,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     useFocusEffect(
         useCallback(() => {
             if(state.type !== "Delegate"){
+                getBalance();
                 handleDelegationState();
                 setResetRedelegateValues(false);
             }
@@ -204,11 +243,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                 <ViewContainer>
                     <Pressable style={{flex: 1}} onPress={() => Keyboard.dismiss()}>
                         <View style={{paddingHorizontal: 20}}>
-                            {state.type === "Delegate"?
-                            <WalletInfo address={wallet.address}/>
-                            :
-                            <WalletInfo available={Number(selectDelegationAmount)}/>
-                            }
+                            <WalletInfo available={state.type === "Delegate"? balance : Number(selectDelegationAmount)}/>
                         </View>
                         {ClassifyByType()}
                         <TransactionConfirmModal transactionHandler={handleTransaction} title={state.type} amount={amount} fee={getFeesFromGas(gas)} open={openSignModal} setOpenModal={handleSignModal} />
@@ -256,6 +291,11 @@ const styles = StyleSheet.create({
         fontSize:14,
         color: TextColor,
     },
+    radioBox: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
+    }
 })
 
 export default DelegateScreen;

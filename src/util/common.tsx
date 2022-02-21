@@ -9,13 +9,17 @@ export const convertNumber = (value: string | number | undefined) => {
     return Number(value);
 }
 
-export const convertCurrent = (value: number) => {
+export const convertCurrent = (value: number | string) => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 export const convertAmount = (value:string | number, isUfct:boolean = true) => {
     if(isUfct) return convertCurrent(make2DecimalPlace(convertToFctNumber(value)));
     return convertCurrent(make2DecimalPlace(value));
+}
+
+export const convertToFctNumberForInput = (value: number | string) => {
+    return make2DecimalPlace(convertToFctNumber(value));
 }
 
 export const convertToFctNumber = (value: string | number) => {
