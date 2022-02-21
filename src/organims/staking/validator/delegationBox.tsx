@@ -2,20 +2,22 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import SmallButton from "@/components/button/smallButton";
-import { BgColor, BoxColor, DisableColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
+import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
 import { ARROW_ACCORDION } from "@/constants/images";
-import { resizeFontSize } from "@/util/common";
-import { degree, LayoutAnim, TurnToOpposite, TurnToOriginal } from "@/util/animation";
-import { StakingValues } from "@/hooks/staking/hooks";
-import { TRANSACTION_TYPE } from "@/constants/common";
+import { convertAmount, resizeFontSize } from "@/util/common";
+import { degree, TurnToOpposite, TurnToOriginal } from "@/util/animation";
+import { StakingState } from "@/hooks/staking/hooks";
+import { getFeesFromGas } from "@/util/firma";
 
 interface Props {
-    stakingState: StakingValues;
+    stakingState: StakingState;
+    delegations: number;
+    gas: number;
     handleDelegate: Function;
     transactionHandler: Function;
 }
 
-const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props) => {
+const DelegationBox = ({stakingState, delegations, gas, handleDelegate, transactionHandler}:Props) => {
     const arrowDeg = useRef(new Animated.Value(0)).current;
 
     const [openModal, setOpenModal] = useState(false);
@@ -35,7 +37,6 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
     }
 
     const handleOpenAccordion = () => {
-        LayoutAnim();
         setOpenAccordion(!openAccordion);
     }
 
@@ -60,27 +61,28 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
                 <View style={styles.boxH}>
                     <View style={styles.boxV}>
                         <Text style={styles.title}>Available</Text>
-                        <Text style={[styles.balance, {fontSize: rewardTextSize}]}>{stakingState.available}
+                        <Text style={[styles.balance, {fontSize: rewardTextSize}]}>{convertAmount(stakingState.available, false)}
                             <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
                         </Text>
                     </View>
                     <SmallButton
                         title={"Delegate"}
                         size={122}
+                        active={stakingState.available > 0}
                         onPressEvent={() => onPressEvent('Delegate')}/>
                 </View>
                 <View style={styles.divider}/>
                 <View style={styles.boxH}>
                     <View style={styles.boxV}>
                         <Text style={styles.title}>Staking Reward</Text>
-                        <Text style={[styles.balance, {fontSize: rewardTextSize}]}>{stakingState.stakingReward}
+                        <Text style={[styles.balance, {fontSize: rewardTextSize}]}>{convertAmount(stakingState.stakingReward, false)}
                             <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
                         </Text>
                     </View>
                     <SmallButton
                         title={"Withdraw"}
                         size={122}
-                        color={DisableColor}
+                        active={stakingState.stakingReward > 0}
                         onPressEvent={() => setOpenModal(true)}/>
                 </View>
             </View>
@@ -88,28 +90,30 @@ const DelegationBox = ({stakingState, handleDelegate, transactionHandler}:Props)
             <View style={[styles.delegationBox, {marginTop: 12, paddingTop: 22, paddingBottom: 12}]}>
                 <View style={styles.boxH}>
                     <Text style={styles.title}>My Delegations</Text>
-                    <Text style={[styles.balance, {fontSize: rewardTextSize}]}>{stakingState.delegated}
+                    <Text style={[styles.balance, {fontSize: rewardTextSize}]}>{convertAmount(stakingState.delegated, false)}
                         <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
                     </Text>
                 </View>
-                <View style={[styles.boxH, {justifyContent: "space-evenly", height: accordionHeight}, accordionHeight > 0 && {paddingTop: 22}]}>
+                <View style={[styles.boxH, {justifyContent: "center", height: accordionHeight}, accordionHeight > 0 && {paddingTop: 22}]}>
                     <SmallButton
                         title={"Redelegate"}
                         size={142}
                         height={accordionHeight}
-                        color={DisableColor}
+                        active={delegations > 0}
                         onPressEvent={() => onPressEvent('Redelegate')}/>
+                    <View style={{width: 15}}/>
                     <SmallButton
                         title={"Undelegate"}
                         size={142}
                         height={accordionHeight}
+                        active={stakingState.delegated > 0}
                         onPressEvent={() => onPressEvent('Undelegate')}/>
                 </View>
                 <TouchableOpacity style={styles.boxArrow} onPress={() => handleOpenAccordion()}>
                     <Animated.Image style={[styles.icon_arrow, {transform: [{rotate: degree(arrowDeg)}]}]} source={ARROW_ACCORDION} />
                 </TouchableOpacity>
             </View>
-            <TransactionConfirmModal transactionHandler={transactionHandler} title={"Withdraw"} amount={stakingState.stakingReward} open={openModal} setOpenModal={handleWithdraw} />
+            <TransactionConfirmModal transactionHandler={transactionHandler} title={"Withdraw"} amount={stakingState.stakingReward} fee={getFeesFromGas(gas)} open={openModal} setOpenModal={handleWithdraw} />
         </View>
     )
 }
@@ -139,6 +143,7 @@ const styles = StyleSheet.create({
     },
     boxArrow: {
         width: "100%",
+        paddingVertical: 5,
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",

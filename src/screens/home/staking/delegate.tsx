@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import InputSetVertical from "@/components/input/inputSetVertical";
@@ -9,9 +9,15 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import ValidatorSelectModal from "@/organims/staking/delegate/validatorSelectModal";
 import WalletInfo from "@/organims/wallet/send/walletInfo";
-import { KeyValue, TRANSACTION_TYPE } from "@/constants/common";
+import { CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
 import { DownArrow } from "@/components/icon/icon";
 import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { AppContext } from "@/util/context";
+import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas, undelegate } from "@/util/firma";
+import WarnContainer from "@/components/parts/containers/warnContainer";
+import { useDelegationData } from "@/hooks/staking/hooks";
+import { useFocusEffect } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
@@ -29,9 +35,15 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const {params} = route;
     const {state} = params;
 
+    const {wallet, dispatchEvent} = useContext(AppContext);
+    const { delegationState, handleDelegationState } = useDelegationData(wallet.address);
+
     const [amount, setAmount] = useState(0);
+    const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
     const [status, setStatus] = useState(0);
+    const [resetInputValues, setInputResetValues] = useState(false);
     const [openSignModal, setOpenSignModal] = useState(false);
+    const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
 
     const [selectOperatorAddressSrc, setSelectOperatorAddressSrc] = useState("");
     const [selectValidatorMoniker, setSelectValidatorMoniker] = useState("");
@@ -44,12 +56,18 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
             password: password,
             operatorAddressDst : state.operatorAddress,
             amount: amount,
+            gas: gas,
         }
 
         if(state.type === "Redelegate"){
             transactionState['operatorAddressSrc'] = selectOperatorAddressSrc;
         }
 
+        setStatus(0);
+        setSelectDelegationAmount(0);
+        setSelectOperatorAddressSrc("");
+        setInputResetValues(true);
+        setResetRedelegateValues(true);
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
@@ -65,6 +83,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const ClassifyByType = () => {
         switch (state.type) {
             case "Delegate":
+                return delegate();
             case "Undelegate":
                 return delegate();
             case "Redelegate":
@@ -80,7 +99,12 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                     numberOnly={true}
                     placeholder="0"
                     validation={true}
+                    resetValues={resetInputValues}
                     onChangeEvent={handleAmount}/>
+                
+                {state.type === "Undelegate" &&
+                <WarnContainer text={UNDELEGATE_NOTICE_TEXT} />
+                }
             </View>
         )
     }
@@ -102,9 +126,37 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
         )
     }
 
-    const handleNext = () => {
-        if(status > 0) return; 
-        setStatus(status + 1);
+    const handleNext = async() => {
+        if(status > 0) return;
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        let gas = FIRMACHAIN_DEFAULT_CONFIG.defaultGas;
+        try {
+            switch (state.type) {
+                case "Delegate":
+                    gas = await getEstimateGasDelegate(wallet.name, state.operatorAddress, amount);
+                    setGas(gas);
+                    break;
+                case "Undelegate":
+                    gas = await getEstimateGasUndelegate(wallet.name, state.operatorAddress, amount);
+                    setGas(gas);
+                    break;
+                case "Redelegate":
+                    gas = await getEstimateGasRedelegate(wallet.name, selectOperatorAddressSrc, state.operatorAddress, amount);
+                    console.log(gas);
+                    
+                    setGas(gas);
+                    break;
+            }
+            setStatus(status + 1);
+        } catch (error) {
+            console.log(error); 
+
+            Toast.show({
+                type: 'error',
+                text1: 'Error, please try again',
+            });
+        }
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
     }
 
     const handleSignModal = (open:boolean) => {
@@ -114,9 +166,9 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
 
     const handleSelectValidator = (address:string) => {
         setSelectOperatorAddressSrc(address);
-        const selectedValidator = state.delegations.find((item:any) => item.validatorAddress === address);
-        setSelectValidatorMoniker(selectedValidator.moniker);
-        setSelectDelegationAmount(selectedValidator.amount);
+        const selectedValidator = delegationState.find((item:any) => item.validatorAddress === address);
+        setSelectValidatorMoniker(selectedValidator === undefined? '' : selectedValidator.moniker);
+        setSelectDelegationAmount(selectedValidator === undefined? 0 : selectedValidator.amount);
     }
 
     const handleSelectModal = (open:boolean) => {
@@ -130,35 +182,44 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     useEffect(() => {
         if(state){
             if(state.type === "Undelegate"){
-                const amount = state.delegations.find((item:any) => item.validatorAddress === state.operatorAddress).amount;
-                setSelectDelegationAmount(amount);
+                const amount = delegationState.find((item:any) => item.validatorAddress === state.operatorAddress)?.amount;
+                setSelectDelegationAmount(amount === undefined? 0 : amount);
             }
         }
-    }, [state.type]);
+    }, [state.type, delegationState]);
+
+    useFocusEffect(
+        useCallback(() => {
+            if(state.type !== "Delegate"){
+                handleDelegationState();
+                setResetRedelegateValues(false);
+            }
+        }, [])
+    )
 
     return (
         <Container
             title={state.type}
             backEvent={handleBack}>
                 <ViewContainer>
-                    <>
-                    <View style={{paddingHorizontal: 20}}>
-                        {state.type === "Delegate"?
-                        <WalletInfo address={state.address}/>
-                        :
-                        <WalletInfo available={Number(selectDelegationAmount)}/>
-                        }
-                    </View>
-                    {ClassifyByType()}
-                    <TransactionConfirmModal transactionHandler={handleTransaction} title={state.type} amount={amount} open={openSignModal} setOpenModal={handleSignModal} />
-                    <ValidatorSelectModal list={state.delegations.filter((item:any) => item.validatorAddress !== state.operatorAddress)} open={openSelectModal} setOpenModal={handleSelectModal} setValue={handleSelectValidator}/> 
-                    <View style={styles.buttonBox}>
-                        <Button
-                            title={"Next"}
-                            active={Number(amount) > 0}
-                            onPressEvent={handleNext}/>
-                    </View>
-                    </>
+                    <Pressable style={{flex: 1}} onPress={() => Keyboard.dismiss()}>
+                        <View style={{paddingHorizontal: 20}}>
+                            {state.type === "Delegate"?
+                            <WalletInfo address={wallet.address}/>
+                            :
+                            <WalletInfo available={Number(selectDelegationAmount)}/>
+                            }
+                        </View>
+                        {ClassifyByType()}
+                        <TransactionConfirmModal transactionHandler={handleTransaction} title={state.type} amount={amount} fee={getFeesFromGas(gas)} open={openSignModal} setOpenModal={handleSignModal} />
+                        <ValidatorSelectModal list={delegationState.filter((item:any) => item.validatorAddress !== state.operatorAddress)} open={openSelectModal} setOpenModal={handleSelectModal} setValue={handleSelectValidator} resetValues={resetRedelegateValues}/> 
+                        <View style={styles.buttonBox}>
+                            <Button
+                                title={"Next"}
+                                active={Number(amount) > 0}
+                                onPressEvent={handleNext}/>
+                        </View>
+                    </Pressable>
                 </ViewContainer>
         </Container>
     )
@@ -167,10 +228,6 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
 const styles = StyleSheet.create({
     conatainer: {
         paddingHorizontal: 20,
-    },
-    boxH: {
-        flexDirection: "row",
-        justifyContent: "space-between",
     },
     buttonBox: {
         flex: 1,

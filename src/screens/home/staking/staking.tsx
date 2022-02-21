@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { StakingValues, useValidatorDescription } from "@hooks/staking/hooks";
+import { useValidatorData } from "@hooks/staking/hooks";
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from "@constants/theme";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import ValidatorList from "@/organims/staking/validatorList";
@@ -9,76 +9,92 @@ import DelegationList from "@/organims/staking/delegationList";
 import BalancesBox from "@/organims/staking/parts/balanceBox";
 import RewardBox from "@/organims/staking/parts/rewardBox";
 import { useNavigation } from "@react-navigation/native";
+import { AppContext } from "@/util/context";
+import { FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE } from "@/constants/common";
+import { getEstimateGasFromAllDelegations } from "@/util/firma";
+import RefreshScrollView from "@/components/parts/refreshScrollView";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
 interface Props {
-    state: any
+    state: any;
 }
 
 const StakingScreen: React.FunctionComponent<Props> = (props) => {
+    const {state} = props;
     const navigation:ScreenNavgationProps = useNavigation();
     
-    const {state} = props;
-    const {stakingState,
-        validatorsState,} = state;
+    const { wallet } = useContext(AppContext);
+    const { validatorsState, handleValidatorsPolling } = useValidatorData();
 
     const [tab, setTab] = useState(0);
-    const [delegations, setDelegations]:Array<any> = useState();
-    
-    const [stakingValues, setStakingValues] = useState<StakingValues>({
-        available: 0,
-        delegated: 0,
-        undelegate: 0,
-        stakingReward: 0,
-    });
+    const [withdrawAllGas, setWithdrawAllGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
 
     useEffect(() => {
-        setDelegations(useValidatorDescription(stakingState.delegateList, validatorsState.validators));
-
-        setStakingValues({
-            available: stakingState.available,
-            delegated: stakingState.delegated,
-            undelegate: stakingState.undelegate,
-            stakingReward: stakingState.stakingReward,
-        });
-    }, [state]);
+        const getGasFromAllDelegations = async() => {
+            if(state.stakingState.stakingReward > 0){
+                 try {
+                     let gas = await getEstimateGasFromAllDelegations(wallet.name);
+                     setWithdrawAllGas(gas);
+                 } catch (error) {
+                     console.log(error);
+                 }
+            }
+        }
+        getGasFromAllDelegations();
+    }, [state.stakingState, validatorsState]);
 
     const handleMoveToValidator = (address:string) => {
         navigation.navigate(Screens.Validator, {
             validatorAddress: address,
-            delegations: delegations,
         });
     }
 
-    const handleWithdrawAll = () => {
+    const handleWithdrawAll = (password:string) => {
+        const transactionState = {
+            type: TRANSACTION_TYPE["WITHDRAW ALL"],
+            password: password,
+            address : wallet.address,
+            gas: withdrawAllGas,
+        }
 
+        navigation.navigate(Screens.Transaction, {state: transactionState});
+    }
+
+    const refreshStates = () => {
+        handleValidatorsPolling();
+        state.handleDelegationState();
     }
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+            <RefreshScrollView
+                refreshFunc={refreshStates}>
+                <>
                 <View style={styles.box}>
-                    <RewardBox reward={stakingValues.stakingReward} transactionHandler={handleWithdrawAll}/>
-                    <BalancesBox stakingValues={stakingValues}/>
+                    <RewardBox gas={withdrawAllGas} reward={state.stakingState.stakingReward} transactionHandler={handleWithdrawAll}/>
+                    <BalancesBox stakingValues={state.stakingState}/>
                 </View>
 
-                <View style={styles.tabBox}>
-                    <TouchableOpacity 
-                        style={[styles.tab, {borderBottomColor: tab === 0? WhiteColor:'transparent'}]}
-                        onPress={()=>setTab(0)}>
-                        <Text style={tab === 0?styles.tabTitleActive:styles.tabTitleInactive}>My Delegations</Text>
-                    </TouchableOpacity>
+                <View style={styles.listContainer}>
+                    <View style={styles.tabBox}>
+                        <TouchableOpacity 
+                            style={[styles.tab, {borderBottomColor: tab === 0? WhiteColor:'transparent'}]}
+                            onPress={()=>setTab(0)}>
+                            <Text style={tab === 0?styles.tabTitleActive:styles.tabTitleInactive}>My Delegations</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity 
-                        style={[styles.tab, {borderBottomColor: tab === 1? WhiteColor:'transparent'}]}
-                        onPress={()=>setTab(1)}>
-                        <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity 
+                            style={[styles.tab, {borderBottomColor: tab === 1? WhiteColor:'transparent'}]}
+                            onPress={()=>setTab(1)}>
+                            <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {tab === 0 && <DelegationList delegations={state.delegationState} navigateValidator={handleMoveToValidator}/>}
+                    {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
                 </View>
-                {tab === 0 && <DelegationList delegations={delegations} navigateValidator={handleMoveToValidator}/>}
-                {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
-            </ScrollView>
+                </>
+            </RefreshScrollView>
         </View>
     )
 }
@@ -91,18 +107,24 @@ const styles = StyleSheet.create({
     },
     box: {
         marginHorizontal: 20,
-        marginBottom: 36,
+        marginBottom: 20,
         borderRadius: 4,
+    },
+    listContainer: {
+        paddingVertical: 15,
+        backgroundColor: BoxColor,
     },
     tabBox: {
         height: 58,
-        paddingHorizontal: 20,
+        marginHorizontal: 20,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: BoxColor,
+        backgroundColor: BgColor,
         borderBottomWidth: 1,
         borderBottomColor: DisableColor,
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
     },
     tab: {
         flex: 1,

@@ -9,9 +9,9 @@ import Button from "@/components/button/button";
 import { FailCircle, SuccessCircle } from "@/components/icon/icon";
 
 import { BgColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
-import { TRANSACTION_TYPE } from "@/constants/common";
+import { EXPLORER, TRANSACTION_TYPE } from "@/constants/common";
 
-import { delegate, redelegate, sendFCT, undelegate, withdrawRewards } from "@/util/firma";
+import { delegate, redelegate, sendFCT, undelegate, withdrawAllRewards, withdrawRewards } from "@/util/firma";
 import { getWallet } from "@/util/wallet";
 import { AppContext } from "@/util/context";
 
@@ -47,7 +47,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
 
     const openExplorer = (hash:string) => {
         if(transactionResult.code === -1) return;
-        Linking.openURL('https://explorer-devnet.firmachain.org/transactions/' + hash);
+        Linking.openURL(EXPLORER + '/transactions/' + hash);
     }
 
     useEffect(() => {
@@ -62,7 +62,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
         const transaction = async() => {
             switch (state.type) {
                 case TRANSACTION_TYPE["SEND"]:
-                    await sendFCT(mnemonic, state.targetAddress, state.amount, state.memo)
+                    await sendFCT(mnemonic, state.targetAddress, state.amount, state.gas, state.memo)
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
@@ -76,7 +76,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     })
                     break;
                 case TRANSACTION_TYPE["DELEGATE"]:
-                    await delegate(mnemonic, state.operatorAddressDst, state.amount)
+                    await delegate(mnemonic, state.operatorAddressDst, state.amount, state.gas)
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
@@ -90,7 +90,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     })
                     break;
                 case TRANSACTION_TYPE["REDELEGATE"]:
-                    await redelegate(mnemonic, state.operatorAddressSrc, state.operatorAddressDst, state.amount)
+                    await redelegate(mnemonic, state.operatorAddressSrc, state.operatorAddressDst, state.amount, state.gas)
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
@@ -104,7 +104,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     })
                     break;
                 case TRANSACTION_TYPE["UNDELEGATE"]:
-                    await undelegate(mnemonic, state.operatorAddressDst, state.amount)
+                    await undelegate(mnemonic, state.operatorAddressDst, state.amount, state.gas)
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
@@ -118,7 +118,21 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     })
                     break;
                 case TRANSACTION_TYPE["WITHDRAW"]:
-                    await withdrawRewards(mnemonic, state.operatorAddress)
+                    await withdrawRewards(mnemonic, state.operatorAddress, state.gas)
+                    .then(res => {
+                        setTransactionResult({
+                            code: res.code,
+                            result: res.transactionHash})
+                        console.log("RESULT : ", res);})
+                    .catch(error => {
+                        console.log("ERROR : ", error.toString());
+                        setTransactionResult({
+                            code: -1,
+                            result: error.toString()})
+                    })
+                    break;
+                case TRANSACTION_TYPE["WITHDRAW ALL"]:
+                    await withdrawAllRewards(mnemonic, state.gas)
                     .then(res => {
                         setTransactionResult({
                             code: res.code,

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import Container from "@/components/parts/containers/conatainer";
@@ -9,8 +9,9 @@ import Button from "@/components/button/button";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
-import { TRANSACTION_TYPE } from "@/constants/common";
+import { CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE } from "@/constants/common";
 import { AppContext } from "@/util/context";
+import { getEstimateGasSend, getFeesFromGas } from "@/util/firma";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
@@ -21,11 +22,13 @@ interface Props {
 const SendScreen: React.FunctionComponent<Props> = (props) => {
     const {navigation} = props;
 
-    const {wallet} = useContext(AppContext);
+    const {wallet, dispatchEvent} = useContext(AppContext);
 
     const [targetAddress, setTargetAddress] = useState('');
-    const [amount, setAmount] = useState(0);   
+    const [amount, setAmount] = useState(0);
+    const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
     const [memo, setMemo] = useState(null);
+    const [resetInputValues, setInputResetValues] = useState(false);
 
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
 
@@ -37,8 +40,10 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
             password: password,
             targetAddress : targetAddress,
             amount: amount,
+            gas: gas,
             memo: memo,
         }
+        setInputResetValues(true);
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
@@ -52,6 +57,14 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
 
     const handleSend = async() => {
         if(targetAddress === '' || amount <= 0) return;
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        try {
+            let gas = await getEstimateGasSend(wallet.name, targetAddress, amount);
+            setGas(gas);
+        } catch (error){
+            console.log(error);
+        }
+        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
         handleTransactionModal(true);
     }
 
@@ -61,24 +74,23 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
-                    <View>
+                    <Pressable onPress={() => Keyboard.dismiss()}>
                         <WalletInfo address={wallet.address} />
-                        <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} />
-                    </View>
+                        <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} reset={resetInputValues}/>
+                    </Pressable>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
                             title="Send"
                             active={wallet.address !== '' && amount > 0}
                             onPressEvent={handleSend}/>
                     </View>
-                    {openTransactionModal && 
-                        <TransactionConfirmModal 
-                            transactionHandler={handleTransaction} 
-                            title={"Send"} 
-                            amount={amount} 
-                            open={openTransactionModal} 
-                            setOpenModal={handleTransactionModal} />
-                    }
+                    <TransactionConfirmModal 
+                        transactionHandler={handleTransaction} 
+                        title={"Send"} 
+                        fee={getFeesFromGas(gas)}
+                        amount={amount} 
+                        open={openTransactionModal} 
+                        setOpenModal={handleTransactionModal} />
                 </View>
             </ViewContainer>
         </Container>

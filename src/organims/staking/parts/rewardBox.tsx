@@ -1,17 +1,18 @@
-import { convertCurrent, convertNumber, make2DecimalPlace, resizeFontSize } from "@/util/common";
+import { convertCurrent, make2DecimalPlace, resizeFontSize } from "@/util/common";
+import { getFeesFromGas } from "@/util/firma";
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import SmallButton from "../../../components/button/smallButton";
-import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
-import { ButtonPointLightColor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor } from "../../../constants/theme";
+import SmallButton from "@/components/button/smallButton";
+import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
+import { ButtonPointLightColor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor } from "@/constants/theme";
 
 interface Props {
     reward: any;
-    fromVD?: boolean;
+    gas: number;
     transactionHandler: Function;
 }
 
-const RewardBox = ({fromVD, reward, transactionHandler}:Props) => {
+const RewardBox = ({gas, reward, transactionHandler}:Props) => {
     const [openModal, setOpenModal] = useState(false);
     const [rewardTextSize, setRewardTextSize] = useState(28);
     
@@ -19,14 +20,13 @@ const RewardBox = ({fromVD, reward, transactionHandler}:Props) => {
         return convertCurrent(make2DecimalPlace(reward));
     }, [reward]);
     
-    const handleWithdraw = (open:boolean) => {
+    const handleWithdraw = async(open:boolean) => {
         setOpenModal(open);
     }
 
     useEffect(() => {
         setRewardTextSize(resizeFontSize(reward, 10000, 28));
     }, [reward]);
-    
 
     return (
         <View style={styles.rewardBox}>
@@ -37,11 +37,12 @@ const RewardBox = ({fromVD, reward, transactionHandler}:Props) => {
                 </Text>
             </View>
             <SmallButton
-                title={"Withdraw"}
+                title={"Withdraw All"}
                 size={125}
+                active={reward > 0}
                 color={ButtonPointLightColor}
                 onPressEvent={() => handleWithdraw(true)}/>
-            <TransactionConfirmModal transactionHandler={transactionHandler} title={fromVD? "Withdraw" : "Withdraw All"} amount={reward} open={openModal} setOpenModal={handleWithdraw} />
+            <TransactionConfirmModal transactionHandler={transactionHandler} title={"Withdraw All"} amount={reward} fee={getFeesFromGas(gas)} open={openModal} setOpenModal={handleWithdraw} />
         </View>
     )
 }
