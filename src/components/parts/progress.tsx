@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, BackHandler, Platform, StyleSheet, View } from "react-native";
 import { fadeIn, fadeOut } from "@/util/animation";
 import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Progress = () => {
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
@@ -28,6 +29,15 @@ const Progress = () => {
             clearInterval(timer);
         };
     }, [])
+
+    useFocusEffect(
+        useCallback(() => {
+            if(Platform.OS === "android"){
+                const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+                return () => backHandler.remove()
+            }
+        }, [])
+    )
 
     return (
         <View style={styles.container}>
