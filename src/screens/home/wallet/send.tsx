@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { Keyboard, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import Container from "@/components/parts/containers/conatainer";
@@ -27,7 +27,6 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
 
     const {wallet, dispatchEvent} = useContext(AppContext);
     const {balance, getBalance} = useBalanceData(wallet.address);
-
 
     const [targetAddress, setTargetAddress] = useState('');
     const [amount, setAmount] = useState(0);
@@ -104,7 +103,7 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
                 <View style={styles.container}>
                     <ScrollView>
                         <WalletInfo available={balance} />
-                        <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} limitAmount={balance} reset={resetInputValues}/>
+                        <SendInputBox address={setTargetAddress} amount={setAmount} memo={setMemo} available={balance} reset={resetInputValues}/>
                     </ScrollView>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
