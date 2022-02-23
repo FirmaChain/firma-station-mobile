@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import Button from "@/components/button/button";
@@ -9,8 +9,8 @@ import TransactionConfirmModal from "@/components/modal/transactionConfirmModal"
 import ValidatorSelectModal from "@/organims/staking/delegate/validatorSelectModal";
 import WalletInfo from "@/organims/wallet/send/walletInfo";
 import { AUTO_ENTERED_AMOUNT_TEXT, CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, REDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
-import { DownArrow, QuestionCircle, Radio } from "@/components/icon/icon";
-import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { DownArrow, Radio } from "@/components/icon/icon";
+import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import { AppContext } from "@/util/context";
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from "@/util/firma";
 import WarnContainer from "@/components/parts/containers/warnContainer";
@@ -41,6 +41,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
 
     const {balance, getBalance} = useBalanceData(wallet.address);
 
+    const [limitAvailable, setLimitAvailable] = useState(0);
     const [amount, setAmount] = useState(0);
     const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
     const [status, setStatus] = useState(0);
@@ -52,8 +53,9 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const [alertDescription, setAlertDescription] = useState('');
 
     const [autoActive, setAutoActive] = useState(false);
-    const [autoAmount, setAutoAmount] = useState(0);
-    const [activeQuestion, setActiveQuestion] = useState(false);
+    const [autoAmount, setAutoAmount] = useState('');
+
+    const [safetyActive, setSafetyActive] = useState(true);
 
     const [selectOperatorAddressSrc, setSelectOperatorAddressSrc] = useState("");
     const [selectValidatorMoniker, setSelectValidatorMoniker] = useState("");
@@ -118,33 +120,39 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                 <InputSetVerticalForAmount
                     title="Amount"
                     placeholder="0"
-                    accent={autoActive}
-                    limitValue={state.type === "Delegate"? balance : Number(selectDelegationAmount)}
-                    forcedValue={autoAmount.toString()}
+                    accent={state.type === "Delegate"? safetyActive:autoActive}
+                    limitValue={state.type === "Delegate"? limitAvailable : Number(selectDelegationAmount)}
+                    forcedValue={autoAmount}
                     resetValues={resetInputValues}
                     onChangeEvent={handleAmount}/>
                 
                 <View style={styles.radioBox}>
-                    <TouchableOpacity style={styles.radioBox} onPress={() => setAutoActive(!autoActive)}>
-                        <Radio active={autoActive} size={20} color={WhiteColor} />
-                        <Text style={[styles.title, {paddingLeft: 5, marginBottom: 0, color: WhiteColor}]}>{state.type === "Delegate"? "Auto":"All"}</Text>
-                    </TouchableOpacity>
-                    {state.type === "Delegate" &&
-                        <TouchableOpacity style={{paddingLeft: 10, paddingBottom: 10}} onPressIn={()=>setActiveQuestion(true)} onPressOut={()=>setActiveQuestion(false)}>
-                            <QuestionCircle size={20} color={TextGrayColor}/>
+                    {state.type === "Delegate"?
+                        <View style={styles.radioBox}>
+                            <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
+                            <TouchableOpacity onPress={() => setSafetyActive(!safetyActive)}>
+                                <View style={[styles.radioWrapper, safetyActive?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
+                                    <View style={styles.radio} />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        <TouchableOpacity style={styles.radioBox} onPress={() => setAutoActive(!autoActive)}>
+                            <Radio active={autoActive} size={20} color={WhiteColor} />
+                            <Text style={[styles.title, {paddingLeft: 5, marginBottom: 0, color: WhiteColor}]}>{state.type === "Delegate"? "Auto":"All"}</Text>
                         </TouchableOpacity>
                     }
                 </View>
-                {activeQuestion &&
-                <View style={{paddingVertical: 15}}>
+                {safetyActive &&
+                <View>
                     <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
                 </View>
                 }
                 {(state.type === "Undelegate" || state.type === "Redelegate")&&
                 
-                noticeText.map(value => {
+                noticeText.map((value, index) => {
                     return (
-                        <View style={{paddingVertical: 5}}>
+                        <View key={index} style={{paddingVertical: 5}}>
                             <WarnContainer text={value} />
                         </View>
                     )
@@ -187,8 +195,6 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                     break;
                 case "Redelegate":
                     gas = await getEstimateGasRedelegate(wallet.name, selectOperatorAddressSrc, state.operatorAddress, amount);
-                    console.log(gas);
-                    
                     setGas(gas);
                     break;
             }
@@ -200,7 +206,6 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
         }
         dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
     }
-
 
     const handleModalOpen = (open:boolean) => {
         setIsAlertModalOpen(open);
@@ -226,14 +231,28 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
         if(autoActive){
             switch (state.type) {
                 case "Delegate":
-                    setAutoAmount(balance - 100000);
+                    setAutoAmount((balance - 100000).toString());
                     break;
                 default:
-                    setAutoAmount(Number(selectDelegationAmount));
+                    setAutoAmount(selectDelegationAmount.toString());
                     break;
             }
+        } else {
+            setAutoAmount('');
         }
     }, [autoActive])
+
+    useEffect(() => {
+        if(balance > 0){
+            if(safetyActive){
+                setLimitAvailable(balance - 100000);
+            } else {
+                setLimitAvailable(balance - 20000);
+            }
+        }
+        
+    }, [safetyActive, balance])
+    
 
     useEffect(() => {
         setOpenSignModal(status > 0);
@@ -327,7 +346,19 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
-        marginBottom: 10,
+        marginBottom: 5,
+    },
+    radioWrapper: {
+        width: 45,
+        borderRadius: 20,
+        justifyContent: "center",
+        padding: 3,
+    },
+    radio: {
+        width: 18,
+        height: 18,
+        borderRadius: 50,
+        backgroundColor: WhiteColor,
     }
 })
 
