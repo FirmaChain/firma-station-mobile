@@ -1,6 +1,7 @@
-import { BgColor, BoxColor } from "@/constants/theme";
 import React from "react";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { BgColor } from "@/constants/theme";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
+import { Header } from "@react-navigation/stack";
 
 interface Props {
     visible: boolean;
@@ -14,15 +15,18 @@ const CustomModal = ({visible, handleOpen, children}:Props) => {
     }
 
     return (
-        <View style={[styles.container, {display: visible? "flex":"none"}]}>
+        <View style={[styles.container, {display: visible? "flex":"none", flex: visible? 1:0}]}>
             <Modal
                 animationType="fade"
                 transparent={true}
+                onRequestClose={closeModal}
                 visible={visible}>
-                    <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
-                    <View style={styles.modalBox}>
-                        {children} 
-                    </View>
+                    <KeyboardAvoidingView behavior={Platform.select({android: undefined, ios: 'padding'})} enabled style={{flex: 1}}>
+                        <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
+                        <View style={styles.modalBox}>
+                            {children} 
+                        </View>
+                    </KeyboardAvoidingView>
             </Modal>
         </View>
     )
@@ -30,7 +34,6 @@ const CustomModal = ({visible, handleOpen, children}:Props) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
@@ -46,7 +49,6 @@ const styles = StyleSheet.create({
     modalBox: {
         width: '100%',
         height: 'auto',
-        maxHeight: 500,
         shadowColor: BgColor,
         shadowOffset: {width: 0, height: -4},
         shadowOpacity: 0.1,

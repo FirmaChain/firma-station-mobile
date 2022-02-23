@@ -43,7 +43,7 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: Platform.OS === "ios" ? getStatusBarHeight() : 0,
+        paddingTop: Platform.select({android: 0, ios: getStatusBarHeight()}),
         backgroundColor: BgColor,
     },
     boxH: {

@@ -12,7 +12,7 @@ const ViewContainer = ({bgColor, full = false, children}:Props) => {
         <View 
             style={[styles.viewContainer, 
             {backgroundColor: bgColor, 
-            paddingBottom: full? 0 : Platform.OS === "ios"? 50 : 30}]}>
+            paddingBottom: full? 0 : Platform.select({android: 30, ios: 50}),}]}>
             {children}
         </View>
     )

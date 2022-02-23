@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         backgroundColor: BgColor,
-        paddingBottom: Platform.OS === "ios"? 50 : 30,
+        paddingBottom: Platform.select({android: 30, ios: 50}),
         paddingHorizontal: 20,
     },
     resultBox: {

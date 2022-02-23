@@ -75,9 +75,8 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
                 return;
             }
         }
-        
         const result = useBio? passwordFromBio : password;
-        
+
         transactionHandler && transactionHandler(result);
         handleModal(false);
     }

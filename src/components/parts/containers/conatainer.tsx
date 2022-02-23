@@ -32,7 +32,7 @@ const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: Platform.OS === "ios" ? getStatusBarHeight() : 0,
+        paddingTop: Platform.select({android: 0, ios: getStatusBarHeight()}),
     },
 })
 
