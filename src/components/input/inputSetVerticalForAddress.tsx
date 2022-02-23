@@ -8,14 +8,12 @@ import QRCodeScannerModal from "../modal/qrCodeScanner";
 
 const InputSetVerticalForAddress: React.FC<{
     title: string;
-    message?: string;
     numberOnly?: boolean;
-    validation?: boolean;
     placeholder: string;
     secure?: boolean;
     resetValues?: boolean;
     onChangeEvent: Function;
-}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, resetValues = false, onChangeEvent}) => {
+}> = ({title, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
     const [openModal, setOpenModal] = useState(false);
@@ -60,9 +58,6 @@ const InputSetVerticalForAddress: React.FC<{
                 onFocus={()=>setFocus(true)}
                 onBlur={()=>setFocus(false)}
                 onChangeText={text => handleInputChange(text)}/>
-            <View style={styles.messageContainer}>
-                <Text style={[styles.message, {color: validation? 'green':TextWarnColor}]}>{message}</Text>
-            </View>
 
             <QRCodeScannerModal isAddress={true} visible={openModal} handleOpen={handleModal} ReaderHandler={handleInputChange} />
         </View>

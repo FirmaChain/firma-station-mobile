@@ -46,6 +46,12 @@ export const BackArrow = ({size, color}:Props) => {
     )
 }
 
+export const ForwardArrowWithTail = ({size, color}:Props) => {
+    return (
+        <Ionicons name="arrow-forward" size={size} color={color}/>
+    )
+}
+
 export const ForwardArrow = ({size, color}:Props) => {
     return (
         <MaterialIcons name="arrow-forward-ios" size={size} color={color}/>
@@ -85,6 +91,12 @@ export const Person = ({size, color}:Props) => {
 export const ExclamationCircle = ({size, color}:Props) => {
     return (
         <AntDesignIcons name="exclamationcircleo" size={size} color={color} />
+    )
+}
+
+export const QuestionCircle = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="questioncircleo" size={size} color={color} />
     )
 }
 

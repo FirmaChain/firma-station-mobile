@@ -66,8 +66,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
-                            result: res.transactionHash})
-                        console.log("RESULT : ", res);})
+                            result: res.transactionHash})})
                     .catch(error => {
                         console.log("ERROR : ", error.toString());
                         setTransactionResult({
@@ -80,8 +79,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
-                            result: res.transactionHash})
-                        console.log("RESULT : ", res);})
+                            result: res.transactionHash})})
                     .catch(error => {
                         console.log("ERROR : ", error.toString());
                         setTransactionResult({
@@ -94,8 +92,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
-                            result: res.transactionHash})
-                        console.log("RESULT : ", res);})
+                            result: res.transactionHash})})
                     .catch(error => {
                         console.log("ERROR : ", error.toString());
                         setTransactionResult({
@@ -108,8 +105,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
-                            result: res.transactionHash})
-                        console.log("RESULT : ", res);})
+                            result: res.transactionHash})})
                     .catch(error => {
                         console.log("ERROR : ", error.toString());
                         setTransactionResult({
@@ -122,8 +118,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
-                            result: res.transactionHash})
-                        console.log("RESULT : ", res);})
+                            result: res.transactionHash})})
                     .catch(error => {
                         console.log("ERROR : ", error.toString());
                         setTransactionResult({
@@ -136,8 +131,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
                     .then(res => {
                         setTransactionResult({
                             code: res.code,
-                            result: res.transactionHash})
-                        console.log("RESULT : ", res);})
+                            result: res.transactionHash})})
                     .catch(error => {
                         console.log("ERROR : ", error.toString());
                         setTransactionResult({

@@ -16,6 +16,7 @@ import { CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, TRANSACTION_
 import { AppContext } from "@/util/context";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import { useFocusEffect } from "@react-navigation/native";
+import AlertModal from "@/components/modal/alertModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -45,6 +46,8 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
     });
 
     const [withdrawGas, setWithdrawGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alertDescription, setAlertDescription] = useState('');
 
     const [validator, setValidator]:Array<any> = useState(null);
 
@@ -59,6 +62,8 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
     }
 
     const handleWithdraw = (password:string) => {
+        if(alertDescription !== '') return handleModalOpen(true);
+
         const transactionState = {
             type: TRANSACTION_TYPE["WITHDRAW"],
             password: password,
@@ -66,6 +71,10 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
             gas: withdrawGas,
         }
         navigation.navigate(Screens.Transaction, {state: transactionState});
+    }
+
+    const handleModalOpen = (open:boolean) => {
+        setIsAlertModalOpen(open);
     }
 
     const handleUrl = (url:string) => {
@@ -93,6 +102,7 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
                 setWithdrawGas(gas);
             } catch (error) {
                 console.log(error);
+                setAlertDescription(String(error));
             }
         }
         dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
@@ -181,6 +191,14 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
                                         <AddressBox title={"Operator address"} path={"validators"} address={validator.operatorAddress} />
                                         <AddressBox title={"Account address"} path={"accounts"} address={validator.accountAddress} />
                                     </View>
+
+                                    <AlertModal
+                                        visible={isAlertModalOpen}
+                                        handleOpen={handleModalOpen}
+                                        title={"Failed"}
+                                        desc={alertDescription}
+                                        confirmTitle={"OK"}
+                                        type={"ERROR"}/>
                                 </View>
                         </RefreshScrollView>
                     }

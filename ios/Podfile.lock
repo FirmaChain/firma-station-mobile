@@ -286,7 +286,7 @@ PODS:
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
-  - react-native-safe-area-context (3.4.0):
+  - react-native-safe-area-context (3.4.1):
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
@@ -369,7 +369,7 @@ PODS:
     - React-Core
   - RNPermissions (3.2.0):
     - React-Core
-  - RNScreens (3.11.1):
+  - RNScreens (3.12.0):
     - React-Core
     - React-RCTImage
   - RNSVG (12.1.1):
@@ -598,7 +598,7 @@ SPEC CHECKSUMS:
   react-native-biometrics: 9d3306e5d29c3bc4e6a3c912d759a94e76a2f683
   react-native-camera: 210a872c84d3aa0982a9223047ef9e743ed694fa
   react-native-randombytes: 5fc412efe7b5c55b9002c0004d75fe5fabcaa507
-  react-native-safe-area-context: f11988cdde9ab647843ca7d4912392c0255100b6
+  react-native-safe-area-context: 5b8a418400eb3d8364aa87300e865c0262cc17b9
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   React-perflogger: 3c9bb7372493e49036f07a82c44c8cf65cbe88db
   React-RCTActionSheet: 052606483045a408693aa7e864410b4a052f541a
@@ -619,7 +619,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: bf572f552ea324acd5b5464b8d30755b2d8c1de6
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
   RNPermissions: bf844d392fe0ecbfbd2e4ae2b88cc32f2f09b369
-  RNScreens: 4d83613b50b74ed277026375dc0810893b0c347f
+  RNScreens: 2559f98b0835103cbef3b26ba77fa61d4bb37ae7
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   RNVectorIcons: 7923e585eaeb139b9f4531d25a125a1500162a0b
   Yoga: 9b6696970c3289e8dea34b3eda93f23e61fb8121

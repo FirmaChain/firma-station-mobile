@@ -13,7 +13,7 @@ interface Props {
 
 const MonikerSection = ({validator}:Props) => {
   return (
-    <View style={[styles.vdWrapperH, {alignItems: "center", paddingVertical: 10}]}>
+    <View style={[styles.vdWrapperH, {alignItems: "center"}]}>
         <View style={styles.moniikerWrapperH}>
             {validator.avatarURL?
             <Image

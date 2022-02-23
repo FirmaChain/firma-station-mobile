@@ -18,7 +18,7 @@ const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type}:Props
     }
 
     return (
-        <View style={[styles.container, {display: visible? "flex":"none"}]}>
+        <View style={[styles.container, {display: visible? "flex":"none", flex: visible? 1:0}]}>
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -47,7 +47,6 @@ const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type}:Props
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         position: "absolute",

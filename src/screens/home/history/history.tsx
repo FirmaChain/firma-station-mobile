@@ -64,16 +64,16 @@ const HistoryScreen: React.FunctionComponent = () => {
                                                         <View style={[styles.wrapperH, {alignItems: "center", paddingBottom: 15}]}>
                                                             <Text style={[styles.contentTitle, {fontSize: 10, fontWeight: "normal"}]}>{convertTime(value.timestamp, false, true)}</Text>
                                                         </View>
-                                                        <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center", paddingLeft: 10}]}>
-                                                            <View style={styles.historyWrapper}>
+                                                        <View style={[styles.wrapperH, styles.wrapper, {flex: 4, justifyContent: "flex-start", alignItems: "flex-start", paddingLeft: 10}]}>
+                                                            <View style={[styles.historyWrapper, {flex: 1}]}>
                                                                 <Text style={[styles.contentTitle, {fontSize: 14}]}>Block</Text>
                                                                 <Text style={[styles.contentItem, {fontSize: 14}]}>{value.block}</Text>
                                                             </View>
-                                                            <View style={styles.historyWrapper}>
+                                                            <View style={[styles.historyWrapper, {flex: 2, paddingHorizontal: 10}]}>
                                                                 <Text style={[styles.contentTitle, {fontSize: 14}]}>Type</Text>
                                                                 <Text style={[styles.contentItem, {fontSize: 14}]}>{value.type}</Text>
                                                             </View>
-                                                            <View style={styles.historyWrapper}>
+                                                            <View style={[styles.historyWrapper, {flex: 1}]}>
                                                                 <Text style={[styles.contentTitle, {fontSize: 14}]}>Result</Text>
                                                                 <Text style={[styles.contentItem, {fontSize: 14}]}>{value.success}</Text>
                                                             </View>

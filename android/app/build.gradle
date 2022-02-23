@@ -43,33 +43,32 @@ android {
         }
     }
     signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
-        // release {
-        //     if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
-        //         storeFile file(MYAPP_RELEASE_STORE_FILE)
-        //         storePassword MYAPP_RELEASE_STORE_PASSWORD
-        //         keyAlias MYAPP_RELEASE_KEY_ALIAS
-        //         keyPassword MYAPP_RELEASE_KEY_PASSWORD
-        //     }
+        // debug {
+        //     storeFile file('debug.keystore')
+        //     storePassword 'android'
+        //     keyAlias 'androiddebugkey'
+        //     keyPassword 'android'
         // }
-    }
-    buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-            if (nativeArchitectures) {
-                ndk {
-                    abiFilters nativeArchitectures.split(',')
-                }
+        release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
             }
         }
+    }
+    buildTypes {
+        // debug {
+        //     signingConfig signingConfigs.debug
+        //     if (nativeArchitectures) {
+        //         ndk {
+        //             abiFilters nativeArchitectures.split(',')
+        //         }
+        //     }
+        // }
         release {
-            signingConfig signingConfigs.debug
-            // signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

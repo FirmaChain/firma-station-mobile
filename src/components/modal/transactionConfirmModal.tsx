@@ -11,6 +11,7 @@ import { convertAmount } from "@/util/common";
 import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { AppContext } from "@/util/context";
+import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 
 interface Props {
     title: string,
@@ -125,7 +126,7 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
                             message=""
                             validation={true}
                             secure={true}
-                            placeholder="Muse be at least 10 characters"
+                            placeholder={PLACEHOLDER_FOR_PASSWORD}
                             onChangeEvent={handleInputChange}/>
                         }
                         <Button

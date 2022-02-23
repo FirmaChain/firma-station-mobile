@@ -1,3 +1,4 @@
+import { EXPLORER } from "@/constants/common";
 import React from "react";
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BoxColor, Lato, TextAddressColor, TextColor } from "../../../constants/theme";
@@ -10,7 +11,7 @@ interface Props {
 
 const AddressBox = ({title, path, address}:Props) => {
     const openExplorer = (URL:string) => {
-        Linking.openURL('https://explorer-devnet.firmachain.org/' + path + "/" + URL);
+        Linking.openURL(EXPLORER + "/" + path + "/" + URL);
     }
 
     return (

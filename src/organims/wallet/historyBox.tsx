@@ -46,12 +46,12 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                 </View>
                 :
                 <>
-                <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center" ,paddingTop: 18}]}>
-                    <View style={styles.historyWrapper}>
+                <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "flex-start" ,paddingTop: 18, flex: 3}]}>
+                    <View style={[styles.historyWrapper, {flex: 1,}]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Block</Text>
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.block}</Text>
                     </View>
-                    <View style={styles.historyWrapper}>
+                    <View style={[styles.historyWrapper, {flex: 1.5}]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Type</Text>
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.type}</Text>
                     </View>
@@ -67,12 +67,12 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "center"}]}>
-                    <View style={styles.historyWrapper}>
+                <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "flex-start", flex: 3}]}>
+                    <View style={[styles.historyWrapper, {flex: 1,}]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Result</Text>
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.success}</Text>
                     </View>
-                    <View style={styles.historyWrapper}>
+                    <View style={[styles.historyWrapper, {flex: 1.5,}]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Time</Text>
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{convertTime(historyData.timestamp, false, true)}</Text>
                     </View>

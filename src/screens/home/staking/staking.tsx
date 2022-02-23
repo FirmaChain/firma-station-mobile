@@ -13,6 +13,7 @@ import { AppContext } from "@/util/context";
 import { FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE } from "@/constants/common";
 import { getEstimateGasFromAllDelegations } from "@/util/firma";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
+import AlertModal from "@/components/modal/alertModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
@@ -30,14 +31,19 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
     const [tab, setTab] = useState(0);
     const [withdrawAllGas, setWithdrawAllGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
 
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alertDescription, setAlertDescription] = useState('');
+
     useEffect(() => {
         const getGasFromAllDelegations = async() => {
             if(state.stakingState.stakingReward > 0){
                  try {
                      let gas = await getEstimateGasFromAllDelegations(wallet.name);
                      setWithdrawAllGas(gas);
+                     setAlertDescription('');
                  } catch (error) {
                      console.log(error);
+                     setAlertDescription(String(error));
                  }
             }
         }
@@ -51,6 +57,8 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
     }
 
     const handleWithdrawAll = (password:string) => {
+        if(alertDescription !== '') return handleModalOpen(true);
+
         const transactionState = {
             type: TRANSACTION_TYPE["WITHDRAW ALL"],
             password: password,
@@ -59,6 +67,10 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
         }
 
         navigation.navigate(Screens.Transaction, {state: transactionState});
+    }
+
+    const handleModalOpen = (open:boolean) => {
+        setIsAlertModalOpen(open);
     }
 
     const refreshStates = () => {
@@ -81,7 +93,7 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
                         <TouchableOpacity 
                             style={[styles.tab, {borderBottomColor: tab === 0? WhiteColor:'transparent'}]}
                             onPress={()=>setTab(0)}>
-                            <Text style={tab === 0?styles.tabTitleActive:styles.tabTitleInactive}>My Delegations</Text>
+                            <Text style={tab === 0?styles.tabTitleActive:styles.tabTitleInactive}>My Stakings</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity 
@@ -90,8 +102,16 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
                             <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
                         </TouchableOpacity>
                     </View>
-                    {tab === 0 && <DelegationList delegations={state.delegationState} navigateValidator={handleMoveToValidator}/>}
+                    {tab === 0 && <DelegationList delegations={state.delegationState} redelegations={state.redelegationState} undelegations={state.undelegationState} navigateValidator={handleMoveToValidator}/>}
                     {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
+                    
+                    <AlertModal
+                        visible={isAlertModalOpen}
+                        handleOpen={handleModalOpen}
+                        title={"Failed"}
+                        desc={alertDescription}
+                        confirmTitle={"OK"}
+                        type={"ERROR"}/>
                 </View>
                 </>
             </RefreshScrollView>

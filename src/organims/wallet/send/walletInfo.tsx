@@ -1,31 +1,20 @@
 import { BorderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import { convertAmount } from "@/util/common";
-import React, { useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
-    address?: string;
-    available?: number;
+    available: number;
 }
 
-const WalletInfo = ({address = '', available = 0}:Props) => {
-    const {balance} = useBalanceData(address);
-    const [availableValue, setAvailableValue] = useState(balance);
-
-    const availableBalance = useMemo(() => {
-        return convertAmount(availableValue);
-    }, [availableValue]);
-
-    useEffect(() => {
-        if(available !== 0) return setAvailableValue(available);
-        return setAvailableValue(balance);
-    }, [balance, available])
+const WalletInfo = ({available = 0}:Props) => {
     
     return (
         <View style={styles.boxH}>
             <Text style={styles.title}>Available</Text>
-            <Text style={styles.balance}>{availableBalance}
+            <Text style={styles.balance}>{convertAmount(available)}
                 <Text style={[styles.title, {fontSize: 14}]}>  FCT</Text>
             </Text>
         </View>

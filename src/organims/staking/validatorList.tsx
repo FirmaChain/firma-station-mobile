@@ -59,8 +59,8 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
                             <DataSection title="Voting Power" data={vd.votingPowerPercent.toString() + '%'} />
                             <DataSection title="Commission" data={vd.commission.toString() + '%'} />
                             <DataSection 
-                                title="APY/APR" 
-                                data={convertPercentage(vd.APY) + '% / ' + convertPercentage(vd.APR) + '%'} />
+                                title="APR/APY" 
+                                data={convertPercentage(vd.APR) + '% / ' + convertPercentage(vd.APY) + '%'} />
                             <DataSection title="Uptime" data={vd.condition.toString() + '%'} />
                             <View style={{paddingBottom: 22}} />
                         </View>
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     sortButton: {
         flexDirection: 'row',
         alignItems: 'center',
+        paddingVertical: 10,
     },
     sortItem: {
         color: GrayColor,

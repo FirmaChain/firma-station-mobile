@@ -25,8 +25,6 @@ const InputSetVerticalForAmount: React.FC<{
     }, [resetValues])
 
     useEffect(() => {
-        console.log(forcedValue);
-        
         if(forcedValue !== '' && accent) handleInputChange(convertToFctNumberForInput(forcedValue).toString());
     }, [forcedValue, accent])
 
@@ -35,7 +33,12 @@ const InputSetVerticalForAmount: React.FC<{
             setVal(convertToFctNumberForInput(limitValue).toString());
         }
     }, [val])
-    
+
+    useEffect(() => {
+        if(convertToFctNumberForInput(limitValue) < Number(val)){
+            setVal(convertToFctNumberForInput(limitValue).toString());
+        }
+    }, [limitValue])
 
     return (
         <View style={styles.viewContainer}>
@@ -48,7 +51,7 @@ const InputSetVerticalForAmount: React.FC<{
                 placeholderTextColor={InputPlaceholderColor}
                 keyboardType={"numeric"}
                 autoCapitalize = 'none'
-                editable={!accent}
+                editable={forcedValue === ''}
                 value={val.toString()}
                 selectionColor={WhiteColor}
                 onFocus={()=>setFocus(true)}

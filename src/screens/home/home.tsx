@@ -34,7 +34,7 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
 
     const {wallet, dispatchEvent} = useContext(AppContext);
     const { balance, getBalance } = useBalanceData(wallet.address);
-    const { delegationState, handleDelegationState, handleDelegationPolling } = useDelegationData(wallet.address);
+    const { delegationState, redelegationState, undelegationState, handleDelegationState, handleDelegationPolling } = useDelegationData(wallet.address);
     const { recentHistory, handleCurrentHistoryState, handleCurrentHistoryPolling } = useHistoryData(wallet.address);
     const { stakingState, getStakingState, updateStakingState, getStakingComplete } = useStakingData(wallet.address);
 
@@ -42,6 +42,8 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
         state: {
             stakingState,
             delegationState,
+            redelegationState,
+            undelegationState,
             handleDelegationState,
         }
     }
@@ -111,7 +113,9 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
 
     useFocusEffect(
         useCallback(() => {
-            SplashScreen.hide();
+            setTimeout(() => {
+                SplashScreen.hide();
+            }, 1500);
             const routeName = getFocusedRouteNameFromRoute(props.route);
             if(routeName !== "Governance"){
                 handleCurrentDataPolling(true);

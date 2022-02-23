@@ -25,8 +25,8 @@ const PercentageBox = ({APR, APY, dataArr}:Props) => {
                 </View>
                 <View style={styles.divider} />
                 <View style={[styles.wrapperH, {flex: 1, justifyContent: "space-around"}]}>
-                    <Text style={[styles.title, {color: TextDarkGrayColor}]}>APY</Text>
-                    <Text style={[styles.data, {opacity: .6}]}>{APY} %</Text>
+                    <Text style={styles.title}>APY</Text>
+                    <Text style={styles.data}>{APY} %</Text>
                 </View>
             </View>
 

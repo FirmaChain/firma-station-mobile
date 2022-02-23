@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
-import { Animated, InteractionManager, StyleSheet, View } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 import { fadeIn, fadeOut } from "@/util/animation";
 import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 

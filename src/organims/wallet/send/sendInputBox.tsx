@@ -26,28 +26,26 @@ const SendInputBox = ({address, amount, memo, limitAmount, reset}:Props) => {
     }
 
     return (
-        <View>
-            <InputSetVerticalForAddress
-                title="To address"
-                message=""
-                validation={true}
-                placeholder="Address"
-                resetValues={reset}
-                onChangeEvent={handleAddress}/>
-            <InputSetVerticalForAmount
-                title="Amount"
-                placeholder="0 FCT"
-                limitValue={limitAmount}
-                resetValues={reset}
-                onChangeEvent={handleAmount}/>
-            <InputSetVertical
-                title="Memo"
-                message=""
-                validation={true}
-                placeholder="Memo"
-                resetValues={reset}
-                onChangeEvent={handleMemo}/>
-        </View>
+        <>
+        <InputSetVerticalForAddress
+            title="To address"
+            placeholder="Address"
+            resetValues={reset}
+            onChangeEvent={handleAddress}/>
+        <InputSetVerticalForAmount
+            title="Amount"
+            placeholder="0 FCT"
+            limitValue={limitAmount}
+            resetValues={reset}
+            onChangeEvent={handleAmount}/>
+        <InputSetVertical
+            title="Memo"
+            message=""
+            validation={true}
+            placeholder="Memo"
+            resetValues={reset}
+            onChangeEvent={handleMemo}/>
+        </>
     )
 }
 
