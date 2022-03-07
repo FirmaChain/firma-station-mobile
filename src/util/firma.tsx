@@ -1,7 +1,6 @@
 import { FIRMACHAIN_CONFIG, FIRMACHAIN_DEFAULT_CONFIG } from "@/constants/common";
-import { StakingState } from "@/hooks/staking/hooks";
+import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
 import { FirmaMobileSDK, FirmaUtil } from "@firmachain/firma-js"
-import { FirmaConfig } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
 import { convertNumber, convertToFctNumber } from "./common";
 import { getPasswordForEstimateGas, getWallet } from "./wallet";
@@ -163,6 +162,15 @@ export const getDelegateList = async(address:string) => {
     }
 }
 
+export const getRedelegationList = async(address:string) => {
+    try {
+        return await firmaSDK.Staking.getTotalRedelegationInfo(address);
+    } catch (error) {
+        console.log("getRedelegationList : ", error);
+        return [];
+    }
+}
+
 export const getUndelegateList = async(address:string) => {
     try {
         return await firmaSDK.Staking.getTotalUndelegateInfo(address);
@@ -266,6 +274,55 @@ export const getDelegations = async(address:string) => {
     });
 
     return delegateList;
+}
+
+export const getRedelegations = async(address:string) => {
+    const redelegationListOrigin = await getRedelegationList(address);
+    
+    let redelegationList:RedelegationInfo[] = []; 
+    redelegationListOrigin.map((redelegation) => {
+        redelegation.entries.map((entry) => {
+            redelegationList.push({
+                srcAddress: redelegation.redelegation.validator_src_address,
+                srcMoniker: "",
+                srcAvatarURL: "",
+                dstAddress: redelegation.redelegation.validator_dst_address,
+                dstMoniker: "",
+                dstAvatarURL: "",
+                balance: convertNumber(entry.redelegation_entry.shares_dst),
+                completionTime: entry.redelegation_entry.completion_time,
+            })
+        })
+    })
+
+    const redelegationListSort = redelegationList.sort((a: any, b: any) => {
+            return new Date(a.completionTime).getTime() - new Date(b.completionTime).getTime()
+        });
+
+    return redelegationListSort;
+}
+
+export const getUndelegations = async(address:string) => {
+    const undelegationListOrigin = await getUndelegateList(address);
+    
+    let undelegationList:UndelegationInfo[] = []; 
+    undelegationListOrigin.map((undelegation) => {
+        undelegation.entries.map((entry) => {
+            undelegationList.push({
+                validatorAddress: undelegation.validator_address,
+                moniker: "",
+                avatarURL: "",
+                balance: convertNumber(entry.balance),
+                completionTime: entry.completion_time,
+            })
+        })
+    })
+
+    const redelegationListSort = undelegationList.sort((a: any, b: any) => {
+            return new Date(a.completionTime).getTime() - new Date(b.completionTime).getTime()
+        });
+
+    return redelegationListSort;
 }
 
 export const getStaking = async(address:string) => {

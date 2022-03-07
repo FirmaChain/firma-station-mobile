@@ -1,54 +1,63 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useValidatorData } from "@hooks/staking/hooks";
+import { useStakingData, useValidatorData } from "@hooks/staking/hooks";
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from "@constants/theme";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import ValidatorList from "@/organims/staking/validatorList";
 import DelegationList from "@/organims/staking/delegationList";
 import BalancesBox from "@/organims/staking/parts/balanceBox";
 import RewardBox from "@/organims/staking/parts/rewardBox";
-import { useNavigation } from "@react-navigation/native";
-import { AppContext } from "@/util/context";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE } from "@/constants/common";
 import { getEstimateGasFromAllDelegations } from "@/util/firma";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import AlertModal from "@/components/modal/alertModal";
+import { useHistoryData } from "@/hooks/wallet/hooks";
+import { CommonActions } from "@/redux/actions";
+import { useAppSelector } from "@/redux/hooks";
+import { wait } from "@/util/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
-interface Props {
-    state: any;
-}
-
-const StakingScreen: React.FunctionComponent<Props> = (props) => {
-    const {state} = props;
+const StakingScreen = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-    
-    const { wallet } = useContext(AppContext);
-    const { validatorsState, handleValidatorsPolling } = useValidatorData();
+
+    const { wallet, staking } = useAppSelector(state => state);
+    const isFocused = useIsFocused();
+
+    const { validators, handleValidatorsPolling } = useValidatorData();
+    const { stakingState, getStakingState, updateStakingState } = useStakingData();
+    const { recentHistory, currentHistoryPolling, refetchCurrentHistory } = useHistoryData();
 
     const [tab, setTab] = useState(0);
+    const [isRefresh, setIsRefresh] = useState(false);
     const [withdrawAllGas, setWithdrawAllGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
 
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
 
+    const validatorList = useMemo(() => {
+        return validators;
+    }, [validators]);
+
     useEffect(() => {
-        const getGasFromAllDelegations = async() => {
-            if(state.stakingState.stakingReward > 0){
-                 try {
-                     let gas = await getEstimateGasFromAllDelegations(wallet.name);
-                     setWithdrawAllGas(gas);
-                     setAlertDescription('');
-                 } catch (error) {
-                     console.log(error);
-                     setAlertDescription(String(error));
-                 }
-            }
+        if(stakingState.stakingReward > 0) {
+            updateStakingState(stakingState.stakingReward);
         }
-        getGasFromAllDelegations();
-    }, [state.stakingState, validatorsState]);
+    }, [stakingState.stakingReward])
+
+    const currentHistoryRefetch = async() => {
+        if(refetchCurrentHistory)
+            await refetchCurrentHistory();
+    }
+
+    const handleCurrentHistoryPolling = (polling:boolean) => {
+        if(currentHistoryPolling) {
+            currentHistoryRefetch();
+            currentHistoryPolling(polling);
+        }
+    }
 
     const handleMoveToValidator = (address:string) => {
         navigation.navigate(Screens.Validator, {
@@ -56,27 +65,66 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
         });
     }
 
+    const handleModalOpen = (open:boolean) => {
+        setIsAlertModalOpen(open);
+    }
+
     const handleWithdrawAll = (password:string) => {
         if(alertDescription !== '') return handleModalOpen(true);
-
         const transactionState = {
             type: TRANSACTION_TYPE["WITHDRAW ALL"],
             password: password,
             address : wallet.address,
             gas: withdrawAllGas,
         }
-
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
-    const handleModalOpen = (open:boolean) => {
-        setIsAlertModalOpen(open);
+    useEffect(() => {
+        const getGasFromAllDelegations = async() => {
+            if(stakingState.stakingReward > 0 && stakingState.available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
+                await getEstimateGasFromAllDelegations(wallet.name).then(value => {
+                    setWithdrawAllGas(value);
+                    setAlertDescription('');
+                })
+                .catch(error => {
+                    console.log(error);
+                    setAlertDescription(String(error));
+                });
+            }
+        }
+
+        if(isFocused)
+            getGasFromAllDelegations();
+    }, [stakingState, validators]);
+
+    useEffect(() => {
+        if(recentHistory !== undefined){
+            refreshStates();
+        }
+    },[recentHistory])
+
+    const refreshStates = async() => {
+        setIsRefresh(true);
+        CommonActions.handleLoadingProgress(true);
+        if(validatorList.length > 0){
+            await handleValidatorsPolling();
+        }
+        await getStakingState();
+        wait(1500).then(() => {
+            CommonActions.handleLoadingProgress(false);
+        });
+        setIsRefresh(false);
     }
 
-    const refreshStates = () => {
-        handleValidatorsPolling();
-        state.handleDelegationState();
-    }
+    useFocusEffect(
+        useCallback(() => {
+            handleCurrentHistoryPolling(true);
+            return () => {
+                handleCurrentHistoryPolling(false);
+            }
+        }, [])
+    )
 
     return (
         <View style={styles.container}>
@@ -84,8 +132,8 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
                 refreshFunc={refreshStates}>
                 <>
                 <View style={styles.box}>
-                    <RewardBox gas={withdrawAllGas} reward={state.stakingState.stakingReward} transactionHandler={handleWithdrawAll}/>
-                    <BalancesBox stakingValues={state.stakingState}/>
+                    <RewardBox gas={withdrawAllGas} reward={staking.stakingReward} transactionHandler={handleWithdrawAll}/>
+                    <BalancesBox stakingValues={stakingState}/>
                 </View>
 
                 <View style={styles.listContainer}>
@@ -102,8 +150,14 @@ const StakingScreen: React.FunctionComponent<Props> = (props) => {
                             <Text style={tab === 1?styles.tabTitleActive:styles.tabTitleInactive}>Validator</Text>
                         </TouchableOpacity>
                     </View>
-                    {tab === 0 && <DelegationList delegations={state.delegationState} redelegations={state.redelegationState} undelegations={state.undelegationState} navigateValidator={handleMoveToValidator}/>}
-                    {tab === 1 && <ValidatorList validators={validatorsState.validators} navigateValidator={handleMoveToValidator}/>}
+                    <DelegationList 
+                        visible={tab === 0}
+                        isRefresh={isRefresh}
+                        navigateValidator={handleMoveToValidator}/>
+                    <ValidatorList 
+                        visible={tab === 1}
+                        validators={validatorList} 
+                        navigateValidator={handleMoveToValidator}/>
                     
                     <AlertModal
                         visible={isAlertModalOpen}
@@ -169,4 +223,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default StakingScreen;
+export default React.memo(StakingScreen);
