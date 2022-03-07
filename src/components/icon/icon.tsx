@@ -124,3 +124,9 @@ export const SortDESC = ({size, color}:Props) => {
     )
 }
 
+export const FingerPrint = ({size, color}:Props) => {
+    return (
+        <Ionicons name="ios-finger-print" size={size} color={color} />
+    )
+}
+

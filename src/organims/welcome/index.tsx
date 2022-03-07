@@ -1,11 +1,11 @@
-import Button from "@/components/button/button";
-import { WELCOME_DESCRIPTION } from "@/constants/common";
-import { BgColor, DisableColor, Lato, TextGrayColor } from "@/constants/theme";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import Button from "@/components/button/button";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { WELCOME_DESCRIPTION } from "@/constants/common";
+import { BgColor, DisableColor, Lato, TextGrayColor } from "@/constants/theme";
 import Description from "./description";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
