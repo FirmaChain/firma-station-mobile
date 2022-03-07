@@ -86,7 +86,7 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
     }
 
     const getUseBioAuthState = async() => {
-        const result = await getUseBioAuth();
+        const result = await getUseBioAuth(wallet.name);
         setActive(result);
         setUseBio(result);
     }

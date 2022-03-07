@@ -45,14 +45,10 @@ const StepThree = ({wallet}:Props) => {
 
     const MoveToHomeScreen = (result:boolean) => {
         if(result){
-            confirmViaBioAuth().then(res => {
-                if(res){
-                    setPasswordViaBioAuth(wallet.password);
-                    setChain(USE_BIO_AUTH + wallet.name, "true");
-                    handleOpenBioAuthModal(false);
-                    navigation.reset({routes: [{name: 'Home'}]});
-                }
-            });
+            setPasswordViaBioAuth(wallet.password);
+            setChain(USE_BIO_AUTH + wallet.name, "true");
+            handleOpenBioAuthModal(false);
+            navigation.reset({routes: [{name: 'Home'}]});
         } else {
             handleOpenBioAuthModal(false);
             navigation.reset({routes: [{name: 'Home'}]});

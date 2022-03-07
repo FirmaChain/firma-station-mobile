@@ -2,12 +2,11 @@ import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 
 interface IQueryParam {
-  onCompleted: (data: any) => void;
   proposalId?: string;
   address?: string;
 }
 
-export const useBlockDataQuery = ({ onCompleted }: IQueryParam) => {
+export const useBlockDataQuery = () => {
   return useQuery(
     gql`
       query {
@@ -24,11 +23,11 @@ export const useBlockDataQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
-export const useVotingPowerQuery = ({ onCompleted }: IQueryParam) => {
+export const useVotingPowerQuery = () => {
   return useQuery(
     gql`
       query {
@@ -47,11 +46,11 @@ export const useVotingPowerQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
-export const useTokenomicsQuery = ({ onCompleted }: IQueryParam) => {
+export const useTokenomicsQuery = () => {
   return useQuery(
     gql`
       query {
@@ -67,11 +66,11 @@ export const useTokenomicsQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
-export const useValidatorsDescriptionQuery = ({ onCompleted }: IQueryParam) => {
+export const useValidatorsDescriptionQuery = () => {
   return useQuery(
     gql`
       query {
@@ -93,11 +92,11 @@ export const useValidatorsDescriptionQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
-export const useValidatorsQuery = ({ onCompleted }: IQueryParam) => {
+export const useValidatorsQuery = () => {
   return useQuery(
     gql`
       query {
@@ -157,11 +156,11 @@ export const useValidatorsQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
-export const useValidatorFromAddressQuery = ({ onCompleted, address }: IQueryParam) => {
+export const useValidatorFromAddressQuery = ({ address }: IQueryParam) => {
   return useQuery(
     gql`
       {
@@ -221,12 +220,12 @@ export const useValidatorFromAddressQuery = ({ onCompleted, address }: IQueryPar
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
 
-export const useGovernmentQuery = ({ onCompleted }: IQueryParam) => {
+export const useGovernmentQuery = () => {
   return useQuery(
     gql`
       query {
@@ -242,11 +241,11 @@ export const useGovernmentQuery = ({ onCompleted }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
-export const useProposalQuery = ({ onCompleted, proposalId }: IQueryParam) => {
+export const useProposalQuery = ({ proposalId }: IQueryParam) => {
   return useQuery(
     gql`
       query {
@@ -285,12 +284,12 @@ export const useProposalQuery = ({ onCompleted, proposalId }: IQueryParam) => {
         }
       }
     `,
-    { onCompleted, pollInterval: 0, notifyOnNetworkStatusChange: true }
+    { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
 
 
-export const useCurrentHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) => {
+export const useCurrentHistoryByAddressQuery = ({ address }: IQueryParam) => {
   return useQuery(
     gql`
       query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
@@ -312,7 +311,6 @@ export const useCurrentHistoryByAddressQuery = ({ onCompleted, address }: IQuery
       }
     `,
     {
-      onCompleted,
       pollInterval: 0,
       notifyOnNetworkStatusChange: true,
       variables: {
@@ -323,7 +321,7 @@ export const useCurrentHistoryByAddressQuery = ({ onCompleted, address }: IQuery
   );
 };
 
-export const useHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) => {
+export const useHistoryByAddressQuery = ({ address }: IQueryParam) => {
   return useQuery(
     gql`
       query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
@@ -344,7 +342,6 @@ export const useHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) 
       }
     `,
     {
-      onCompleted,
       pollInterval: 0,
       notifyOnNetworkStatusChange: true,
       variables: {
@@ -356,7 +353,7 @@ export const useHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) 
 };
 
 
-export const useTransferHistoryByAddressQuery = ({ onCompleted, address }: IQueryParam) => {
+export const useTransferHistoryByAddressQuery = ({ address }: IQueryParam) => {
   return useQuery(
     gql`
       query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
@@ -378,7 +375,6 @@ export const useTransferHistoryByAddressQuery = ({ onCompleted, address }: IQuer
       }
     `,
     {
-      onCompleted,
       pollInterval: 0,
       notifyOnNetworkStatusChange: true,
       variables: {
@@ -390,7 +386,7 @@ export const useTransferHistoryByAddressQuery = ({ onCompleted, address }: IQuer
   );
 };
 
-export const useAvataURLFromAddress = ({ onCompleted, address }: IQueryParam) => {
+export const useAvataURLFromAddress = ({ address }: IQueryParam) => {
   return useQuery(
     gql`
       query {
@@ -405,7 +401,6 @@ export const useAvataURLFromAddress = ({ onCompleted, address }: IQueryParam) =>
       }
     `,
     {
-      onCompleted,
       pollInterval: 0,
       notifyOnNetworkStatusChange: true,
       variables: {
