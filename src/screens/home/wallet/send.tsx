@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -9,12 +9,13 @@ import Button from "@/components/button/button";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
-import { CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from "@/constants/common";
-import { AppContext } from "@/util/context";
+import { FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from "@/constants/common";
 import { addressCheck, getEstimateGasSend, getFeesFromGas } from "@/util/firma";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import { useFocusEffect } from "@react-navigation/native";
 import AlertModal from "@/components/modal/alertModal";
+import { useAppSelector } from "@/redux/hooks";
+import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
@@ -25,8 +26,8 @@ interface Props {
 const SendScreen: React.FunctionComponent<Props> = (props) => {
     const {navigation} = props;
 
-    const {wallet, dispatchEvent} = useContext(AppContext);
-    const {balance, getBalance} = useBalanceData(wallet.address);
+    const {wallet} = useAppSelector(state => state);
+    const {balance, getBalance} = useBalanceData();
 
     const [targetAddress, setTargetAddress] = useState('');
     const [amount, setAmount] = useState(0);
@@ -65,7 +66,7 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
     const handleSend = async() => {
         if(targetAddress === '' || amount <= 0) return;
         const isValidAddress = addressCheck(targetAddress);
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         try {
             if(isValidAddress){
                 let gas = await getEstimateGasSend(wallet.name, targetAddress, amount);
@@ -73,7 +74,7 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
             } else {
                 setAlertDescription(WRONG_TARGET_ADDRESS_WARN_TEXT);
                 setIsAlertModalOpen(true);
-                dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+                CommonActions.handleLoadingProgress(false);
                 return;
             }
         } catch (error){
@@ -81,7 +82,7 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
             setAlertDescription(String(error));
             setIsAlertModalOpen(true);
         }
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        CommonActions.handleLoadingProgress(false);
         handleTransactionModal(true);
     }
 
@@ -91,7 +92,7 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
 
     useFocusEffect(
         useCallback(() => {
-            getBalance();
+            getBalance();            
         }, [])
     )
 
@@ -108,7 +109,7 @@ const SendScreen: React.FunctionComponent<Props> = (props) => {
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
                             title="Send"
-                            active={wallet.address !== '' && amount > 0}
+                            active={targetAddress !== '' && amount > 0}
                             onPressEvent={handleSend}/>
                     </View>
 

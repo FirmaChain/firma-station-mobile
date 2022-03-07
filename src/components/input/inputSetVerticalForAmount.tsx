@@ -1,7 +1,8 @@
-import { convertCurrent, convertToFctNumberForInput } from "@/util/common";
+import { convertToFctNumberForInput } from "@/util/common";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, PointColor, PointLightColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "../../constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import TextButton from "../button/textButton";
 
 const InputSetVerticalForAmount: React.FC<{
     title: string;
@@ -10,14 +11,30 @@ const InputSetVerticalForAmount: React.FC<{
     limitValue: number;
     forcedValue?: string;
     resetValues?: boolean;
+    enableMaxAmount?: boolean;
+    onChangeMaxAmount?: Function;
     onChangeEvent: Function;
-}> = ({title, placeholder, accent = false, limitValue, forcedValue = '', resetValues = false, onChangeEvent}) => {
+}> = ({title, 
+    placeholder, 
+    accent = false, 
+    limitValue, 
+    forcedValue = '', 
+    resetValues = false, 
+    enableMaxAmount = false, 
+    onChangeMaxAmount,
+    onChangeEvent}) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
+    const [maxAmount, setMaxAmount] = useState(false);
 
     const handleInputChange = (value: string) => {
         setVal(value);
         onChangeEvent && onChangeEvent(Number(value));
+    }
+
+    const handleActiveMaxAmount = (value: boolean) => {
+        setMaxAmount(value);
+        onChangeMaxAmount && onChangeMaxAmount(value);
     }
 
     useEffect(() => {
@@ -25,25 +42,20 @@ const InputSetVerticalForAmount: React.FC<{
     }, [resetValues])
 
     useEffect(() => {
-        if(forcedValue !== '' && accent) handleInputChange(convertToFctNumberForInput(forcedValue).toString());
-    }, [forcedValue, accent])
+        if(forcedValue !== '') handleInputChange(convertToFctNumberForInput(forcedValue).toString());
+    }, [forcedValue])
 
     useEffect(() => {
         if(Number(val) > convertToFctNumberForInput(limitValue)){
-            setVal(convertToFctNumberForInput(limitValue).toString());
+            handleInputChange(convertToFctNumberForInput(limitValue).toString());
         }
-    }, [val])
-
-    useEffect(() => {
-        if(convertToFctNumberForInput(limitValue) < Number(val)){
-            setVal(convertToFctNumberForInput(limitValue).toString());
-        }
-    }, [limitValue])
+    }, [val, limitValue])
 
     return (
         <View style={styles.viewContainer}>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>{title}</Text>
+                {enableMaxAmount && <TextButton title={"Max"} onPressEvent={() => handleActiveMaxAmount(!maxAmount)} />}
             </View>
             <TextInput
                 style={[styles.input, accent? {borderColor: PointLightColor} : {borderColor: focus? WhiteColor : 'transparent'}]}
@@ -51,8 +63,8 @@ const InputSetVerticalForAmount: React.FC<{
                 placeholderTextColor={InputPlaceholderColor}
                 keyboardType={"numeric"}
                 autoCapitalize = 'none'
-                editable={forcedValue === ''}
                 value={val.toString()}
+                editable={limitValue > 0}
                 selectionColor={WhiteColor}
                 onFocus={()=>setFocus(true)}
                 onBlur={()=>setFocus(false)}

@@ -16,7 +16,7 @@ interface Props {
 const SendInputBox = ({address, amount, memo, available, reset}:Props) => {
     const [safetyActive, setSafetyActive] = useState(true);
     const [limitAvailable, setLimitAvailable] = useState(0);
-    
+
     const handleAddress = (value:string) => {
         address(value);
     }
@@ -30,15 +30,22 @@ const SendInputBox = ({address, amount, memo, available, reset}:Props) => {
     }
 
     useEffect(() => {
-        if(available > 0){
-            if(safetyActive){
-                setLimitAvailable(available - 100000);
-            } else {
-                setLimitAvailable(available - 20000);
-            }
+        if(safetyActive && available > 100000){
+            setLimitAvailable(available - 100000);
+        } 
+        if(!safetyActive && available > 20000) {
+            setLimitAvailable(available - 20000);
         }
-        
-    }, [safetyActive, available])
+    }, [available, safetyActive])
+
+    useEffect(() => {
+        if(available > 20000){
+            setSafetyActive(true);
+        } else {
+            setLimitAvailable(0);
+            setSafetyActive(false);
+        }
+    }, [available])
 
     return (
         <View>
@@ -63,7 +70,7 @@ const SendInputBox = ({address, amount, memo, available, reset}:Props) => {
                 onChangeEvent={handleMemo}/>
             <View style={styles.radioBox}>
                 <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
-                <TouchableOpacity onPress={() => setSafetyActive(!safetyActive)}>
+                <TouchableOpacity disabled={limitAvailable == 0 || available < 100000} onPress={() => setSafetyActive(!safetyActive)}>
                     <View style={[styles.radioWrapper, safetyActive?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
                         <View style={styles.radio} />
                     </View>

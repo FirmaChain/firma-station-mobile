@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
@@ -8,10 +8,9 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import ValidatorSelectModal from "@/organims/staking/delegate/validatorSelectModal";
 import WalletInfo from "@/organims/wallet/send/walletInfo";
-import { AUTO_ENTERED_AMOUNT_TEXT, CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, REDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
-import { DownArrow, Radio } from "@/components/icon/icon";
+import { AUTO_ENTERED_AMOUNT_TEXT, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, REDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
+import { DownArrow } from "@/components/icon/icon";
 import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
-import { AppContext } from "@/util/context";
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from "@/util/firma";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import { useDelegationData } from "@/hooks/staking/hooks";
@@ -19,6 +18,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import AlertModal from "@/components/modal/alertModal";
+import { CommonActions } from "@/redux/actions";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
@@ -35,11 +36,10 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const {navigation, route} = props;
     const {params} = route;
     const {state} = params;
-
-    const {wallet, dispatchEvent} = useContext(AppContext);
-    const { delegationState, handleDelegationState } = useDelegationData(wallet.address);
-
-    const {balance, getBalance} = useBalanceData(wallet.address);
+    
+    const {wallet} = useAppSelector(state => state);
+    const { delegationState, handleDelegationState } = useDelegationData();
+    const {balance, getBalance} = useBalanceData();
 
     const [limitAvailable, setLimitAvailable] = useState(0);
     const [amount, setAmount] = useState(0);
@@ -52,8 +52,8 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
 
-    const [autoActive, setAutoActive] = useState(false);
-    const [autoAmount, setAutoAmount] = useState('');
+    const [maxActive, setMaxActive] = useState(false);
+    const [maxAmount, setMaxAmount] = useState('');
 
     const [safetyActive, setSafetyActive] = useState(true);
 
@@ -119,15 +119,17 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
             <View style={styles.conatainer}>
                 <InputSetVerticalForAmount
                     title="Amount"
-                    placeholder="0"
-                    accent={state.type === "Delegate"? safetyActive:autoActive}
+                    placeholder="0 FCT"
+                    accent={state.type === "Delegate"? safetyActive:maxActive}
                     limitValue={state.type === "Delegate"? limitAvailable : Number(selectDelegationAmount)}
-                    forcedValue={autoAmount}
+                    forcedValue={maxAmount}
                     resetValues={resetInputValues}
+                    enableMaxAmount={true}
+                    onChangeMaxAmount={setMaxActive}
                     onChangeEvent={handleAmount}/>
                 
                 <View style={styles.radioBox}>
-                    {state.type === "Delegate"?
+                    {state.type === "Delegate" &&
                         <View style={styles.radioBox}>
                             <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
                             <TouchableOpacity onPress={() => setSafetyActive(!safetyActive)}>
@@ -136,11 +138,6 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        :
-                        <TouchableOpacity style={styles.radioBox} onPress={() => setAutoActive(!autoActive)}>
-                            <Radio active={autoActive} size={20} color={WhiteColor} />
-                            <Text style={[styles.title, {paddingLeft: 5, marginBottom: 0, color: WhiteColor}]}>{state.type === "Delegate"? "Auto":"All"}</Text>
-                        </TouchableOpacity>
                     }
                 </View>
                 {safetyActive &&
@@ -181,7 +178,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
 
     const handleNext = async() => {
         if(status > 0) return;
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         let gas = FIRMACHAIN_DEFAULT_CONFIG.defaultGas;
         try {
             switch (state.type) {
@@ -204,7 +201,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
             setAlertDescription(String(error));
             setIsAlertModalOpen(true);
         }
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        CommonActions.handleLoadingProgress(false);
     }
 
     const handleModalOpen = (open:boolean) => {
@@ -228,31 +225,37 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
     }
 
     useEffect(() => {
-        if(autoActive){
+        if(maxActive){
             switch (state.type) {
                 case "Delegate":
-                    setAutoAmount((balance - 100000).toString());
+                    setMaxAmount((balance - 100000).toString());
                     break;
                 default:
-                    setAutoAmount(selectDelegationAmount.toString());
+                    setMaxAmount(selectDelegationAmount.toString());
                     break;
             }
         } else {
-            setAutoAmount('');
+            setMaxAmount('');
         }
-    }, [autoActive])
+    }, [maxActive])
 
     useEffect(() => {
-        if(balance > 0){
-            if(safetyActive){
-                setLimitAvailable(balance - 100000);
-            } else {
-                setLimitAvailable(balance - 20000);
-            }
+        if(safetyActive && balance > 100000){
+            setLimitAvailable(balance - 100000);
+        } 
+        if(!safetyActive && balance > 20000) {
+            setLimitAvailable(balance - 20000);
         }
-        
-    }, [safetyActive, balance])
-    
+    }, [balance, safetyActive])
+
+    useEffect(() => {
+        if(balance > 20000){
+            setSafetyActive(true);
+        } else {
+            setLimitAvailable(0);
+            setSafetyActive(false);
+        }
+    }, [balance])
 
     useEffect(() => {
         setOpenSignModal(status > 0);
@@ -269,11 +272,10 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
 
     useFocusEffect(
         useCallback(() => {
-            if(state.type !== "Delegate"){
-                getBalance();
-                handleDelegationState();
-                setResetRedelegateValues(false);
-            }
+            getBalance();
+            handleDelegationState();
+            setResetRedelegateValues(false);
+            setInputResetValues(false);
         }, [])
     )
 
@@ -345,7 +347,7 @@ const styles = StyleSheet.create({
     radioBox: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         marginBottom: 5,
     },
     radioWrapper: {
