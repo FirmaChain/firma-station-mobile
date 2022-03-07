@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, Keyboard } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -9,14 +9,14 @@ import ModalItems from "@/components/modal/modalItems";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { DownArrow } from "@/components/icon/icon";
-import { CONTEXT_ACTIONS_TYPE, PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
+import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import { BgColor, InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { getWalletList, setBioAuth, setPasswordForEstimateGas, setWalletWithAutoLogin } from "@/util/wallet";
 import { getChain } from "@/util/secureKeyChain";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
 import { decrypt, keyEncrypt } from "@/util/keystore";
-import { AppContext } from "@/util/context";
+import { WalletActions } from "@/redux/actions";
 
 type SelectWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -26,8 +26,6 @@ interface SelectWalletScreenProps {
 
 const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (props) => {
     const {navigation} = props;
-
-    const {dispatchEvent} = useContext(AppContext);
 
     const [items, setItems]:Array<any> = useState([]);
     const [selected, setSelected] = useState(-1);
@@ -109,10 +107,8 @@ const SelectWalletScreen: React.FunctionComponent<SelectWalletScreenProps> = (pr
         
         await setPasswordForEstimateGas(password);
 
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
-            name: selectedWallet,
-            address: adr,
-        });
+        WalletActions.handleWalletName(selectedWallet);
+        WalletActions.handleWalletAddress(adr);
 
         setBioAuth(password);
 

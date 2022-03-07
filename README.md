@@ -34,6 +34,10 @@ How to build and run firma-station-mobile
   yarn add react-native-vector-icons
   yarn add --dev @types/react-native-vector-icons
   npm i react-native-splash-screen --save
+  npm install redux-thunk redux react-redux
+  npm install --save-dev redux-tools
+  npm install @types/react-redux -D
+  yarn add @react-native-async-storage/async-storage
   </code>
 </pre>
 

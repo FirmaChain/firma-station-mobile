@@ -1,5 +1,5 @@
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Button from "@/components/button/button";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -8,8 +8,7 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import MnemonicQuiz from "@/organims/createWallet/stepThree/mnemonicQuiz";
 import { BgColor } from "@/constants/theme";
 import { setBioAuth, setNewWallet, setPasswordForEstimateGas, setWalletWithAutoLogin } from "@/util/wallet";
-import { AppContext } from "@/util/context";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
+import { CommonActions, WalletActions } from "@/redux/actions";
 
 type CreateStepThreeScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -27,12 +26,10 @@ const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps>
     const {params} = route;
     const {wallet} = params;
 
-    const {dispatchEvent} = useContext(AppContext);
-
     const [confirm, setConfirm] = useState(false);
     
     const onCompleteCreateWallet = async() => {
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         setConfirm(false);
         const address = await setNewWallet(wallet.name, wallet.password, wallet.mnemonic);
         await setWalletWithAutoLogin(JSON.stringify({
@@ -43,10 +40,9 @@ const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps>
         await setPasswordForEstimateGas(wallet.password);
         setBioAuth(wallet.password);
 
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
-            name: wallet.name,
-            address: address,
-        });
+        WalletActions.handleWalletName(wallet.name);
+        WalletActions.handleWalletAddress(address === null? "" : address);
+
         navigation.reset({routes: [{name: 'Home'}]});
     }
 

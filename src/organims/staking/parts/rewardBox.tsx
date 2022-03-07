@@ -1,4 +1,4 @@
-import { convertCurrent, make2DecimalPlace, resizeFontSize } from "@/util/common";
+import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
 import { getFeesFromGas } from "@/util/firma";
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -17,7 +17,7 @@ const RewardBox = ({gas, reward, transactionHandler}:Props) => {
     const [rewardTextSize, setRewardTextSize] = useState(28);
     
     const stakingReward = useMemo(() => {
-        return convertCurrent(make2DecimalPlace(reward));
+        return convertCurrent(makeDecimalPoint(reward));
     }, [reward]);
     
     const handleWithdraw = async(open:boolean) => {

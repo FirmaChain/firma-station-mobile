@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, ScrollView, Pressable, Keyboard } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -10,15 +10,14 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
 import { setBioAuth, setNewWallet, setPasswordForEstimateGas, setWalletWithAutoLogin } from "@/util/wallet";
 import { BgColor } from "@/constants/theme";
-import { AppContext } from "@/util/context";
 import Toast from "react-native-toast-message";
-import { CONTEXT_ACTIONS_TYPE, 
-    PLACEHOLDER_FOR_PASSWORD, 
+import {  PLACEHOLDER_FOR_PASSWORD, 
     PLACEHOLDER_FOR_PASSWORD_CONFIRM, 
     PLACEHOLDER_FOR_WALLET_NAME, 
     WARNING_PASSWORD_IS_TOO_SHORT, 
     WARNING_PASSWORD_NOT_MATCH, 
     WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
+import { CommonActions, WalletActions } from "@/redux/actions";
 
 type CreateStepOneScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
@@ -35,8 +34,6 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
     const {navigation, route} = props;
     const {params} = route;
     const {wallet = null} = params;
-
-    const {dispatchEvent} = useContext(AppContext);
 
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
@@ -95,11 +92,11 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
     }
 
     const onCreateWalletAndMoveToStepTwo = async() => {
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         try {
             const result = await createNewWallet();
             if(result === undefined){
-                dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+                CommonActions.handleLoadingProgress(false);
                 return Toast.show({
                     type: 'error',
                     text1: 'Wallet creation failed. Please try again.',
@@ -114,12 +111,12 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
 
             navigation.navigate(Screens.CreateStepTwo, {wallet: wallet});
         } catch (error) {
-            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+            CommonActions.handleLoadingProgress(false);
         }
     }
 
     const onCompleteRecoverWallet = async() => {
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         const address = await setNewWallet(walletName, password, wallet.mnemonic);
         await setWalletWithAutoLogin(JSON.stringify({
             name: walletName,
@@ -127,10 +124,9 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
         }));
         await setPasswordForEstimateGas(password);
         setBioAuth(password);
-        dispatchEvent &&dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
-            name: walletName,
-            address: address,
-        });
+
+        WalletActions.handleWalletName(walletName);
+        WalletActions.handleWalletAddress(address === null? "" : address);
 
         navigation.reset({routes: [{name: 'Home'}]});
     }
@@ -173,7 +169,7 @@ const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (
                     <View style={styles.buttonBox}>
                         <Button 
                             title={wallet? 'Recover' : 'Next'} 
-                            active={confirm && nameValidation} 
+                            active={pwValidation && confirm && nameValidation} 
                             onPressEvent={wallet? onCompleteRecoverWallet : onCreateWalletAndMoveToStepTwo} />
                     </View>
                 </Pressable>

@@ -13,14 +13,11 @@ import StepRecoverScreen from "@/screens/createWallet/stepRecover";
 
 import HomeScreen from "../screens/home/home";
 
-import WalletScreen from "../screens/home/wallet/wallet";
 import SendScreen from "../screens/home/wallet/send";
 
-import StakingScreen from "../screens/home/staking/staking";
 import ValidatorScreen from "../screens/home/staking/validator";
 import DelegateScreen from "../screens/home/staking/delegate";
 
-import GovernanceScreen from "../screens/home/governance/governance";
 import ProposalScreen from "../screens/home/governance/proposal";
 import DepositScreen from "@/screens/home/governance/deposit";
 
@@ -33,7 +30,7 @@ import LoginCheckScreen from "@/screens/loginCheck";
 import HistoryScreen from "@/screens/home/history/history";
 
 export const Stack = createStackNavigator<StackParamList>();
-const StackNavigator: React.FunctionComponent = () => {
+const StackNavigator = () => {
     return (
         <Stack.Navigator 
             screenOptions={{
@@ -128,19 +125,11 @@ const StackNavigator: React.FunctionComponent = () => {
             <Stack.Group>
                 <Stack.Screen
                     options={{headerShown: false}}
-                    name={Screens.Wallet}
-                    component={WalletScreen} />
-                <Stack.Screen
-                    options={{headerShown: false}}
                     name={Screens.Send}
                     component={SendScreen} />
             </Stack.Group>
 
             <Stack.Group>
-                <Stack.Screen
-                    options={{headerShown: false}}
-                    name={Screens.Staking}
-                    component={StakingScreen} />
                 <Stack.Screen
                     options={{headerShown: false}}
                     name={Screens.Validator}
@@ -152,10 +141,6 @@ const StackNavigator: React.FunctionComponent = () => {
             </Stack.Group>
 
             <Stack.Group>
-                <Stack.Screen
-                    options={{headerShown: false}}
-                    name={Screens.Governance}
-                    component={GovernanceScreen} />
                 <Stack.Screen
                     options={{headerShown: false}}
                     name={Screens.Proposal}

@@ -1,40 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import Description from "@/organims/welcome/description";
-import Button from "@/components/button/button";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { getChain } from "@/util/secureKeyChain";
-import { BgColor, DisableColor, Lato, TextGrayColor } from "@/constants/theme";
-import { WALLET_LIST, WELCOME_DESCRIPTION } from "@/constants/common";
+import { BgColor } from "@/constants/theme";
+import { WALLET_LIST } from "@/constants/common";
 import SplashScreen from "react-native-splash-screen";
+import Welcome from "@/organims/welcome";
 
-type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
-
-interface WelcomeScreenProps {
-    navigation: ScreenNavgationProps;
-}
-
-const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = (props) => {
-    const {navigation} = props;
-    const Title: string = 'CONNECT';
-    const Desc: string = WELCOME_DESCRIPTION;
-
+const WelcomeScreen = () => {
     const [walletExist, setWalletExist] = useState(false);
-
-    function handleCreateStepOne(){
-        navigation.navigate(Screens.CreateStepOne, {});
-    }
-
-    function handleSelectWallet(){
-        navigation.navigate(Screens.SelectWallet);
-    }
-
-    function handleRecoverWallet(){
-        navigation.navigate(Screens.RecoverWallet);
-    }
-
+    
     const isWalletExist = async() => {
         await getChain(WALLET_LIST).then(res => {
             if(res === false) return setWalletExist(false);
@@ -54,65 +28,9 @@ const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = (props) => {
 
     return (
         <ViewContainer bgColor={BgColor}>
-            <View style={styles.viewContainer}>
-                <Description title={Title} desc={Desc} />
-                <View style={styles.buttonBox}>
-                    {walletExist && 
-                    <View style={{paddingBottom: 10}}>
-                        <Button title={'Select Wallet'} active={true}onPressEvent={handleSelectWallet}/>
-                    </View>}
-                    <Button title={'New Wallet'} active={true} border={true} onPressEvent={handleCreateStepOne} />
-                    <View style={styles.dividerWrapper}>
-                        <View style={styles.divider}/>
-                        <Text style={styles.dividerText}>OR</Text>
-                        <View style={styles.divider}/>
-                    </View>
-                    <Button title={'Recover Wallet'} active={true} border={true} onPressEvent={handleRecoverWallet} />
-                </View>
-            </View>
+            <Welcome walletExist={walletExist} />
         </ViewContainer>
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: "100%",
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: BgColor,
-    },
-    viewContainer: {
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-around",
-    },
-    buttonBox: {
-        width: "100%", 
-        paddingHorizontal: 20, 
-        flex: 1, 
-        justifyContent: "flex-end"
-    },
-    dividerWrapper: {
-        height: 17,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginVertical: 14,
-    },
-    divider: {
-        flex:1,
-        height: 1,
-        backgroundColor: DisableColor,
-    },
-    dividerText: {
-        fontFamily: Lato,
-        fontSize: 14,
-        fontWeight: "normal",
-        color: TextGrayColor,
-        paddingHorizontal: 18,
-    }
-})
-
-export default WelcomeScreen;
+export default React.memo(WelcomeScreen);

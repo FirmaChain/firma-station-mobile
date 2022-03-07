@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Keyboard, Pressable, StyleSheet, View } from "react-native";
 import { getUniqueId } from "react-native-device-info";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -9,18 +9,17 @@ import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import AlertModal from "@/components/modal/alertModal";
 import { getChain, removeChain, setChain } from "@/util/secureKeyChain";
-import { AppContext } from "@/util/context";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { PasswordValidationCheck } from "@/util/validationCheck";
 import { getWalletList, getWalletWithAutoLogin, setBioAuth, setNewWallet } from "@/util/wallet";
 import { BgColor } from "@/constants/theme";
-import { CONTEXT_ACTIONS_TYPE, 
-    PASSWORD_CHANGE_FAIL, 
+import { PASSWORD_CHANGE_FAIL, 
     PASSWORD_CHANGE_SUCCESS, 
     PLACEHOLDER_FOR_PASSWORD, 
     PLACEHOLDER_FOR_PASSWORD_CONFIRM, 
     WALLET_LIST, 
     WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
+import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;
 
@@ -37,8 +36,6 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     const {navigation, route} = props;
     const {params} = route;
     const {walletName} = params;
-
-    const {dispatchEvent} = useContext(AppContext);
 
     // 0: need to password confirm
     // 1: changed password
@@ -114,10 +111,10 @@ const ChangePasswordScreen: React.FunctionComponent<ChangePasswordProps> = (prop
     }
 
     const changeNewPassword = async() => {
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         await removeCurrentPassword();
         await createNewPassword();
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);          
+        CommonActions.handleLoadingProgress(false);
     }
 
     const removeCurrentPassword = async() => {

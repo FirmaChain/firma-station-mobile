@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StyleSheet, View } from "react-native";
@@ -6,12 +6,12 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 import Button from "@/components/button/button";
-import { CONTEXT_ACTIONS_TYPE, RECOVER_INFO_MESSAGE } from "@/constants/common";
+import { RECOVER_INFO_MESSAGE } from "@/constants/common";
 import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
-import { AppContext } from "@/util/context";
 import { recoverFromMnemonic } from "@/util/firma";
 import Toast from "react-native-toast-message";
 import WarnContainer from "@/components/parts/containers/warnContainer";
+import { CommonActions } from "@/redux/actions";
 
 type RecoverWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -22,8 +22,6 @@ interface RecoverWalletScreenProps {
 const RecoverWalletScreen: React.FunctionComponent<RecoverWalletScreenProps> = (props) => {
     const {navigation} = props;
 
-    const {dispatchEvent} = useContext(AppContext);
-
     const [active, setActive] = useState(false);
 
     const handleBack = () => {
@@ -31,10 +29,9 @@ const RecoverWalletScreen: React.FunctionComponent<RecoverWalletScreenProps> = (
     }
 
     const recoverWalletViaQR = async(mnemonic: string) => {
-
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         const wallet = await recoverFromMnemonic(mnemonic);
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        CommonActions.handleLoadingProgress(false);
         if(wallet === undefined){
             return Toast.show({
                 type: 'error',

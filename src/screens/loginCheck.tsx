@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 import { getWalletWithAutoLogin } from "@/util/wallet";
-import { AppContext } from "@/util/context";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
+import { useAppSelector } from "@/redux/hooks";
+import { CommonActions, WalletActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -15,10 +15,10 @@ interface LoginCheckScreenProps {
 }
 
 const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props) => {
-    const { dispatchEvent, wallet } = useContext(AppContext);
     const {navigation} = props;
 
     const [loading, setLoading] = useState(true);
+    const walletState = useAppSelector(state => state.wallet);
 
     useEffect(() => {
         const getWalletForAutoLogin = async() => {
@@ -26,10 +26,8 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
             .then((res) => { 
                 if(res !== ""){
                     const result = JSON.parse(res);
-                    dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["WALLET"], {
-                        address: result.address,
-                        name: result.name,
-                    })
+                    WalletActions.handleWalletName(result.name);
+                    WalletActions.handleWalletAddress(result.address);
                 }
                 setLoading(false);
             })
@@ -40,14 +38,14 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
 
     useEffect(() => {
         if(!loading){
-            if(wallet){
+            if(walletState.name !== ""){
                 navigation.reset({routes: [{name: Screens.Home}]});
             } else {
                 navigation.reset({routes: [{name: Screens.Welcome}]});
-                dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], loading);
+                CommonActions.handleLoadingProgress(loading);
             }
         } else {
-            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], loading);
+            CommonActions.handleLoadingProgress(loading);
         }
     }, [loading]);
     

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
-import { convertAmount, convertCurrent, convertNumber, resizeFontSize } from "@/util/common";
+import { convertAmount, resizeFontSize } from "@/util/common";
 import { StakingState } from "@/hooks/staking/hooks";
 
 interface Props {
@@ -35,7 +35,7 @@ const BalanceBox = ({stakingValues}:Props) => {
                         <View key={index} style={[styles.box, {flex: 1}, (index < StakingValues.length - 1) && {borderRightColor: DisableColor, borderRightWidth: 1}]}>
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, {fontSize: resizeFontSize(item.data, 10000, 16)}]}>{convertAmount(item.data, item.ufct)}</Text>
+                                <Text style={[styles.desc, {fontSize: resizeFontSize(item.ufct?item.data / 1000000 : item.data, 10000, 16)}]}>{convertAmount(item.data, item.ufct)}</Text>
                             </View>
                         </View>
                     )

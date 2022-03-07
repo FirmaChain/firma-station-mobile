@@ -1,8 +1,6 @@
+import React from "react";
 import { BorderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import { useBalanceData } from "@/hooks/wallet/hooks";
 import { convertAmount } from "@/util/common";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
@@ -14,7 +12,7 @@ const WalletInfo = ({available = 0}:Props) => {
     return (
         <View style={styles.boxH}>
             <Text style={styles.title}>Available</Text>
-            <Text style={styles.balance}>{convertAmount(available)}
+            <Text style={styles.balance}>{convertAmount(available, true, 6)}
                 <Text style={[styles.title, {fontSize: 14}]}>  FCT</Text>
             </Text>
         </View>

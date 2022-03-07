@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor, InputBgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
@@ -10,9 +10,8 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import Button from "@/components/button/button";
 import { recoverFromMnemonic } from "@/util/firma";
 import Toast from "react-native-toast-message";
-import { AppContext } from "@/util/context";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
 import TextButton from "@/components/button/textButton";
+import { CommonActions } from "@/redux/actions";
 
 type StepRecoverScreenNavigationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
@@ -22,7 +21,6 @@ interface StepRecoverScreenProps {
 
 const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (props) => {
     const {navigation} = props;
-    const {dispatchEvent} = useContext(AppContext);
 
     const [focus, setFocus] = useState(false);
     const [activeRecover, setActiveRecover] = useState(false);
@@ -42,9 +40,9 @@ const StepRecoverScreen: React.FunctionComponent<StepRecoverScreenProps> = (prop
     }
 
     const handleRecoverViaSeed = async() => {
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
+        CommonActions.handleLoadingProgress(true);
         const wallet = await recoverFromMnemonic(mnemonic);
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
+        CommonActions.handleLoadingProgress(false);
         if(wallet === undefined){
             return Toast.show({
                 type: 'error',
