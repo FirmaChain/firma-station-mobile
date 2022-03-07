@@ -12,10 +12,10 @@ import { recoverFromMnemonic } from "@/util/firma";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 
-type StepRecoverScreenNavigationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
 const StepRecover = () => {
-    const navigation:StepRecoverScreenNavigationProps = useNavigation();
+    const navigation:ScreenNavgationProps = useNavigation();
 
     const [activeRecover, setActiveRecover] = useState(false);
     const [mnemonic, setMnemonic] = useState('');

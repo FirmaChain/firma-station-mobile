@@ -9,14 +9,14 @@ import Button from "@/components/button/button";
 import MnemonicGrid from "./mnmonicGrid";
 import { BgColor } from "@/constants/theme";
 
-type CreateStepTwoScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 
 interface Props {
     wallet: any;
 }
 
 const StepTwo = ({wallet}:Props) => {
-    const navigation:CreateStepTwoScreenNavigationProps = useNavigation(); 
+    const navigation:ScreenNavgationProps = useNavigation(); 
 
     const onMoveToStepThree = () => {
         navigation.navigate(Screens.CreateStepThree, {wallet: wallet});

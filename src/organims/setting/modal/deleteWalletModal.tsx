@@ -15,7 +15,7 @@ interface Props {
     deleteWallet: Function;
 }
 
-const DeleteWallet = ({walletName, open, setOpenModal, deleteWallet}: Props) => {
+const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: Props) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
@@ -106,4 +106,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default DeleteWallet;
+export default DeleteWalletModal;

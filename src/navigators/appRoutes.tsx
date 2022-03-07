@@ -1,7 +1,6 @@
 import { CreateStepOneParams } from '../screens/createWallet/stepOne';
 import { CreateStepTwoParams } from '../screens/createWallet/stepTwo';
 import { CreateStepThreeParams } from '../screens/createWallet/stepThree';
-import { ChangePasswordParams } from "../screens/setting/changePassword";
 import { ExportWalletParams } from "../screens/setting/exportWallet";
 import { ValidatorParams } from "../screens/home/staking/validator";
 import { ProposalParams } from "../screens/home/governance/proposal";
@@ -67,6 +66,6 @@ export type StackParamList = {
     Deposit: DepositParams;
 
     Setting: undefined;
-    ChangePassword: ChangePasswordParams;
+    ChangePassword: undefined;
     ExportPrivateKey: ExportWalletParams;
 }

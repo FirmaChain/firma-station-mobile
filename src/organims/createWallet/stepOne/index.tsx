@@ -3,28 +3,28 @@ import { Keyboard, Pressable, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
-import { CommonActions, WalletActions } from "@/redux/actions";
+import { CommonActions } from "@/redux/actions";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
-import { setBioAuth, setEncryptPassword, setNewWallet, setPasswordViaBioAuth, setWalletWithAutoLogin, setWalletWithBioAuth } from "@/util/wallet";
+import { setPasswordViaBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { setChain } from "@/util/secureKeyChain";
-import { checkBioMetrics, confirmViaBioAuth } from "@/util/bioAuth";
+import { confirmViaBioAuth } from "@/util/bioAuth";
 import { createNewWallet, Wallet } from "@/util/firma";
 import { BgColor } from "@/constants/theme";
 import { USE_BIO_AUTH } from "@/constants/common";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 
-type CreateStepOneScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
 interface Props {
     wallet?: any;
 }
 
 const StepOne = ({wallet = null}:Props) => {
-    const navigation:CreateStepOneScreenNavigationProps = useNavigation(); 
+    const navigation:ScreenNavgationProps = useNavigation(); 
 
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
@@ -78,7 +78,7 @@ const StepOne = ({wallet = null}:Props) => {
             confirmViaBioAuth().then(res => {
                 if(res){
                     setPasswordViaBioAuth(wallet.password);
-                    setChain(USE_BIO_AUTH, "true");
+                    setChain(USE_BIO_AUTH + wallet.name, "true");
                     handleOpenBioAuthModal(false);
                     navigation.reset({routes: [{name: 'Home'}]});
                 }
@@ -101,7 +101,7 @@ const StepOne = ({wallet = null}:Props) => {
             <ViewContainer bgColor={BgColor}>
                 <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>
                     <InputBox walletInfo={handleWalletInfo}/>
-                    <BioAuthModal visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>
+                    {wallet && <BioAuthModal walletName={wallet.name} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>}
                     <View style={styles.buttonBox}>
                         <Button 
                             title={wallet? 'Recover' : 'Next'} 

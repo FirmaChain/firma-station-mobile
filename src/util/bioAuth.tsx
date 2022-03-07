@@ -5,6 +5,7 @@ import { openSettings } from "react-native-permissions";
 export const confirmViaBioAuth = async() => {
     let authResult:boolean = false;
     const { biometryType } = await ReactNativeBiometrics.isSensorAvailable();
+
     await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType })
     .then((result) => {
         const {success} = result
@@ -29,10 +30,8 @@ export const confirmViaBioAuth = async() => {
 
 export const checkBioMetrics = async() => {
     let result = ReactNativeBiometrics.isSensorAvailable()
-
     .then((resultObject) => {
         const { available, biometryType } = resultObject
-        
         if (available && biometryType === ReactNativeBiometrics.TouchID) {
             return true;
         } else if (available && biometryType === ReactNativeBiometrics.FaceID) {

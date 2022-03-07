@@ -1,6 +1,7 @@
 import { USE_BIO_AUTH, WALLET_LIST } from "@/constants/common";
+import { CommonActions, WalletActions } from "@/redux/actions";
 import { getUniqueId } from "react-native-device-info";
-import { confirmViaBioAuth } from "./bioAuth";
+import { checkBioMetrics } from "./bioAuth";
 import { getAdrFromMnemonic } from "./firma";
 import { decrypt, encrypt, keyEncrypt } from "./keystore";
 import { getChain, setChain } from "./secureKeyChain";
@@ -48,9 +49,9 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
         address: adr,
     }));
 
-    await setPasswordForEstimateGas(password);
+    await setEncryptPassword(password);
 
-    const useBioAuth = await getUseBioAuth();
+    const useBioAuth = await getUseBioAuth(name);
     if(useBioAuth){
         await setPasswordViaBioAuth(password);
     }
@@ -98,9 +99,9 @@ export const setWalletWithAutoLogin = async(walletInfo:string) => {
     setChain(UNIQUE_ID, encWallet);
 }
 
-export const getUseBioAuth = async() => {
+export const getUseBioAuth = async(name:string) => {
     let result = false;
-    await getChain(USE_BIO_AUTH).then(res => {
+    await getChain(USE_BIO_AUTH + name).then(res => {
         if(res){
             if(res.password === 'true') result = true;
             if(res.password === 'false') result = false;
@@ -112,8 +113,8 @@ export const getUseBioAuth = async() => {
     return result;
 }
 
-export const setBioAuth = async(password:string) => {
-    const result = await getUseBioAuth();
+export const setBioAuth = async(name:string, password:string) => {
+    const result = await getUseBioAuth(name);
     if(result){
         await setPasswordViaBioAuth(password);
     }
@@ -159,7 +160,7 @@ export const setPasswordViaBioAuth = async(password:string) => {
     setChain(UNIQUE_ID + timestamp.toString(), encWallet);
 }
 
-export const getPasswordForEstimateGas = async() => {
+export const getDecryptPassword = async() => {
     let timestamp = 0;
     await getWalletWithAutoLogin().then(res => {
         if('') return null;
@@ -182,7 +183,7 @@ export const getPasswordForEstimateGas = async() => {
     return result;
 }
 
-export const setPasswordForEstimateGas = async(password:string) => {
+export const setEncryptPassword = async(password:string) => {
     let timestamp = 0;
     await getWalletWithAutoLogin().then(res => {
         if('') return null;
@@ -195,4 +196,22 @@ export const setPasswordForEstimateGas = async(password:string) => {
 
     const encWallet = encrypt(password, timestamp.toString() + UNIQUE_ID);
     setChain(timestamp.toString() + UNIQUE_ID, encWallet);
+}
+
+export const setWalletWithBioAuth = async(name:string, password:string, mnemonic:string) => {
+    CommonActions.handleLoadingProgress(true);
+    const address = await setNewWallet(name, password, mnemonic);
+    await setWalletWithAutoLogin(JSON.stringify({
+        name: name,
+        address: address,
+    }));
+
+    await setEncryptPassword(password);
+    setBioAuth(name, password);
+
+    WalletActions.handleWalletName(name);
+    WalletActions.handleWalletAddress(address === null? "" : address);
+
+    const result = await checkBioMetrics();
+    return result;
 }

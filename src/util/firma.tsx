@@ -3,7 +3,7 @@ import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/stakin
 import { FirmaMobileSDK, FirmaUtil } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
 import { convertNumber, convertToFctNumber } from "./common";
-import { getPasswordForEstimateGas, getWallet } from "./wallet";
+import { getDecryptPassword, getWallet } from "./wallet";
 
 const firmaSDK = new FirmaMobileSDK(FIRMACHAIN_CONFIG);
 
@@ -89,46 +89,46 @@ const organizeWallet = async(wallet:FirmaWalletService) => {
     }
 }
 
-export const getWalletForEstimateGas = async(walletName:string) => {
-    let password = await getPasswordForEstimateGas();
+export const getDecryptWalletInfo = async(walletName:string) => {
+    let password = await getDecryptPassword();
     let mnemonic = await getWallet(walletName, password);
     return await firmaSDK.Wallet.fromMnemonic(mnemonic);
 }
 
 export const getEstimateGasFromAllDelegations = async(walletName:string) => {
-    let wallet = await getWalletForEstimateGas(walletName);
+    let wallet = await getDecryptWalletInfo(walletName);
     const delegationList = await firmaSDK.Staking.getTotalDelegationInfo(await wallet.getAddress())
     const estimatedGas = await firmaSDK.Distribution.getGasEstimationWithdrawAllRewardsFromAllValidator(wallet, delegationList);
     return estimatedGas;
 }
 
 export const getEstimateGasFromDelegation = async(walletName:string, validatorAddress:string,) => {
-    let wallet = await getWalletForEstimateGas(walletName);
+    let wallet = await getDecryptWalletInfo(walletName);
     const estimatedGas = await firmaSDK.Distribution.getGasEstimationWithdrawAllRewards(wallet, validatorAddress);
     return estimatedGas;
 }
 
 export const getEstimateGasDelegate = async(walletName:string, validatorAddress:string, amount:number) => {
-    let wallet = await getWalletForEstimateGas(walletName);
+    let wallet = await getDecryptWalletInfo(walletName);
     const gasEstimation = await firmaSDK.Staking.getGasEstimationDelegate(wallet, validatorAddress, amount);
     return gasEstimation;
 }
 
 export const getEstimateGasUndelegate = async(walletName:string, validatorAddress:string, amount:number) => {
-    let wallet = await getWalletForEstimateGas(walletName);
+    let wallet = await getDecryptWalletInfo(walletName);
     const gasEstimation = await firmaSDK.Staking.getGasEstimationUndelegate(wallet, validatorAddress, amount);
     return gasEstimation;
 }
 
 export const getEstimateGasRedelegate = async(walletName:string, validatorSrcAddress:string, validatorDstAddress:string, amount:number) => {
-    let wallet = await getWalletForEstimateGas(walletName);
+    let wallet = await getDecryptWalletInfo(walletName);
     const gasEstimation = await firmaSDK.Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
     return gasEstimation;
 }
 
 
 export const getEstimateGasSend = async(walletName:string, address:string, amount:number) => {
-    let wallet = await getWalletForEstimateGas(walletName);
+    let wallet = await getDecryptWalletInfo(walletName);
     const gasEstimation = await firmaSDK.Bank.getGasEstimationSend(wallet, address, amount);
     return gasEstimation;
 }

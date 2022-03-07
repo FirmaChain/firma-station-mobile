@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
 import Container from "@/components/parts/containers/conatainer";
@@ -5,24 +7,21 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import { USE_BIO_AUTH } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { CommonActions, WalletActions } from "@/redux/actions";
-import { checkBioMetrics, confirmViaBioAuth } from "@/util/bioAuth";
+import { confirmViaBioAuth } from "@/util/bioAuth";
 import { setChain } from "@/util/secureKeyChain";
-import { setBioAuth, setEncryptPassword, setNewWallet, setPasswordViaBioAuth, setWalletWithAutoLogin, setWalletWithBioAuth } from "@/util/wallet";
+import { setPasswordViaBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
 import MnemonicQuiz from "./mnemonicQuiz";
 
-type CreateStepThreeScreenNavigationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
 interface Props {
     wallet: any;
 }
 
 const StepThree = ({wallet}:Props) => {
-    const navigation: CreateStepThreeScreenNavigationProps = useNavigation();
+    const navigation: ScreenNavgationProps = useNavigation();
 
     const [confirm, setConfirm] = useState(false);
     const [openBioAuthModal, setOpenBioAuthModal] = useState(false);
@@ -49,7 +48,7 @@ const StepThree = ({wallet}:Props) => {
             confirmViaBioAuth().then(res => {
                 if(res){
                     setPasswordViaBioAuth(wallet.password);
-                    setChain(USE_BIO_AUTH, "true");
+                    setChain(USE_BIO_AUTH + wallet.name, "true");
                     handleOpenBioAuthModal(false);
                     navigation.reset({routes: [{name: 'Home'}]});
                 }
@@ -77,7 +76,7 @@ const StepThree = ({wallet}:Props) => {
                 <View style={styles.buttonBox}>
                     <Button title='Confirm and finish' active={confirm} onPressEvent={onCompleteCreateWallet} />
                 </View>
-                <BioAuthModal visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>
+                <BioAuthModal walletName={wallet.name} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>
                 </>
             </ViewContainer>
         </Container>
