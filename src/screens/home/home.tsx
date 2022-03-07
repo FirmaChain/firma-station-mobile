@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { getFocusedRouteNameFromRoute, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -13,11 +13,7 @@ import { BoxDarkColor, GrayColor, WhiteColor } from "@/constants/theme";
 import { Image } from "react-native";
 import { ICON_DOCUMENT } from "@/constants/images";
 import SplashScreen from "react-native-splash-screen";
-import { useDelegationData, useStakingData } from "@/hooks/staking/hooks";
-import { AppContext } from "@/util/context";
-import { useBalanceData, useHistoryData } from "@/hooks/wallet/hooks";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
-import { convertToFctNumber } from "@/util/common";
+import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -27,40 +23,11 @@ interface Props {
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen: React.FunctionComponent<Props> = (props) => {
+const HomeScreen = (props:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
 
     const [title, setTitle] = useState('Wallet');
-
-    const {wallet, dispatchEvent} = useContext(AppContext);
-    const { balance, getBalance } = useBalanceData(wallet.address);
-    const { delegationState, redelegationState, undelegationState, handleDelegationState, handleDelegationPolling } = useDelegationData(wallet.address);
-    const { recentHistory, handleCurrentHistoryState, handleCurrentHistoryPolling } = useHistoryData(wallet.address);
-    const { stakingState, getStakingState, updateStakingState, getStakingComplete } = useStakingData(wallet.address);
-
-    const stakingProps = {
-        state: {
-            stakingState,
-            delegationState,
-            redelegationState,
-            undelegationState,
-            handleDelegationState,
-        }
-    }
-
-    const refreshForWallet = () => {
-        getBalance();
-        getStakingState();
-        handleCurrentHistoryState && handleCurrentHistoryState();
-    }
-
-    const walletProps = {
-        state: {
-            stakingState,
-            recentHistory,
-            refreshForWallet,
-        }
-    }
+    const routeName = getFocusedRouteNameFromRoute(props.route);
 
     const moveToSetting = () => {
         navigation.navigate(Screens.Setting);
@@ -70,59 +37,20 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
         navigation.navigate(Screens.History);
     }
 
-    const handleCurrentDataPolling = (polling:boolean) => {
-        handleCurrentHistoryState && handleCurrentHistoryState();
-        handleCurrentHistoryPolling && handleCurrentHistoryPolling(polling);
-        handleDelegationPolling(polling);
-
-        if(polling && getStakingComplete){
-            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
-            setTimeout(() => {
-                dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
-            }, 1500);
-        }
-    }
-
     useEffect(() => {
-        const routeName = getFocusedRouteNameFromRoute(props.route);
         if(routeName === undefined){
             setTitle('Wallet');
         } else {
             setTitle(routeName);
         }
-    }, [getFocusedRouteNameFromRoute(props.route)]);
-
-    useEffect(() => {
-        let reward = 0;
-        delegationState.map(value => {
-            reward = reward + convertToFctNumber(value.reward);
-        })
-        updateStakingState(balance, reward);
-    }, [delegationState])
-
-    useEffect(() => {
-        getStakingState();
-        handleDelegationState();
-    }, [recentHistory])
-
-    useEffect(() => {
-        if(getStakingComplete){
-            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
-        }
-    }, [getStakingComplete])
+    }, [routeName]);
 
     useFocusEffect(
         useCallback(() => {
             setTimeout(() => {
                 SplashScreen.hide();
             }, 1500);
-            const routeName = getFocusedRouteNameFromRoute(props.route);
-            if(routeName !== "Governance"){
-                handleCurrentDataPolling(true);
-            }
-            return () => {
-                handleCurrentDataPolling(false);
-            }
+            CommonActions.handleLoadingProgress(false);
         }, [])
     )
 
@@ -139,9 +67,10 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
                     tabBarInactiveTintColor: GrayColor,
                 }}
                 initialRouteName="Wallet">
+           
                 <Tab.Screen 
                     name={'Wallet'} 
-                    children={() => <WalletScreen {...walletProps}/>}
+                    children={() => <WalletScreen />}
                     options={{
                         tabBarIcon: ({focused}) => {
                             return <WalletIcon name={'ios-wallet-outline'} size={24} color={focused? WhiteColor : GrayColor}/>
@@ -149,7 +78,7 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
                     }}/>
                 <Tab.Screen 
                     name={'Staking'} 
-                    children={() => <StakingScreen {...stakingProps}/>}
+                    children={() => <StakingScreen />}
                     options={{
                         tabBarIcon:
                         ({focused}) => {
@@ -169,4 +98,4 @@ const HomeScreen: React.FunctionComponent<Props> = (props) => {
     )
 }
 
-export default HomeScreen;
+export default React.memo(HomeScreen);

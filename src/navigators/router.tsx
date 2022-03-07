@@ -7,12 +7,12 @@ import StackNavigator from "./stackNavigators";
 
 const Router = () => {
 
-    const commonState = useAppSelector(state => state.common);
+    const {common} = useAppSelector(state => state);
 
     return (
         <NavigationContainer theme={DarkTheme}>
             <StackNavigator/>
-            {commonState.loading && <Progress />}
+            {common.loading && <Progress />}
             <CustomToast />
         </NavigationContainer>
     )

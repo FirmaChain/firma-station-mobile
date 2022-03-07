@@ -1,30 +1,33 @@
-import React, { useContext, useState } from "react";
-import { Linking, Platform, StyleSheet, Text, View, TouchableOpacity, ScrollView, RefreshControl, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Linking, Platform, StyleSheet, Text, View, TouchableOpacity, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { BgColor, BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, WhiteColor } from "@/constants/theme";
+import { BgColor, BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { useHistoryData } from "@/hooks/wallet/hooks";
 import { convertTime } from "@/util/common";
 import { ForwardArrow } from "@/components/icon/icon";
-import { useNavigation } from "@react-navigation/native";
-import { AppContext } from "@/util/context";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { EXPLORER } from "@/constants/common";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
+import { useAppSelector } from "@/redux/hooks";
+import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
 const HistoryScreen: React.FunctionComponent = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const { wallet } = useContext(AppContext);
 
-    const { historyList, handleHisotyPolling } = useHistoryData(wallet.address);
-
+    const { historyList, handleHisotyPolling } = useHistoryData();
     const [pagination, setPagination] = useState(10);
 
-    const refreshStates = () => {
-        handleHisotyPolling && handleHisotyPolling();
+    const refreshStates = async() => {
+        if(handleHisotyPolling !== undefined){
+            CommonActions.handleLoadingProgress(true);
+            await handleHisotyPolling();
+            CommonActions.handleLoadingProgress(false);
+        }
     }
 
     const onScrollEnd = (event:NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -46,6 +49,12 @@ const HistoryScreen: React.FunctionComponent = () => {
     const handleBack = () => {
         navigation.goBack();
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            refreshStates();
+        }, [])
+    )
 
     return (
         <Container

@@ -11,7 +11,6 @@ interface Props {
     children: JSX.Element;
 }
 
-
 const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparent", children}:Props) => {
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView|null>(null);
@@ -27,6 +26,8 @@ const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparen
     useFocusEffect(
         useCallback(() => {
             scrollRef.current?.scrollTo({ y: 0, animated: false});
+            return () => {
+            }
         },[])
     )
 

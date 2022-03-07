@@ -10,26 +10,34 @@ export const convertNumber = (value: string | number | undefined) => {
 }
 
 export const convertCurrent = (value: number | string) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    var val = value.toString().split(".");
+    val[0] = val[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return val.join(".");
 }
 
-export const convertAmount = (value:string | number, isUfct:boolean = true) => {
-    if(isUfct) return convertCurrent(make2DecimalPlace(convertToFctNumber(value)));
-    return convertCurrent(make2DecimalPlace(value));
+export const convertAmount = (value:string | number, isUfct:boolean = true, point: number = 2) => {
+    if(isUfct) return convertCurrent(makeDecimalPoint(convertToFctNumber(value), point));
+    return convertCurrent(makeDecimalPoint(value, point));
 }
 
 export const convertToFctNumberForInput = (value: number | string) => {
-    return make2DecimalPlace(convertToFctNumber(value));
+    return makeDecimalPoint(convertToFctNumber(value), 6);
 }
 
 export const convertToFctNumber = (value: string | number) => {
     return Number(value) / 1000000;
 }
 
-export const make2DecimalPlace = (value: string | number) => {
-    const val = convertNumber(value) * 100;
+export const makeDecimalPoint = (value: string | number, point: number = 2) => {
+    let digitsPoint:any = "1";
+    for(let i = 0; i < point; i++){
+        digitsPoint = digitsPoint + "0";
+    }
+    digitsPoint = Number(digitsPoint);
+
+    const val = convertNumber(value) * digitsPoint;
     const val2 = Math.floor(val);
-    const result = val2 / 100;
+    const result = val2 / digitsPoint;
 
     return result;
 }
@@ -49,15 +57,15 @@ export const convertTime = (time:string, fulltime:boolean, addTime?:boolean) => 
 export const convertPercentage = (value: string | number) => {
     let percent = Number(value) * 100;
     
-    let result = convertCurrent(make2DecimalPlace(percent));
+    let result = convertCurrent(makeDecimalPoint(percent));
     if (percent >= 1e3 && percent < 1e6) {
-        result = convertCurrent(make2DecimalPlace(percent / 1e3)) + "K";
+        result = convertCurrent(makeDecimalPoint(percent / 1e3)) + "K";
     } else if (percent >= 1e6 && percent < 1e9) {
-        result = convertCurrent(make2DecimalPlace(percent / 1e6)) + "M";
+        result = convertCurrent(makeDecimalPoint(percent / 1e6)) + "M";
     } else if (percent >= 1e9 && percent < 1e12) {
-        result = convertCurrent(make2DecimalPlace(percent / 1e9)) + "B";
+        result = convertCurrent(makeDecimalPoint(percent / 1e9)) + "B";
     } else if (percent >= 1e12) {
-        result = convertCurrent(make2DecimalPlace(percent / 1e12)) + "T";
+        result = convertCurrent(makeDecimalPoint(percent / 1e12)) + "T";
     }
     
     return  result;

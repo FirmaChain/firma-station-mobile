@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -7,36 +7,27 @@ import { BgColor } from "@/constants/theme";
 import ProposalList from "@/organims/governance/proposalList";
 import { useGovernanceList } from "@/hooks/governance/hooks";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
-import { AppContext } from "@/util/context";
-import { CONTEXT_ACTIONS_TYPE } from "@/constants/common";
+import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governance>;
 
-const GovernanceScreen: React.FunctionComponent = () => {
+const GovernanceScreen = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const { dispatchEvent } = useContext(AppContext);
-    const { governanceState, getGovernanceComplete, handleGovernanceListPolling } = useGovernanceList();
+    const { governanceState, handleGovernanceListPolling } = useGovernanceList();
 
     const handleMoveToDetail = (proposalId:number) => {
         navigation.navigate(Screens.Proposal, {proposalId: proposalId});
     }
 
-    const refreshStates = () => {
-        handleGovernanceListPolling && handleGovernanceListPolling();
+    const refreshStates = async() => {
+        CommonActions.handleLoadingProgress(true);
+        await handleGovernanceListPolling();
+        CommonActions.handleLoadingProgress(false);
     }
-
-    useEffect(() => {
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], !getGovernanceComplete);
-    }, [getGovernanceComplete])
-    
 
     useFocusEffect(
         useCallback(() => {
-            dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
             refreshStates();
-            setTimeout(() => {
-                dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
-            }, 1000);
         }, [])
     )
 

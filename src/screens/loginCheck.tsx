@@ -18,7 +18,7 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
     const {navigation} = props;
 
     const [loading, setLoading] = useState(true);
-    const walletState = useAppSelector(state => state.wallet);
+    const {wallet} = useAppSelector(state => state);
 
     useEffect(() => {
         const getWalletForAutoLogin = async() => {
@@ -38,7 +38,7 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
 
     useEffect(() => {
         if(!loading){
-            if(walletState.name !== ""){
+            if(wallet.name !== ""){
                 navigation.reset({routes: [{name: Screens.Home}]});
             } else {
                 navigation.reset({routes: [{name: Screens.Welcome}]});

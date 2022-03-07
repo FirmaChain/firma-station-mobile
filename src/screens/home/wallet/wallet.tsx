@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { BgColor } from "@/constants/theme";
 import AddressBox from "@/organims/wallet/addressBox";
@@ -6,22 +6,22 @@ import BalanceBox from "@/organims/wallet/balanceBox";
 import HistoryBox from "@/organims/wallet/historyBox";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { useNavigation } from "@react-navigation/native";
-import { AppContext } from "@/util/context";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
+import { useStakingData } from "@/hooks/staking/hooks";
+import { useHistoryData } from "@/hooks/wallet/hooks";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
-interface Props {
-    state: any;
-}
-
-const WalletScreen: React.FunctionComponent<Props> = (props) => {
-    const {state} = props;
+const WalletScreen = () => {
     const navigation: ScreenNavgationProps = useNavigation();
+    const isFocused = useIsFocused();
+    const {wallet, staking} = useAppSelector(state => state);
 
-    const {wallet} = useContext(AppContext);
-
+    const { recentHistory, refetchCurrentHistory, currentHistoryPolling } = useHistoryData();
+    const { stakingState, getStakingState, updateStakingState } = useStakingData();
+    
     const handleSend = () => {
         navigation.navigate(Screens.Send);
     }
@@ -34,9 +34,42 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
         navigation.navigate(Screens.History);
     }
 
-    const refreshStates = () => {
-        state.refreshForWallet();
+    const currentHistoryRefetch = async() => {
+        if(refetchCurrentHistory)
+            await refetchCurrentHistory();
     }
+
+    const handleCurrentHistoryPolling = async(polling:boolean) => {
+        if(currentHistoryPolling) {
+            currentHistoryPolling(polling);
+        }
+    }
+
+    const refreshStates = async() => {
+        await getStakingState();
+        await currentHistoryRefetch();
+    }
+
+    useEffect(() => {
+        if(staking.stakingReward > 0 && isFocused)
+            updateStakingState(staking.stakingReward);
+    }, [staking.stakingReward, isFocused])
+    
+    useEffect(() => {
+        if(recentHistory !== undefined){
+            refreshStates();
+        }
+    },[recentHistory])
+
+    useFocusEffect(
+        useCallback(() => {
+            currentHistoryRefetch();
+            handleCurrentHistoryPolling(true);
+            return () => {
+                handleCurrentHistoryPolling(false);
+            }
+        }, [])
+    )
 
     return (
         <View style={styles.container}>
@@ -44,8 +77,8 @@ const WalletScreen: React.FunctionComponent<Props> = (props) => {
             <RefreshScrollView
                 refreshFunc={refreshStates}>
                 <View style={styles.content}>
-                    <BalanceBox stakingValues={state.stakingState} handleSend={handleSend} handleStaking={handleStaking}/>
-                    <HistoryBox handleHistory={handleHistory} recentHistory={state.recentHistory}/>
+                    <BalanceBox stakingValues={stakingState} handleSend={handleSend} handleStaking={handleStaking}/>
+                    <HistoryBox handleHistory={handleHistory} recentHistory={recentHistory}/>
                 </View>
             </RefreshScrollView>
         </View>

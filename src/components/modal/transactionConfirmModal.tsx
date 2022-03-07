@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CustomModal from "./customModal";
 import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
@@ -10,8 +10,8 @@ import Button from "../button/button";
 import { convertAmount } from "@/util/common";
 import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import { AppContext } from "@/util/context";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     title: string,
@@ -28,7 +28,7 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
         confirmTitle: 'Confirm'
     }
 
-    const {wallet} = useContext(AppContext);
+    const {wallet} = useAppSelector(state => state);
 
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
@@ -110,7 +110,7 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
                         {amount > 0 &&
                         <View style={[styles.boxH, styles.receiptDesc, {borderTopWidth: 1, borderTopColor: BorderColor}]}>
                             <Text style={styles.itemTitle}>Amount</Text>
-                            <Text style={styles.itemBalance}>{convertAmount(amount, false)}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={styles.itemBalance}>{convertAmount(amount, false, 6)}<Text style={styles.itemTitle}>  FCT</Text></Text>
                         </View>
                         }
                         <View style={[styles.boxH, styles.receiptDesc]}>

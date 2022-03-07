@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -13,7 +13,7 @@ import { EXPLORER, TRANSACTION_TYPE } from "@/constants/common";
 
 import { delegate, redelegate, sendFCT, undelegate, withdrawAllRewards, withdrawRewards } from "@/util/firma";
 import { getWallet } from "@/util/wallet";
-import { AppContext } from "@/util/context";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Transaction>;
 
@@ -31,7 +31,7 @@ const TransactionScreen: React.FunctionComponent<TransactionScreenProps> = (prop
     const {params} = route;
     const {state} = params;
 
-    const {wallet} = useContext(AppContext);
+    const {wallet} = useAppSelector(state => state);
 
     const [transactionResult, setTransactionResult]:any = useState(null);
     const [mnemonic, setMnemonic] = useState('');

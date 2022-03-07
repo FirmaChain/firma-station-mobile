@@ -20,7 +20,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>
 
 const SettingScreen: React.FunctionComponent = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const walletState = useAppSelector(state => state.wallet);
+    const {wallet} = useAppSelector(state => state);
 
     const [openDelModal, setOpenDelModal] = useState(false);
     const [openBioModal, setOpenBioModal] = useState(false);
@@ -43,11 +43,11 @@ const SettingScreen: React.FunctionComponent = () => {
     const handleMenus = (path:string) => {
         switch (path) {
             case "ChangePW":
-                navigation.navigate(Screens.ChangePassword, {walletName: walletState.name});
+                navigation.navigate(Screens.ChangePassword, {walletName: wallet.name});
                 break;
             case "ExportPK":
             case "ExportMN":
-                navigation.navigate(Screens.ExportWallet, {walletName: walletState.name, type: path});
+                navigation.navigate(Screens.ExportWallet, {walletName: wallet.name, type: path});
                 break;
             default:
                 break;
@@ -72,7 +72,7 @@ const SettingScreen: React.FunctionComponent = () => {
     }
 
     const handleDeleteWallet = async() => {
-        await removeChain(walletState.name)
+        await removeChain(wallet.name)
             .then(res => console.log(res))
             .catch(error => console.log(error));
 
@@ -81,7 +81,7 @@ const SettingScreen: React.FunctionComponent = () => {
             let arr = res !== undefined? res : [];
             
             if(arr.length > 1){
-                arr.filter(item => item !== walletState.name).map((item, index) => {
+                arr.filter(item => item !== wallet.name).map((item, index) => {
                     newList += item + "/";
                 });
                 newList = newList.slice(0, -1);
@@ -173,12 +173,12 @@ const SettingScreen: React.FunctionComponent = () => {
                         </TouchableOpacity>
                     </View>
                     <DeleteWallet 
-                        walletName={walletState.name} 
+                        walletName={wallet.name} 
                         open={openDelModal} 
                         setOpenModal={handleDelModal}
                         deleteWallet={handleDeleteWallet}/>
                     <BioAuthOnModal
-                        walletName={walletState.name}
+                        walletName={wallet.name}
                         open={openBioModal}
                         setOpenModal={closeBioModal}
                         bioAuthhandler={handleBioAuthState}/>
