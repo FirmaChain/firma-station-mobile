@@ -29,17 +29,27 @@ export const convertToFctNumber = (value: string | number) => {
 }
 
 export const makeDecimalPoint = (value: string | number, point: number = 2) => {
-    let digitsPoint:any = "1";
-    for(let i = 0; i < point; i++){
-        digitsPoint = digitsPoint + "0";
-    }
-    digitsPoint = Number(digitsPoint);
+    const val = convertNumber(value).toString();
+    const pointPos = val.indexOf(".");
 
-    const val = convertNumber(value) * digitsPoint;
-    const val2 = Math.floor(val);
-    const result = val2 / digitsPoint;
+    if(pointPos === -1) return Number(val).toFixed(point);
 
-    return result;
+    const splitValue = val.split(".");
+    const belowDecimal = splitValue[1].substring(0, point);
+    return Number(`${splitValue[0]}.${splitValue[1]}`).toFixed(point);
+    // let digitsPoint:any = "1";
+    // for(let i = 0; i < point; i++){
+    //     digitsPoint = digitsPoint + "0";
+    // }
+    // digitsPoint = Number(digitsPoint);
+
+    // const val = convertNumber(value) * digitsPoint;
+    // const val2 = Math.floor(val);
+    // const result = val2 / digitsPoint;
+
+    // const result = numeral
+
+    // return result;
 }
 
 export const isValid = (data:any) => {
