@@ -15,11 +15,13 @@ import ExportModal from "@/organims/setting/modal/exportModal";
 import { BgColor } from "@/constants/theme";
 import { PLACEHOLDER_FOR_PASSWORD, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 import { getPrivateKeyFromMnemonic } from "@/util/firma";
+import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
+import { confirmViaBioAuth } from "@/util/bioAuth";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ExportWallet>;
 
 export type ExportWalletParams = {
-    walletName: string;
     type: string;
 }
 
@@ -28,10 +30,12 @@ interface ExportWalletProps {
     navigation: ScreenNavgationProps;
 }
 
-const ExportWalletScreen: React.FunctionComponent<ExportWalletProps> = (props) => {
+const ExportWalletScreen = (props:ExportWalletProps) => {
     const {navigation, route} = props;
     const {params} = route;
-    const {walletName, type} = params;
+    const {type} = params;
+
+    const {wallet} = useAppSelector(state => state);
 
     // 0: need to password confirm
     // 1: export privatekey
@@ -59,13 +63,13 @@ const ExportWalletScreen: React.FunctionComponent<ExportWalletProps> = (props) =
         setValidation(PasswordValidationCheck(value));
     }
 
-    const exportWallet = async() => {
-        await getMnemonicFromChain();
+    const exportWallet = async(password:string) => {
+        await getMnemonicFromChain(password);
     }
 
-    const getMnemonicFromChain = async() => {
-        const key:string = keyEncrypt(walletName, password);
-        await getChain(walletName).then(res => {
+    const getMnemonicFromChain = async(password:string) => {
+        const key:string = keyEncrypt(wallet.name, password);
+        await getChain(wallet.name).then(res => {
             if(res){
                 let w = decrypt(res.password, key.toString());
                 if(w !== null) {
@@ -91,7 +95,6 @@ const ExportWalletScreen: React.FunctionComponent<ExportWalletProps> = (props) =
                         setIsModalOpen(true);
                     }
                 }
-        
                 getPrivatekey();
             } else {
                 setStatus(1);
@@ -110,6 +113,25 @@ const ExportWalletScreen: React.FunctionComponent<ExportWalletProps> = (props) =
         navigation.goBack();
     }
 
+    useEffect(() => {
+        const exportViaBioAuth = async() => {
+            const result = await getUseBioAuth();
+            if(result){
+                const auth = await confirmViaBioAuth();
+                if(auth){
+                    await getPasswordViaBioAuth().then(res => {
+                        exportWallet(res);
+                    }).catch(error => console.log(error));
+                } else {
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+        exportViaBioAuth();
+    }, [])
+
     return (
         <Container
             title={titleText}
@@ -125,7 +147,7 @@ const ExportWalletScreen: React.FunctionComponent<ExportWalletProps> = (props) =
                                 onChangeEvent={handlePassword} />
                         </View>
                         <View style={styles.buttonBox}>
-                            <Button title='Export' active={validation} onPressEvent={exportWallet} />
+                            <Button title='Export' active={validation} onPressEvent={() => exportWallet(password)} />
                         </View>
 
                         <AlertModal
