@@ -7,6 +7,7 @@ import { confirmViaBioAuth } from "@/util/bioAuth";
 import { removeChain, setChain } from "@/util/secureKeyChain";
 import { getUseBioAuth, getWalletWithAutoLogin, setPasswordViaBioAuth } from "@/util/wallet";
 import BioAuthOnModal from "../modal/bioAuthOnModal";
+import Toast from "react-native-toast-message";
 
 interface Props {
     wallet: any;
@@ -30,12 +31,21 @@ const BioAuthRadio = ({wallet}:Props) => {
         setUseBio(value);
     }
 
+    const handleToast = () => {
+        const msg = 'Bio Auth has been activated';
+        Toast.show({
+            type: 'info',
+            text1: msg,
+        });
+    }
+
     const handleBioAuthState = async(password?:string) => {
         if(password){
             confirmViaBioAuth().then(res => {
                 if(res){
                     setPasswordViaBioAuth(password);
                     setChain(USE_BIO_AUTH + wallet.name, "true");
+                    handleToast();
                 } else {
                     handleBioAuth(false);
                 }
