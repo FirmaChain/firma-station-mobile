@@ -1,39 +1,66 @@
 import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
 import { useEffect, useState } from "react";
-import { convertNumber } from "../../util/common";
+import { convertNumber, convertTime } from "../../util/common";
 
 export interface GovernanceState {
-    list: Array<any>;
+    list: Array<ProposalItemState>;
+}
+
+export interface ProposalItemState {
+    title: string;
+    proposalId: string;
+    status: string;
+    description: string;
+    proposalType: string;
+    depositEndTime: string;
+    votingStartTime: string;
+    votingEndTime: string;
 }
 
 export interface ProposalState {
+    titleState: ProposalTitleState;
+    descState: ProposalDescriptionState;
+    voteState: ProposalVoteState;
+}
+
+export interface ProposalTitleState {
     proposalId: number;
     title: string;
-    description: string;
+    status: string;
+}
+
+export interface ProposalDescriptionState {
     status: string;
     proposalType: string;
     submitTime: string;
+    description: string;
+    classified: any;
     votingStartTime: string;
     votingEndTime: string;
-    classified: any;
+    depositPeriod: string;
+    minDeposit: number;
+    proposalDeposit: Array<any>;
+}
+
+export interface ProposalVoteState {
+    votingStartTime: string;
+    votingEndTime: string;
     quorum: number;
     currentTurnout: number;
     stakingPool: Array<any>;
+    totalVotingPower: number;
     proposalTally: Array<any>;
-    proposalVote: Array<any>;
-    minDeposit: number;
-    proposalDeposit: Array<any>;
-    depositPeriod: number;
 }
 
 export const useGovernanceList = () => {
     const [governanceState, setGovernanceList] = useState<GovernanceState>({
         list: [],
     });
-    const [getGovernanceComplete, setGovernanceComplete] = useState(false);
 
-    const { startPolling } = useGovernmentQuery({
-        onCompleted: (data) =>{
+    const { refetch, loading, data } = useGovernmentQuery();
+
+    useEffect(() => {
+        if(loading === false){
             const list = data.proposals
             .map((proposal:any) => {
                 return proposal;
@@ -42,17 +69,15 @@ export const useGovernanceList = () => {
                 ...prevState,
                 list,
             }));
-            setGovernanceComplete(true);
         }
-    })
+    }, [loading, data]);
 
-    const handleGovernanceListPolling = () => {
-        return startPolling(0);
+    const handleGovernanceListPolling = async() => {
+        return await refetch();
     }
 
     return {
         governanceState,
-        getGovernanceComplete,
         handleGovernanceListPolling,
     }
 }
@@ -60,9 +85,10 @@ export const useGovernanceList = () => {
 export const useProposalData = (id:number) => {
     const [proposalState, setProposalState] = useState<ProposalState | null>(null);
 
-    const {startPolling } = useProposalQuery({
-        proposalId: id.toString(),
-        onCompleted: (data) => {
+    const {refetch, loading, data } = useProposalQuery({proposalId: id.toString()})
+
+    useEffect(() => {
+        if(loading === false) {
             const classifiedData = () => {
                 if(data.proposal[0].content.changes) {
                     return {
@@ -96,31 +122,55 @@ export const useProposalData = (id:number) => {
         
                 return totalVote / totalVotingPower;
             }
-        
-            setProposalState({
+
+            const convertDepositPeriod = (period:number, submitTime:string) => {
+                const periodToDay = period / 86400000000000;
+                const date = new Date(submitTime);
+                date.setDate(date.getDate() + periodToDay);
+                
+                return convertTime(date.toString(), true);;
+            }
+
+            const titleState:ProposalTitleState = ({
                 proposalId: data.proposal[0].proposalId,
                 title: data.proposal[0].title,
-                description: data.proposal[0].description,
+                status: data.proposal[0].status,
+            })
+
+            const descState:ProposalDescriptionState = ({
                 status: data.proposal[0].status,
                 proposalType: data.proposal[0].content["@type"],
                 submitTime: data.proposal[0].submitTime,
+                description: data.proposal[0].description,
                 classified: classifiedData(),
+                votingStartTime: data.proposal[0].votingStartTime,
+                votingEndTime: data.proposal[0].votingEndTime,
+                depositPeriod: convertDepositPeriod(data.govParams[0].depositParams.max_deposit_period, data.proposal[0].submitTime,),
+                minDeposit: data.govParams[0].depositParams.min_deposit[0].amount,
+                proposalDeposit: data.proposal[0].proposalDeposits[0].amount,
+            })
+
+            const voteState:ProposalVoteState = ({
                 votingStartTime: data.proposal[0].votingStartTime,
                 votingEndTime: data.proposal[0].votingEndTime,
                 quorum: convertNumber(data.govParams[0].tallyParams.quorum),
                 currentTurnout: calculateCurrentTurnout(),
                 stakingPool: data.stakingPool[0],
+                totalVotingPower: convertNumber(data.stakingPool[0].totalVotingPower),
                 proposalTally: data.proposalTallyResult[0],
-                proposalVote: data.proposalVote,
-                minDeposit: data.govParams[0].depositParams.min_deposit[0].amount,
-                proposalDeposit: data.proposal[0].proposalDeposits[0].amount,
-                depositPeriod: data.govParams[0].depositParams.max_deposit_period
+            })
+        
+            setProposalState({
+                titleState,
+                descState,
+                voteState,
             })
         }
-    })
+    }, [loading, data])
+    
 
     const handleProposalPolling = () => {
-        return startPolling(0);
+        return refetch();
     }
 
 
