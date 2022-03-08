@@ -1,4 +1,5 @@
 import { useCurrentHistoryByAddressQuery, useHistoryByAddressQuery } from "@/apollo/gqls";
+import { useAppSelector } from "@/redux/hooks";
 import { getBalanceFromAdr } from "@/util/firma";
 import { useEffect, useState } from "react";
 import { convertNumber } from "../../util/common";
@@ -11,10 +12,6 @@ export interface BalanceState {
     reward: number;
 }
 
-export interface HistoryListState {
-    list: Array<any>;
-}
-
 export interface HistoryState {
     hash: any;
     success: string;
@@ -23,12 +20,17 @@ export interface HistoryState {
     block: any;
 }
 
-export const useBalanceData = (address:string) => {
+export interface HistoryListState {
+    list: Array<HistoryState>;
+}
+
+export const useBalanceData = () => {
+    const {wallet} = useAppSelector(state => state);
     const [balance, setBalance] = useState(0);
     
     async function getBalance() {
-        if(address === '' || address === undefined) return;
-        await getBalanceFromAdr(address).then(res => setBalance(convertNumber(res)));
+        if(wallet.address === '' || wallet.address === undefined) return;
+        await getBalanceFromAdr(wallet.address).then(res => setBalance(convertNumber(res)));
     }
 
     useEffect(() => {
@@ -41,13 +43,14 @@ export const useBalanceData = (address:string) => {
     }
 }
 
-export const useHistoryData = (address:string) => {
+export const useHistoryData = () => {
+    const {wallet} = useAppSelector(state => state);
     const [historyList, setHistoryList] = useState<HistoryListState>({
         list: [],
     });
     const [recentHistory, setRecentHistory] = useState<HistoryState>();
 
-    if(address === '' || address === undefined) return {historyList};
+    if(wallet.address === '' || wallet.address === undefined) return {historyList};
     
     const convertMsgType = (type:string) => {
         const value = type.replace("Msg","").split(".");
@@ -60,10 +63,11 @@ export const useHistoryData = (address:string) => {
         return "Failed"
     }
 
-    const {startPolling: startHistoryPoling } = useHistoryByAddressQuery({
-        address: `{${address}}`,
-        onCompleted:(data) => {
-            const list = data.messagesByAddress.map((value:any) => {
+    const {refetch: startHistoryPoling, loading: historyLoading, data: historyData } = useHistoryByAddressQuery({address: `{${wallet.address}}`});
+
+    useEffect(() => {
+        if(historyLoading === false){
+            const list = historyData.messagesByAddress.map((value:any) => {
                 const result = {
                     hash: value.transaction.hash,
                     success: convertResult(value.transaction.success),
@@ -78,12 +82,18 @@ export const useHistoryData = (address:string) => {
                 list,
             }));
         }
-    });
+    }, [historyLoading, historyData])
+    
 
-    const {startPolling: startCurrentHistoryPolling, stopPolling: stopCurrentHistoryPolling} = useCurrentHistoryByAddressQuery({
-        address: `{${address}}`,
-        onCompleted:(data) => {
-            const history = data.messagesByAddress.map((value:any) => {
+    const {startPolling: startCurrentHistoryPolling, 
+        stopPolling: stopCurrentHistoryPolling, 
+        refetch: refetchCurrentHistory, 
+        loading: currentHistoryLoading, 
+        data: currentHistoryData} = useCurrentHistoryByAddressQuery({address: `{${wallet.address}}`});
+
+    useEffect(() => {
+        if(currentHistoryLoading === false){
+            const history = currentHistoryData.messagesByAddress.map((value:any) => {
                 const result = {
                     hash: value.transaction.hash,
                     success: convertResult(value.transaction.success),
@@ -93,28 +103,29 @@ export const useHistoryData = (address:string) => {
                 }
                 return result;
             })
-            setRecentHistory(history[0]);
+            if(history.length > 0 && history[0].block !== recentHistory?.block){
+                setRecentHistory(history[0]);
+            }
         }
-    });
+    }, [currentHistoryLoading, currentHistoryData]);
 
-    const handleHisotyPolling = () => {
-        return startHistoryPoling(0);
+    const handleHisotyPolling = async() => {
+        return await startHistoryPoling();
     }
 
-    const handleCurrentHistoryPolling = (polling: boolean) => {
-        if(polling) return startCurrentHistoryPolling(30000);
-        return stopCurrentHistoryPolling();
-    }
-
-    const handleCurrentHistoryState = () => {
-        startCurrentHistoryPolling(0);
+    const currentHistoryPolling = (polling: boolean) => {
+        if(polling) {
+            startCurrentHistoryPolling(30000)
+        } else {
+            stopCurrentHistoryPolling();
+        }
     }
 
     return {
         historyList, 
         recentHistory,
-        handleCurrentHistoryState,
+        refetchCurrentHistory,
         handleHisotyPolling,
-        handleCurrentHistoryPolling,
+        currentHistoryPolling,
     }
 }

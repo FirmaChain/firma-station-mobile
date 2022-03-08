@@ -6,27 +6,17 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import InputSetVertical from "../../../components/input/inputSetVertical";
 
 interface Props {
-    address: any;
-    amount: any;
-    memo: any;
+    handleSendInfo: (type:string, value:string|number) => void;
     available: number;
     reset: boolean;
 }
 
-const SendInputBox = ({address, amount, memo, available, reset}:Props) => {
+const SendInputBox = ({handleSendInfo, available, reset}:Props) => {
     const [safetyActive, setSafetyActive] = useState(true);
     const [limitAvailable, setLimitAvailable] = useState(0);
 
-    const handleAddress = (value:string) => {
-        address(value);
-    }
-
-    const handleAmount = (value:number) => {
-        amount(value);
-    }
-
-    const handleMemo = (value:string) => {
-        memo(value);
+    const handleSendInfoState = (type:string, value:string|number) => {
+        handleSendInfo(type, value);
     }
 
     useEffect(() => {
@@ -39,10 +29,10 @@ const SendInputBox = ({address, amount, memo, available, reset}:Props) => {
     }, [available, safetyActive])
 
     useEffect(() => {
-        if(available > 20000){
+        if(available > 100000){
             setSafetyActive(true);
         } else {
-            setLimitAvailable(0);
+            setLimitAvailable(available >= 20000? (available-20000):0);
             setSafetyActive(false);
         }
     }, [available])
@@ -53,21 +43,21 @@ const SendInputBox = ({address, amount, memo, available, reset}:Props) => {
                 title="To address"
                 placeholder="Address"
                 resetValues={reset}
-                onChangeEvent={handleAddress}/>
+                onChangeEvent={(value:any) => handleSendInfoState("address", value)}/>
             <InputSetVerticalForAmount
                 title="Amount"
                 placeholder="0 FCT"
                 accent={safetyActive}
                 limitValue={limitAvailable}
                 resetValues={reset}
-                onChangeEvent={handleAmount}/>
+                onChangeEvent={(value:any) => handleSendInfoState("amount", value)}/>
             <InputSetVertical
                 title="Memo"
                 message=""
                 validation={true}
                 placeholder="Memo"
                 resetValues={reset}
-                onChangeEvent={handleMemo}/>
+                onChangeEvent={(value:any) => handleSendInfoState("memo", value)}/>
             <View style={styles.radioBox}>
                 <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
                 <TouchableOpacity disabled={limitAvailable == 0 || available < 100000} onPress={() => setSafetyActive(!safetyActive)}>
