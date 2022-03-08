@@ -1,9 +1,9 @@
+import React, { useMemo } from "react"
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ForwardArrow } from "@/components/icon/icon";
 import { EXPLORER } from "@/constants/common";
 import { convertTime } from "@/util/common";
-import React, { useMemo } from "react"
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
+import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
 
 interface Props {
     recentHistory: any;

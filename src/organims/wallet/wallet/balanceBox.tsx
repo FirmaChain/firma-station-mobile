@@ -1,12 +1,16 @@
-import { ForwardArrow } from "@/components/icon/icon";
-import { COINGECKO } from "@/constants/common";
-import { FIRMA_LOGO } from "@/constants/images";
-import { StakingState } from "@/hooks/staking/hooks";
-import { convertAmount, convertCurrent, convertToFctNumber, make2DecimalPlace, resizeFontSize } from "@/util/common";
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import SmallButton from "../../components/button/smallButton";
-import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "../../constants/theme";
+import { StakingState } from "@/hooks/staking/hooks";
+import { convertAmount, 
+        convertCurrent, 
+        convertToFctNumber, 
+        makeDecimalPoint, 
+        resizeFontSize } from "@/util/common";
+import { ForwardArrow } from "@/components/icon/icon";
+import SmallButton from "@/components/button/smallButton";
+import { COINGECKO } from "@/constants/common";
+import { FIRMA_LOGO } from "@/constants/images";
+import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 
 interface Props {
     stakingValues: StakingState;
@@ -16,7 +20,6 @@ interface Props {
 
 const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
     const [chainInfo, setChainInfo]:Array<any> = useState([]);
-    const [balanceTextSize, setBalanceTextSize] = useState(28);
 
     const currentPrice = useMemo(() => {
         if(chainInfo?.market_data === undefined) return 0;
@@ -28,20 +31,24 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
     }, [stakingValues])
 
     const delegated = useMemo(() => {
-        return convertCurrent(make2DecimalPlace(stakingValues.delegated));
+        return convertCurrent(makeDecimalPoint(stakingValues.delegated));
     }, [stakingValues]);
 
     const undelegate = useMemo(() => {
-        return convertCurrent(make2DecimalPlace((stakingValues.undelegate)));
+        return convertCurrent(makeDecimalPoint((stakingValues.undelegate)));
     }, [stakingValues]);
 
     const reward = useMemo(() => {
-        return convertCurrent(make2DecimalPlace((stakingValues.stakingReward)));
+        return convertCurrent(makeDecimalPoint((stakingValues.stakingReward)));
     }, [stakingValues]);
     
     const exchangeData = useMemo(() => {
-        return convertCurrent(make2DecimalPlace((convertToFctNumber(available) * currentPrice)));
+        return convertCurrent(makeDecimalPoint((convertToFctNumber(available) * currentPrice)));
     }, [currentPrice, available])
+
+    const balanceTextSize = useMemo(() => {
+        return resizeFontSize(available, 10000, 28);
+    }, [available])
 
     const getChainInfo = async() => {
         await fetch(COINGECKO)
@@ -54,11 +61,6 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
     useEffect(() => {
         getChainInfo();
     }, [])
-
-    useEffect(() => {
-        setBalanceTextSize(resizeFontSize(available, 10000, 28));
-    }, [available]);
-    
 
     return (
         <View style={styles.container}>

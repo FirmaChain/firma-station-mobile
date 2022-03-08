@@ -15,10 +15,10 @@ import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
 import { RECOVER_INFO_MESSAGE } from "@/constants/common";
 import RecoverMenus from "./recoverMenus";
 
-type RecoverWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
 const RecoverWallet = () => {
-    const navigation: RecoverWalletScreenNavigationProps = useNavigation();
+    const navigation: ScreenNavgationProps = useNavigation();
     
     const [active, setActive] = useState(false);
 

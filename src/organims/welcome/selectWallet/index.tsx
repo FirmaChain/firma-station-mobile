@@ -19,10 +19,10 @@ import { useNavigation } from "@react-navigation/native";
 import Container from "@/components/parts/containers/conatainer";
 import WalletSelector from "./walletSelector";
 
-type SelectWalletScreenNavigationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
 const SelectWallet = () => {
-    const navigation: SelectWalletScreenNavigationProps = useNavigation();
+    const navigation: ScreenNavgationProps = useNavigation();
 
     const [items, setItems]:Array<any> = useState([]);
     const [selected, setSelected] = useState(-1);
@@ -109,7 +109,7 @@ const SelectWallet = () => {
         WalletActions.handleWalletName(selectedWallet);
         WalletActions.handleWalletAddress(adr);
 
-        setBioAuth(password);
+        setBioAuth(selectedWallet, password);
         navigation.reset({routes: [{name: 'Home'}]});
     }
 
