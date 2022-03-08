@@ -228,7 +228,7 @@ const DelegateScreen: React.FunctionComponent<DelegateScreenProps> = (props) => 
         if(maxActive){
             switch (state.type) {
                 case "Delegate":
-                    setMaxAmount((balance - 100000).toString());
+                    setMaxAmount((limitAvailable).toString());
                     break;
                 default:
                     setMaxAmount(selectDelegationAmount.toString());

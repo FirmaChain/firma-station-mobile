@@ -1,7 +1,6 @@
 import React from "react";
-import { BgColor } from "@/constants/theme";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
-import { Header } from "@react-navigation/stack";
+import { BgColor } from "@/constants/theme";
 
 interface Props {
     visible: boolean;
@@ -21,11 +20,14 @@ const CustomModal = ({visible, handleOpen, children}:Props) => {
                 transparent={true}
                 onRequestClose={closeModal}
                 visible={visible}>
-                    <KeyboardAvoidingView behavior={Platform.select({android: undefined, ios: 'padding'})} enabled style={{flex: 1}}>
-                        <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
-                        <View style={styles.modalBox}>
-                            {children} 
-                        </View>
+                    <KeyboardAvoidingView
+                        enabled 
+                        behavior={Platform.select({android: undefined, ios: 'padding'})} 
+                        style={{flex: 1}}>
+                            <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
+                            <View style={styles.modalBox}>
+                                {children} 
+                            </View>
                     </KeyboardAvoidingView>
             </Modal>
         </View>
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
         backgroundColor: BgColor,
         borderRadius: 4,
         paddingBottom: 20,
-        zIndex: 1000,
+        zIndex: 9999,
     }
 })
 

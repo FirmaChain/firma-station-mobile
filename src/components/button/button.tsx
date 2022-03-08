@@ -6,11 +6,14 @@ const Button: React.FC<{
     title: string;
     active: boolean;
     border?: boolean;
-    onPressEvent: Function;
+    onPressEvent: () => void;
 }> = ({title, active, border = false, onPressEvent}) => {
 
     return (
-        <TouchableOpacity disabled={!active} style={[styles.button , !active? styles.disableButton : border? styles.borderButton : styles.blueButton]} onPress={() => onPressEvent()}>
+        <TouchableOpacity 
+            disabled={!active} 
+            onPress={() => onPressEvent()}
+            style={[styles.button , !active? styles.disableButton : border? styles.borderButton : styles.blueButton]} >
             <Text style={[styles.text, !active?{color: TextDisableColor}: border?{color:TextGrayColor}:{color:TextColor}]}>{title}</Text>
         </TouchableOpacity>
     )

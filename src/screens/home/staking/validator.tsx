@@ -1,22 +1,23 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { CommonActions, StakingActions } from "@/redux/actions";
+import { useAppSelector } from "@/redux/hooks";
 import Container from "@/components/parts/containers/conatainer";
-import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
+import ViewContainer from "@/components/parts/containers/viewContainer";
+import RefreshScrollView from "@/components/parts/refreshScrollView";
+import AlertModal from "@/components/modal/alertModal";
+import { Person } from "@/components/icon/icon";
 import AddressBox from "@/organims/staking/validator/addressBox";
 import PercentageBox from "@/organims/staking/validator/percentageBox";
-import ViewContainer from "@/components/parts/containers/viewContainer";
-import { convertPercentage, convertToFctNumber } from "@/util/common";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
 import DelegationBox from "@/organims/staking/validator/delegationBox";
+import { convertPercentage, convertToFctNumber } from "@/util/common";
 import { getEstimateGasFromDelegation, getStakingFromvalidator as getStakingFromValidator } from "@/util/firma";
-import { Person } from "@/components/icon/icon";
-import { StakeInfo, useDelegationData, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
-import { CONTEXT_ACTIONS_TYPE, FIRMACHAIN_DEFAULT_CONFIG, KeyValue, TRANSACTION_TYPE } from "@/constants/common";
-import { AppContext } from "@/util/context";
-import RefreshScrollView from "@/components/parts/refreshScrollView";
-import { useFocusEffect } from "@react-navigation/native";
-import AlertModal from "@/components/modal/alertModal";
+import { useDelegationData, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
+import { FIRMACHAIN_DEFAULT_CONFIG, KeyValue, TRANSACTION_TYPE } from "@/constants/common";
+import { BgColor, BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -34,9 +35,9 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
     const {params} = route;
     const {validatorAddress} = params;
 
-    const {wallet, dispatchEvent} = useContext(AppContext);
+    const {wallet} = useAppSelector(state => state);
     const {validatorState, handleValidatorPolling} = useValidatorDataFromAddress(validatorAddress);
-    const {delegationState, handleDelegationState} = useDelegationData(wallet.address);
+    const {delegationState, handleTotalDelegationPolling} = useDelegationData();
 
     const [stakingState, setStakingState] = useState<any>({
         available: 0,
@@ -49,7 +50,56 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
 
-    const [validator, setValidator]:Array<any> = useState(null);
+    const validator = useMemo(() => {
+        if(validatorState !== undefined){
+            return {
+                avatar: validatorState.validatorAvatar,
+                moniker: validatorState.validatorMoniker,
+                description: validatorState.validatorDetail,
+                website: validatorState.validatorWebsite,
+
+                operatorAddress: validatorState.validatorAddress,
+                accountAddress: validatorState.selfDelegateAddress,
+
+                APR: convertPercentage(validatorState.APR),
+                APY: convertPercentage(validatorState.APY),
+                percentageData: [
+                    {row: [{
+                        title: "Voting Power",
+                        data: validatorState.votingPowerPercent,
+                        amount: validatorState.votingPower,
+                    },{
+                        title: "Self-Delegation",
+                        data: validatorState.selfPercent,
+                        amount: convertToFctNumber(validatorState.self),
+                    }]},
+                    {row: [{
+                        title: "Commission",
+                        data: validatorState.commission,
+                    },{
+                        title: "Uptime",
+                        data: validatorState.condition,
+                    }]}
+                ]
+            }
+        }
+        return null;
+    }, [validatorState])
+
+    useEffect(() => {
+        if(validatorState){
+            StakingActions.updateValidatorState(validatorState);
+        }
+    }, [validatorState])
+
+    useEffect(() => {
+        if(stakingState.stakingReward > 0){
+            StakingActions.updateDelegateState({
+                address: validatorAddress,
+                reward: stakingState.stakingReward * 1000000,
+            });
+        }
+    }, [stakingState.stakingReward]);
 
     const handleDelegate = (type:string) => {
         let delegateState:KeyValue = {
@@ -86,7 +136,6 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
     }
 
     const handleDelegateState = async() => {
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], true);
         const state = await getStakingFromValidator(wallet.address, validatorAddress);
 
         setStakingState({
@@ -96,7 +145,7 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
             stakingReward: state.stakingReward,
         });
 
-        if(state.stakingReward > 0){
+        if(state.stakingReward > 0 && state.available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
             try {
                 let gas = await getEstimateGasFromDelegation(wallet.name, validatorAddress);
                 setWithdrawGas(gas);
@@ -105,56 +154,22 @@ const ValidatorScreen: React.FunctionComponent<ValidatorScreenProps> = (props) =
                 setAlertDescription(String(error));
             }
         }
-        dispatchEvent && dispatchEvent(CONTEXT_ACTIONS_TYPE["LOADING"], false);
     }
 
-    const refreshStates = () => {
-        handleValidatorPolling();
-        handleDelegateState();
-        handleDelegationState();
+    const refreshStates = async() => {
+        CommonActions.handleLoadingProgress(true);
+        await handleDelegateState();
+        await handleValidatorPolling();
+        await handleTotalDelegationPolling();
+        CommonActions.handleLoadingProgress(false);
     }
 
     useFocusEffect(
         useCallback(() => {
             refreshStates();
-        }, [])
+        },[])
     )
 
-    useEffect(() => {
-        if(validatorState !== undefined){
-            setValidator({
-                avatar: validatorState.validatorAvatar,
-                moniker: validatorState.validatorMoniker,
-                description: validatorState.validatorDetail,
-                website: validatorState.validatorWebsite,
-
-                operatorAddress: validatorState.validatorAddress,
-                accountAddress: validatorState.selfDelegateAddress,
-
-                APR: convertPercentage(validatorState.APR),
-                APY: convertPercentage(validatorState.APY),
-                percentageData: [
-                    {row: [{
-                        title: "Voting Power",
-                        data: validatorState.votingPowerPercent,
-                        amount: validatorState.votingPower,
-                    },{
-                        title: "Self-Delegation",
-                        data: validatorState.selfPercent,
-                        amount: convertToFctNumber(validatorState.self),
-                    }]},
-                    {row: [{
-                        title: "Commission",
-                        data: validatorState.commission,
-                    },{
-                        title: "Uptime",
-                        data: validatorState.condition,
-                    }]}
-                ]
-            })
-        }
-    }, [validatorState])
-    
     return (
         <Container
             titleOn={false}

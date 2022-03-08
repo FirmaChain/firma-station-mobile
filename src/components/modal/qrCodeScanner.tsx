@@ -1,23 +1,24 @@
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import QRCodeScanner from "react-native-qrcode-scanner";
+import { BarCodeReadEvent } from "react-native-camera";
 import { QRCODE_SCANNER_MODAL_TEXT } from "@/constants/common";
 import { Lato, TextCatTitleColor, WhiteColor } from "@/constants/theme";
 import { ScreenHeight, ScreenWidth } from "@/util/getScreenSize";
-import QRCodeScanner from "react-native-qrcode-scanner";
-import { Close } from "../icon/icon";
 import { addressCheck } from "@/util/firma";
+import { Close } from "../icon/icon";
 import Toast from "react-native-toast-message";
 import CustomToast from "../toast/customToast";
-import { BarCodeReadEvent } from "react-native-camera";
 
 interface Props {
     isAddress?: boolean;
     visible: boolean;
-    handleOpen: Function;
+    handleOpen: (open:boolean)=>void;
     ReaderHandler: Function;
 }
 
 const QRCodeScannerModal = ({isAddress = false, visible, handleOpen, ReaderHandler}:Props) => {
+    
     const handleReader = (event:BarCodeReadEvent) => {
         if(isAddress){
             if(addressCheck(event.data) === false){
@@ -33,7 +34,7 @@ const QRCodeScannerModal = ({isAddress = false, visible, handleOpen, ReaderHandl
     }
 
     const closeModal = () => {
-        handleOpen && handleOpen(false);
+        handleOpen(false);
     }
 
     return (
@@ -42,32 +43,30 @@ const QRCodeScannerModal = ({isAddress = false, visible, handleOpen, ReaderHandl
             transparent={true}
             onRequestClose={closeModal}
             visible={visible}>
-
-            <View style={styles.container}>
-                <QRCodeScanner
-                    reactivate={true}
-                    showMarker={true}
-                    onRead={handleReader}
-                    cameraStyle={{height: ScreenHeight()}}
-                    customMarker={
-                        <View style={styles.rectangleContainer}>
-                            <View style={styles.topOverlay}>
-                                <TouchableOpacity style={{padding: 20}} onPress={()=>closeModal()}>
-                                    <Close size={30} color={WhiteColor} />
-                                </TouchableOpacity>
-                                <Text style={styles.title}>{QRCODE_SCANNER_MODAL_TEXT}</Text>
+                <View style={styles.container}>
+                    <QRCodeScanner
+                        reactivate={true}
+                        showMarker={true}
+                        onRead={handleReader}
+                        cameraStyle={{height: ScreenHeight()}}
+                        customMarker={
+                            <View style={styles.rectangleContainer}>
+                                <View style={styles.topOverlay}>
+                                    <TouchableOpacity style={{padding: 20}} onPress={()=>closeModal()}>
+                                        <Close size={30} color={WhiteColor} />
+                                    </TouchableOpacity>
+                                    <Text style={styles.title}>{QRCODE_SCANNER_MODAL_TEXT}</Text>
+                                </View>
+                                <View style={{ flexDirection: "row" }}>
+                                    <View style={styles.leftAndRightOverlay} />
+                                    <View style={styles.rectangle} />
+                                    <View style={styles.leftAndRightOverlay} />
+                                </View>
+                                <View style={styles.bottomOverlay} />
+                                <CustomToast />
                             </View>
-                            <View style={{ flexDirection: "row" }}>
-                                <View style={styles.leftAndRightOverlay} />
-                                <View style={styles.rectangle} />
-                                <View style={styles.leftAndRightOverlay} />
-                            </View>
-                            <View style={styles.bottomOverlay} />
-                            <CustomToast />
-                        </View>
-                    }
-                />
-            </View>
+                        }/>
+                </View>
         </Modal>
     )
 }

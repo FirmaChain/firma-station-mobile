@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { PLACEHOLDER_FOR_PASSWORD, SETTING_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
+import { Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { decrypt, keyEncrypt } from "@/util/keystore";
+import { getChain } from "@/util/secureKeyChain";
+import { WalletNameValidationCheck } from "@/util/validationCheck";
 import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
-import { PLACEHOLDER_FOR_PASSWORD, SETTING_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
-import { StyleSheet, Text, View } from "react-native";
-import CustomModal from "../../../components/modal/customModal";
-import { Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
-import { decrypt, keyEncrypt } from "../../../util/keystore";
-import { getChain } from "../../../util/secureKeyChain";
-import { WalletNameValidationCheck } from "../../../util/validationCheck";
+import CustomModal from "@/components/modal/customModal";
 
 interface Props {
     walletName: string;
     open: boolean;
-    setOpenModal: Function;
-    bioAuthhandler: Function;
+    setOpenModal: (open:boolean) => void;
+    bioAuthhandler: (value:string) => void;
 }
 
 const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props) => {
@@ -47,7 +47,7 @@ const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props)
 
     const handleBioAuth = () => {
         if(active === false) return;
-        bioAuthhandler && bioAuthhandler(password);
+        bioAuthhandler(password);
     }
 
     const handleModal = (open:boolean) => {

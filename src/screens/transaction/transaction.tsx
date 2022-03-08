@@ -16,4 +16,4 @@ const TransactionScreen = (props:Props) => {
     )
 }
 
-export default TransactionScreen;
+export default React.memo(TransactionScreen);

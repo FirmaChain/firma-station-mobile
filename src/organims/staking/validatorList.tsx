@@ -1,33 +1,35 @@
 import React, { useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
+import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
 import CustomModal from "../../components/modal/customModal";
 import ModalItems from "../../components/modal/modalItems";
-import { DownArrow } from "@/components/icon/icon";
+import { DownArrow, SortASC, SortDESC } from "@/components/icon/icon";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
 import { convertPercentage } from "@/util/common";
 
 interface Props {
+    visible: boolean;
     validators: Array<any>;
     navigateValidator: Function;
 }
 
-const ValidatorList = ({validators, navigateValidator}:Props) => {
+const ValidatorList = ({visible, validators, navigateValidator}:Props) => {
     const sortItems = ['Commision', 'Voting Power', 'Uptime'];
     const [selected, setSelected] = useState(0);
+    const [sortWithDesc, setSortWithDesc] = useState(true);
     const [openModal, setOpenModal] = useState(false);
 
     useMemo(() => {
         switch (selected) {
         case 0:
-            return validators.sort((a, b) => (a.commission - b.commission));
+            return validators.sort((a, b) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
         case 1:
-            return validators.sort((a, b) => (b.votingPower - a.votingPower));
+            return validators.sort((a, b) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
         case 2:
-            return validators.sort((a, b) => (b.condition - a.condition));
+            return validators.sort((a, b) => sortWithDesc?(b.condition - a.condition):(a.condition - b.condition));
         }
-    }, [selected, validators])
+    }, [selected, validators, sortWithDesc])
 
     const handleOpenModal = (open:boolean) => {
         setOpenModal(open);
@@ -39,38 +41,50 @@ const ValidatorList = ({validators, navigateValidator}:Props) => {
     }
     
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>List 
-                    <Text style={{color: PointLightColor}}> {validators.length}</Text>
-                </Text>
-                <View style={{flexDirection: "row", alignItems: "center"}}>
-                    <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                        <Text style={[styles.sortItem, {paddingRight: 4}]}>{sortItems[selected]}</Text>
-                        <DownArrow size={12} color={GrayColor} />
-                    </TouchableOpacity>
+        <>
+        {visible &&
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.title}>List 
+                        <Text style={{color: PointLightColor}}> {validators.length}</Text>
+                    </Text>
+                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                        <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
+                            <Text style={[styles.sortItem, {paddingRight: 4}]}>{sortItems[selected]}</Text>
+                            <DownArrow size={12} color={GrayColor} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{paddingLeft: 10, paddingVertical: 10,}} onPress={() => setSortWithDesc(!sortWithDesc)}>
+                            {sortWithDesc?
+                                <SortDESC size={20} color={GrayColor} />
+                                :
+                                <SortASC size={20} color={GrayColor} />
+                            }
+                        </TouchableOpacity>
+    
+                    </View>
                 </View>
+                {validators.map((vd, index) => {
+                    return (
+                        <TouchableOpacity key={index} onPress={() => navigateValidator(vd.validatorAddress)}>
+                            <View style={styles.item}>
+                                <MonikerSection validator={{avatarURL: vd.validatorAvatar, moniker: vd.validatorMoniker}} />
+                                <DataSection title="Voting Power" data={vd.votingPowerPercent.toString() + '%'} />
+                                <DataSection title="Commission" data={vd.commission.toString() + '%'} />
+                                <DataSection 
+                                    title="APR/APY" 
+                                    data={convertPercentage(vd.APR) + '% / ' + convertPercentage(vd.APY) + '%'} />
+                                <DataSection title="Uptime" data={vd.condition.toString() + '%'} />
+                                <View style={{paddingBottom: 22}} />
+                            </View>
+                        </TouchableOpacity>
+                    )
+                })}
+                <CustomModal visible={openModal} handleOpen={handleOpenModal}>
+                    <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort}/>
+                </CustomModal>
             </View>
-            {validators.map((vd, index) => {
-                return (
-                    <TouchableOpacity key={index} onPress={() => navigateValidator(vd.validatorAddress)}>
-                        <View style={styles.item}>
-                            <MonikerSection validator={{avatarURL: vd.validatorAvatar, moniker: vd.validatorMoniker}} />
-                            <DataSection title="Voting Power" data={vd.votingPowerPercent.toString() + '%'} />
-                            <DataSection title="Commission" data={vd.commission.toString() + '%'} />
-                            <DataSection 
-                                title="APR/APY" 
-                                data={convertPercentage(vd.APR) + '% / ' + convertPercentage(vd.APY) + '%'} />
-                            <DataSection title="Uptime" data={vd.condition.toString() + '%'} />
-                            <View style={{paddingBottom: 22}} />
-                        </View>
-                    </TouchableOpacity>
-                )
-            })}
-            <CustomModal visible={openModal} handleOpen={handleOpenModal}>
-                <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort}/>
-            </CustomModal>
-        </View>
+        }
+        </>
     )
 }
 

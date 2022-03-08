@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useAppSelector } from "@/redux/hooks";
 import { BgColor } from "@/constants/theme";
@@ -16,6 +16,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
 const Wallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
+    const isFocused = useIsFocused();
     const {wallet, staking} = useAppSelector(state => state);
 
     const { recentHistory, refetchCurrentHistory, currentHistoryPolling } = useHistoryData();
@@ -48,6 +49,11 @@ const Wallet = () => {
     }
 
     useEffect(() => {
+        if(staking.stakingReward > 0 && isFocused)
+            updateStakingState(staking.stakingReward);
+    }, [staking.stakingReward, isFocused])
+
+    useEffect(() => {
         if(recentHistory !== undefined){
             refreshStates();
         }
@@ -55,9 +61,6 @@ const Wallet = () => {
 
     useFocusEffect(
         useCallback(() => {
-            if(staking.stakingReward > 0) {
-                updateStakingState(staking.stakingReward);
-            }
             currentHistoryRefetch();
             handleCurrentHistoryPolling(true);
             return () => {

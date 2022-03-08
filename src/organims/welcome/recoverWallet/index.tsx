@@ -14,6 +14,7 @@ import WarnContainer from "@/components/parts/containers/warnContainer";
 import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
 import { RECOVER_INFO_MESSAGE } from "@/constants/common";
 import RecoverMenus from "./recoverMenus";
+import { checkCameraPermission } from "@/util/permission";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -43,8 +44,12 @@ const RecoverWallet = () => {
         navigation.navigate(Screens.StepRecover);
     }
 
-    const handleRecoverViaQR = (value:boolean) => {
-        setActive(value);
+    const handleRecoverViaQR = async(value:boolean) => {
+        let permissionGranted = value;
+        if(value){
+            permissionGranted = await checkCameraPermission();    
+        }
+        setActive(permissionGranted);
     }
 
 
@@ -56,7 +61,7 @@ const RecoverWallet = () => {
                     <View style={styles.container}>
                         <RecoverMenus recoverViaSeed={handleRecoverViaSeed} recoverViaQR={handleRecoverViaQR} />
                         <WarnContainer text={RECOVER_INFO_MESSAGE}/>
-                        <QRCodeScannerModal visible={active} handleOpen={handleRecoverViaQR} ReaderHandler={recoverWalletViaQR} />
+                        {active && <QRCodeScannerModal visible={active} handleOpen={handleRecoverViaQR} ReaderHandler={recoverWalletViaQR} />}
                     </View>
                 </ViewContainer>
         </Container>

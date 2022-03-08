@@ -139,7 +139,7 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
                         <View style={[styles.item]}>
                             <MonikerSection validator={value} />
                             <DataSection title="Delegated" data={convertAmount(value.amount) + " FCT"} />
-                            <DataSection title="Reward" data={convertAmount(value.reward) + " FCT"} />
+                            <DataSection title="Reward" data={convertAmount(value.reward, true, 6) + " FCT"} />
                             <View style={{paddingBottom: 22}} />
                         </View>
                     </TouchableOpacity>
