@@ -1,6 +1,8 @@
+import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
 import { Alert, Platform } from "react-native";
 import ReactNativeBiometrics from "react-native-biometrics";
-import { openSettings } from "react-native-permissions";
+import { openSettings, PERMISSIONS } from "react-native-permissions";
+import { isPermissionGranted } from "./permission";
 
 export const confirmViaBioAuth = async() => {
     let authResult:boolean = false;
@@ -13,9 +15,7 @@ export const confirmViaBioAuth = async() => {
     })
     .catch((error) => {
         console.log(error);
-        const errorMessage = Platform.OS === "android"? String(error).split("Error: ") : String(error).split("\"");
-
-        Alert.alert("Biomerics error", errorMessage[1] + "\nPlease go to the settings and activate the function.", [
+        Alert.alert(BIOMETRICS_PERMISSION_ALERT.title, BIOMETRICS_PERMISSION_ALERT.desc, [
             {
                 text: "Cancel",
                 style: "cancel"

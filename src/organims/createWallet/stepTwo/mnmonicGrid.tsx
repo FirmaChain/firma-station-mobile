@@ -21,7 +21,7 @@ const MnemonicGrid: React.FC<{
         Toast.show({
             type: 'info',
             text1: msg,
-          });
+        });
     }
 
     return (

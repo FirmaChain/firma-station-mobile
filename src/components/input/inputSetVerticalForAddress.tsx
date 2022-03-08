@@ -1,3 +1,4 @@
+import { checkCameraPermission } from "@/util/permission";
 import Clipboard from "@react-native-clipboard/clipboard";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -18,8 +19,12 @@ const InputSetVerticalForAddress: React.FC<{
     const [focus, setFocus] = useState(false);
     const [openModal, setOpenModal] = useState(false);
 
-    const handleModal = (value:boolean) => {
-        setOpenModal(value);
+    const handleModal = async(value:boolean) => {
+        let permissionGranted = value;
+        if(value){
+            permissionGranted = await checkCameraPermission();    
+        }
+        setOpenModal(permissionGranted);
     }
 
     const handleInputChange = (value: string) => {
@@ -59,7 +64,7 @@ const InputSetVerticalForAddress: React.FC<{
                 onBlur={()=>setFocus(false)}
                 onChangeText={text => handleInputChange(text)}/>
 
-            <QRCodeScannerModal isAddress={true} visible={openModal} handleOpen={handleModal} ReaderHandler={handleInputChange} />
+            {openModal && <QRCodeScannerModal isAddress={true} visible={openModal} handleOpen={handleModal} ReaderHandler={handleInputChange} />}
         </View>
     )
 }
