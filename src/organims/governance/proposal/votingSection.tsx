@@ -1,12 +1,12 @@
-import { BoxColor, Lato, TextColor, TextDarkGrayColor } from "@/constants/theme";
-import moment from "moment";
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { convertNumber, convertPercentage, convertTime } from "../../../util/common";
+import { ProposalVoteState } from "@/hooks/governance/hooks";
+import { BoxColor, Lato, TextColor, TextDarkGrayColor } from "@/constants/theme";
+import { convertPercentage } from "@/util/common";
 import VotingPercentage from "./votingPercentage";
 
 interface Props {
-    data: any;
+    data: ProposalVoteState;
 }
 
 const VotingSection = ({data}:Props) => {
@@ -19,7 +19,7 @@ const VotingSection = ({data}:Props) => {
                 ],
                 voteInfo : {
                     quorum: convertPercentage(data.quorum),
-                    totalVotingPower: data.stakingPool.totalVotingPower,
+                    totalVotingPower: data.totalVotingPower,
                     proposalTally: data.proposalTally,
                 }
             }
@@ -90,22 +90,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: TextColor,
     },
-    // boxInfo: {
-    //     alignItems: "flex-start", 
-    //     paddingHorizontal: 20,
-    //     paddingVertical: 10,
-    // },
-    // infoTitle: {
-    //     width: 100,
-    //     color: "#aaa",
-    //     fontSize: 14,
-    //     fontWeight: "bold",
-    //     marginRight: 15,
-    // }, 
-    // infoDesc: {
-    //     fontSize: 14,
-    //     flex: 1,
-    // }
 })
 
 export default VotingSection;

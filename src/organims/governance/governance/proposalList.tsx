@@ -1,11 +1,12 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from "../../constants/common";
-import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
-import { convertNumber, convertTime } from "../../util/common";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from "@/constants/common";
+import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
+import { convertNumber, convertTime } from "@/util/common";
+import { ProposalItemState } from "@/hooks/governance/hooks";
 
 interface Props {
-    proposals: Array<any>;
+    proposals: Array<ProposalItemState>;
     handleDetail: Function;
 }
 

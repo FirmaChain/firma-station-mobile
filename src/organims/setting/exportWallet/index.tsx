@@ -91,7 +91,7 @@ const ExportWallet = ({type}:Props) => {
         }
     }, [mnemonic])
 
-    const handleGoBack = () => {
+    const handleBack = () => {
         setIsModalOpen(false);
         navigation.goBack();
     }
@@ -99,7 +99,7 @@ const ExportWallet = ({type}:Props) => {
     return (
          <Container
             title={titleText}
-            backEvent={handleGoBack}>
+            backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>
                         <InputBox resetValues={!isModalOpen} handlePassword={handlePassword} />
@@ -112,7 +112,7 @@ const ExportWallet = ({type}:Props) => {
                             alertOpen={status === 0 && isModalOpen}
                             exportOpen={status === 1 && isModalOpen}
                             handleOpen={handleModalOpen}
-                            handleGoBack={handleGoBack}/>
+                            handleBack={handleBack}/>
                     </View>
                 </ViewContainer>
         </Container>

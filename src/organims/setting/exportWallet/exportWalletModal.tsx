@@ -11,10 +11,10 @@ interface Props {
     alertOpen: boolean;
     exportOpen: boolean;
     handleOpen: (open:boolean) => void;
-    handleGoBack: () => void;
+    handleBack: () => void;
 }
 
-const ExportWalletModal = ({title, value, alertOpen, exportOpen, handleOpen, handleGoBack}:Props) => {
+const ExportWalletModal = ({title, value, alertOpen, exportOpen, handleOpen, handleBack}:Props) => {
     return (
         <View>
             <AlertModal
@@ -28,7 +28,7 @@ const ExportWalletModal = ({title, value, alertOpen, exportOpen, handleOpen, han
             <CustomModal
                 visible={exportOpen}
                 handleOpen={handleOpen}>
-                <ExportModal type={title} value={value} onPressEvent={handleGoBack}/>
+                <ExportModal type={title} value={value} onPressEvent={handleBack}/>
             </CustomModal>
         </View>
     )

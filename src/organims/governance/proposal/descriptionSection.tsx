@@ -1,29 +1,19 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BoxColor, DividerColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
-import { PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from "../../../constants/common";
-import { convertAmount, convertTime } from "../../../util/common";
+import { PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from "@/constants/common";
+import { convertAmount, convertTime } from "@/util/common";
+import { ProposalDescriptionState } from "@/hooks/governance/hooks";
 
 interface Props {
-    data: {
-        status: string;
-        type: string;
-        submitTime: string;
-        description: string;
-        classified: any;
-        votingStartTime: string;
-        votingEndTime: string;
-        depositPeriod: string;
-        minDeposit: number;
-        proposalDeposit: Array<any>;
-    }
+    data: ProposalDescriptionState;
 }
 
 const DescriptionSection = ({data}:Props) => {
 
     const InfoSection = useMemo(() => {
         if(data) return [
-            {title: "Proposal Type", data: PROPOSAL_MESSAGE_TYPE[data.type]},
+            {title: "Proposal Type", data: PROPOSAL_MESSAGE_TYPE[data.proposalType]},
             {title: "Submit Time", data: convertTime(data.submitTime, true)},
             {title: "Voting Start Time", data: data.status === PROPOSAL_STATUS_DEPOSIT_PERIOD? null : convertTime(data.votingStartTime, true)},
             {title: "Voting End Time", data: data.status === PROPOSAL_STATUS_DEPOSIT_PERIOD? null : convertTime(data.votingEndTime, true)},

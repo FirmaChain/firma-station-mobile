@@ -44,7 +44,7 @@ const ChangePassword = () => {
 
     const handleModalOpen = (open:boolean) => {
         setIsModalOpen(open);
-        if(status === 1) handleGoBack();
+        if(status === 1) handleBack();
     }
 
     const changeNewPassword = async() => {
@@ -104,14 +104,14 @@ const ChangePassword = () => {
         setBioAuth(wallet.name, newPassword);
     }
 
-    const handleGoBack = () => {
+    const handleBack = () => {
         navigation.goBack();
     }
 
     return (
         <Container
             title="Change password"
-            backEvent={handleGoBack}>
+            backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>
                         <InputBox 
