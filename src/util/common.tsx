@@ -29,6 +29,7 @@ export const convertToFctNumber = (value: string | number) => {
 }
 
 export const makeDecimalPoint = (value: string | number, point: number = 2) => {
+    if(value === undefined) return 0;
     const val = convertNumber(value).toString();
     const pointPos = val.indexOf(".");
 
@@ -36,7 +37,7 @@ export const makeDecimalPoint = (value: string | number, point: number = 2) => {
 
     const splitValue = val.split(".");
     const belowDecimal = splitValue[1].substring(0, point);
-    return Number(`${splitValue[0]}.${splitValue[1]}`).toFixed(point);
+    return Number(`${splitValue[0]}.${belowDecimal}`).toFixed(point);
 }
 
 export const isValid = (data:any) => {
