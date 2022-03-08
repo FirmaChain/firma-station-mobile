@@ -20,6 +20,10 @@ const StepRecover = () => {
     const [activeRecover, setActiveRecover] = useState(false);
     const [mnemonic, setMnemonic] = useState('');
 
+    const handleMnemonic = (mnemonic:string) => {
+        setMnemonic(mnemonic);
+    }
+
     const handleRecoverViaSeed = async() => {
         CommonActions.handleLoadingProgress(true);
         const wallet = await recoverFromMnemonic(mnemonic);
@@ -43,7 +47,7 @@ const StepRecover = () => {
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>
-                        <InputBox handleMnemonic={setMnemonic} activateRecover={setActiveRecover} />
+                        <InputBox handleMnemonic={handleMnemonic} activateRecover={setActiveRecover} />
                         <View style={{flex: 1, justifyContent: "flex-end"}}>
                             <Button
                                 title="Recover"

@@ -9,12 +9,13 @@ interface Props {
     activateRecover: (active:boolean) => void;
 }
 
-const InputBox = ({activateRecover}:Props) => {
+const InputBox = ({handleMnemonic, activateRecover}:Props) => {
     const [focus, setFocus] = useState(false);
     const [mnemonic, setMnemonic] = useState('');
 
-    const handleMnemonic = (value: string) => {
+    const handleMnemonicInput = (value: string) => {
         setMnemonic(value);
+        handleMnemonic(value);
     }
 
     const pasteFromClipboard = async() => {
@@ -23,7 +24,7 @@ const InputBox = ({activateRecover}:Props) => {
     }
 
     useEffect(() => {
-        handleMnemonic(mnemonic);
+        handleMnemonicInput(mnemonic);
         const mnemonicArr = mnemonic.split(' ');
         if(mnemonicArr.filter(item => item !== "").length !== 24) activateRecover(false);
         if(mnemonicArr.filter(item => item !== "").length === 24){
@@ -44,7 +45,7 @@ const InputBox = ({activateRecover}:Props) => {
                     value={mnemonic}
                     selectionColor={WhiteColor}
                     keyboardType="url"
-                    onChangeText={text => handleMnemonic(text)} 
+                    onChangeText={text => handleMnemonicInput(text)} 
                     onFocus={()=>setFocus(true)}
                     onBlur={()=>setFocus(false)}/>
             </View>
