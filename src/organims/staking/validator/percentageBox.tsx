@@ -1,12 +1,11 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextGrayColor } from "../../../constants/theme";
-import { convertAmount } from "../../../util/common";
+import { ValidatorData } from "@/hooks/staking/hooks";
+import { convertAmount } from "@/util/common";
+import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextGrayColor } from "@/constants/theme";
 
 interface Props {
-    APR: string;
-    APY: string;
-    dataArr: Array<any>;
+    data: ValidatorData;
 }
 
 const cols = 2;
@@ -14,27 +13,27 @@ const marginHorizontal = 0;
 const marginVertical = 4;
 const width = (Dimensions.get('window').width / cols) - (marginHorizontal * (cols + 1));
 
-const PercentageBox = ({APR, APY, dataArr}:Props) => {
+const PercentageBox = ({data}:Props) => {
 
     return (
         <View style={[styles.container]}>
             <View style={[styles.box, {paddingHorizontal: 20, paddingVertical: 18, marginBottom: 16}]}>
                 <View style={[styles.wrapperH, {flex: 1, justifyContent: "space-around"}]}>
                     <Text style={styles.title}>APR</Text>
-                    <Text style={styles.data}>{APR} %</Text>
+                    <Text style={styles.data}>{data.APR} %</Text>
                 </View>
                 <View style={styles.divider} />
                 <View style={[styles.wrapperH, {flex: 1, justifyContent: "space-around"}]}>
                     <Text style={styles.title}>APY</Text>
-                    <Text style={styles.data}>{APY} %</Text>
+                    <Text style={styles.data}>{data.APY} %</Text>
                 </View>
             </View>
 
             <View style={[styles.box, {paddingVertical: 24}]}>
                 <View style={styles.wrapBox}>
-                    {dataArr.map((grid, index) => {
+                    {data.state.map((grid, index) => {
                         return (
-                        <View key={index} style={[styles.wrapperH, index < dataArr.length - 1 && {paddingBottom: 34}]}>
+                        <View key={index} style={[styles.wrapperH, index < data.state.length - 1 && {paddingBottom: 34}]}>
                             {grid.row.map((item:any, index:number) => {
                                 return (
                                 <View key={index} style={[styles.wrapperH, {flex: 1, alignItems: "center"}]}>

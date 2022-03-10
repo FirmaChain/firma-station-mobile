@@ -14,7 +14,7 @@ import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, Text
 interface Props {
     visible: boolean;
     isRefresh: boolean;
-    navigateValidator: Function;
+    navigateValidator: (address:string) => void;
 }
 
 const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
