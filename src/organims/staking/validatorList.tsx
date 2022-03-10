@@ -1,20 +1,24 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "../../constants/theme";
-import CustomModal from "../../components/modal/customModal";
-import ModalItems from "../../components/modal/modalItems";
+import { convertPercentage } from "@/util/common";
+import { useValidatorData } from "@/hooks/staking/hooks";
+import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
 import { DownArrow, SortASC, SortDESC } from "@/components/icon/icon";
+import CustomModal from "@/components/modal/customModal";
+import ModalItems from "@/components/modal/modalItems";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
-import { convertPercentage } from "@/util/common";
 
 interface Props {
     visible: boolean;
-    validators: Array<any>;
+    isRefresh: boolean;
     navigateValidator: Function;
 }
 
-const ValidatorList = ({visible, validators, navigateValidator}:Props) => {
+const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
+
+    const { validators, handleValidatorsPolling } = useValidatorData();
+
     const sortItems = ['Commision', 'Voting Power', 'Uptime'];
     const [selected, setSelected] = useState(0);
     const [sortWithDesc, setSortWithDesc] = useState(true);
@@ -23,11 +27,11 @@ const ValidatorList = ({visible, validators, navigateValidator}:Props) => {
     useMemo(() => {
         switch (selected) {
         case 0:
-            return validators.sort((a, b) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
+            return validators.sort((a:any, b:any) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
         case 1:
-            return validators.sort((a, b) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
+            return validators.sort((a:any, b:any) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
         case 2:
-            return validators.sort((a, b) => sortWithDesc?(b.condition - a.condition):(a.condition - b.condition));
+            return validators.sort((a:any, b:any) => sortWithDesc?(b.condition - a.condition):(a.condition - b.condition));
         }
     }, [selected, validators, sortWithDesc])
 
@@ -39,6 +43,16 @@ const ValidatorList = ({visible, validators, navigateValidator}:Props) => {
         setSelected(index);
         handleOpenModal(false);
     }
+
+    const refreshValidators = async() => {
+        await handleValidatorsPolling();
+    }
+
+    useEffect(() => {
+        if(isRefresh)
+            refreshValidators();
+    }, [isRefresh])
+    
     
     return (
         <>
@@ -63,7 +77,7 @@ const ValidatorList = ({visible, validators, navigateValidator}:Props) => {
     
                     </View>
                 </View>
-                {validators.map((vd, index) => {
+                {validators.map((vd:any, index:number) => {
                     return (
                         <TouchableOpacity key={index} onPress={() => navigateValidator(vd.validatorAddress)}>
                             <View style={styles.item}>

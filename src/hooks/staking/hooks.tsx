@@ -1,12 +1,33 @@
 import { useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
-import { getDelegations, getStaking } from "@/util/firma";
-import { useEffect, useState } from "react";
-import { convertNumber, convertToFctNumber } from "@/util/common";
+import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
+import { useEffect, useMemo, useState } from "react";
+import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
 import { BLOCKS_PER_YEAR } from "@/constants/common";
+import { useAppSelector } from "@/redux/hooks";
+import { StakingActions } from "@/redux/actions";
 
-export interface ValidatorsState {
-    totalVotingPower: number;
-    validators: Array<any>;
+export interface ValidatorState {
+    description: ValidatorDescription;
+    address: ValidatorAddress;
+    percentageData: ValidatorData;
+}
+
+export interface ValidatorDescription {
+    avatar: string;
+    moniker: string;
+    description: string;
+    website: string;
+}
+
+export interface ValidatorAddress {
+    operatorAddress: string;
+    accountAddress: string;
+}
+
+export interface ValidatorData {
+    APR: string;
+    APY: string;
+    state: Array<any>;
 }
 
 export interface StakeInfo {
@@ -18,6 +39,25 @@ export interface StakeInfo {
     reward: number;
 }
 
+export interface RedelegationInfo {
+    srcAddress: string;
+    srcMoniker: string;
+    srcAvatarURL: string;
+    dstAddress: string;
+    dstMoniker: string;
+    dstAvatarURL: string;
+    balance: number;
+    completionTime: string;
+}
+
+export interface UndelegationInfo {
+    validatorAddress: string;
+    moniker: string;
+    avatarURL: string;
+    balance: number;
+    completionTime: string;
+}
+
 export interface StakingState {
     available: number;
     delegated: number;
@@ -25,117 +65,125 @@ export interface StakingState {
     stakingReward: number;
 }
 
-export const useDelegationData = (address:string) => {
-    const [delegationState, setDelegationState] = useState<Array<StakeInfo>>([]);
-    const [delegationList, setDelegationList] = useState<Array<StakeInfo>>();
-    const [validatorsDescList, setValidatorsDescList] = useState<Array<any>>();
-    const [delegationPolling, setDelegationPolling] = useState(false);
+export const useDelegationData = () => {
+    const {wallet, staking} = useAppSelector(state => state);
+    const [delegationList, setDelegationList] = useState<Array<StakeInfo>>([]);
+    const [redelegationList, setRedelegationList] = useState<Array<RedelegationInfo>>([]);
+    const [undelegationList, setUndelegationList] = useState<Array<UndelegationInfo>>([]);
+    const [validatorsDescList, setValidatorsDescList] = useState<Array<any>>([]);
 
-    const {startPolling } = useValidatorsDescriptionQuery({
-        onCompleted:(data) => {
+    const {refetch, loading, data} = useValidatorsDescriptionQuery();
+
+    useEffect(() => {
+        if(loading === false) {
             setValidatorsDescList(data.validator);
         }
-    });
+    }, [loading, data])
 
-    const handleDelegationPolling = (polling:boolean) => {
-        if(polling){
-            handleDelegationState();
-            setDelegationPolling(true);
-        } else {
-            setDelegationPolling(false);
-        }
+    const handleTotalDelegationPolling = async() => {
+        await refetch();
+        await handleDelegationState();
+        await handleRedelegationState();
+        await handleUndelegationState();
     }
 
-    const handleDelegationState = () => {
-        startPolling(0);
-        getDelegations(address).then((res:Array<StakeInfo>) => {
-            if(res) {
-                setDelegationList(res);
-            }
-        })
-
-        setDelegation();
+    const handleDelegationState = async() => {
+        const result:Array<StakeInfo> = await getDelegations(wallet.address);
+        setDelegationList(result);
     }
 
-    const setDelegation = () => {
-        if(delegationList !== undefined && validatorsDescList !== undefined){
-            setDelegationState(useValidatorDescription(delegationList, validatorsDescList));
-        }
+    const handleRedelegationState = async() => {
+        const redelegationResult:Array<RedelegationInfo> = await getRedelegations(wallet.address);
+        setRedelegationList(redelegationResult);
     }
 
+    const handleUndelegationState = async() => {
+        const undelegateionResult:Array<UndelegationInfo> = await getUndelegations(wallet.address);
+        setUndelegationList(undelegateionResult);
+    }
 
     useEffect(() => {
-        let timer = setInterval(() => {
-            if(delegationPolling){
-                handleDelegationState();
-            }
-        }, 30000);
-        return () => {
-            clearInterval(timer);
+        if(staking.delegate){
+            setDelegationList(delegationList.map((vd:any) => vd.validatorAddress === staking.delegate.address?
+                {...vd, reward: staking.delegate.reward} : vd));
         }
-    })
+    }, [staking.delegate])
 
-    useEffect(() => {
-        setDelegation();
-    }, [delegationList, validatorsDescList])
+    const delegationState:Array<StakeInfo> = useMemo(() => {
+        return useValidatorDescription(delegationList, validatorsDescList);
+    }, [delegationList, validatorsDescList]);
+
+    const redelegationState:Array<RedelegationInfo> = useMemo(() => {
+        return useValidatorDescriptionForRedelegation(redelegationList, validatorsDescList);
+    }, [redelegationList, validatorsDescList]);
+
+    const undelegationState:Array<UndelegationInfo> = useMemo(() => {
+        return useValidatorDescription(undelegationList, validatorsDescList);
+    }, [undelegationList, validatorsDescList]);
+
+    const refetchValidatorDescList = async() => {
+        return await refetch();
+    }
 
     return {
         delegationState,
+        redelegationState,
+        undelegationState,
         handleDelegationState,
-        handleDelegationPolling,
+        handleRedelegationState,
+        handleUndelegationState,
+        handleTotalDelegationPolling,
+        refetchValidatorDescList,
     }
 
 }
 
-export const useStakingData = (address:string) => {
+export const useStakingData = () => {
+    const {wallet} = useAppSelector(state => state);
     const [stakingState, setStakingState] = useState<StakingState>({
         available: 0,
         delegated: 0,
         undelegate: 0,
         stakingReward: 0,
     });
-    const [getStakingComplete, setStakingComplete] = useState(false);
 
-    const getStakingState = () => {
-        getStaking(address).then((res:StakingState) => {
+    const getStakingState = async() => {
+        await getStaking(wallet.address).then((res:StakingState) => {
             if(res) {
                 setStakingState(res);
-                setStakingComplete(true);
+                StakingActions.updateStakingRewardState(res.stakingReward);
             }
         })
     }
 
-    const updateStakingState = (available: number, stakingReward: number) => {
+    const updateStakingState = async(stakingReward: number) => {
+        const balance = await getBalanceFromAdr(wallet.address);
         setStakingState((prevState) => ({
             ...prevState,
-            available,
+            available: convertNumber(balance),
             stakingReward,
         }))
     }
 
     useEffect(() => {
-        if(address === '' || address === undefined) return;
+        if(wallet.address === '' || wallet.address === undefined) return;
         getStakingState();
     }, []);
 
     return { 
         stakingState,
-        getStakingComplete,
         getStakingState,
         updateStakingState,
     }
 }
 
-export const useValidatorDescription = (delegations:Array<StakeInfo>, validators:Array<any>) => {
+export const useValidatorDescription = (delegations:Array<any>, validators:Array<any>) => {
     const result = delegations.map((value) => {
         const desc = validators.find(val => val.validatorInfo.operatorAddress === value.validatorAddress);
         
         const validatorDescription = organizeValidatorDescription(desc);
         return {
-            validatorAddress: value.validatorAddress,
-            delegatorAddress: value.delegatorAddress,
-            amount: value.amount,
-            reward: value.reward,
+            ...value,
             moniker: validatorDescription.validatorMoniker,
             avatarURL: validatorDescription.validatorAvatar,
         }
@@ -144,14 +192,34 @@ export const useValidatorDescription = (delegations:Array<StakeInfo>, validators
     return result;
 }
 
-export const useValidatorData = () => {
-    const [validatorsState, setValidatorsState] = useState<ValidatorsState>({
-        totalVotingPower: 0,
-        validators: [],
-    });
+export const useValidatorDescriptionForRedelegation = (redelegations:Array<RedelegationInfo>, validators:Array<any>) => {
+    const result = redelegations.map((value) => {
+        const src = validators.find(val => val.validatorInfo.operatorAddress === value.srcAddress);
+        const dst = validators.find(val => val.validatorInfo.operatorAddress === value.dstAddress);
 
-    const {startPolling } = useValidatorsQuery({
-        onCompleted:(data) => {
+        const srcDescription = organizeValidatorDescription(src);
+        const dstDescription = organizeValidatorDescription(dst);
+        return {
+            ...value,
+            srcAvatarURL: srcDescription.validatorAvatar,
+            srcMoniker: srcDescription.validatorMoniker,
+            dstAvatarURL: dstDescription.validatorAvatar,
+            dstMoniker: dstDescription.validatorMoniker,
+        }
+    })
+
+    return result;
+}
+
+export const useValidatorData = () => {
+    const stakingState = useAppSelector(state => state.staking);
+    const [validators, setValidators]:Array<any> = useState([]);
+    const [totalVotingPower, setTotalVotingPower] = useState(0);
+
+    const { refetch, loading, data } = useValidatorsQuery();
+
+    useEffect(() => {
+        if(loading === false) {
             const stakingData = organizeStakingData(data);
             const validatorsList = data.validator
             .filter((validator: any) => {
@@ -160,34 +228,43 @@ export const useValidatorData = () => {
             .map((validator: any) => {
                 return organizeValidatorData(validator, stakingData)
             });
-            
+
             const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
             const totalVotingPower = stakingData.totalVotingPower;
 
-            setValidatorsState((prevState) => ({
-                ...prevState,
-                totalVotingPower,
-                validators,
-            }));
+            setTotalVotingPower(totalVotingPower);
+            setValidators(validators);
         }
-    });
+    }, [loading, data]);
 
-    const handleValidatorsPolling = () => {
-        return startPolling(0);
+    useEffect(() => {
+        if(stakingState.validator){
+            setValidators(validators.map((vd:any) => vd.validatorAddress === stakingState.validator.validatorAddress?
+                {...stakingState.validator} : vd
+            ));
+        }
+    }, [stakingState.validator]);
+    
+    const handleValidatorsPolling = async() => {
+        return await refetch();
     }
 
     return {
-        validatorsState,
+        validators,
+        totalVotingPower,
         handleValidatorsPolling,
     };
 }
 
 export const useValidatorDataFromAddress = (address:string) => {
-    const [validatorState, setValidatorState]:Array<any> = useState();
+    const [validatorState, setValidatorState] = useState<ValidatorState>();
 
-    const {startPolling } = useValidatorFromAddressQuery({
+    const {refetch, loading, data} = useValidatorFromAddressQuery({
         address: address.toString(),
-        onCompleted:(data) => {
+    });
+
+    useEffect(() => {
+        if(loading === false){
             const stakingData = organizeStakingData(data);
             const validator = data.validator
             .filter((data: any) => {
@@ -196,14 +273,53 @@ export const useValidatorDataFromAddress = (address:string) => {
             .map((data: any) => {
                 return organizeValidatorData(data, stakingData)
             });
-            setValidatorState(validator[0]);
+
+            const description:ValidatorDescription = {
+                avatar: validator[0].validatorAvatar,
+                moniker: validator[0].validatorMoniker,
+                description: validator[0].validatorDetail,
+                website: validator[0].validatorWebsite,
+            }
+
+            const address:ValidatorAddress = {
+                operatorAddress: validator[0].validatorAddress,
+                accountAddress: validator[0].selfDelegateAddress,
+            }
+
+            const percentageData:ValidatorData = {
+                APR: convertPercentage(validator[0].APR),
+                APY: convertPercentage(validator[0].APY),
+                state: [
+                    {row: [{
+                        title: "Voting Power",
+                        data: validator[0].votingPowerPercent,
+                        amount: validator[0].votingPower,
+                    },{
+                        title: "Self-Delegation",
+                        data: validator[0].selfPercent,
+                        amount: convertToFctNumber(validator[0].self),
+                    }]},
+                    {row: [{
+                        title: "Commission",
+                        data: validator[0].commission,
+                    },{
+                        title: "Uptime",
+                        data: validator[0].condition,
+                    }]}
+                ]
+            }
+
+            setValidatorState({
+                description,
+                address,
+                percentageData
+            });
         }
-    });
-
-    const handleValidatorPolling = () => {
-        return startPolling(0);
+    }, [loading, data])
+    
+    const handleValidatorPolling = async() => {
+        return await refetch();
     }
-
 
     return {
         validatorState,
@@ -292,8 +408,10 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
         return { address: value.delegatorAddress, amount: convertNumber(value.amount.amount) };
     });
     const missedBlockCounter = validator.validatorSigningInfos[0].missedBlocksCounter;
-    const commission = convertNumber(validator.validatorCommissions[0].commission * 100);
-    const condition = (1 - missedBlockCounter / stakingData.signed_blocks_window) * 100;
+    const commission = makeDecimalPoint(validator.validatorCommissions[0].commission * 100);
+    const conditionOrigin = ((1 - missedBlockCounter / stakingData.signed_blocks_window) * 100)
+    const condition = makeDecimalPoint(conditionOrigin, 2);
+
     const status = validator.validatorStatuses[0].status;
     const jailed = validator.validatorStatuses[0].jailed;
 

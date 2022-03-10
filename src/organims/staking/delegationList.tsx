@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { CommonActions, StakingActions } from "@/redux/actions";
+import { useDelegationData } from "@/hooks/staking/hooks";
+import { convertAmount, convertTime, convertToFctNumber } from "@/util/common";
+import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextGrayColor } from "@/constants/theme";
+import { DownArrow } from "@/components/icon/icon";
+import CustomModal from "@/components/modal/customModal";
+import ModalItems from "@/components/modal/modalItems";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
 import MonikerSectionForRedelegate from "./parts/list/monikerSectionForRedelegate";
-import { useDelegationData } from "@/hooks/staking/hooks";
-import { convertAmount, convertTime, convertToFctNumber } from "@/util/common";
-import CustomModal from "@/components/modal/customModal";
-import ModalItems from "@/components/modal/modalItems";
-import { DownArrow } from "@/components/icon/icon";
-import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextGrayColor } from "@/constants/theme";
 
 interface Props {
     visible: boolean;

@@ -1,3 +1,4 @@
+import { ValidatorState } from "@/hooks/staking/hooks";
 import { Action, UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from "../types";
 
 export interface DelegateUpdateState {
@@ -7,7 +8,7 @@ export interface DelegateUpdateState {
 
 export interface StakingReduceState {
     delegate: DelegateUpdateState;
-    validator: Array<any>;
+    validator: ValidatorState;
     stakingReward: number;
 }
 

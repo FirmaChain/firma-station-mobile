@@ -6,14 +6,11 @@ import ValidatorList from "../validatorList";
 
 interface Props {
     isRefresh: boolean;
-    validators: Array<any>;
     navigateValidator: (address:string) => void; 
 }
 
-const StakingLists = ({isRefresh, validators, navigateValidator}:Props) => {
-
+const StakingLists = ({isRefresh, navigateValidator}:Props) => {
     const [tab, setTab] = useState(0);
-
     return (
         <View style={styles.listContainer}>
             <View style={styles.tabBox}>
@@ -35,7 +32,7 @@ const StakingLists = ({isRefresh, validators, navigateValidator}:Props) => {
                 navigateValidator={navigateValidator}/>
             <ValidatorList 
                 visible={tab === 1}
-                validators={validators} 
+                isRefresh={isRefresh}
                 navigateValidator={navigateValidator}/>
         </View>
     )

@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
-import { useStakingData, useValidatorData } from "@/hooks/staking/hooks";
+import { useStakingData } from "@/hooks/staking/hooks";
 import { useHistoryData } from "@/hooks/wallet/hooks";
 import { BgColor } from "@/constants/theme";
 import { wait } from "@/util/common";
@@ -25,7 +25,6 @@ const Staking = () => {
     const { wallet, staking } = useAppSelector(state => state);
     const isFocused = useIsFocused();
 
-    const { validators, handleValidatorsPolling } = useValidatorData();
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
     const { recentHistory, currentHistoryPolling, refetchCurrentHistory } = useHistoryData();
 
@@ -34,10 +33,6 @@ const Staking = () => {
 
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
-
-    const validatorList = useMemo(() => {
-        return validators;
-    }, [validators]);
 
     const currentHistoryRefetch = async() => {
         if(refetchCurrentHistory)
@@ -54,9 +49,6 @@ const Staking = () => {
     const refreshStates = async() => {
         setIsRefresh(true);
         CommonActions.handleLoadingProgress(true);
-        if(validatorList.length > 0){
-            await handleValidatorsPolling();
-        }
         await getStakingState();
         wait(1500).then(() => {
             CommonActions.handleLoadingProgress(false);
@@ -107,7 +99,7 @@ const Staking = () => {
 
         if(isFocused)
             getGasFromAllDelegations();
-    }, [stakingState, validators]);
+    }, [stakingState]);
 
     useEffect(() => {
         if(recentHistory !== undefined){
@@ -133,7 +125,7 @@ const Staking = () => {
                     <RewardBox gas={withdrawAllGas} reward={staking.stakingReward} transactionHandler={handleWithdrawAll}/>
                     <BalanceBox stakingValues={stakingState}/>
                 </View>
-                <StakingLists isRefresh={isRefresh} validators={validatorList} navigateValidator={moveToValidator} />
+                <StakingLists isRefresh={isRefresh} navigateValidator={moveToValidator} />
                 <AlertModal
                     visible={isAlertModalOpen}
                     handleOpen={handleModalOpen}
