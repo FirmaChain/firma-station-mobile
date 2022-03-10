@@ -21,14 +21,14 @@ const History = () => {
     const [pagination, setPagination] = useState(10);
 
     const onScrollEnd = (event:NativeSyntheticEvent<NativeScrollEvent>) => {
-        if(event.nativeEvent.targetContentOffset){
-            if(Platform.OS === 'ios'){
+        if(Platform.OS === 'ios'){
+            if(event.nativeEvent.targetContentOffset){
                 if(event.nativeEvent.contentOffset.y > event.nativeEvent.targetContentOffset.y) 
                 setPagination(pagination => pagination + 5);
-            } else {
-                if(event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
-                setPagination(pagination => pagination + 5);
             }
+        } else {
+            if(event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
+            setPagination(pagination => pagination + 5);
         }
     }
 
