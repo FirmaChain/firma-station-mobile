@@ -1,4 +1,4 @@
-import { convertToFctNumberForInput } from "@/util/common";
+import { convertToFctNumberForInput, handleDecimalPointLimit } from "@/util/common";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
@@ -28,8 +28,10 @@ const InputSetVerticalForAmount: React.FC<{
     const [maxAmount, setMaxAmount] = useState(false);
 
     const handleInputChange = (value: string) => {
-        setVal(value);
-        onChangeEvent && onChangeEvent(Number(value));
+        if(handleDecimalPointLimit(value)){
+            setVal(value);
+            onChangeEvent && onChangeEvent(Number(value));
+        }
     }
 
     const handleActiveMaxAmount = (value: boolean) => {

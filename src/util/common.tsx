@@ -1,3 +1,4 @@
+import { KeyboardEvent } from "react";
 import moment from "moment";
 
 export const wait = (timeout:number) => {
@@ -38,6 +39,14 @@ export const makeDecimalPoint = (value: string | number, point: number = 2) => {
     const splitValue = val.split(".");
     const belowDecimal = splitValue[1].substring(0, point);
     return Number(`${splitValue[0]}.${belowDecimal}`).toFixed(point);
+}
+
+export const handleDecimalPointLimit = (value: number | string) => {
+    const belowDecimal = value.toString().split(".")[1];
+    if(belowDecimal && belowDecimal.length > 6){
+        return false;
+    }
+    return true;
 }
 
 export const isValid = (data:any) => {
