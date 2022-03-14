@@ -13,6 +13,8 @@ import Disconnect from "./disconnect";
 import { removeChain } from "@/util/secureKeyChain";
 import { getUniqueId } from "react-native-device-info";
 import Delete from "./delete";
+import TextMenuItem from "./textMenuItem";
+import { VERSION } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -56,13 +58,18 @@ const Setting = () => {
             title="Setting"
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <ScrollView style={{borderTopWidth: 1, borderTopColor: BgColor}}>
+                <ScrollView 
+                    keyboardShouldPersistTaps={"handled"}
+                    style={{borderTopWidth: 1, borderTopColor: BgColor}}>
                     <BioAuthRadio wallet={wallet}/>
                     {settingList.map((item, index) => {
                         return (
                             <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />
                         )
                     })}
+                    <View style={styles.bottomButtonsBox}>
+                        <TextMenuItem title="Version" content={"v" + VERSION} />
+                    </View>
                     <View style={styles.bottomButtonsBox}>
                         <Disconnect handleDisconnect={disconnectWallet} />
                         <Delete wallet={wallet} handleDisconnect={disconnectWallet} />

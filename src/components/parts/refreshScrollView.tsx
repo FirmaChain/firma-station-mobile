@@ -34,6 +34,7 @@ const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparen
     return (
         <ScrollView
             ref={scrollRef}
+            keyboardShouldPersistTaps="handled"
             onScrollEndDrag={(event:NativeSyntheticEvent<NativeScrollEvent>) => scrollEndFunc && scrollEndFunc(event)}
             refreshControl={
                 <RefreshControl 

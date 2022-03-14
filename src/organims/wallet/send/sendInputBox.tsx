@@ -1,9 +1,9 @@
-import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAddress";
-import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
-import { DisableColor, Lato, PointColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import InputSetVertical from "../../../components/input/inputSetVertical";
+import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAddress";
+import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
+import InputSetVertical from "@/components/input/inputSetVertical";
+import { DisableColor, Lato, PointColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     handleSendInfo: (type:string, value:string|number) => void;

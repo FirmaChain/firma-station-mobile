@@ -116,9 +116,17 @@ const Send = () => {
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
-                    <ScrollView>
+                    <ScrollView
+                        keyboardShouldPersistTaps={"handled"}>
                         <WalletInfo available={balance} />
                         <SendInputBox handleSendInfo={handleSendInfo} available={balance} reset={resetInputValues}/>
+                        <TransactionConfirmModal
+                                transactionHandler={handleTransaction} 
+                                title={"Send"} 
+                                fee={getFeesFromGas(gas)}
+                                amount={sendInfoState.amount} 
+                                open={openTransactionModal} 
+                                setOpenModal={handleTransactionModal} />
                     </ScrollView>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
@@ -126,14 +134,6 @@ const Send = () => {
                             active={sendInfoState.address !== '' && convertNumber(sendInfoState.amount) > 0}
                             onPressEvent={handleSend}/>
                     </View>
-
-                    <TransactionConfirmModal
-                            transactionHandler={handleTransaction} 
-                            title={"Send"} 
-                            fee={getFeesFromGas(gas)}
-                            amount={sendInfoState.amount} 
-                            open={openTransactionModal} 
-                            setOpenModal={handleTransactionModal} />
 
                     <AlertModal
                             visible={openAlertModal}
@@ -151,7 +151,6 @@ const Send = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent:"space-between",
         paddingHorizontal: 20,
     },
 })

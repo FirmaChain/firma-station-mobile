@@ -139,7 +139,7 @@ const Transaction = ({state}:Props) => {
                 {transactionResult.result !== ""?
                 <TransactionResult result={transactionResult} handleBack={handleBack}/> 
                 :
-                <ProgressTransaction/>
+                <ProgressTransaction />
                 }
         </ViewContainer>
     )

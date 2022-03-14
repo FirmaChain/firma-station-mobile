@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getUniqueId } from "react-native-device-info";
-import { USE_BIO_AUTH } from "@/constants/common";
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { removeChain, setChain } from "@/util/secureKeyChain";
 import { getUseBioAuth, getWalletWithAutoLogin, setPasswordViaBioAuth } from "@/util/wallet";
 import BioAuthOnModal from "../modal/bioAuthOnModal";
+import { USE_BIO_AUTH } from "@/../config";
 import Toast from "react-native-toast-message";
 
 interface Props {

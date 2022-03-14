@@ -28,10 +28,9 @@ const InputSetVerticalForAmount: React.FC<{
     const [maxAmount, setMaxAmount] = useState(false);
 
     const handleInputChange = (value: string) => {
-        if(handleDecimalPointLimit(value)){
-            setVal(value);
-            onChangeEvent && onChangeEvent(Number(value));
-        }
+        const result = handleDecimalPointLimit(value);
+        setVal(result);
+        onChangeEvent && onChangeEvent(Number(result));
     }
 
     const handleActiveMaxAmount = (value: boolean) => {

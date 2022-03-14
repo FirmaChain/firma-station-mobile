@@ -1,5 +1,5 @@
 import React from "react";
-import { Keyboard, Platform, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 interface Props {
     bgColor?: string;

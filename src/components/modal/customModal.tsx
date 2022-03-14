@@ -1,5 +1,5 @@
 import React from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
 import { BgColor } from "@/constants/theme";
 
 interface Props {
@@ -25,9 +25,9 @@ const CustomModal = ({visible, handleOpen, children}:Props) => {
                         behavior={Platform.select({android: undefined, ios: 'padding'})} 
                         style={{flex: 1}}>
                             <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
-                            <View style={styles.modalBox}>
+                            <Pressable style={styles.modalBox} onPress={()=>Keyboard.dismiss()}>
                                 {children} 
-                            </View>
+                            </Pressable>
                     </KeyboardAvoidingView>
             </Modal>
         </View>
