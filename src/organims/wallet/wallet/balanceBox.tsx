@@ -8,9 +8,9 @@ import { convertAmount,
         resizeFontSize } from "@/util/common";
 import { ForwardArrow } from "@/components/icon/icon";
 import SmallButton from "@/components/button/smallButton";
-import { COINGECKO } from "@/constants/common";
 import { FIRMA_LOGO } from "@/constants/images";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
+import { COINGECKO } from "@/../config";
 
 interface Props {
     stakingValues: StakingState;

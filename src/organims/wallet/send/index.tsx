@@ -7,13 +7,15 @@ import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import { BgColor } from "@/constants/theme";
-import { FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from "@/constants/common";
+import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from "@/constants/common";
 import { addressCheck, getEstimateGasSend, getFeesFromGas } from "@/util/firma";
+import { convertNumber } from "@/util/common";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import AlertModal from "@/components/modal/alertModal";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import SendInputBox from "./sendInputBox";
 import WalletInfo from "./walletInfo";
 
@@ -121,7 +123,7 @@ const Send = () => {
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
                             title="Send"
-                            active={sendInfoState.address !== '' && sendInfoState.amount > 0}
+                            active={sendInfoState.address !== '' && convertNumber(sendInfoState.amount) > 0}
                             onPressEvent={handleSend}/>
                     </View>
 

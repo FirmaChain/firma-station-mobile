@@ -1,7 +1,7 @@
-import { FIRMACHAIN_CONFIG, FIRMACHAIN_DEFAULT_CONFIG } from "@/constants/common";
-import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
 import { FirmaMobileSDK, FirmaUtil } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
+import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
+import { FIRMACHAIN_CONFIG, FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import { convertNumber, convertToFctNumber } from "./common";
 import { getDecryptPassword, getWallet } from "./wallet";
 

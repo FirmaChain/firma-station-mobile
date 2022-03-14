@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, Lato, TextColor } from "@/constants/theme";
-import DeleteWalletModal from "../modal/deleteWalletModal";
 import { removeChain, setChain } from "@/util/secureKeyChain";
 import { getWalletList } from "@/util/wallet";
-import { WALLET_LIST } from "@/constants/common";
+import { WALLET_LIST } from "@/../config";
+import DeleteWalletModal from "../modal/deleteWalletModal";
 
 interface Props {
     wallet: any;

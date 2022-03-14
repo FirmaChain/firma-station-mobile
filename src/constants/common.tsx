@@ -2,16 +2,9 @@ export interface KeyValue {
     [key: string]: any;
 }
 
-export const WALLET_LIST = "FIRMA_WALLET_LIST_1";
-export const USE_BIO_AUTH = "USE_BIO_AUTH";
-
-export const CONTEXT_ACTIONS_TYPE: KeyValue = {
-    LOADING: "LOADING_PROGRESS",
-    WALLET: "WALLET_INFO",
-}
-
 export const WELCOME_DESCRIPTION = "Use seed phrases to create\nnew wallets or restore existing wallets.";
 
+export const MNEMONIC_WARN_MESSAGE = "If you lose your seed phrase it's gone forever. Station doesn't store any data.";
 export const RECOVER_INFO_MESSAGE = "Generate QR code from setting menu of\nFirma Station desktop or extionsion";
 
 export const PLACEHOLDER_FOR_WALLET_NAME = "Enter 5-20 alphanumeric characters";
@@ -26,6 +19,36 @@ export const PASSWORD_CHANGE_SUCCESS = "Successfully changed your password.";
 export const PASSWORD_CHANGE_FAIL = "Please check your current password.";
 
 export const TRANSACTION_PROCESS_TEXT = "This transaction is in process.";
+export const TRANSACTION_PROCESS_DESCRIPTION_TEXT = "It can take up from 5 to 15 seconds for\na transaction to be completed.";
+export const TRANSACTION_PROCESS_NOTICE_TEXT = "Depending on the condition of the network,\nit can take up to more than 15 seconds.";
+
+export const WRONG_TARGET_ADDRESS_WARN_TEXT = "Invalid address. Please check again.";
+
+export const BIOMETRICS_PERMISSION_ALERT = {
+    title: "Biometrics not authrized",
+    desc: "Move to settings to enable Biometrics permissions?"
+}
+
+export const CAMERA_PERMISSION_ALERT = {
+    title: "Camera not authrized",
+    desc: "Move to settings to enable camera permissions?"
+}
+
+// wallet
+export const ADDRESS_QRCODE_MODAL_TEXT = {
+    title: 'Address',
+    desc: 'Description for QR code',
+    confirmTitle: 'Ok'
+}
+
+export const QRCODE_SCANNER_MODAL_TEXT = "Scan QR code";
+
+export const CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT = {
+    title: 'Use Bio Auth',
+    desc: 'Use your Biometric for faster, easeier access to your account',
+    confirmTitle: 'Enable',
+    cancelTitle: 'Later'
+}
 
 // setting
 export const SETTING_BIO_AUTH_MODAL_TEXT = {
@@ -39,6 +62,19 @@ export const SETTING_DELETE_WALLET_TEXT = {
     desc: 'Are you sure you want to delete this wallet?\nYour wallet cannot be recovered without seed phrase.',
     confirmTitle: 'Delete'
 }
+
+// delegate
+export const AUTO_ENTERED_AMOUNT_TEXT = "The entire amount is automatically entered except 0.1FCT, which will be used as a transaction fee.";
+export const UNDELEGATE_NOTICE_TEXT = [
+    "A 21 day period is required when undelegating your tokens. During the 21 day period, you will not receive any rewards. And you can't send and delegate that amount during 21 days.",
+    "A maximum of 7 undelegations are allowed per validator during the 21 day link period."
+]
+
+export const REDELEGATE_NOTICE_TEXT = [
+    "Redelegated supply will be linked for a period of 21 days.",
+    "A maximum of 7 redelegations are allowed. ",
+    "Until the 21 day link period passes, you cannot redelegate your redelgated supply to another validator.",
+]
 
 // transaction
 export const TRANSACTION_TYPE: KeyValue = {

@@ -2,9 +2,9 @@ import React from "react";
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { HistoryListState } from "@/hooks/wallet/hooks";
 import { ForwardArrow } from "@/components/icon/icon";
-import { EXPLORER } from "@/constants/common";
 import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import { convertTime } from "@/util/common";
+import { EXPLORER } from "@/../config";
 
 interface Props {
     historyList: HistoryListState;

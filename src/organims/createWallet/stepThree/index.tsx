@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { BgColor } from "@/constants/theme";
+import { setChain } from "@/util/secureKeyChain";
+import { setPasswordViaBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { USE_BIO_AUTH } from "@/constants/common";
-import { BgColor } from "@/constants/theme";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { confirmViaBioAuth } from "@/util/bioAuth";
-import { setChain } from "@/util/secureKeyChain";
-import { setPasswordViaBioAuth, setWalletWithBioAuth } from "@/util/wallet";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { USE_BIO_AUTH } from "@/../config";
 import MnemonicQuiz from "./mnemonicQuiz";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;

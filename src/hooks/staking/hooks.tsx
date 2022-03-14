@@ -1,10 +1,10 @@
-import { useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
-import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
 import { useEffect, useMemo, useState } from "react";
-import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
-import { BLOCKS_PER_YEAR } from "@/constants/common";
 import { useAppSelector } from "@/redux/hooks";
 import { StakingActions } from "@/redux/actions";
+import { useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
+import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
+import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
+import { BLOCKS_PER_YEAR } from "@/../config";
 
 export interface ValidatorState {
     description: ValidatorDescription;

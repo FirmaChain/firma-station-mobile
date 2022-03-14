@@ -1,19 +1,20 @@
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { CommonActions } from "@/redux/actions";
+import { useAppSelector } from "@/redux/hooks";
+import { getUniqueId } from "react-native-device-info";
+import { removeChain, setChain } from "@/util/secureKeyChain";
+import { getWalletList, getWalletWithAutoLogin, setBioAuth, setNewWallet } from "@/util/wallet";
+import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS } from "@/constants/common";
+import { BgColor } from "@/constants/theme";
 import Button from "@/components/button/button";
 import AlertModal from "@/components/modal/alertModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS, WALLET_LIST } from "@/constants/common";
-import { BgColor } from "@/constants/theme";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { CommonActions } from "@/redux/actions";
-import { useAppSelector } from "@/redux/hooks";
-import { removeChain, setChain } from "@/util/secureKeyChain";
-import { getWalletList, getWalletWithAutoLogin, setBioAuth, setNewWallet } from "@/util/wallet";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { getUniqueId } from "react-native-device-info";
+import { WALLET_LIST } from "@/../config";
 import InputBox from "./inputBox";
 
 

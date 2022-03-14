@@ -1,9 +1,9 @@
 import React from "react";
 import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { EXPLORER } from "@/constants/common";
 import { BgColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import { FailCircle, SuccessCircle } from "@/components/icon/icon";
 import Button from "@/components/button/button";
+import { EXPLORER } from "@/../config";
 import { ResultState } from ".";
 
 interface Props {

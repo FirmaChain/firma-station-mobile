@@ -10,10 +10,9 @@ import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
 import { setPasswordViaBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { setChain } from "@/util/secureKeyChain";
-import { confirmViaBioAuth } from "@/util/bioAuth";
 import { createNewWallet, Wallet } from "@/util/firma";
 import { BgColor } from "@/constants/theme";
-import { USE_BIO_AUTH } from "@/constants/common";
+import { USE_BIO_AUTH } from "@/../config";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 

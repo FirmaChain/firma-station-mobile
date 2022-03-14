@@ -7,13 +7,15 @@ import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { useDelegationData } from "@/hooks/staking/hooks";
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from "@/util/firma";
-import { FIRMACHAIN_DEFAULT_CONFIG, TRANSACTION_TYPE } from "@/constants/common";
+import { TRANSACTION_TYPE } from "@/constants/common";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import AlertModal from "@/components/modal/alertModal";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import InputBox from "./inputBox";
+import { convertNumber } from "@/util/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
@@ -70,7 +72,6 @@ const Delegate = ({type, operatorAddress}:Props) => {
     const handleNext = async() => {
         if(status > 0) return;
         CommonActions.handleLoadingProgress(true);
-        console.log(delegateState.operatorAddressDst);
         
         let gas = FIRMACHAIN_DEFAULT_CONFIG.defaultGas;
         try {
@@ -141,7 +142,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
                         <View style={[styles.buttonBox, {flex: 1, minHeight: 60}]}>
                             <Button
                                 title={"Next"}
-                                active={Number(delegateState.amount) > 0}
+                                active={convertNumber(delegateState.amount) > 0}
                                 onPressEvent={handleNext}/>
                         </View>
                     </View>

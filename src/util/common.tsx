@@ -41,12 +41,16 @@ export const makeDecimalPoint = (value: string | number, point: number = 2) => {
     return Number(`${splitValue[0]}.${belowDecimal}`).toFixed(point);
 }
 
-export const handleDecimalPointLimit = (value: number | string) => {
-    const belowDecimal = value.toString().split(".")[1];
-    if(belowDecimal && belowDecimal.length > 6){
-        return false;
+export const handleDecimalPointLimit = (value: string) => {
+    const val = value.toString().split(".");
+
+    if(val[1] === undefined) val[1] = "0";
+    if(val[1].length > 6){
+        val[1] = val[1].substring(0, 6);
+        const result = val[0] + "." + val[1];
+        return result;
     }
-    return true;
+    return value;
 }
 
 export const isValid = (data:any) => {

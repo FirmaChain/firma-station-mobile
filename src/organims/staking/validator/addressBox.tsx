@@ -1,7 +1,7 @@
-import { EXPLORER } from "@/constants/common";
 import React from "react";
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, Lato, TextAddressColor, TextColor } from "../../../constants/theme";
+import { BoxColor, Lato, TextAddressColor, TextColor } from "@/constants/theme";
+import { EXPLORER } from "@/../config";
 
 interface Props {
     title: string;
