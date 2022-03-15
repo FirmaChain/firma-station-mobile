@@ -27,7 +27,7 @@ const History = () => {
                 setPagination(pagination => pagination + 5);
             }
         } else {
-            if(event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
+            if((event.nativeEvent.contentOffset.y + 50) >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
             setPagination(pagination => pagination + 5);
         }
     }
