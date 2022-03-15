@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
 import { Lato, TextColor } from "../../constants/theme";
 import { ScreenWidth } from "../../util/getScreenSize";
 
@@ -9,9 +9,9 @@ interface Props {
 
 const TitleBar = ({title}:Props) => {
     return (
-        <View style={styles.container}>
+        <Pressable style={styles.container} onPress={()=>Keyboard.dismiss()}>
             <Text style={styles.title}>{title}</Text>
-        </View>
+        </Pressable>
     );
 };
 

@@ -5,13 +5,15 @@ import { BoxColor, Lato, TextWarnColor } from "@/constants/theme";
 
 interface Props {
     bgColor?: string;
+    paddingVertival?: number;
+    align?: string; 
     text: string;
     question?: boolean;
 }
 
-const WarnContainer = ({bgColor = BoxColor, text, question = false}:Props) => {
+const WarnContainer = ({bgColor = BoxColor, paddingVertival = 15, text, question = false}:Props) => {
     return (
-        <View style={[styles.wranContainer, {backgroundColor: bgColor}]}>
+        <View style={[styles.wranContainer, {backgroundColor: bgColor, paddingVertical: paddingVertival}]}>
             <View style={styles.box}>
                 <View style={{height: 20, justifyContent: "center"}}>
                     {question? 
@@ -20,7 +22,7 @@ const WarnContainer = ({bgColor = BoxColor, text, question = false}:Props) => {
                     <ExclamationCircle size={15} color={TextWarnColor} />
                     }
                 </View>
-                <Text style={styles.warnText}>{text}</Text>
+                <Text style={[styles.warnText]}>{text}</Text>
             </View>
         </View>
     )
@@ -32,7 +34,6 @@ const styles = StyleSheet.create({
         backgroundColor: BoxColor,
         borderRadius: 4,
         paddingHorizontal: 20,
-        paddingVertical: 15,
         overflow: 'hidden',
     },
     box: {

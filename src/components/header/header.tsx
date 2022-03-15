@@ -1,7 +1,7 @@
-import { BorderColor, BoxColor, BoxDarkColor, Lato, PointColor, TextColor } from "@/constants/theme";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { ScreenWidth } from "../../util/getScreenSize";
+import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
+import { BorderColor, BoxDarkColor, Lato, PointColor, TextColor } from "@/constants/theme";
+import { ScreenWidth } from "@/util/getScreenSize";
 import ArrowButton from "../button/arrowButton";
 
 const Header:  React.FC<{
@@ -11,7 +11,7 @@ const Header:  React.FC<{
     }> = ({step, bgColor = BoxDarkColor, onPressEvent}) => {
 
     return (
-        <View style={[styles.container, {backgroundColor: bgColor}]}>
+        <Pressable style={[styles.container, {backgroundColor: bgColor}]} onPress={()=>Keyboard.dismiss()}>
             <ArrowButton onPressEvent={onPressEvent}/>
             {step > 0 && 
             <View style={styles.stepBox}>
@@ -28,7 +28,7 @@ const Header:  React.FC<{
                 </View>
             </View>
             }
-        </View>
+        </Pressable>
     );
 };
 
