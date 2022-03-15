@@ -44,7 +44,7 @@ const ModalItemsForValidator = ({initVal, data, onPressEvent}:Props) => {
 const styles = StyleSheet.create({
     modalContainer: {
         width: "100%",
-        paddingVertical: 20,
+        maxHeight: 500,
     },
     modalContentBox: {
         width: "100%",

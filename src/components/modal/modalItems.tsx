@@ -6,14 +6,14 @@ import { Radio } from "../icon/icon";
 interface Props {
     initVal: number;
     data: any[];
-    onPressEvent: Function;
+    onPressEvent: (index:number) => void;
 }
 
 const ModalItems = ({initVal, data, onPressEvent}:Props) => {
     const [selected, setSelected] = useState(initVal);
 
     const handleSelect = (index:number) => {
-        onPressEvent && onPressEvent(index);
+        onPressEvent(index);
         setSelected(index);
     }
 

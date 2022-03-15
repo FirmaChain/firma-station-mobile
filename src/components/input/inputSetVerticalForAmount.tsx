@@ -56,7 +56,7 @@ const InputSetVerticalForAmount: React.FC<{
         <View style={styles.viewContainer}>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>{title}</Text>
-                {enableMaxAmount && <TextButton title={"Max"} onPressEvent={() => handleActiveMaxAmount(!maxAmount)} />}
+                {enableMaxAmount && <TextButton title={"Max"} active={limitValue > 0} onPressEvent={() => handleActiveMaxAmount(!maxAmount)} />}
             </View>
             <TextInput
                 style={[styles.input, accent? {borderColor: PointLightColor} : {borderColor: focus? WhiteColor : 'transparent'}]}

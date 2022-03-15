@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Lato, TextColor } from "../../constants/theme";
+import { DisableColor, Lato, TextButtonColor, TextColor } from "../../constants/theme";
 
 const TextButton: React.FC<{
     title: string;
+    active?: boolean;
     onPressEvent: Function;
-}> = ({title, onPressEvent}) => {
+}> = ({title, active = true, onPressEvent}) => {
+    const bgColor = active? TextButtonColor:DisableColor;
+
     const handleOnPress = (value?:any) => {
         onPressEvent && onPressEvent(value);
     }
 
     return (
-        <TouchableOpacity style={{flexDirection: "row"}} onPress={()=>handleOnPress()}>
-            <Text style={[styles.title, styles.button]}>{title}</Text>
+        <TouchableOpacity disabled={!active} style={{flexDirection: "row"}} onPress={()=>handleOnPress()}>
+            <Text style={[styles.title, styles.button, {backgroundColor: bgColor}]}>{title}</Text>
         </TouchableOpacity>
     )
 }
@@ -31,6 +34,5 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         overflow: "hidden",
-        backgroundColor: "#0f3f92",
     },
 })

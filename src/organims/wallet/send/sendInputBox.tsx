@@ -20,11 +20,16 @@ const SendInputBox = ({handleSendInfo, available, reset}:Props) => {
     }
 
     useEffect(() => {
-        if(safetyActive && available > 100000){
-            setLimitAvailable(available - 100000);
-        } 
-        if(!safetyActive && available > 20000) {
-            setLimitAvailable(available - 20000);
+        if(safetyActive){
+            if(available > 100000){
+                setLimitAvailable(available - 100000);
+            }
+        } else {
+            if(available > 20000) {
+                setLimitAvailable(available - 20000);
+            } else {
+                setLimitAvailable(0);
+            }
         }
     }, [available, safetyActive])
 
