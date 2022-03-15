@@ -66,7 +66,7 @@ export interface StakingState {
 }
 
 export const useDelegationData = () => {
-    const {wallet, staking} = useAppSelector(state => state);
+    const {wallet, staking, common} = useAppSelector(state => state);
     const [delegationList, setDelegationList] = useState<Array<StakeInfo>>([]);
     const [redelegationList, setRedelegationList] = useState<Array<RedelegationInfo>>([]);
     const [undelegationList, setUndelegationList] = useState<Array<UndelegationInfo>>([]);
@@ -125,6 +125,10 @@ export const useDelegationData = () => {
         return await refetch();
     }
 
+    useEffect(() => {
+        handleTotalDelegationPolling();
+    }, [common.network])
+
     return {
         delegationState,
         redelegationState,
@@ -139,7 +143,7 @@ export const useDelegationData = () => {
 }
 
 export const useStakingData = () => {
-    const {wallet} = useAppSelector(state => state);
+    const {wallet, common} = useAppSelector(state => state);
     const [stakingState, setStakingState] = useState<StakingState>({
         available: 0,
         delegated: 0,
@@ -168,7 +172,7 @@ export const useStakingData = () => {
     useEffect(() => {
         if(wallet.address === '' || wallet.address === undefined) return;
         getStakingState();
-    }, []);
+    }, [common.network]);
 
     return { 
         stakingState,
@@ -212,7 +216,7 @@ export const useValidatorDescriptionForRedelegation = (redelegations:Array<Redel
 }
 
 export const useValidatorData = () => {
-    const stakingState = useAppSelector(state => state.staking);
+    const {staking, common} = useAppSelector(state => state);
     const [validators, setValidators]:Array<any> = useState([]);
     const [totalVotingPower, setTotalVotingPower] = useState(0);
 
@@ -238,16 +242,20 @@ export const useValidatorData = () => {
     }, [loading, data]);
 
     useEffect(() => {
-        if(stakingState.validator){
-            setValidators(validators.map((vd:any) => vd.validatorAddress === stakingState.validator.validatorAddress?
-                {...stakingState.validator} : vd
+        if(staking.validator){
+            setValidators(validators.map((vd:any) => vd.validatorAddress === staking.validator.validatorAddress?
+                {...staking.validator} : vd
             ));
         }
-    }, [stakingState.validator]);
+    }, [staking.validator]);
     
     const handleValidatorsPolling = async() => {
         return await refetch();
     }
+
+    useEffect(() => {
+        handleValidatorsPolling();
+    }, [common.network])
 
     return {
         validators,

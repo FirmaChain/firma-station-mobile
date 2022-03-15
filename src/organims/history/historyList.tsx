@@ -4,7 +4,7 @@ import { HistoryListState } from "@/hooks/wallet/hooks";
 import { ForwardArrow } from "@/components/icon/icon";
 import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import { convertTime } from "@/util/common";
-import { EXPLORER } from "@/../config";
+import { EXPLORER_URL } from "@/constants/common";
 
 interface Props {
     historyList: HistoryListState;
@@ -15,7 +15,7 @@ interface Props {
 const HistoryList = ({historyList, pagination}:Props) => {
 
     const moveToExplorer = (hash:string) => {
-        Linking.openURL(EXPLORER + '/transactions/' + hash);
+        Linking.openURL(EXPLORER_URL() + '/transactions/' + hash);
     }
 
     return (

@@ -1,11 +1,19 @@
 import { FirmaMobileSDK, FirmaUtil } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
 import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
-import { FIRMACHAIN_CONFIG, FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
+import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import { convertNumber, convertToFctNumber } from "./common";
 import { getDecryptPassword, getWallet } from "./wallet";
 
-const firmaSDK = new FirmaMobileSDK(FIRMACHAIN_CONFIG);
+let firmaSDK = new FirmaMobileSDK(CHAIN_NETWORK["MainNet"].FIRMACHAIN_CONFIG);
+
+export const setFirmaSDK = (network:string) => {
+    firmaSDK = new FirmaMobileSDK(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG);
+}
+
+const getFirmaSDK = () => {
+    return firmaSDK;
+}
 
 export interface Wallet {
     name?: string;
@@ -24,7 +32,7 @@ export interface TransactionState {
 // Wallet
 export const createNewWallet = async() => {
     try {
-        let wallet = await firmaSDK.Wallet.newWallet();
+        let wallet = await getFirmaSDK().Wallet.newWallet();
         return organizeWallet(wallet);
     } catch (error) {
         console.log('createNewWallet error : ' + error);
@@ -33,7 +41,7 @@ export const createNewWallet = async() => {
 
 export const recoverFromMnemonic = async(mnemonic:string) => {
     try {
-        let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
+        let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
         return wallet;
     } catch (error) {
         console.log('recoverFromMnemonic error : ' + error);
@@ -62,7 +70,7 @@ export const getAdrFromMnemonic = async(mnemonic:string) => {
 
 export const getBalanceFromAdr = async(address:string) => {    
     try {
-        let balance = await firmaSDK.Bank.getBalance(address);
+        let balance = await getFirmaSDK().Bank.getBalance(address);
         return balance;
     } catch (error) {
         console.log('getBalanceFromAdr error : ' + error); 
@@ -92,44 +100,44 @@ const organizeWallet = async(wallet:FirmaWalletService) => {
 export const getDecryptWalletInfo = async(walletName:string) => {
     let password = await getDecryptPassword();
     let mnemonic = await getWallet(walletName, password);
-    return await firmaSDK.Wallet.fromMnemonic(mnemonic);
+    return await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
 }
 
 export const getEstimateGasFromAllDelegations = async(walletName:string) => {
     let wallet = await getDecryptWalletInfo(walletName);
-    const delegationList = await firmaSDK.Staking.getTotalDelegationInfo(await wallet.getAddress())
-    const estimatedGas = await firmaSDK.Distribution.getGasEstimationWithdrawAllRewardsFromAllValidator(wallet, delegationList);
+    const delegationList = await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())
+    const estimatedGas = await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewardsFromAllValidator(wallet, delegationList);
     return estimatedGas;
 }
 
 export const getEstimateGasFromDelegation = async(walletName:string, validatorAddress:string,) => {
     let wallet = await getDecryptWalletInfo(walletName);
-    const estimatedGas = await firmaSDK.Distribution.getGasEstimationWithdrawAllRewards(wallet, validatorAddress);
+    const estimatedGas = await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewards(wallet, validatorAddress);
     return estimatedGas;
 }
 
 export const getEstimateGasDelegate = async(walletName:string, validatorAddress:string, amount:number) => {
     let wallet = await getDecryptWalletInfo(walletName);
-    const gasEstimation = await firmaSDK.Staking.getGasEstimationDelegate(wallet, validatorAddress, amount);
+    const gasEstimation = await getFirmaSDK().Staking.getGasEstimationDelegate(wallet, validatorAddress, amount);
     return gasEstimation;
 }
 
 export const getEstimateGasUndelegate = async(walletName:string, validatorAddress:string, amount:number) => {
     let wallet = await getDecryptWalletInfo(walletName);
-    const gasEstimation = await firmaSDK.Staking.getGasEstimationUndelegate(wallet, validatorAddress, amount);
+    const gasEstimation = await getFirmaSDK().Staking.getGasEstimationUndelegate(wallet, validatorAddress, amount);
     return gasEstimation;
 }
 
 export const getEstimateGasRedelegate = async(walletName:string, validatorSrcAddress:string, validatorDstAddress:string, amount:number) => {
     let wallet = await getDecryptWalletInfo(walletName);
-    const gasEstimation = await firmaSDK.Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
+    const gasEstimation = await getFirmaSDK().Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
     return gasEstimation;
 }
 
 
 export const getEstimateGasSend = async(walletName:string, address:string, amount:number) => {
     let wallet = await getDecryptWalletInfo(walletName);
-    const gasEstimation = await firmaSDK.Bank.getGasEstimationSend(wallet, address, amount);
+    const gasEstimation = await getFirmaSDK().Bank.getGasEstimationSend(wallet, address, amount);
     return gasEstimation;
 }
 
@@ -139,8 +147,8 @@ export const getFeesFromGas = (estimatedGas: number) => {
 };
 
 export const sendFCT = async(mnemonic:string, target:string, amount:number, estimatedGas:number, memo?:string) => {
-    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
-    let send = await firmaSDK.Bank.send(wallet, target, amount, {
+    let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+    let send = await getFirmaSDK().Bank.send(wallet, target, amount, {
         memo: memo,
         gas: estimatedGas,
         fee: getFeesFromGas(estimatedGas),
@@ -155,7 +163,7 @@ export const addressCheck = (address:string) => {
 // Staking
 export const getDelegateList = async(address:string) => {
     try {
-        return await firmaSDK.Staking.getTotalDelegationInfo(address);
+        return await getFirmaSDK().Staking.getTotalDelegationInfo(address);
     } catch (error) {
         console.log("getDelegateList : ", error);
         return [];
@@ -164,7 +172,7 @@ export const getDelegateList = async(address:string) => {
 
 export const getRedelegationList = async(address:string) => {
     try {
-        return await firmaSDK.Staking.getTotalRedelegationInfo(address);
+        return await getFirmaSDK().Staking.getTotalRedelegationInfo(address);
     } catch (error) {
         console.log("getRedelegationList : ", error);
         return [];
@@ -173,7 +181,7 @@ export const getRedelegationList = async(address:string) => {
 
 export const getUndelegateList = async(address:string) => {
     try {
-        return await firmaSDK.Staking.getTotalUndelegateInfo(address);
+        return await getFirmaSDK().Staking.getTotalUndelegateInfo(address);
     } catch (error) {
         console.log("getUndelegateList : ", error);
         return [];
@@ -181,7 +189,7 @@ export const getUndelegateList = async(address:string) => {
 }
 
 export const getTotalReward = async(address:string) => {
-    return await firmaSDK.Distribution.getTotalRewardInfo(address);
+    return await getFirmaSDK().Distribution.getTotalRewardInfo(address);
 }
 
 export const getStakingFromvalidator = async(address:string, validatorAddress:string) => {
@@ -209,8 +217,8 @@ export const getStakingFromvalidator = async(address:string, validatorAddress:st
 }
 
 export const delegate = async(mnemonic:string, address:string, amount:number, estimatedGas:number) => {
-    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
-    let result = await firmaSDK.Staking.delegate(wallet, address, amount,{
+    let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+    let result = await getFirmaSDK().Staking.delegate(wallet, address, amount,{
         gas: estimatedGas,
         fee: getFeesFromGas(estimatedGas),
     });
@@ -219,8 +227,8 @@ export const delegate = async(mnemonic:string, address:string, amount:number, es
 }
 
 export const redelegate = async(mnemonic:string, srcAddress:string, dstAddress:string, amount:number, estimatedGas:number) => {
-    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
-    let result = await firmaSDK.Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
+    let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+    let result = await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
         gas: estimatedGas,
         fee: getFeesFromGas(estimatedGas),
     });
@@ -228,8 +236,8 @@ export const redelegate = async(mnemonic:string, srcAddress:string, dstAddress:s
 }
 
 export const undelegate = async(mnemonic:string, address:string, amount:number, estimatedGas:number) => {
-    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
-    let result = await firmaSDK.Staking.undelegate(wallet, address, amount, {
+    let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+    let result = await getFirmaSDK().Staking.undelegate(wallet, address, amount, {
         gas: estimatedGas,
         fee: getFeesFromGas(estimatedGas),
     });
@@ -238,8 +246,8 @@ export const undelegate = async(mnemonic:string, address:string, amount:number, 
 }
 
 export const withdrawRewards = async (mnemonic:string, address:string, estimatedGas:number) => {
-    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
-    const result = await firmaSDK.Distribution.withdrawAllRewards(wallet, address, {
+    let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+    const result = await getFirmaSDK().Distribution.withdrawAllRewards(wallet, address, {
         gas: estimatedGas,
         fee: getFeesFromGas(estimatedGas),
     });
@@ -248,9 +256,9 @@ export const withdrawRewards = async (mnemonic:string, address:string, estimated
 };
 
 export const withdrawAllRewards = async (mnemonic:string, estimatedGas:number) => {
-    let wallet = await firmaSDK.Wallet.fromMnemonic(mnemonic);
-    const delegationList = await firmaSDK.Staking.getTotalDelegationInfo(await wallet.getAddress())
-    const result = await firmaSDK.Distribution.withdrawAllRewardsFromAllValidator(wallet, delegationList,{
+    let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+    const delegationList = await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())
+    const result = await getFirmaSDK().Distribution.withdrawAllRewardsFromAllValidator(wallet, delegationList,{
         gas: estimatedGas,
         fee: getFeesFromGas(estimatedGas),
     });

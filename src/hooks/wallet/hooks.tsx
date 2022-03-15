@@ -25,7 +25,7 @@ export interface HistoryListState {
 }
 
 export const useBalanceData = () => {
-    const {wallet} = useAppSelector(state => state);
+    const {wallet, common} = useAppSelector(state => state);
     const [balance, setBalance] = useState(0);
     
     async function getBalance() {
@@ -35,7 +35,7 @@ export const useBalanceData = () => {
 
     useEffect(() => {
         getBalance();
-    }, []);
+    }, [common.network]);
 
     return {
         balance,
@@ -44,7 +44,7 @@ export const useBalanceData = () => {
 }
 
 export const useHistoryData = () => {
-    const {wallet} = useAppSelector(state => state);
+    const {wallet, common} = useAppSelector(state => state);
     const [historyList, setHistoryList] = useState<HistoryListState>({
         list: [],
     });
@@ -120,6 +120,14 @@ export const useHistoryData = () => {
             stopCurrentHistoryPolling();
         }
     }
+
+    useEffect(() => {
+        const changeChainNetwork = async() => {
+            await refetchCurrentHistory();
+            await handleHisotyPolling();
+        }
+        changeChainNetwork();
+    }, [common.network]);
 
     return {
         historyList, 

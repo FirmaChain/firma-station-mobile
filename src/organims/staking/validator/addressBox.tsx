@@ -1,7 +1,7 @@
 import React from "react";
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BoxColor, Lato, TextAddressColor, TextColor } from "@/constants/theme";
-import { EXPLORER } from "@/../config";
+import { EXPLORER_URL } from "@/constants/common";
 
 interface Props {
     title: string;
@@ -11,7 +11,7 @@ interface Props {
 
 const AddressBox = ({title, path, address}:Props) => {
     const openExplorer = (URL:string) => {
-        Linking.openURL(EXPLORER + "/" + path + "/" + URL);
+        Linking.openURL(EXPLORER_URL() + "/" + path + "/" + URL);
     }
 
     return (

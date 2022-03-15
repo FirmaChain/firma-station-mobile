@@ -3,8 +3,8 @@ import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { BgColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import { FailCircle, SuccessCircle } from "@/components/icon/icon";
 import Button from "@/components/button/button";
-import { EXPLORER } from "@/../config";
 import { ResultState } from ".";
+import { EXPLORER_URL } from "@/constants/common";
 
 interface Props {
     result: ResultState;
@@ -20,7 +20,7 @@ const TransactionResult = ({result, handleBack}:Props) => {
 
     const openExplorer = (hash:string) => {
         if(result.code === -1) return;
-        Linking.openURL(EXPLORER + '/transactions/' + hash);
+        Linking.openURL(EXPLORER_URL() + '/transactions/' + hash);
     }
 
 

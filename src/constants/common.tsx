@@ -1,5 +1,17 @@
+import { CHAIN_NETWORK } from "@/../config";
+
 export interface KeyValue {
     [key: string]: any;
+}
+
+let EXPLORER = CHAIN_NETWORK["MainNet"].EXPLORER;
+
+export const setExplorerUrl = (network:string) => {
+    EXPLORER = CHAIN_NETWORK[network].EXPLORER;
+}
+
+export const EXPLORER_URL = () => {
+    return EXPLORER;
 }
 
 export const WELCOME_DESCRIPTION = "Use seed phrases to create\nnew wallets or restore existing wallets.";

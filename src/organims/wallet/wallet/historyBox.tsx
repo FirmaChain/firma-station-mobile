@@ -3,7 +3,7 @@ import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import { ForwardArrow } from "@/components/icon/icon";
 import { convertTime } from "@/util/common";
-import { EXPLORER } from "@/../config";
+import { EXPLORER_URL } from "@/constants/common";
 
 interface Props {
     recentHistory: any;
@@ -23,7 +23,7 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
     }, [recentHistory])
 
     const moveToExplorer = (hash:string) => {
-        Linking.openURL(EXPLORER + '/transactions/' + hash);
+        Linking.openURL(EXPLORER_URL() + '/transactions/' + hash);
     }
 
     const moveToHistory = () => {

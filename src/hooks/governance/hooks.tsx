@@ -1,4 +1,5 @@
 import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
+import { useAppSelector } from "@/redux/hooks";
 import { useEffect, useState } from "react";
 import { convertNumber, convertTime } from "../../util/common";
 
@@ -53,6 +54,7 @@ export interface ProposalVoteState {
 }
 
 export const useGovernanceList = () => {
+    const {common} = useAppSelector(state => state);
     const [governanceState, setGovernanceList] = useState<GovernanceState>({
         list: [],
     });
@@ -75,6 +77,11 @@ export const useGovernanceList = () => {
     const handleGovernanceListPolling = async() => {
         return await refetch();
     }
+
+    useEffect(() => {
+        handleGovernanceListPolling();
+    }, [common.network])
+    
 
     return {
         governanceState,

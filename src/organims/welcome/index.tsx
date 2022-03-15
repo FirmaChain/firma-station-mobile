@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "@/components/button/button";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { WELCOME_DESCRIPTION } from "@/constants/common";
 import { BgColor, DisableColor, Lato, TextGrayColor } from "@/constants/theme";
 import Description from "./description";
+import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -32,6 +33,10 @@ const Welcome = (props:Props) => {
     function handleRecoverWallet(){
         navigation.navigate(Screens.RecoverWallet);
     }
+
+    useEffect(() => {
+        CommonActions.handleNetwork("MainNet");
+    }, [])
 
     return (
         <View style={styles.viewContainer}>
