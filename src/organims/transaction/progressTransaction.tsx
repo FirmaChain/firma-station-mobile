@@ -1,19 +1,30 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
 import { Animated, BackHandler, Platform, StyleSheet, Text, View } from "react-native";
 import { fadeIn, fadeOut } from "@/util/animation";
-import { TRANSACTION_PROCESS_TEXT } from "@/constants/common";
-import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { TRANSACTION_PROCESS_DESCRIPTION_TEXT, TRANSACTION_PROCESS_NOTICE_TEXT, TRANSACTION_PROCESS_TEXT } from "@/constants/common";
+import { BgColor, Lato, TextCatTitleColor, TextColor, TextLightGrayColor, TextWarnColor } from "@/constants/theme";
 import { useFocusEffect } from "@react-navigation/native";
+import { getStatusBarHeight } from "react-native-status-bar-height";
+import { QuestionCircle } from "@/components/icon/icon";
 
 const ProgressTransaction = () => {
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
     const fadeAnim_2 = useRef(new Animated.Value(0)).current;
     const fadeAnim_3 = useRef(new Animated.Value(0)).current;
+    const fadeAnim_notice = useRef(new Animated.Value(0)).current;
 
     const animated = [ fadeAnim_1, fadeAnim_2, fadeAnim_3 ];
 
     const [counter, setCounter] = useState(0);
+
+    const networkDelay = useMemo(() => {
+        if(counter % 60 >= 15){ 
+            fadeIn(fadeAnim_notice);
+            return true;
+        }
+        return false;
+    }, [counter])
 
     const createTimerText = (time:number) => {
         let min:string|number = parseInt((time/60).toString());
@@ -61,17 +72,27 @@ const ProgressTransaction = () => {
     return (
         <View style={styles.container}>
             <View style={styles.background}/>
-            <View style={[styles.box, {height: 250, justifyContent: "flex-start"}]}>
-                <View>
-                    <Animated.Image style={[styles.logo, {opacity: 1}]} source={LOADING_LOGO_0} />
-                    <Animated.Image style={[styles.logo, {opacity: fadeAnim_1}]} source={LOADING_LOGO_1} />
-                    <Animated.Image style={[styles.logo, {opacity: fadeAnim_2}]} source={LOADING_LOGO_2} />
-                    <Animated.Image style={[styles.logo, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
-                </View>
-                <View style={styles.counterBox}>
+            <View style={[styles.box, {justifyContent: "flex-start", flex: 6}]}>
+                <View style={[styles.counterBox,{flex: 2}]}>
+                    <View style={{position:"relative", height: 280}}>
+                        <Animated.Image style={[styles.logo, {opacity: 1}]} source={LOADING_LOGO_0} />
+                        <Animated.Image style={[styles.logo, {opacity: fadeAnim_1}]} source={LOADING_LOGO_1} />
+                        <Animated.Image style={[styles.logo, {opacity: fadeAnim_2}]} source={LOADING_LOGO_2} />
+                        <Animated.Image style={[styles.logo, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
+                    </View>
                     <Text style={styles.notice}>{TRANSACTION_PROCESS_TEXT}</Text>
                     <Text style={styles.counter}>{createTimerText(counter)}</Text>
                 </View>
+                <View style={[styles.counterBox,{flex: 1, width: "100%", justifyContent: "center"}]}>
+                    <Text style={[styles.description, {paddingBottom: 20, fontSize: 16}]}>{TRANSACTION_PROCESS_DESCRIPTION_TEXT}</Text>
+                    <Animated.View style={[styles.descriptionWrapper, {opacity: fadeAnim_notice}]}>
+                        <View style={{paddingTop: 3}}>
+                            <QuestionCircle size={15} color={TextWarnColor} />
+                        </View>
+                        <Text style={[styles.description, {color: TextWarnColor, lineHeight: 20, paddingLeft: 5}]}>{TRANSACTION_PROCESS_NOTICE_TEXT}</Text>
+                    </Animated.View>
+                </View>
+
             </View>
         </View>
     )
@@ -83,6 +104,7 @@ const styles = StyleSheet.create({
         height: "100%",
         alignItems: "center",
         justifyContent: "center",
+        paddingTop: getStatusBarHeight(),
     },
     background: {
         position: "absolute",
@@ -104,19 +126,11 @@ const styles = StyleSheet.create({
         height: 120,
         position: "absolute",
         left: -60,
-        top: 0,
-    },
-    logoSmall: {
-        width: 50,
-        height: 50,
-        position: "absolute",
-        left: -25,
-        top: 0,
+        top: "50%",
     },
     counterBox: {
-        height: "100%",
         alignItems: "center",
-        justifyContent: "flex-end",
+        justifyContent: "center",
     },
     notice: {
         fontFamily: Lato,
@@ -129,7 +143,21 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,
-    }
+    },
+    descriptionWrapper: {
+        width: "100%", 
+        flexDirection:"row", 
+        justifyContent: "center", 
+        alignItems: "flex-start", 
+        paddingHorizontal: 20, 
+    },
+    description: {
+        fontFamily: Lato,
+        fontSize: 14,
+        color: TextLightGrayColor,
+        textAlign: "center",
+    },
+
 })
 
 export default ProgressTransaction;
