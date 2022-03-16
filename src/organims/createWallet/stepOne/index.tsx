@@ -8,12 +8,10 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
-import { setPasswordViaBioAuth, setWalletWithBioAuth } from "@/util/wallet";
-import { setChain } from "@/util/secureKeyChain";
+import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { createNewWallet, Wallet } from "@/util/firma";
 import { CREATE_WALLET_FAILED } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
-import { USE_BIO_AUTH } from "@/../config";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 
@@ -75,7 +73,7 @@ const StepOne = ({wallet = null}:Props) => {
     const MoveToHomeScreen = (result:boolean) => {
         if(result){
             setPasswordViaBioAuth(wallet.password);
-            setChain(USE_BIO_AUTH + walletName, "true");
+            setUseBioAuth(walletName);
             handleOpenBioAuthModal(false);
             navigation.reset({routes: [{name: 'Home'}]});
         } else {

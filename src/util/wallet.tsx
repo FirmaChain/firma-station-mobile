@@ -37,7 +37,7 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
     await getChain(WALLET_LIST).then(res => {
         if(res) list += '/' + res.password;
     }).catch(error => console.log('error : ' + error));
-    setChain(WALLET_LIST, list);
+    setWalletLIst(list)
 
     let adr = null;
     await getAdrFromMnemonic(mnemonic).then(res => {
@@ -57,6 +57,14 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
     }
 
     return adr;
+}
+
+export const setWalletLIst = (list:string) => {
+    if(list === ''){
+        removeChain(WALLET_LIST);
+    } else {
+        setChain(WALLET_LIST, list);
+    }
 }
 
 export const removeWallet = async(name:string) => {
@@ -190,7 +198,7 @@ export const removePasswordViaBioAuth = async() => {
         console.log('error : ' + error);
         return null;
     })
-    await removeChain(getUniqueId + timestamp.toString())
+    await removeChain(UNIQUE_ID + timestamp.toString())
     .then(res => console.log(res))
     .catch(error => console.log(error));
 }

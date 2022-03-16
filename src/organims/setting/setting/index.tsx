@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -7,11 +7,10 @@ import { useAppSelector } from "@/redux/hooks";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
+import { removeWalletWithAutoLogin } from "@/util/wallet";
 import BioAuthRadio from "./bioAuthRadio";
 import MenuItem from "./menuItem";
 import Disconnect from "./disconnect";
-import { removeChain } from "@/util/secureKeyChain";
-import { getUniqueId } from "react-native-device-info";
 import Delete from "./delete";
 import TextMenuItem from "./textMenuItem";
 import { VERSION } from "@/../config";
@@ -47,9 +46,7 @@ const Setting = () => {
     }
 
     const disconnectWallet = async() => {
-        await removeChain(getUniqueId())
-            .then(res => console.log(res))
-            .catch(error => console.log(error));
+        await removeWalletWithAutoLogin();
         navigation.reset({routes: [{name: 'Welcome'}]});
     }
 

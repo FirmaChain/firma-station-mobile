@@ -12,14 +12,14 @@ const InputSetVertical: React.FC<{
     accent?: boolean;
     forcedValue?: string;
     resetValues?: boolean;
-    onChangeEvent: Function;
+    onChangeEvent: (value:string) => void;
 }> = ({title, message, numberOnly = false, validation, placeholder, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 
     const handleInputChange = (value: string) => {
         setVal(value);
-        onChangeEvent && onChangeEvent(value);
+        onChangeEvent(value);
     }
 
     useEffect(() => {

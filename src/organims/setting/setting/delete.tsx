@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, Lato, TextColor } from "@/constants/theme";
-import { removeChain, setChain } from "@/util/secureKeyChain";
-import { getWalletList, removeUseBioAuth } from "@/util/wallet";
-import { WALLET_LIST } from "@/../config";
+import { getWalletList, removeUseBioAuth, removeWallet, setWalletLIst } from "@/util/wallet";
 import DeleteWalletModal from "../modal/deleteWalletModal";
 
 interface Props {
@@ -19,24 +17,20 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
     }
 
     const handleDeleteWallet = async() => {
-        await removeChain(wallet.name)
-            .then(res => console.log(res))
-            .catch(error => console.log(error));
-        
+        await removeWallet(wallet.name);
         await removeUseBioAuth(wallet.name);
-
+        
         let newList:string = '';
         await getWalletList().then(res => {
             let arr = res !== undefined? res : [];
             
             if(arr.length > 1){
-                arr.filter(item => item !== wallet.name).map((item, index) => {
+                arr.filter(item => item !== wallet.name).map((item) => {
                     newList += item + "/";
                 });
                 newList = newList.slice(0, -1);
             }
-
-            setChain(WALLET_LIST, newList);
+            setWalletLIst(newList);
             handleDelModal(false);
             handleDisconnect();
         }).catch(error => {

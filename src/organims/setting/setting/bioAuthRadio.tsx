@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { getUniqueId } from "react-native-device-info";
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
 import { BIOAUTH_ACTIVATE } from "@/constants/common";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import { removeChain, setChain } from "@/util/secureKeyChain";
-import { getUseBioAuth, getWalletWithAutoLogin, setPasswordViaBioAuth } from "@/util/wallet";
+import { getUseBioAuth, removePasswordViaBioAuth, setPasswordViaBioAuth, setUseBioAuth } from "@/util/wallet";
 import BioAuthOnModal from "../modal/bioAuthOnModal";
-import { USE_BIO_AUTH } from "@/../config";
 import Toast from "react-native-toast-message";
 
 interface Props {
@@ -44,7 +41,7 @@ const BioAuthRadio = ({wallet}:Props) => {
             confirmViaBioAuth().then(res => {
                 if(res){
                     setPasswordViaBioAuth(password);
-                    setChain(USE_BIO_AUTH + wallet.name, "true");
+                    setUseBioAuth(wallet.name);
                     handleToast();
                 } else {
                     handleBioAuth(false);
@@ -52,18 +49,7 @@ const BioAuthRadio = ({wallet}:Props) => {
             });
             setOpenBioModal(false);
         } else {
-            let timestamp = 0;
-            await getWalletWithAutoLogin().then(res => {
-                if('') return null;
-                const result = JSON.parse(res);
-                timestamp = result.timestamp;
-            }).catch(error => {
-                console.log('error : ' + error);
-                return null;
-            })
-            await removeChain(getUniqueId + timestamp.toString())
-            .catch(error => console.log(error));
-            setChain(USE_BIO_AUTH + wallet.name, "false");
+            await removePasswordViaBioAuth();
         }
     }
 

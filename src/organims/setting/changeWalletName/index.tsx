@@ -5,15 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions, WalletActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
-import { removeChain, setChain } from "@/util/secureKeyChain";
-import { getUseBioAuth, getWalletList, removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet, setUseBioAuth } from "@/util/wallet";
+import { getUseBioAuth, getWalletList, removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet, setUseBioAuth, setWalletLIst } from "@/util/wallet";
 import { WALLETNAME_CHANGE_SUCCESS } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import Button from "@/components/button/button";
 import AlertModal from "@/components/modal/alertModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import { WALLET_LIST } from "@/../config";
 import InputBox from "./inputBox";
 
 
@@ -67,12 +65,7 @@ const ChangeWalletName = () => {
                 });
                 newList = newList.slice(0, -1);
             }
-            
-            if(newList === ''){
-                removeChain(WALLET_LIST);
-            } else {
-                setChain(WALLET_LIST, newList);
-            }
+            setWalletLIst(newList);
         }).catch(error => {
             console.log(error)
         });
