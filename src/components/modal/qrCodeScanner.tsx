@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { BarCodeReadEvent } from "react-native-camera";
-import { QRCODE_SCANNER_MODAL_TEXT } from "@/constants/common";
+import { QRCODE_SCANNER_MODAL_TEXT, WRONG_ADDRESS } from "@/constants/common";
 import { Lato, TextCatTitleColor, WhiteColor } from "@/constants/theme";
 import { ScreenHeight, ScreenWidth } from "@/util/getScreenSize";
 import { addressCheck } from "@/util/firma";
@@ -24,7 +24,7 @@ const QRCodeScannerModal = ({isAddress = false, visible, handleOpen, ReaderHandl
             if(addressCheck(event.data) === false){
                 return Toast.show({
                     type: 'error',
-                    text1: 'Wrong address',
+                    text1: WRONG_ADDRESS,
                 });
             }
         }

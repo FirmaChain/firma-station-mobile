@@ -46,6 +46,10 @@ export const CAMERA_PERMISSION_ALERT = {
     desc: "Move to settings to enable camera permissions?"
 }
 
+export const COPIED_CLIPBOARD = "Copied your ";
+export const CHANGE_NETWORK_NOTICE = "it is under changing into the ";
+export const BIOAUTH_ACTIVATE = "Bio Auth has been activated";
+
 // wallet
 export const ADDRESS_QRCODE_MODAL_TEXT = {
     title: 'Address',
@@ -61,6 +65,10 @@ export const CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT = {
     confirmTitle: 'Enable',
     cancelTitle: 'Later'
 }
+
+export const CREATE_WALLET_FAILED = "Wallet creation failed. Please try again.";
+export const WRONG_ADDRESS = "Wrong address";
+export const CHECK_MNEMONIC = "Check your mnemonic again.";
 
 // setting
 export const SETTING_BIO_AUTH_MODAL_TEXT = {

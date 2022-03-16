@@ -6,7 +6,7 @@ import { BgColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/t
 import Toast from "react-native-toast-message";
 import TextButton from "@/components/button/textButton";
 import WarnContainer from "@/components/parts/containers/warnContainer";
-import { MNEMONIC_WARN_MESSAGE } from "@/constants/common";
+import { COPIED_CLIPBOARD, MNEMONIC_WARN_MESSAGE } from "@/constants/common";
 
 const MnemonicGrid: React.FC<{
     mnemonic: string;
@@ -16,11 +16,9 @@ const MnemonicGrid: React.FC<{
 
     const handleMnemonicToClipboard = () => {
         Clipboard.setString(mnemonic);
-        const msg = 'Copied your mnemonic';
-        
         Toast.show({
             type: 'info',
-            text1: msg,
+            text1: COPIED_CLIPBOARD + "mnemonic",
         });
     }
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, Lato, TextColor } from "@/constants/theme";
 import { removeChain, setChain } from "@/util/secureKeyChain";
-import { getWalletList } from "@/util/wallet";
+import { getWalletList, removeUseBioAuth } from "@/util/wallet";
 import { WALLET_LIST } from "@/../config";
 import DeleteWalletModal from "../modal/deleteWalletModal";
 
@@ -22,6 +22,8 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
         await removeChain(wallet.name)
             .then(res => console.log(res))
             .catch(error => console.log(error));
+        
+        await removeUseBioAuth(wallet.name);
 
         let newList:string = '';
         await getWalletList().then(res => {

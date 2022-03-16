@@ -1,12 +1,12 @@
 import Clipboard from "@react-native-clipboard/clipboard";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { AddressBoxColor, AddressTextColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import Toast from "react-native-toast-message";
 import { Copy, QRCodeIcon } from "@/components/icon/icon";
 import CustomModal from "@/components/modal/customModal";
 import Button from "@/components/button/button";
-import { ADDRESS_QRCODE_MODAL_TEXT } from "@/constants/common";
+import { AddressBoxColor, AddressTextColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { ADDRESS_QRCODE_MODAL_TEXT, COPIED_CLIPBOARD } from "@/constants/common";
 import QRCode from "react-native-qrcode-svg";
 
 interface Props {
@@ -18,11 +18,9 @@ const AddressBox = ({address}: Props) => {
 
     const handleAddressToClipboard = () => {
         Clipboard.setString(address);
-        const msg = 'Copied your address';
-        
         Toast.show({
             type: 'info',
-            text1: msg,
+            text1: COPIED_CLIPBOARD + "address",
           });
     }
 

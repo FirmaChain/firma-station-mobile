@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getUniqueId } from "react-native-device-info";
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
+import { BIOAUTH_ACTIVATE } from "@/constants/common";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { removeChain, setChain } from "@/util/secureKeyChain";
 import { getUseBioAuth, getWalletWithAutoLogin, setPasswordViaBioAuth } from "@/util/wallet";
@@ -32,10 +33,9 @@ const BioAuthRadio = ({wallet}:Props) => {
     }
 
     const handleToast = () => {
-        const msg = 'Bio Auth has been activated';
         Toast.show({
             type: 'info',
-            text1: msg,
+            text1: BIOAUTH_ACTIVATE,
         });
     }
 

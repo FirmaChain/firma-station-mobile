@@ -1,16 +1,17 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BgColor, BoxColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
 import Button from "@/components/button/button";
 import { Copy } from "@/components/icon/icon";
+import { BgColor, BoxColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { COPIED_CLIPBOARD } from "@/constants/common";
 import QRCode from "react-native-qrcode-svg";
 
 interface Props {
     type: string;
     value: string;
-    onPressEvent: Function;
+    onPressEvent: ()=>void;
 }
 
 const ExportModal = ({type, value, onPressEvent}:Props) => {
@@ -22,12 +23,9 @@ const ExportModal = ({type, value, onPressEvent}:Props) => {
 
     const copyPrivateKey = () => {
         Clipboard.setString(value);
-
-        const msg = 'Copied your private key';
-        
         Toast.show({
             type: 'info',
-            text1: msg,
+            text1: COPIED_CLIPBOARD + type,
         });
     }
 
