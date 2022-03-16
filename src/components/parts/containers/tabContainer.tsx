@@ -3,7 +3,7 @@ import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
-import { BgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
+import { BgColor, FailedColor, Lato, TextButtonColor, TextColor, WhiteColor } from "@/constants/theme";
 import { ICON_HISTORY } from "@/constants/images";
 import { Setting } from "@/components/icon/icon";
 import TextButton from "@/components/button/textButton";
@@ -19,7 +19,7 @@ interface Props {
 
 const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props) => {
     const {common} = useAppSelector(state => state);
-    const networkList = ["MainNet", "TestNet", "DevNet"];
+    const networkList = ["MainNet", "TestNet"];
     const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
     const [openNetworkSelectModal, setOpenNetworkSelectModal] = useState(false);
     
@@ -36,6 +36,8 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props)
     }
 
     const handleSelectNetwork = (index:number) => {
+        CommonActions.handleIsNetworkChange(true);
+        CommonActions.handleLoadingProgress(true);
         CommonActions.handleNetwork(networkList[index]);
         setSelectedNetworkIndex(index);
         setOpenNetworkSelectModal(false);
@@ -55,6 +57,7 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props)
                 <View style={styles.boxH}>
                     <TextButton
                         title={common.network}
+                        bgColor={common.network === "MainNet"? TextButtonColor:FailedColor}
                         onPressEvent={() => handleNetworkSelectModal(true)}/>
                     <TouchableOpacity style={{padding: 10}} onPress={() => handleMoveToHistory()}>
                         <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />

@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
-import { Animated, BackHandler, Platform, StyleSheet, View } from "react-native";
+import { Animated, BackHandler, Platform, StyleSheet, Text, View } from "react-native";
 import { fadeIn, fadeOut } from "@/util/animation";
 import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { useFocusEffect } from "@react-navigation/native";
+import { useAppSelector } from "@/redux/hooks";
+import { CHANGE_NETWORK_NOTICE } from "@/constants/common";
 
 const Progress = () => {
+    const {common} = useAppSelector(state => state);
+
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
     const fadeAnim_2 = useRef(new Animated.Value(0)).current;
     const fadeAnim_3 = useRef(new Animated.Value(0)).current;
@@ -41,13 +45,14 @@ const Progress = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.background}/>
+            <View style={[styles.background, {opacity: common.isNetworkChanged?1:.5}]}/>
             <View style={[styles.box, {justifyContent: "center"}]}>
                 <Animated.Image style={[styles.logo, {opacity: 1}]} source={LOADING_LOGO_0} />
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_1}]} source={LOADING_LOGO_1} />
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_2}]} source={LOADING_LOGO_2} />
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
             </View>
+            {common.isNetworkChanged && <Text style={styles.network}>{CHANGE_NETWORK_NOTICE + common.network}</Text>}
         </View>
     )
 }
@@ -65,7 +70,6 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         backgroundColor: BgColor,
-        opacity: .5,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -97,6 +101,14 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,
+    },
+    network: {
+        width: "100%",
+        fontFamily: Lato,
+        fontSize: 16,
+        textAlign: "center",
+        color: TextColor,
+        paddingTop: 20,
     }
 })
 

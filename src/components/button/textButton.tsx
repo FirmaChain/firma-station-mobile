@@ -4,10 +4,11 @@ import { DisableColor, Lato, TextButtonColor, TextColor } from "../../constants/
 
 const TextButton: React.FC<{
     title: string;
+    bgColor?: string;
     active?: boolean;
     onPressEvent: Function;
-}> = ({title, active = true, onPressEvent}) => {
-    const bgColor = active? TextButtonColor:DisableColor;
+}> = ({title, bgColor = TextButtonColor, active = true, onPressEvent}) => {
+    const backgroundColor = active? (bgColor? bgColor:TextButtonColor):DisableColor;
 
     const handleOnPress = (value?:any) => {
         onPressEvent && onPressEvent(value);
@@ -15,7 +16,7 @@ const TextButton: React.FC<{
 
     return (
         <TouchableOpacity disabled={!active} style={{flexDirection: "row"}} onPress={()=>handleOnPress()}>
-            <Text style={[styles.title, styles.button, {backgroundColor: bgColor}]}>{title}</Text>
+            <Text style={[styles.title, styles.button, {backgroundColor: backgroundColor}]}>{title}</Text>
         </TouchableOpacity>
     )
 }

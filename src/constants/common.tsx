@@ -47,7 +47,7 @@ export const CAMERA_PERMISSION_ALERT = {
 }
 
 export const COPIED_CLIPBOARD = "Copied your ";
-export const CHANGE_NETWORK_NOTICE = "it is under changing into the ";
+export const CHANGE_NETWORK_NOTICE = "Under changing into the ";
 export const BIOAUTH_ACTIVATE = "Bio Auth has been activated";
 
 // wallet

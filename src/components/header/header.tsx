@@ -1,6 +1,6 @@
 import React from "react";
 import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
-import { BorderColor, BoxDarkColor, Lato, PointColor, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
+import { BorderColor, BoxDarkColor, FailedColor, Lato, PointColor, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import { ScreenWidth } from "@/util/getScreenSize";
 import ArrowButton from "../button/arrowButton";
 import { useAppSelector } from "@/redux/hooks";
@@ -84,9 +84,8 @@ const styles = StyleSheet.create({
     network: {
         fontFamily: Lato, 
         fontSize: 14,
-        fontWeight: "bold",
         textAlign: "right", 
-        color: TextGrayColor,
+        color: FailedColor,
     }
 })
 
