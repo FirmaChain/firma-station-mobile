@@ -3,7 +3,7 @@ import { getUniqueId } from "react-native-device-info";
 import { checkBioMetrics } from "./bioAuth";
 import { getAdrFromMnemonic } from "./firma";
 import { decrypt, encrypt, keyEncrypt } from "./keystore";
-import { getChain, setChain } from "./secureKeyChain";
+import { getChain, removeChain, setChain } from "./secureKeyChain";
 import { USE_BIO_AUTH, WALLET_LIST } from "@/../config";
 
 const UNIQUE_ID = getUniqueId();
@@ -105,12 +105,20 @@ export const getUseBioAuth = async(name:string) => {
         if(res){
             if(res.password === 'true') result = true;
             if(res.password === 'false') result = false;
+        } else {
+            result = false;
         }
     }).catch(error => {
         console.log(error);
     })
     
     return result;
+}
+
+export const removeUseBioAuth = async(name:string) => {
+    await removeChain(USE_BIO_AUTH + name)
+            .then(res => console.log(res))
+            .catch(error => console.log(error));
 }
 
 export const setBioAuth = async(name:string, password:string) => {
@@ -133,8 +141,6 @@ export const getPasswordViaBioAuth = async() => {
 
     let result = '';
     await getChain(UNIQUE_ID + timestamp.toString()).then(res => {
-        console.log(res);
-        
         if(res === false) return null;
         result = decrypt(res.password, UNIQUE_ID + timestamp.toString());
     }).catch(error => {

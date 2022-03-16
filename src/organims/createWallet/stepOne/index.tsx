@@ -11,6 +11,7 @@ import BioAuthModal from "@/components/modal/bioAuthModal";
 import { setPasswordViaBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { setChain } from "@/util/secureKeyChain";
 import { createNewWallet, Wallet } from "@/util/firma";
+import { CREATE_WALLET_FAILED } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import { USE_BIO_AUTH } from "@/../config";
 import InputBox from "./inputBox";
@@ -47,7 +48,7 @@ const StepOne = ({wallet = null}:Props) => {
                 CommonActions.handleLoadingProgress(false);
                 return Toast.show({
                     type: 'error',
-                    text1: 'Wallet creation failed. Please try again.',
+                    text1: CREATE_WALLET_FAILED,
                 });
             }
             const wallet: Wallet = {
@@ -56,7 +57,6 @@ const StepOne = ({wallet = null}:Props) => {
                 mnemonic: result.mnemonic,
                 privatekey: result.privateKey,
             }
-
             navigation.navigate(Screens.CreateStepTwo, {wallet: wallet});
         } catch (error) {
             CommonActions.handleLoadingProgress(false);
@@ -75,7 +75,7 @@ const StepOne = ({wallet = null}:Props) => {
     const MoveToHomeScreen = (result:boolean) => {
         if(result){
             setPasswordViaBioAuth(wallet.password);
-            setChain(USE_BIO_AUTH + wallet.name, "true");
+            setChain(USE_BIO_AUTH + walletName, "true");
             handleOpenBioAuthModal(false);
             navigation.reset({routes: [{name: 'Home'}]});
         } else {

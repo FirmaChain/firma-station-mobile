@@ -12,7 +12,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import Toast from "react-native-toast-message";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
-import { RECOVER_INFO_MESSAGE } from "@/constants/common";
+import { CHECK_MNEMONIC, RECOVER_INFO_MESSAGE } from "@/constants/common";
 import RecoverMenus from "./recoverMenus";
 import { checkCameraPermission } from "@/util/permission";
 
@@ -34,7 +34,7 @@ const RecoverWallet = () => {
         if(wallet === undefined){
             return Toast.show({
                 type: 'error',
-                text1: 'Check your mnemonic again.',
+                text1: CHECK_MNEMONIC,
             });
         }
         navigation.navigate(Screens.CreateStepOne, {wallet: wallet});

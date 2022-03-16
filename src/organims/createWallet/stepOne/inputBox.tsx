@@ -68,6 +68,8 @@ const InputBox = ({walletInfo}:Props) => {
     useEffect(() => {
         if(nameValidation && pwValidation && confirm){
             walletInfo(walletName, password, true);
+        } else {
+            walletInfo(walletName, password, false);
         }
     }, [nameValidation, pwValidation, confirm])
 

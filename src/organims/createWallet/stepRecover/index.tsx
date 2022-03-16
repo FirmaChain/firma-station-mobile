@@ -9,6 +9,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor, InputBgColor, Lato, TextColor } from "@/constants/theme";
 import { recoverFromMnemonic } from "@/util/firma";
+import { CHECK_MNEMONIC } from "@/constants/common";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 
@@ -31,7 +32,7 @@ const StepRecover = () => {
         if(wallet === undefined){
             return Toast.show({
                 type: 'error',
-                text1: 'Check your mnemonic again.',
+                text1: CHECK_MNEMONIC,
             });
         }
         navigation.navigate(Screens.CreateStepOne, {wallet: wallet});
