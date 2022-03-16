@@ -65,7 +65,7 @@ const SendInputBox = ({handleSendInfo, available, reset}:Props) => {
                 onChangeEvent={(value:any) => handleSendInfoState("memo", value)}/>
             <View style={styles.radioBox}>
                 <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
-                <TouchableOpacity disabled={limitAvailable == 0 || available < 100000} onPress={() => setSafetyActive(!safetyActive)}>
+                <TouchableOpacity disabled={limitAvailable < 20000 || available < 100000} onPress={() => setSafetyActive(!safetyActive)}>
                     <View style={[styles.radioWrapper, safetyActive?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
                         <View style={styles.radio} />
                     </View>

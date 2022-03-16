@@ -65,23 +65,6 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
         setSelectDelegationAmount(selectedValidator === undefined? 0 : selectedValidator.amount);
     }
 
-    const handleSafetyMode = (active:boolean) => {
-        setSafetyActive(active)
-        if(active){
-            if(balance > 100000){
-                setLimitAvailable(balance - 100000);
-            } else {
-                handleSafetyMode(false);
-            }
-        } else {
-            if(balance > 20000) {
-                setLimitAvailable(balance - 20000);
-            } else {
-                setLimitAvailable(0);
-            }
-        }
-    }
-
     useEffect(() => {
         if(maxActive){
             switch (type) {
@@ -98,10 +81,28 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
     }, [maxActive]);
 
     useEffect(() => {
-        if(type === "Delegate" && balance > 0){
-            if(balance < 100000) setSafetyActive(false);
+        if(type === "Delegate"){
+            if(safetyActive){
+                if(available > 100000){
+                    setLimitAvailable(available - 100000);
+                } 
+            } else {
+                if(available > 20000) {
+                    setLimitAvailable(available - 20000);
+                } else {
+                    setLimitAvailable(0);
+                    setSafetyActive(false);
+                }
+            }
         }
-    }, [balance]);
+    }, [type, safetyActive, available])
+    
+
+    useEffect(() => {
+        if(type === "Delegate" && available > 0){
+            if(available < 100000) setSafetyActive(false);
+        }
+    }, [available]);
 
     useEffect(() => {
         if(type === "Undelegate"){
@@ -147,7 +148,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                     {type === "Delegate" &&
                         <View style={styles.radioBox}>
                             <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
-                            <TouchableOpacity disabled={limitAvailable === 0} onPress={() => handleSafetyMode(!safetyActive)}>
+                            <TouchableOpacity disabled={limitAvailable < 20000 || available < 100000} onPress={() => setSafetyActive(!safetyActive)}>
                                 <View style={[styles.radioWrapper, safetyActive?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
                                     <View style={styles.radio} />
                                 </View>
@@ -155,7 +156,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                         </View>
                     }
                 </View>
-                {(type === "Delegate" && safetyActive && balance > 0) &&
+                {(type === "Delegate" && safetyActive && available > 100000) &&
                 <View>
                     <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
                 </View>
