@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -23,6 +23,7 @@ const Setting = () => {
     const {wallet} = useAppSelector(state => state);
 
     const settingList = [
+        {title: 'Change Wallet name', path: 'ChangeWN'},
         {title: 'Change Password', path: 'ChangePW'},
         {title: 'Export Private key', path: 'ExportPK'},
         {title: 'Export Mnemonic', path: 'ExportMN'},
@@ -30,6 +31,9 @@ const Setting = () => {
 
     const handleMenus = (path:string) => {
         switch (path) {
+            case "ChangeWN":
+                navigation.navigate(Screens.ChangeWalletName);
+                break;
             case "ChangePW":
                 navigation.navigate(Screens.ChangePassword);
                 break;

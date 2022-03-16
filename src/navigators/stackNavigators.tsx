@@ -28,6 +28,7 @@ import ExportWalletScreen from "../screens/setting/exportWallet";
 import TransactionScreen from "../screens/transaction/transaction";
 import LoginCheckScreen from "@/screens/loginCheck";
 import HistoryScreen from "@/screens/home/history/history";
+import ChangeWalletNameScreen from "@/screens/setting/changeWalletName";
 
 export const Stack = createStackNavigator<StackParamList>();
 const StackNavigator = () => {
@@ -112,6 +113,10 @@ const StackNavigator = () => {
                     options={{headerShown: false}}
                     name={Screens.Setting}
                     component={SettingScreen} />
+                <Stack.Screen
+                    options={{headerShown: false}}
+                    name={Screens.ChangeWalletName}
+                    component={ChangeWalletNameScreen} />
                 <Stack.Screen
                     options={{headerShown: false}}
                     name={Screens.ChangePassword}

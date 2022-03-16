@@ -1,17 +1,43 @@
 import React from "react";
-import { BgColor, BoxColor, Lato, TextColor } from "@/constants/theme";
 import { StyleSheet, Text, View } from "react-native";
+import { BgColor, BoxColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import AntDesignIcons from "react-native-vector-icons/AntDesign";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface Props {
     title: string;
     content: string;
+    icon?: boolean;
+    iconType?: string;
+    iconName?: string;
 }
 
-const TextMenuItem = ({title, content}:Props) => {
+const TextMenuItem = ({title, icon = false, iconType = "", iconName = "", content}:Props) => {
+
+    const Icon = () => {
+        switch (iconType) {
+            case "MaterialCommunityIcons":
+                return <MaterialCommunityIcons name={iconName} size={15} color={WhiteColor} />
+            case "MaterialIcons":
+                return <MaterialIcons name={iconName} size={15} color={WhiteColor} />
+            case "AntDesign":
+                return <AntDesignIcons name={iconName} size={15} color={WhiteColor} />
+            case "Ionicons":
+                return <Ionicons name={iconName} size={15} color={WhiteColor} />
+            default:
+                break;
+        }
+    }
+
     return (
         <View style={styles.listItem}>
             <Text style={styles.itemTitle}>{title}</Text>
-            <Text style={styles.content}>{content}</Text>
+            <View style={styles.contentWrapper}>
+                <Text style={[styles.content, {paddingRight: icon? 5:0}]}>{content}</Text>
+                {icon && Icon()}
+            </View>
         </View>
     )
 }
@@ -30,6 +56,10 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16,
         color: TextColor
+    },
+    contentWrapper: {
+        flexDirection: "row",
+        alignItems: "center",
     },
     content: {
         fontFamily: Lato,

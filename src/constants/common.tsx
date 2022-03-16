@@ -27,6 +27,8 @@ export const WARNING_WALLET_NAME_IS_TOO_SHORT = "name must be between 5 and 20 c
 export const WARNING_PASSWORD_IS_TOO_SHORT = "Password must be longer than 10 characters";
 export const WARNING_PASSWORD_NOT_MATCH = "Password does not match";
 
+export const WALLETNAME_CHANGE_SUCCESS = "Successfully changed your wallet name.";
+
 export const PASSWORD_CHANGE_SUCCESS = "Successfully changed your password.";
 export const PASSWORD_CHANGE_FAIL = "Please check your current password.";
 

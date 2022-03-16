@@ -36,7 +36,8 @@ export enum Screens {
 
     Setting = 'Setting',
     ChangePassword = 'ChangePassword',
-    ExportWallet = 'ExportPrivateKey',
+    ChangeWalletName = 'ChangeWalletName',
+    ExportWallet = 'ExportWallet',
 }
 
 export type StackParamList = {
@@ -67,5 +68,6 @@ export type StackParamList = {
 
     Setting: undefined;
     ChangePassword: undefined;
-    ExportPrivateKey: ExportWalletParams;
+    ChangeWalletName: undefined;
+    ExportWallet: ExportWalletParams;
 }

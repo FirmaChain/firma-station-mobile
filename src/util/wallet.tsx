@@ -59,6 +59,12 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
     return adr;
 }
 
+export const removeWallet = async(name:string) => {
+    await removeChain(name)
+    .then(res => console.log(res))
+    .catch(error => console.log(error));
+}
+
 export const getWallet = async(name:string, password:string) => {
     const walletKey:string = keyEncrypt(name, password);
     let result = '';
@@ -97,6 +103,14 @@ export const setWalletWithAutoLogin = async(walletInfo:string) => {
     const encWallet = encrypt(payload, UNIQUE_ID);
     
     setChain(UNIQUE_ID, encWallet);
+}
+
+export const removeWalletWithAutoLogin = () => {
+    removeChain(UNIQUE_ID);
+}
+
+export const setUseBioAuth = (name:string) => {
+    setChain(USE_BIO_AUTH + name, "true");
 }
 
 export const getUseBioAuth = async(name:string) => {
@@ -164,6 +178,21 @@ export const setPasswordViaBioAuth = async(password:string) => {
 
     const encWallet = encrypt(password, UNIQUE_ID + timestamp.toString());
     setChain(UNIQUE_ID + timestamp.toString(), encWallet);
+}
+
+export const removePasswordViaBioAuth = async() => {
+    let timestamp = 0;
+    await getWalletWithAutoLogin().then(res => {
+        if('') return null;
+        const result = JSON.parse(res);
+        timestamp = result.timestamp;
+    }).catch(error => {
+        console.log('error : ' + error);
+        return null;
+    })
+    await removeChain(getUniqueId + timestamp.toString())
+    .then(res => console.log(res))
+    .catch(error => console.log(error));
 }
 
 export const getDecryptPassword = async() => {
