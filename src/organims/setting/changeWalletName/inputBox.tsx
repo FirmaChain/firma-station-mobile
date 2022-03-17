@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
-import InputSetVertical from "@/components/input/inputSetVertical";
-import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_WALLET_NAME, WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
-import { InputBgColor, Lato, TextGrayColor } from "@/constants/theme";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
+import { InputBgColor, Lato, TextGrayColor } from "@/constants/theme";
+import { PLACEHOLDER_FOR_PASSWORD, 
+    PLACEHOLDER_FOR_WALLET_NAME, 
+    WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
+import InputSetVertical from "@/components/input/inputSetVertical";
 
 interface Props {
     wallet: any;

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 import InputSetVertical from "@/components/input/inputSetVertical";
-import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_PASSWORD_CONFIRM, PLACEHOLDER_FOR_WALLET_NAME, WARNING_PASSWORD_IS_TOO_SHORT, WARNING_PASSWORD_NOT_MATCH, WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
+import { PLACEHOLDER_FOR_PASSWORD, 
+    PLACEHOLDER_FOR_PASSWORD_CONFIRM, 
+    PLACEHOLDER_FOR_WALLET_NAME, 
+    WARNING_PASSWORD_IS_TOO_SHORT, 
+    WARNING_PASSWORD_NOT_MATCH, 
+    WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
 import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
 
 interface Props {

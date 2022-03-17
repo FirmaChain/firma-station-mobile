@@ -1,13 +1,13 @@
-import Clipboard from "@react-native-clipboard/clipboard";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { AddressBoxColor, AddressTextColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { ADDRESS_QRCODE_MODAL_TEXT, COPIED_CLIPBOARD } from "@/constants/common";
 import { Copy, QRCodeIcon } from "@/components/icon/icon";
 import CustomModal from "@/components/modal/customModal";
 import Button from "@/components/button/button";
-import { AddressBoxColor, AddressTextColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
-import { ADDRESS_QRCODE_MODAL_TEXT, COPIED_CLIPBOARD } from "@/constants/common";
 import QRCode from "react-native-qrcode-svg";
+import Clipboard from "@react-native-clipboard/clipboard";
+import Toast from "react-native-toast-message";
 
 interface Props {
     address: string;

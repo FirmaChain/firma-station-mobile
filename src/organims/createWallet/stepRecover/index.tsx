@@ -4,12 +4,12 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions } from "@/redux/actions";
-import Button from "@/components/button/button";
-import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor, InputBgColor, Lato, TextColor } from "@/constants/theme";
 import { recoverFromMnemonic } from "@/util/firma";
 import { CHECK_MNEMONIC } from "@/constants/common";
+import Button from "@/components/button/button";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 

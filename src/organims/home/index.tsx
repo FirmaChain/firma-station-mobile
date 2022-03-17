@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
-import TabNavigators from "@/navigators/tabNavigators";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions } from "@/redux/actions";
-import SplashScreen from "react-native-splash-screen";
-import TabContainer from "@/components/parts/containers/tabContainer";
 import { useAppSelector } from "@/redux/hooks";
+import TabContainer from "@/components/parts/containers/tabContainer";
+import TabNavigators from "@/navigators/tabNavigators";
+import SplashScreen from "react-native-splash-screen";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 

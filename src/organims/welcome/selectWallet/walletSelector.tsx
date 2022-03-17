@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
-import { DownArrow } from "@/components/icon/icon";
-import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { DownArrow } from "@/components/icon/icon";
 
 interface Props {
     handleOpenModal: Function;

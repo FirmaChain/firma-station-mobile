@@ -1,7 +1,7 @@
 import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { BorderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { convertAmount } from "@/util/common";
-import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
     available: number;

@@ -1,12 +1,12 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Clipboard from "@react-native-clipboard/clipboard";
-import Toast from "react-native-toast-message";
-import Button from "@/components/button/button";
 import { Copy } from "@/components/icon/icon";
 import { BgColor, BoxColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { COPIED_CLIPBOARD } from "@/constants/common";
 import QRCode from "react-native-qrcode-svg";
+import Clipboard from "@react-native-clipboard/clipboard";
+import Toast from "react-native-toast-message";
+import Button from "@/components/button/button";
 
 interface Props {
     type: string;

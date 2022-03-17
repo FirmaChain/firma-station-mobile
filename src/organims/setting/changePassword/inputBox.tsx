@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Keyboard, Pressable, StyleSheet } from "react-native";
-import InputSetVertical from "@/components/input/inputSetVertical";
 import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_PASSWORD_CONFIRM, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import { PasswordValidationCheck } from "@/util/validationCheck";
+import InputSetVertical from "@/components/input/inputSetVertical";
 
 interface Props {
     wallet: any;

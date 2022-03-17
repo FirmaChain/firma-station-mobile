@@ -1,7 +1,7 @@
-import InputSetVertical from "@/components/input/inputSetVertical";
-import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import React from "react";
 import { Keyboard, Pressable, StyleSheet } from "react-native";
+import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
+import InputSetVertical from "@/components/input/inputSetVertical";
 
 interface Props {
     resetValues: boolean;

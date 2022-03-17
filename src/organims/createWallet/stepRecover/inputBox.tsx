@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { InputBgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import Clipboard from "@react-native-clipboard/clipboard";
 import TextButton from "@/components/button/textButton";
-import { InputBgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     handleMnemonic: (mnemonic:string) => void;

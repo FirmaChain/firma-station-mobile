@@ -1,8 +1,8 @@
-import { WhiteColor } from "@/constants/theme";
-import { wait } from "@/util/common";
-import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useRef, useState } from "react";
 import { RefreshControl, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { WhiteColor } from "@/constants/theme";
+import { wait } from "@/util/common";
 
 interface Props {
     scrollEndFunc?: Function;

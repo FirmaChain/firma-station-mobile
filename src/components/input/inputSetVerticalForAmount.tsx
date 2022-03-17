@@ -1,6 +1,6 @@
-import { convertToFctNumberForInput, handleDecimalPointLimit } from "@/util/common";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { convertToFctNumberForInput, handleDecimalPointLimit } from "@/util/common";
 import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import TextButton from "../button/textButton";
 

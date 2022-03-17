@@ -1,8 +1,8 @@
 import React from "react";
 import { View } from "react-native";
+import { WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 import AlertModal from "@/components/modal/alertModal";
 import CustomModal from "@/components/modal/customModal";
-import { WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 import ExportModal from "../modal/exportModal";
 
 interface Props {

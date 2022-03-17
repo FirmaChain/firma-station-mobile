@@ -1,7 +1,7 @@
 import React from 'react';
-import { ForwardArrow, ForwardArrowWithTail, Person } from '@/components/icon/icon';
-import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor, WhiteColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor, WhiteColor } from '@/constants/theme';
+import { ForwardArrow, ForwardArrowWithTail, Person } from '@/components/icon/icon';
 import { RedelegationInfo } from '@/hooks/staking/hooks';
 
 interface Props {

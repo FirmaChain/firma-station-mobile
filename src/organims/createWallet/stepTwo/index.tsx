@@ -3,11 +3,11 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
+import { BgColor } from "@/constants/theme";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import MnemonicGrid from "./mnmonicGrid";
-import { BgColor } from "@/constants/theme";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 

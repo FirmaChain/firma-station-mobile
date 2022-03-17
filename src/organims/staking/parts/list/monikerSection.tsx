@@ -2,7 +2,6 @@ import React from 'react';
 import { ForwardArrow, Person } from '@/components/icon/icon';
 import { DarkGrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface Props {
     validator: {

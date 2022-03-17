@@ -1,6 +1,6 @@
-import { CAMERA_PERMISSION_ALERT } from "@/constants/common";
 import { Alert, Platform } from "react-native";
 import { Permission, check, RESULTS, PERMISSIONS, openSettings } from "react-native-permissions"
+import { CAMERA_PERMISSION_ALERT } from "@/constants/common";
 
 export const isPermissionGranted = async(permission:Permission) => {
     let granted = false;

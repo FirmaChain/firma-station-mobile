@@ -1,12 +1,12 @@
 import React from "react";
-import Clipboard from "@react-native-clipboard/clipboard";
 import { StyleSheet, Text, View } from "react-native";
 import { ScreenWidth } from "@/util/getScreenSize";
 import { BgColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import Toast from "react-native-toast-message";
+import { COPIED_CLIPBOARD, MNEMONIC_WARN_MESSAGE } from "@/constants/common";
 import TextButton from "@/components/button/textButton";
 import WarnContainer from "@/components/parts/containers/warnContainer";
-import { COPIED_CLIPBOARD, MNEMONIC_WARN_MESSAGE } from "@/constants/common";
+import Clipboard from "@react-native-clipboard/clipboard";
+import Toast from "react-native-toast-message";
 
 const MnemonicGrid: React.FC<{
     mnemonic: string;

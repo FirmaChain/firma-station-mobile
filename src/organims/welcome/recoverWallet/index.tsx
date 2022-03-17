@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Button from "@/components/button/button";
-import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
-import { BgColor } from "@/constants/theme";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@/redux/actions";
 import { recoverFromMnemonic } from "@/util/firma";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import Toast from "react-native-toast-message";
+import { checkCameraPermission } from "@/util/permission";
+import { CHECK_MNEMONIC, RECOVER_INFO_MESSAGE } from "@/constants/common";
+import { BgColor } from "@/constants/theme";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
-import { CHECK_MNEMONIC, RECOVER_INFO_MESSAGE } from "@/constants/common";
 import RecoverMenus from "./recoverMenus";
-import { checkCameraPermission } from "@/util/permission";
+import Toast from "react-native-toast-message";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 

@@ -1,6 +1,6 @@
-import { Lato, TextDarkGrayColor, TextDisableColor } from "@/constants/theme";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { Lato, TextDarkGrayColor, TextDisableColor } from "@/constants/theme";
 
 interface Props {
     title: string;

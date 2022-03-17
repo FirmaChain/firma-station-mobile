@@ -1,10 +1,10 @@
 import React from "react";
 import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
-import { FailCircle, SuccessCircle } from "@/components/icon/icon";
-import Button from "@/components/button/button";
-import { ResultState } from ".";
 import { EXPLORER_URL } from "@/constants/common";
+import { FailCircle, SuccessCircle } from "@/components/icon/icon";
+import { ResultState } from ".";
+import Button from "@/components/button/button";
 
 interface Props {
     result: ResultState;

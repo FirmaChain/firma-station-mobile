@@ -1,7 +1,7 @@
-import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
 import { Alert } from "react-native";
-import ReactNativeBiometrics from "react-native-biometrics";
 import { openSettings } from "react-native-permissions";
+import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
+import ReactNativeBiometrics from "react-native-biometrics";
 
 export const confirmViaBioAuth = async() => {
     let authResult:boolean = false;

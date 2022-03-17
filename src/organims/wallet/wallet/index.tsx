@@ -5,9 +5,9 @@ import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/n
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useAppSelector } from "@/redux/hooks";
 import { BgColor } from "@/constants/theme";
-import RefreshScrollView from "@/components/parts/refreshScrollView";
 import { useHistoryData } from "@/hooks/wallet/hooks";
 import { useStakingData } from "@/hooks/staking/hooks";
+import RefreshScrollView from "@/components/parts/refreshScrollView";
 import AddressBox from "./addressBox";
 import BalanceBox from "./balanceBox";
 import HistoryBox from "./historyBox";

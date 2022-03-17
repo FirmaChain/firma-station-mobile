@@ -1,6 +1,6 @@
-import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 
 const QuestionItem: React.FC<{
     title: string;

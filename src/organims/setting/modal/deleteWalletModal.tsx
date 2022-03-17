@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD, SETTING_DELETE_WALLET_TEXT } from "@/constants/common";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import CustomModal from "@/components/modal/customModal";
-import { FailedColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { FailedColor, Lato, TextCatTitleColor } from "@/constants/theme";
+import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
-import { WalletNameValidationCheck } from "@/util/validationCheck";
+import CustomModal from "@/components/modal/customModal";
 import InputSetVertical from "@/components/input/inputSetVertical";
 
 interface Props {

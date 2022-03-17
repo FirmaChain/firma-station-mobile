@@ -1,8 +1,8 @@
-import { Person } from "@/components/icon/icon";
-import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
-import { ValidatorDescription } from "@/hooks/staking/hooks";
 import React from "react";
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
+import { ValidatorDescription } from "@/hooks/staking/hooks";
+import { Person } from "@/components/icon/icon";
 
 interface Props {
     validator: ValidatorDescription;

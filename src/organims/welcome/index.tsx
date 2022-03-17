@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import SplashScreen from "react-native-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -12,6 +11,7 @@ import { WELCOME_DESCRIPTION } from "@/constants/common";
 import { WALLET_LIST } from "@/../config";
 import Button from "@/components/button/button";
 import ViewContainer from "@/components/parts/containers/viewContainer";
+import SplashScreen from "react-native-splash-screen";
 import Description from "./description";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;

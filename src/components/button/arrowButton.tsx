@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { WhiteColor } from "@/constants/theme";
 import { BackArrow } from "../icon/icon";
 

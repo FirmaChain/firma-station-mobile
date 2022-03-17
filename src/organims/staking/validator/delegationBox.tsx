@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
-import SmallButton from "@/components/button/smallButton";
 import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
 import { ARROW_ACCORDION } from "@/constants/images";
-import { convertAmount, resizeFontSize } from "@/util/common";
 import { degree, TurnToOpposite, TurnToOriginal } from "@/util/animation";
-import { StakingState } from "@/hooks/staking/hooks";
+import { convertAmount, resizeFontSize } from "@/util/common";
 import { getFeesFromGas } from "@/util/firma";
+import { StakingState } from "@/hooks/staking/hooks";
+import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
+import SmallButton from "@/components/button/smallButton";
 
 interface Props {
     stakingState: StakingState;

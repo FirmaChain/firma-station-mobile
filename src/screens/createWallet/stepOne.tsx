@@ -1,5 +1,4 @@
 import React from "react";
-import { StyleSheet } from "react-native";
 import StepOne from "@/organims/createWallet/stepOne";
 
 export type CreateStepOneParams = {

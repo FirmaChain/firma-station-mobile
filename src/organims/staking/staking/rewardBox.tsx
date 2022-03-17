@@ -1,10 +1,10 @@
-import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
-import { getFeesFromGas } from "@/util/firma";
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { ButtonPointLightColor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor } from "@/constants/theme";
+import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
+import { getFeesFromGas } from "@/util/firma";
 import SmallButton from "@/components/button/smallButton";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
-import { ButtonPointLightColor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor } from "@/constants/theme";
 
 interface Props {
     reward: any;

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
 import { BIOAUTH_ACTIVATE } from "@/constants/common";
-import { confirmViaBioAuth } from "@/util/bioAuth";
 import { getUseBioAuth, removePasswordViaBioAuth, setPasswordViaBioAuth, setUseBioAuth } from "@/util/wallet";
+import { confirmViaBioAuth } from "@/util/bioAuth";
 import BioAuthOnModal from "../modal/bioAuthOnModal";
 import Toast from "react-native-toast-message";
 
