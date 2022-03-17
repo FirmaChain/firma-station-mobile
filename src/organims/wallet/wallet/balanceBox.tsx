@@ -7,10 +7,10 @@ import { convertAmount,
         makeDecimalPoint, 
         resizeFontSize } from "@/util/common";
 import { ForwardArrow } from "@/components/icon/icon";
-import SmallButton from "@/components/button/smallButton";
 import { FIRMA_LOGO } from "@/constants/images";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
-import { COINGECKO } from "../../../../config";
+import { COINGECKO } from "@/../config";
+import SmallButton from "@/components/button/smallButton";
 
 interface Props {
     stakingValues: StakingState;

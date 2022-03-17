@@ -10,6 +10,7 @@ import { BgColor } from "@/constants/theme";
 import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from "@/constants/common";
 import { addressCheck, getEstimateGasSend, getFeesFromGas } from "@/util/firma";
 import { convertNumber } from "@/util/common";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
@@ -17,7 +18,6 @@ import TransactionConfirmModal from "@/components/modal/transactionConfirmModal"
 import AlertModal from "@/components/modal/alertModal";
 import SendInputBox from "./sendInputBox";
 import WalletInfo from "./walletInfo";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 

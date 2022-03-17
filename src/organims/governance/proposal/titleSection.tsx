@@ -1,8 +1,8 @@
-import { ProposalTitleState } from '@/hooks/governance/hooks';
-import React, { useMemo } from 'react'
+import React from 'react'
 import { StyleSheet, Text, View } from 'react-native';
-import { PROPOSAL_STATUS, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from '../../../constants/common';
-import { Lato, TextColor, TextGrayColor } from '../../../constants/theme';
+import { ProposalTitleState } from '@/hooks/governance/hooks';
+import { PROPOSAL_STATUS, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from '@/constants/common';
+import { Lato, TextColor } from '@/constants/theme';
 
 interface Props {
     data: ProposalTitleState

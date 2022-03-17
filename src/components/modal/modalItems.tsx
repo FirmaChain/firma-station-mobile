@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, ScrollView, Text } from "react-native";
-import { BorderColor, Lato, TextColor, WhiteColor } from "../../constants/theme";
+import { BorderColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { Radio } from "../icon/icon";
 
 interface Props {

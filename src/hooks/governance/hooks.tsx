@@ -1,7 +1,7 @@
-import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
-import { useAppSelector } from "@/redux/hooks";
 import { useEffect, useState } from "react";
-import { convertNumber, convertTime } from "../../util/common";
+import { useAppSelector } from "@/redux/hooks";
+import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
+import { convertNumber, convertTime } from "@/util/common";
 
 export interface GovernanceState {
     list: Array<ProposalItemState>;

@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import Toast, { BaseToast, ErrorToast} from 'react-native-toast-message';
-import { Lato, toastError, toastInfo, toastSuccess } from "../../constants/theme";
+import { Lato, toastError, toastInfo, toastSuccess } from "@/constants/theme";
 
 const CustomToast = () => {
     const toastConfig = {

@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react";
 import { useCurrentHistoryByAddressQuery, useHistoryByAddressQuery } from "@/apollo/gqls";
 import { useAppSelector } from "@/redux/hooks";
 import { getBalanceFromAdr } from "@/util/firma";
-import { useEffect, useState } from "react";
-import { convertNumber } from "../../util/common";
+import { convertNumber } from "@/util/common";
 
 export interface BalanceState {
     available: number;

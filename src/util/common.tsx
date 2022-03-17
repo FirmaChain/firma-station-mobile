@@ -1,4 +1,3 @@
-import { KeyboardEvent } from "react";
 import moment from "moment";
 
 export const wait = (timeout:number) => {

@@ -1,7 +1,7 @@
-import { BgColor, BoxColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { ScreenWidth } from "../../../util/getScreenSize";
+import { BoxColor, Lato, TextColor } from "@/constants/theme";
+import { ScreenWidth } from "@/util/getScreenSize";
 
 const MnemonicItems: React.FC<{
     mnemonicItems: string[];

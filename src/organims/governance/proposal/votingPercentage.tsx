@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BgColor, BorderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
-import { convertAmount, convertNumber, convertPercentage } from "../../../util/common";
+import { convertAmount, convertNumber, convertPercentage } from "@/util/common";
 import { CaretUp } from "@/components/icon/icon";
 
 interface Props {

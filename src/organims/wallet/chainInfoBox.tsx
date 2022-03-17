@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { TextColor } from "../../constants/theme";
+import { TextColor } from "@/constants/theme";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {

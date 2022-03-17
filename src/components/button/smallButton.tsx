@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { DisableColor, Lato, PointColor, TextColor } from "../../constants/theme";
+import { DisableColor, Lato, PointColor, TextColor } from "@/constants/theme";
 
 const SmallButton: React.FC<{
     title: string;

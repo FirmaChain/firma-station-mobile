@@ -9,6 +9,7 @@ import { StakingState, useDelegationData, useValidatorDataFromAddress } from "@/
 import { getEstimateGasFromDelegation, getStakingFromvalidator } from "@/util/firma";
 import { BgColor, BoxColor } from "@/constants/theme";
 import { KeyValue, TRANSACTION_TYPE } from "@/constants/common";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
@@ -17,7 +18,6 @@ import DescriptionBox from "./descriptionBox";
 import DelegationBox from "./delegationBox";
 import PercentageBox from "./percentageBox";
 import AddressBox from "./addressBox";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 

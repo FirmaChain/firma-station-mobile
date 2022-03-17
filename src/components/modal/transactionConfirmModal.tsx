@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import CustomModal from "./customModal";
-import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
-import { decrypt, keyEncrypt } from "../../util/keystore";
-import { getChain } from "../../util/secureKeyChain";
-import { WalletNameValidationCheck } from "../../util/validationCheck";
-import InputSetVertical from "../input/inputSetVertical";
-import Button from "../button/button";
+import { useAppSelector } from "@/redux/hooks";
+import { decrypt, keyEncrypt } from "@/util/keystore";
+import { getChain } from "@/util/secureKeyChain";
+import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { convertAmount } from "@/util/common";
 import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
 import { confirmViaBioAuth } from "@/util/bioAuth";
+import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
-import { useAppSelector } from "@/redux/hooks";
+import InputSetVertical from "../input/inputSetVertical";
+import Button from "../button/button";
+import CustomModal from "./customModal";
 
 interface Props {
     title: string,

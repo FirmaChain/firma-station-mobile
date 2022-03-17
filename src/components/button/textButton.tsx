@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { DisableColor, Lato, TextButtonColor, TextColor } from "../../constants/theme";
+import { DisableColor, Lato, TextButtonColor, TextColor } from "@/constants/theme";
 
 const TextButton: React.FC<{
     title: string;

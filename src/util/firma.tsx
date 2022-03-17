@@ -1,9 +1,9 @@
 import { FirmaMobileSDK, FirmaUtil } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
 import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
+import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import { convertNumber, convertToFctNumber } from "./common";
 import { getDecryptPassword, getWallet } from "./wallet";
-import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from "../../config";
 
 let firmaSDK = new FirmaMobileSDK(CHAIN_NETWORK["MainNet"].FIRMACHAIN_CONFIG);
 

@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "../../../constants/theme";
 import { convertAmount, resizeFontSize } from "@/util/common";
 import { StakingState } from "@/hooks/staking/hooks";
+import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 
 interface Props {
     stakingValues: StakingState;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, PointColor, PointLightColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "../../constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "@/constants/theme";
 
 const InputSetVertical: React.FC<{
     title: string;

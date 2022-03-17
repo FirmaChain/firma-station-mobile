@@ -1,10 +1,8 @@
-import React from "react";
+import React, { useEffect, useState }from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor } from "../../constants/theme";
-import WalletIcon from "react-native-vector-icons/Ionicons";
-import { useEffect } from "react";
-import { useState } from "react";
+import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { ARROW_DISABLE, ARROW_ENABLE, FIRMA_LOGO } from "@/constants/images";
+import WalletIcon from "react-native-vector-icons/Ionicons";
 
 const Description: React.FC<{
     title: string;

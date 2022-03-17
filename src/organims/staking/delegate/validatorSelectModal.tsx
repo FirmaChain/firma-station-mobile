@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
-import CustomModal from "../../../components/modal/customModal";
 import { StakeInfo } from "@/hooks/staking/hooks";
+import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
+import CustomModal from "@/components/modal/customModal";
 
 interface Props {
     list: Array<StakeInfo>;

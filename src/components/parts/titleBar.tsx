@@ -1,7 +1,7 @@
 import React from "react";
-import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
-import { Lato, TextColor } from "../../constants/theme";
-import { ScreenWidth } from "../../util/getScreenSize";
+import { Keyboard, Pressable, StyleSheet, Text } from "react-native";
+import { Lato, TextColor } from "@/constants/theme";
+import { ScreenWidth } from "@/util/getScreenSize";
 
 interface Props {
     title: string;

@@ -2,7 +2,7 @@ import { checkCameraPermission } from "@/util/permission";
 import Clipboard from "@react-native-clipboard/clipboard";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "../../constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "@/constants/theme";
 import TextButton from "../button/textButton";
 import { QRCodeIcon } from "../icon/icon";
 import QRCodeScannerModal from "../modal/qrCodeScanner";

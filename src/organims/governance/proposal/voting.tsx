@@ -1,10 +1,10 @@
-import { PROPOSAL_STATUS_DEPOSIT_PERIOD, PROPOSAL_STATUS_VOTING_PERIOD } from "@/constants/common";
 import React, { useMemo, useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Button from "../../../components/button/button";
-import CustomModal from "../../../components/modal/customModal";
-import TransactionConfirmModal from "../../../components/modal/transactionConfirmModal";
-import { BorderColor, Lato, TextColor } from "../../../constants/theme";
+import { PROPOSAL_STATUS_DEPOSIT_PERIOD, PROPOSAL_STATUS_VOTING_PERIOD } from "@/constants/common";
+import { BorderColor, Lato, TextColor } from "@/constants/theme";
+import Button from "@/components/button/button";
+import CustomModal from "@/components/modal/customModal";
+import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 
 const cols = 2;
 const marginHorizontal = 4;
@@ -69,7 +69,7 @@ const Voting = ({status, transactionHandler, depositHandler}:Props) => {
                     </View>
                 </View>
         </CustomModal>
-        <TransactionConfirmModal transactionHandler={transactionHandler} title={"Vote - " + selectedVote} walletName={""} open={openTransactionModal} setOpenModal={handleTransactionModal} />
+        <TransactionConfirmModal transactionHandler={transactionHandler} title={"Vote - " + selectedVote} amount={0} fee={0} open={openTransactionModal} setOpenModal={handleTransactionModal} />
         </>
     )
 }

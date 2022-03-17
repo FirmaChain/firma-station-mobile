@@ -4,7 +4,7 @@ import { StakingActions } from "@/redux/actions";
 import { useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
 import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
 import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
-import { BLOCKS_PER_YEAR } from "../../../config";
+import { BLOCKS_PER_YEAR } from "@/../config";
 
 export interface ValidatorState {
     description: ValidatorDescription;

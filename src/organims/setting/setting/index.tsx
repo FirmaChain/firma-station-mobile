@@ -4,16 +4,16 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
 import { BgColor } from "@/constants/theme";
 import { removeWalletWithAutoLogin } from "@/util/wallet";
+import { VERSION } from "@/../config";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 import BioAuthRadio from "./bioAuthRadio";
 import MenuItem from "./menuItem";
 import Disconnect from "./disconnect";
 import Delete from "./delete";
 import TextMenuItem from "./textMenuItem";
-import { VERSION } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 

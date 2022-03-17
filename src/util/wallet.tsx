@@ -1,10 +1,10 @@
 import { CommonActions, WalletActions } from "@/redux/actions";
 import { getUniqueId } from "react-native-device-info";
+import { USE_BIO_AUTH, WALLET_LIST } from "@/../config";
 import { checkBioMetrics } from "./bioAuth";
 import { getAdrFromMnemonic } from "./firma";
 import { decrypt, encrypt, keyEncrypt } from "./keystore";
 import { getChain, removeChain, setChain } from "./secureKeyChain";
-import { USE_BIO_AUTH, WALLET_LIST } from "../../config";
 
 const UNIQUE_ID = getUniqueId();
 

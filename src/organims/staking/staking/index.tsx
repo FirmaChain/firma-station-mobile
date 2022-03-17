@@ -7,16 +7,16 @@ import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { useStakingData } from "@/hooks/staking/hooks";
 import { useHistoryData } from "@/hooks/wallet/hooks";
-import { BgColor } from "@/constants/theme";
-import { wait } from "@/util/common";
-import { TRANSACTION_TYPE } from "@/constants/common";
 import { getEstimateGasFromAllDelegations } from "@/util/firma";
+import { wait } from "@/util/common";
+import { BgColor } from "@/constants/theme";
+import { TRANSACTION_TYPE } from "@/constants/common";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
+import AlertModal from "@/components/modal/alertModal";
 import RewardBox from "./rewardBox";
 import BalanceBox from "./balanceBox";
-import AlertModal from "@/components/modal/alertModal";
 import StakingLists from "./stakingLists";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
