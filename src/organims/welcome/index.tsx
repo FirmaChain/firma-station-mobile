@@ -1,26 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
+import { getStatusBarHeight } from "react-native-status-bar-height";
+import SplashScreen from "react-native-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useAppSelector } from "@/redux/hooks";
-import { getStatusBarHeight } from "react-native-status-bar-height";
-import { DisableColor, FailedColor, Lato, TextGrayColor } from "@/constants/theme";
+import { getChain } from "@/util/secureKeyChain";
+import { BgColor, DisableColor, FailedColor, Lato, TextGrayColor } from "@/constants/theme";
 import { WELCOME_DESCRIPTION } from "@/constants/common";
+import { WALLET_LIST } from "@/../config";
 import Button from "@/components/button/button";
+import ViewContainer from "@/components/parts/containers/viewContainer";
 import Description from "./description";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
-interface Props {
-    walletExist: boolean;
-}
-
-const Welcome = (props:Props) => {
-    const {walletExist} = props;
+const Welcome = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-
+    
     const {common} = useAppSelector(state => state);
+
+    const [walletExist, setWalletExist] = useState(false);
 
     const Title: string = 'CONNECT';
     const Desc: string = WELCOME_DESCRIPTION;
@@ -37,24 +38,44 @@ const Welcome = (props:Props) => {
         navigation.navigate(Screens.RecoverWallet);
     }
 
+    
+    const isWalletExist = async() => {
+        await getChain(WALLET_LIST).then(res => {
+            if(res === false) return setWalletExist(false);
+            return setWalletExist(true);
+        }).catch(error => {
+            console.log('error : ' + error);
+        })
+    }
+
+    useEffect(() => {
+        SplashScreen.hide();
+        isWalletExist();
+        return () => {
+            setWalletExist(false);
+        }
+    }, [])
+
     return (
-        <View style={styles.viewContainer}>
-            <Text style={styles.network}>{common.network !== "MainNet" && common.network}</Text>
-            <Description title={Title} desc={Desc} />
-            <View style={styles.buttonBox}>
-                {walletExist && 
-                <View style={{paddingBottom: 10}}>
-                    <Button title={'Select Wallet'} active={true}onPressEvent={handleSelectWallet}/>
-                </View>}
-                <Button title={'New Wallet'} active={true} border={true} onPressEvent={handleCreateStepOne} />
-                <View style={styles.dividerWrapper}>
-                    <View style={styles.divider}/>
-                    <Text style={styles.dividerText}>OR</Text>
-                    <View style={styles.divider}/>
+        <ViewContainer bgColor={BgColor}>
+            <View style={styles.viewContainer}>
+                <Text style={styles.network}>{common.network !== "MainNet" && common.network}</Text>
+                <Description title={Title} desc={Desc} />
+                <View style={styles.buttonBox}>
+                    {walletExist && 
+                    <View style={{paddingBottom: 10}}>
+                        <Button title={'Select Wallet'} active={true}onPressEvent={handleSelectWallet}/>
+                    </View>}
+                    <Button title={'New Wallet'} active={true} border={true} onPressEvent={handleCreateStepOne} />
+                    <View style={styles.dividerWrapper}>
+                        <View style={styles.divider}/>
+                        <Text style={styles.dividerText}>OR</Text>
+                        <View style={styles.divider}/>
+                    </View>
+                    <Button title={'Recover Wallet'} active={true} border={true} onPressEvent={handleRecoverWallet} />
                 </View>
-                <Button title={'Recover Wallet'} active={true} border={true} onPressEvent={handleRecoverWallet} />
             </View>
-        </View>
+        </ViewContainer>
     )
 }
 
