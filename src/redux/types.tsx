@@ -3,6 +3,7 @@ export type Action = {
     payload?: any,
 }
 
+export const IS_CONNECTION = "IS_CONNECTION";
 export const HANDLE_LOADING_PROGRESS = "HANDLE_LOADING_PROGRESS";
 export const HANDLE_NETWORK = "HANDLE_NETWORK";
 export const IS_NETWORK_CHANGED = "IS_NETWORK_CHANGED";

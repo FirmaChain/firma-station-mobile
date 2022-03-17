@@ -43,6 +43,7 @@ export default Description;
 const styles = StyleSheet.create({
     styledView: {
         flex: 2,
+        marginTop: -25,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

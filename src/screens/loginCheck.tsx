@@ -7,6 +7,7 @@ import { BgColor } from "@/constants/theme";
 import { getWalletWithAutoLogin } from "@/util/wallet";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions, WalletActions } from "@/redux/actions";
+import SplashScreen from "react-native-splash-screen";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -18,7 +19,7 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
     const {navigation} = props;
 
     const [loading, setLoading] = useState(true);
-    const {wallet} = useAppSelector(state => state);
+    const {wallet, common} = useAppSelector(state => state);
 
     useEffect(() => {
         const getWalletForAutoLogin = async() => {
@@ -37,22 +38,23 @@ const LoginCheckScreen: React.FunctionComponent<LoginCheckScreenProps> = (props)
     }, []);
 
     useEffect(() => {
-        if(!loading){
-            if(wallet.name !== ""){
-                navigation.reset({routes: [{name: Screens.Home}]});
+        if(common.connect){
+            if(!loading){
+                if(wallet.name !== ""){
+                    navigation.reset({routes: [{name: Screens.Home}]});
+                } else {
+                    navigation.reset({routes: [{name: Screens.Welcome}]});
+                    CommonActions.handleLoadingProgress(loading);
+                }
             } else {
-                navigation.reset({routes: [{name: Screens.Welcome}]});
                 CommonActions.handleLoadingProgress(loading);
             }
-        } else {
-            CommonActions.handleLoadingProgress(loading);
         }
-    }, [loading]);
+    }, [loading, common.connect]);
     
     return (
         <ViewContainer bgColor={BgColor}>
-            <View style={styles.container}>
-            </View>
+            <View style={styles.container}/>
         </ViewContainer>
     )
 }

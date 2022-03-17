@@ -4,7 +4,7 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import { getChain } from "@/util/secureKeyChain";
 import { BgColor } from "@/constants/theme";
 import Welcome from "@/organims/welcome";
-import { WALLET_LIST } from "@/../config";
+import { WALLET_LIST } from "../../../config";
 
 const WelcomeScreen = () => {
     const [walletExist, setWalletExist] = useState(false);

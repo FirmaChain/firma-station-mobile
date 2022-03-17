@@ -8,7 +8,6 @@ import { useAppSelector } from "@/redux/hooks";
 import { useDelegationData } from "@/hooks/staking/hooks";
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from "@/util/firma";
 import { TRANSACTION_TYPE } from "@/constants/common";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
@@ -16,6 +15,7 @@ import AlertModal from "@/components/modal/alertModal";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import InputBox from "./inputBox";
 import { convertNumber } from "@/util/common";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 

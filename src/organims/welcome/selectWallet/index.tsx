@@ -110,7 +110,7 @@ const SelectWallet = () => {
         WalletActions.handleWalletAddress(adr);
 
         setBioAuth(selectedWallet, password);
-        navigation.reset({routes: [{name: 'Home'}]});
+        navigation.reset({routes: [{name: Screens.Home}]});
     }
 
     useEffect(() => {

@@ -2,7 +2,7 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { ApolloLink, concat } from "@apollo/client/link/core";
 import { HttpLink } from "@apollo/client/link/http";
-import { CHAIN_NETWORK } from "@/../config";
+import { CHAIN_NETWORK } from "../../config";
 
 let httpLink = new HttpLink({ uri: CHAIN_NETWORK["MainNet"].GRAPHQL + '/v1/graphql'});
 const authMiddleware = new ApolloLink((operation, forward) => {

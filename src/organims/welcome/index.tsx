@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import Button from "@/components/button/button";
+import React from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { useAppSelector } from "@/redux/hooks";
+import { getStatusBarHeight } from "react-native-status-bar-height";
+import { DisableColor, FailedColor, Lato, TextGrayColor } from "@/constants/theme";
 import { WELCOME_DESCRIPTION } from "@/constants/common";
-import { BgColor, DisableColor, Lato, TextGrayColor } from "@/constants/theme";
+import Button from "@/components/button/button";
 import Description from "./description";
-import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -18,6 +19,8 @@ interface Props {
 const Welcome = (props:Props) => {
     const {walletExist} = props;
     const navigation: ScreenNavgationProps = useNavigation();
+
+    const {common} = useAppSelector(state => state);
 
     const Title: string = 'CONNECT';
     const Desc: string = WELCOME_DESCRIPTION;
@@ -34,12 +37,9 @@ const Welcome = (props:Props) => {
         navigation.navigate(Screens.RecoverWallet);
     }
 
-    useEffect(() => {
-        CommonActions.handleNetwork("MainNet");
-    }, [])
-
     return (
         <View style={styles.viewContainer}>
+            <Text style={styles.network}>{common.network !== "MainNet" && common.network}</Text>
             <Description title={Title} desc={Desc} />
             <View style={styles.buttonBox}>
                 {walletExist && 
@@ -59,18 +59,21 @@ const Welcome = (props:Props) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: "100%",
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: BgColor,
-    },
     viewContainer: {
         flex: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-around",
+        paddingTop: Platform.select({android: 0, ios: getStatusBarHeight()}),
+    },
+    network: {
+        width: "100%",
+        height: 25,
+        fontFamily: Lato, 
+        fontSize: 14,
+        textAlign: "right", 
+        color: FailedColor,
+        paddingHorizontal: 20,
     },
     buttonBox: {
         width: "100%", 

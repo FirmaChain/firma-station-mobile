@@ -13,7 +13,7 @@ import MenuItem from "./menuItem";
 import Disconnect from "./disconnect";
 import Delete from "./delete";
 import TextMenuItem from "./textMenuItem";
-import { VERSION } from "@/../config";
+import { VERSION } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -47,7 +47,7 @@ const Setting = () => {
 
     const disconnectWallet = async() => {
         await removeWalletWithAutoLogin();
-        navigation.reset({routes: [{name: 'Welcome'}]});
+        navigation.reset({routes: [{name: Screens.Welcome}]});
     }
 
     const handleBack = () => {

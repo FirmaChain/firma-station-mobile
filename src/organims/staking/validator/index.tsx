@@ -13,11 +13,11 @@ import RefreshScrollView from "@/components/parts/refreshScrollView";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import AlertModal from "@/components/modal/alertModal";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import DescriptionBox from "./descriptionBox";
 import DelegationBox from "./delegationBox";
 import PercentageBox from "./percentageBox";
 import AddressBox from "./addressBox";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 

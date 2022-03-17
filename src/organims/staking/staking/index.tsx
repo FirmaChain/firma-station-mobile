@@ -12,11 +12,11 @@ import { wait } from "@/util/common";
 import { TRANSACTION_TYPE } from "@/constants/common";
 import { getEstimateGasFromAllDelegations } from "@/util/firma";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import RewardBox from "./rewardBox";
 import BalanceBox from "./balanceBox";
 import AlertModal from "@/components/modal/alertModal";
 import StakingLists from "./stakingLists";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "../../../../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 

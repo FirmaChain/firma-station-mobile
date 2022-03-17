@@ -1,4 +1,11 @@
-import { HANDLE_LOADING_PROGRESS, HANDLE_NETWORK, IS_NETWORK_CHANGED } from "../types"
+import { HANDLE_LOADING_PROGRESS, HANDLE_NETWORK, IS_CONNECTION, IS_NETWORK_CHANGED } from "../types"
+
+export const handleIsConnection = (connect:boolean) => (
+    {
+        type: IS_CONNECTION,
+        payload: connect,
+    }
+)
 
 export const handleLoadingProgress = (loading:boolean) => (
     {

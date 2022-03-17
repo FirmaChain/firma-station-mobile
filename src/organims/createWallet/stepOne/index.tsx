@@ -66,7 +66,7 @@ const StepOne = ({wallet = null}:Props) => {
         if(useBioAuth){
             handleOpenBioAuthModal(true);
         } else {
-            navigation.reset({routes: [{name: 'Home'}]});
+            navigation.reset({routes: [{name: Screens.Home}]});
         }
     }
 
@@ -75,10 +75,10 @@ const StepOne = ({wallet = null}:Props) => {
             setPasswordViaBioAuth(wallet.password);
             setUseBioAuth(walletName);
             handleOpenBioAuthModal(false);
-            navigation.reset({routes: [{name: 'Home'}]});
+            navigation.reset({routes: [{name: Screens.Home}]});
         } else {
             handleOpenBioAuthModal(false);
-            navigation.reset({routes: [{name: 'Home'}]});
+            navigation.reset({routes: [{name: Screens.Home}]});
         }
     }
 
