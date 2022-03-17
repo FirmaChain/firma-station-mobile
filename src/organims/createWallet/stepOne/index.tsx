@@ -70,9 +70,9 @@ const StepOne = ({wallet = null}:Props) => {
         }
     }
 
-    const MoveToHomeScreen = (result:boolean) => {
+    const MoveToHomeScreen = async(result:boolean) => {
         if(result){
-            setPasswordViaBioAuth(wallet.password);
+            await setPasswordViaBioAuth(wallet.password);
             setUseBioAuth(walletName);
             handleOpenBioAuthModal(false);
             navigation.reset({routes: [{name: Screens.Home}]});
@@ -94,7 +94,7 @@ const StepOne = ({wallet = null}:Props) => {
             <ViewContainer bgColor={BgColor}>
                 <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>
                     <InputBox walletInfo={handleWalletInfo}/>
-                    {wallet && <BioAuthModal walletName={wallet.name} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>}
+                    {wallet && <BioAuthModal walletName={walletName} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>}
                     <View style={styles.buttonBox}>
                         <Button 
                             title={wallet? 'Recover' : 'Next'} 

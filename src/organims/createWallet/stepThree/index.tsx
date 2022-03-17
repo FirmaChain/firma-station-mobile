@@ -40,9 +40,9 @@ const StepThree = ({wallet}:Props) => {
         }
     }
 
-    const MoveToHomeScreen = (result:boolean) => {
+    const MoveToHomeScreen = async(result:boolean) => {
         if(result){
-            setPasswordViaBioAuth(wallet.password);
+            await setPasswordViaBioAuth(wallet.password);
             setUseBioAuth(wallet.name);
             handleOpenBioAuthModal(false);
             navigation.reset({routes: [{name: Screens.Home}]});

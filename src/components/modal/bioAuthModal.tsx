@@ -26,9 +26,7 @@ const BioAuthModal = (props:Props) => {
             const auth = await confirmViaBioAuth();
             if(auth){
                 handleResult(true);
-            } else {
-                return handleResult(false);
-            }
+            } 
         }
     }
 
