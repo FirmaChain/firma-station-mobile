@@ -6,6 +6,7 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions } from "@/redux/actions";
 import SplashScreen from "react-native-splash-screen";
 import TabContainer from "@/components/parts/containers/tabContainer";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -15,6 +16,7 @@ interface Props {
 
 const Home = ({title}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
+    const {common} = useAppSelector(state => state);
 
     const moveToSetting = () => {
         navigation.navigate(Screens.Setting);
@@ -26,10 +28,14 @@ const Home = ({title}:Props) => {
 
     useFocusEffect(
         useCallback(() => {
-            setTimeout(() => {
-                SplashScreen.hide();
+            const timeout = setTimeout(() => {
+                    SplashScreen.hide();
             }, 1500);
-            CommonActions.handleLoadingProgress(false);
+
+            if(common.connect === false) {
+                clearTimeout(timeout);
+            }
+            CommonActions.handleLoadingProgress(!common.connect);
         }, [])
     )
 

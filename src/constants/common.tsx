@@ -48,6 +48,7 @@ export const CAMERA_PERMISSION_ALERT = {
     desc: "Move to settings to enable camera permissions?"
 }
 
+export const CONNECTION_NOTICE = "Connection error.\nPlease check your network.";
 export const COPIED_CLIPBOARD = "Copied your ";
 export const CHANGE_NETWORK_NOTICE = "Under changing into the ";
 export const BIOAUTH_ACTIVATE = "Bio Auth has been activated";

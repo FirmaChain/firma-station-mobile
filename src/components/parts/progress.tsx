@@ -5,10 +5,12 @@ import { fadeIn, fadeOut } from "@/util/animation";
 import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import { CHANGE_NETWORK_NOTICE } from "@/constants/common";
+import { CHANGE_NETWORK_NOTICE, CONNECTION_NOTICE } from "@/constants/common";
 
 const Progress = () => {
     const {common} = useAppSelector(state => state);
+
+    const opacity = (common.connect === false || common.isNetworkChanged)? 1:.5;
 
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
     const fadeAnim_2 = useRef(new Animated.Value(0)).current;
@@ -45,7 +47,7 @@ const Progress = () => {
 
     return (
         <View style={styles.container}>
-            <View style={[styles.background, {opacity: common.isNetworkChanged?1:.5}]}/>
+            <View style={[styles.background, {opacity: opacity}]}/>
             <View style={[styles.box, {justifyContent: "center"}]}>
                 <Animated.Image style={[styles.logo, {opacity: 1}]} source={LOADING_LOGO_0} />
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_1}]} source={LOADING_LOGO_1} />
@@ -53,6 +55,7 @@ const Progress = () => {
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
             </View>
             {common.isNetworkChanged && <Text style={styles.network}>{CHANGE_NETWORK_NOTICE + common.network}</Text>}
+            {common.connect === false && <Text style={styles.network}>{CONNECTION_NOTICE}</Text>}
         </View>
     )
 }
