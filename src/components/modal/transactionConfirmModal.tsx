@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
-import { decrypt, keyEncrypt } from "@/util/keystore";
-import { getChain } from "@/util/secureKeyChain";
-import { WalletNameValidationCheck } from "@/util/validationCheck";
-import { convertAmount } from "@/util/common";
 import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
+import { WalletNameValidationCheck } from "@/util/validationCheck";
+import { decrypt, keyEncrypt } from "@/util/keystore";
+import { convertAmount } from "@/util/common";
+import { getChain } from "@/util/secureKeyChain";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";

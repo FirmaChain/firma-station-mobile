@@ -59,9 +59,9 @@ export const isValid = (data:any) => {
 
 export const convertTime = (time:string, fulltime:boolean, addTime?:boolean) => {
     if(time === undefined) return '';
-    if(fulltime) return moment(time).format("YYYY-MM-DD HH:mm:ss (UTC+0)");
-    if(addTime)return moment(time).format("YYYY-MM-DD HH:mm:ss");
-    return moment(time).format("YYYY-MM-DD");
+    if(fulltime) return moment(new Date(time)).format("YYYY-MM-DD HH:mm:ss (UTC+0)");
+    if(addTime)return moment(new Date(time)).format("YYYY-MM-DD HH:mm:ss");
+    return moment(new Date(time)).format("YYYY-MM-DD");
 }
 
 export const convertPercentage = (value: string | number) => {

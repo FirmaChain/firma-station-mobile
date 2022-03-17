@@ -1,12 +1,12 @@
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import QRCodeScanner from "react-native-qrcode-scanner";
-import { BarCodeReadEvent } from "react-native-camera";
 import { QRCODE_SCANNER_MODAL_TEXT, WRONG_ADDRESS } from "@/constants/common";
 import { Lato, TextCatTitleColor, WhiteColor } from "@/constants/theme";
 import { ScreenHeight, ScreenWidth } from "@/util/getScreenSize";
 import { addressCheck } from "@/util/firma";
 import { Close } from "../icon/icon";
+import { BarCodeReadEvent } from "react-native-camera";
+import QRCodeScanner from "react-native-qrcode-scanner";
 import Toast from "react-native-toast-message";
 import CustomToast from "../toast/customToast";
 
