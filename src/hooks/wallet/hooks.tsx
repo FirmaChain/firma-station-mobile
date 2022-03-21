@@ -122,6 +122,14 @@ export const useHistoryData = () => {
     }
 
     useEffect(() => {
+        setHistoryList({list:[]});
+        setRecentHistory({
+            hash: '',
+            success: '',
+            type: '',
+            timestamp: '',
+            block: 0,
+        });
         const changeChainNetwork = async() => {
             await refetchCurrentHistory();
             await handleHisotyPolling();

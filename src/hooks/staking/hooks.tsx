@@ -126,6 +126,10 @@ export const useDelegationData = () => {
     }
 
     useEffect(() => {
+        setDelegationList([]);
+        setRedelegationList([]);
+        setUndelegationList([]);
+        setValidatorsDescList([]);
         handleTotalDelegationPolling();
     }, [common.network])
 
@@ -170,7 +174,14 @@ export const useStakingData = () => {
     }
 
     useEffect(() => {
-        if(wallet.address === '' || wallet.address === undefined) return;
+        if(wallet.address === '' || wallet.address === undefined) {
+            return setStakingState({
+                available: 0,
+                delegated: 0,
+                undelegate: 0,
+                stakingReward: 0,
+            })
+        };
         getStakingState();
     }, [common.network]);
 
@@ -254,6 +265,7 @@ export const useValidatorData = () => {
     }
 
     useEffect(() => {
+        setValidators([]);
         handleValidatorsPolling();
     }, [common.network])
 

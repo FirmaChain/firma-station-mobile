@@ -23,7 +23,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>
 const Staking = () => {
     const navigation:ScreenNavgationProps = useNavigation();
 
-    const { wallet, staking } = useAppSelector(state => state);
+    const { wallet, staking, common } = useAppSelector(state => state);
     const isFocused = useIsFocused();
 
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
@@ -52,7 +52,9 @@ const Staking = () => {
         CommonActions.handleLoadingProgress(true);
         await getStakingState();
         wait(1500).then(() => {
-            CommonActions.handleLoadingProgress(false);
+            if(common.isNetworkChanged === false){
+                CommonActions.handleLoadingProgress(false);
+            }
         });
         setIsRefresh(false);
     }
@@ -121,6 +123,7 @@ const Staking = () => {
         <View style={styles.container}>
             <RefreshScrollView
                 refreshFunc={refreshStates}>
+                {common.connect && 
                 <>
                 <View style={styles.box}>
                     <RewardBox gas={withdrawAllGas} reward={staking.stakingReward} transactionHandler={handleWithdrawAll}/>
@@ -135,6 +138,7 @@ const Staking = () => {
                     confirmTitle={"OK"}
                     type={"ERROR"}/>
                 </>
+                }
             </RefreshScrollView>
         </View>
     )

@@ -3,6 +3,7 @@ import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { setFirmaSDK } from "@/util/firma";
+import { wait } from "@/util/common";
 import { setExplorerUrl } from "@/constants/common";
 import { ApolloProvider, getClient, setClient } from "@/apollo";
 import Progress from "@/components/parts/progress";
@@ -34,20 +35,16 @@ const Router = () => {
     }, [common.connect, common.loading]);
 
     useEffect(() => {
-        setClient(common.network);
-        setFirmaSDK(common.network);
-        setExplorerUrl(common.network);
-        const timeout = setTimeout(() => {
+        wait(3000).then(() => {
             CommonActions.handleLoadingProgress(false);
             CommonActions.handleIsNetworkChange(false);
-        }, 5000);
-
-        if(common.connect === false) {
-            clearTimeout(timeout);
-        }
+        })
     }, [common.network]);
 
     useEffect(() => {
+        setClient(common.network);
+        setFirmaSDK(common.network);
+        setExplorerUrl(common.network);
         CommonActions.handleIsConnection(true);
         unsubscribe();
     }, []);

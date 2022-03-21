@@ -6,6 +6,9 @@ import { CommonActions } from "@/redux/actions";
 import { BgColor, FailedColor, Lato, TextButtonColor, TextColor, WhiteColor } from "@/constants/theme";
 import { ICON_HISTORY } from "@/constants/images";
 import { Setting } from "@/components/icon/icon";
+import { setFirmaSDK } from "@/util/firma";
+import { setClient } from "@/apollo";
+import { setExplorerUrl } from "@/constants/common";
 import TextButton from "@/components/button/textButton";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
@@ -36,8 +39,12 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props)
     }
 
     const handleSelectNetwork = (index:number) => {
+        if(index === selectedNetworkIndex) return setOpenNetworkSelectModal(false);
         CommonActions.handleIsNetworkChange(true);
         CommonActions.handleLoadingProgress(true);
+        setFirmaSDK(networkList[index]);
+        setClient(networkList[index]);
+        setExplorerUrl(networkList[index]);
         CommonActions.handleNetwork(networkList[index]);
         setSelectedNetworkIndex(index);
         setOpenNetworkSelectModal(false);
