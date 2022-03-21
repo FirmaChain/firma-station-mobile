@@ -31,11 +31,13 @@ const BalanceBox = ({stakingValues}:Props) => {
         <View style={styles.container}>
             <View style={[styles.box, {flex: 3}]}>
                 {StakingValues.map((item, index) => {
+                    const originSize = 16;
+                    // const resize = resizeFontSize(item.ufct?item.data / 100000000 : item.data, 1000000, originSize);
                     return (
                         <View key={index} style={[styles.box, {flex: 1}, (index < StakingValues.length - 1) && {borderRightColor: DisableColor, borderRightWidth: 1}]}>
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, {fontSize: resizeFontSize(item.ufct?item.data / 1000000 : item.data, 10000, 16)}]}>{convertAmount(item.data, item.ufct)}</Text>
+                                <Text style={[styles.desc, {fontSize: originSize}]}>{convertAmount(item.data, item.ufct)}</Text>
                             </View>
                         </View>
                     )

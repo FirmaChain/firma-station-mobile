@@ -9,12 +9,13 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 interface Props {
     title: string;
     content: string;
+    bgColor?: string;
     icon?: boolean;
     iconType?: string;
     iconName?: string;
 }
 
-const TextMenuItem = ({title, icon = false, iconType = "", iconName = "", content}:Props) => {
+const TextMenuItem = ({title, content, bgColor = BoxColor, icon = false, iconType = "", iconName = ""}:Props) => {
 
     const Icon = () => {
         switch (iconType) {
@@ -32,7 +33,7 @@ const TextMenuItem = ({title, icon = false, iconType = "", iconName = "", conten
     }
 
     return (
-        <View style={styles.listItem}>
+        <View style={[styles.listItem, {backgroundColor: bgColor}]}>
             <Text style={styles.itemTitle}>{title}</Text>
             <View style={styles.contentWrapper}>
                 <Text style={[styles.content, {paddingRight: icon? 5:0}]}>{content}</Text>
@@ -44,7 +45,6 @@ const TextMenuItem = ({title, icon = false, iconType = "", iconName = "", conten
 
 const styles = StyleSheet.create({
     listItem: {
-        backgroundColor: BoxColor,
         padding: 20,
         flexDirection: "row",
         justifyContent: "space-between",

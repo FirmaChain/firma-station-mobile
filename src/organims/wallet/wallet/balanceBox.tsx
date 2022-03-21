@@ -95,17 +95,17 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
                 <View style={[styles.wrapperH, {flex: 3, justifyContent: "space-between", alignItems: "center" ,paddingTop: 18}]}>
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Delegated</Text>
-                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingValues.delegated, 100000, 18)}]}>{delegated}</Text>
+                        <Text style={[styles.balance, {fontSize: 16}]}>{delegated}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Undelegate</Text>
-                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingValues.undelegate, 100000, 18)}]}>{undelegate}</Text>
+                        <Text style={[styles.balance, {fontSize: 16}]}>{undelegate}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Reward</Text>
-                        <Text style={[styles.balance, {fontSize: resizeFontSize(stakingValues.stakingReward, 100000, 18)}]}>{reward}</Text>
+                        <Text style={[styles.balance, {fontSize: 16}]}>{reward}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

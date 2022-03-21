@@ -34,13 +34,15 @@ const ModalItems = ({initVal, data, onPressEvent}:Props) => {
 const styles = StyleSheet.create({
     modalContainer: {
         width: '100%',
-        paddingVertical: 20,
+        marginBottom: 20,
+        maxHeight: 500,
     },
     modalContentBox: {
         width: '100%',
         paddingVertical: 20,
         paddingHorizontal: 20,
         flexDirection: 'row',
+        alignItems: "center",
         justifyContent: 'space-between',
         borderBottomWidth: .5,
         borderBottomColor: BorderColor,
