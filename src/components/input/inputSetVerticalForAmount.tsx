@@ -29,7 +29,11 @@ const InputSetVerticalForAmount: React.FC<{
 
     const handleInputChange = (value: string) => {
         const result = handleDecimalPointLimit(value);
-        setVal(result);
+        if(value === '0'){
+            setVal('');
+        } else {
+            setVal(result);
+        }
         onChangeEvent && onChangeEvent(Number(result));
     }
 

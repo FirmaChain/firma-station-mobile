@@ -52,6 +52,7 @@ export const CONNECTION_NOTICE = "Connection error.\nPlease check your network."
 export const COPIED_CLIPBOARD = "Copied your ";
 export const CHANGE_NETWORK_NOTICE = "Under changing into the ";
 export const BIOAUTH_ACTIVATE = "Bio Auth has been activated";
+export const FEE_INSUFFICIENT_NOTICE = "The fee is insufficient. Please check the balance.";
 
 // wallet
 export const ADDRESS_QRCODE_MODAL_TEXT = {
@@ -93,6 +94,7 @@ export const UNDELEGATE_NOTICE_TEXT = [
     "A maximum of 7 undelegations are allowed per validator during the 21 day link period."
 ]
 
+export const NO_DELEGATION = "No Delegation";
 export const REDELEGATE_NOTICE_TEXT = [
     "Redelegated supply will be linked for a period of 21 days.",
     "A maximum of 7 redelegations are allowed. ",

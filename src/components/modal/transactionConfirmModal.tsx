@@ -61,8 +61,12 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
         }
     }
 
+    let isProcessing = false;
     const handleTransaction = async() => {
         if(active === false) return;
+        
+        if(isProcessing === true) return;
+        isProcessing = true;
 
         let passwordFromBio = '';
         if(useBio){
@@ -72,11 +76,13 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
                     passwordFromBio = res;
                 }).catch(error => console.log(error));
             } else {
+                isProcessing = false;
                 return;
             }
         }
         const result = useBio? passwordFromBio : password;
 
+        isProcessing = false;
         transactionHandler && transactionHandler(result);
         handleModal(false);
     }

@@ -4,14 +4,14 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@/redux/actions";
-import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
-import Button from "@/components/button/button";
-import BioAuthModal from "@/components/modal/bioAuthModal";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { createNewWallet, Wallet } from "@/util/firma";
 import { CREATE_WALLET_FAILED } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
+import Container from "@/components/parts/containers/conatainer";
+import ViewContainer from "@/components/parts/containers/viewContainer";
+import Button from "@/components/button/button";
+import BioAuthModal from "@/components/modal/bioAuthModal";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 
@@ -58,6 +58,10 @@ const StepOne = ({wallet = null}:Props) => {
             navigation.navigate(Screens.CreateStepTwo, {wallet: wallet});
         } catch (error) {
             CommonActions.handleLoadingProgress(false);
+            Toast.show({
+                type: 'error',
+                text1: CREATE_WALLET_FAILED,
+            });
         }
     }
 
@@ -72,7 +76,7 @@ const StepOne = ({wallet = null}:Props) => {
 
     const MoveToHomeScreen = async(result:boolean) => {
         if(result){
-            await setPasswordViaBioAuth(wallet.password);
+            await setPasswordViaBioAuth(password);
             setUseBioAuth(walletName);
             handleOpenBioAuthModal(false);
             navigation.reset({routes: [{name: Screens.Home}]});
