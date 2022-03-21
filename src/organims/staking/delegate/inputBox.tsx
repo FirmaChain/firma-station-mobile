@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { StakeInfo } from "@/hooks/staking/hooks";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
-import { AUTO_ENTERED_AMOUNT_TEXT, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
+import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
 import { DownArrow } from "@/components/icon/icon";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
@@ -100,7 +100,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
 
     useEffect(() => {
         if(type === "Delegate" && available > 0){
-            if(available < 100000) setSafetyActive(false);
+            if(available <= 100000) setSafetyActive(false);
         }
     }, [available]);
 
@@ -144,23 +144,29 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                     onChangeMaxAmount={setMaxActive}
                     onChangeEvent={(value:number) => handleDelegateState("amount", value)}/>
                 
-                <View style={styles.radioBox}>
-                    {type === "Delegate" &&
-                        <View style={styles.radioBox}>
-                            <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
-                            <TouchableOpacity disabled={limitAvailable < 20000 || available < 100000} onPress={() => setSafetyActive(!safetyActive)}>
-                                <View style={[styles.radioWrapper, safetyActive?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
-                                    <View style={styles.radio} />
-                                </View>
-                            </TouchableOpacity>
+                {type === "Delegate" &&
+                    <>
+                    <View style={styles.radioBox}>
+                        <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
+                        <TouchableOpacity disabled={available <= 100000} onPress={() => setSafetyActive(!safetyActive)}>
+                            <View style={[styles.radioWrapper, safetyActive?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
+                                <View style={styles.radio} />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    {(available > 0 && available <= 20000) && 
+                        <View style={{marginBottom: 10}}>
+                            <WarnContainer text={FEE_INSUFFICIENT_NOTICE}/>
                         </View>
                     }
-                </View>
-                {(type === "Delegate" && safetyActive && available > 100000) &&
-                <View>
-                    <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
-                </View>
+                    {(safetyActive && available > 100000) &&
+                    <View>
+                        <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
+                    </View>
+                    }
+                    </>
                 }
+
                 {(type === "Undelegate" || type === "Redelegate")&&
                 
                 noticeText.map((value, index) => {
@@ -237,8 +243,8 @@ const styles = StyleSheet.create({
     radioBox: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 5,
+        justifyContent: "flex-start",
+        marginBottom: 10,
     },
     radioWrapper: {
         width: 45,

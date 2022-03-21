@@ -4,6 +4,8 @@ import { DisableColor, Lato, PointColor, TextGrayColor, WhiteColor } from "@/con
 import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAddress";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import InputSetVertical from "@/components/input/inputSetVertical";
+import WarnContainer from "@/components/parts/containers/warnContainer";
+import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE } from "@/constants/common";
 
 interface Props {
     handleSendInfo: (type:string, value:string|number) => void;
@@ -65,12 +67,22 @@ const SendInputBox = ({handleSendInfo, available, reset}:Props) => {
                 onChangeEvent={(value:any) => handleSendInfoState("memo", value)}/>
             <View style={styles.radioBox}>
                 <Text style={[styles.title, {paddingRight: 5}]}>Safety</Text>
-                <TouchableOpacity disabled={limitAvailable < 20000 || available < 100000} onPress={() => setSafetyActive(!safetyActive)}>
+                <TouchableOpacity disabled={available <= 100000} onPress={() => setSafetyActive(!safetyActive)}>
                     <View style={[styles.radioWrapper, safetyActive?{backgroundColor: PointColor, alignItems: "flex-end"}:{backgroundColor: DisableColor}]}>
                         <View style={styles.radio} />
                     </View>
                 </TouchableOpacity>
             </View>
+            {(available > 0 && available <= 20000) && 
+            <View style={{marginBottom: 10}}>
+                <WarnContainer text={FEE_INSUFFICIENT_NOTICE}/>
+            </View>
+            }
+            {(safetyActive && available > 100000) &&
+            <View>
+                <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
+            </View>
+            }
         </View>
     )
 }
@@ -86,7 +98,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
-        marginBottom: 5,
+        marginBottom: 10,
     },
     radioWrapper: {
         width: 45,
