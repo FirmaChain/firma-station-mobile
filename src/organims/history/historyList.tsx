@@ -28,7 +28,7 @@ const HistoryList = ({historyList, pagination}:Props) => {
                         <View style={styles.wrapperH}>
                             <View style={{flex: 2}}>
                                 <View style={[styles.wrapperH, {alignItems: "center", paddingBottom: 15}]}>
-                                    <Text style={[styles.contentTitle, {fontSize: 10, fontWeight: "normal"}]}>{convertTime(value.timestamp, false, true)}</Text>
+                                    <Text style={[styles.contentTitle, {fontSize: 10, fontWeight: "normal"}]}>{convertTime(value.timestamp, true, false)}</Text>
                                 </View>
                                 <View style={[styles.wrapperH, styles.wrapper, {flex: 4, justifyContent: "flex-start", alignItems: "flex-start", paddingLeft: 10}]}>
                                     <View style={[styles.historyWrapper, {flex: 1}]}>

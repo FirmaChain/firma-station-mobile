@@ -1,4 +1,5 @@
-import moment from "moment";
+import moment, { locales } from "moment";
+import { Platform } from "react-native";
 
 export const wait = (timeout:number) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -59,9 +60,17 @@ export const isValid = (data:any) => {
 
 export const convertTime = (time:string, fulltime:boolean, addTime?:boolean) => {
     if(time === undefined) return '';
-    if(fulltime) return moment(new Date(time)).format("YYYY-MM-DD HH:mm:ss (UTC+0)");
-    if(addTime)return moment(new Date(time)).format("YYYY-MM-DD HH:mm:ss");
-    return moment(new Date(time)).format("YYYY-MM-DD");
+    
+    let date = new Date(time);
+    const offset = date.getTimezoneOffset();
+    if(Platform.OS === "ios"){
+        date.setHours(date.getHours() - (offset/60));
+    }
+    const GMT = (offset/60) < 0? "+"+(Math.abs(offset/60)):((offset/60) * -1);
+
+    if(fulltime) return moment(new Date(date)).format("YYYY-MM-DD HH:mm:ss") + ` (GMT${GMT})`;
+    if(addTime)return moment(new Date(date)).format("YYYY-MM-DD HH:mm:ss");
+    return moment(new Date(date)).format("YYYY-MM-DD");
 }
 
 export const convertPercentage = (value: string | number) => {

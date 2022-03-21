@@ -40,7 +40,7 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                     <ForwardArrow size={20} color={TextCatTitleColor}/>
                     }
                 </View>
-                {recentHistory === undefined? 
+                {(recentHistory === undefined || recentHistory.hash === "")? 
                 <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "center", alignItems: "center" ,paddingTop: 18}]}>
                     <Text style={[styles.contentItem, {fontSize: 14}]}>There's no history yet</Text>
                 </View>
