@@ -4,18 +4,28 @@ import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor } from "@/consta
 import { ARROW_DISABLE, ARROW_ENABLE, FIRMA_LOGO } from "@/constants/images";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 
-const Description: React.FC<{
+interface Props {
     title: string;
     desc: string;
-}> = ({title, desc}) => {
+}
+
+const Description = ({title, desc}:Props) => {
 
     const [arrowIndex, setArrowIndex] = useState(0);
+
+    const handleArrowIndex = () => {
+        setArrowIndex(arrowIndex => arrowIndex === 2? 0 : arrowIndex + 1);
+    }
+
     useEffect(() => {
-        let timer = setInterval(() => {
-            setArrowIndex(arrowIndex => arrowIndex === 2? 0 : arrowIndex + 1);
+        handleArrowIndex();
+        let timerId = setTimeout(function progress() {
+            handleArrowIndex();
+            timerId = setTimeout(progress, 500);
         }, 500);
+
         return () => {
-            clearInterval(timer);
+            clearTimeout(timerId);
         }
     }, []);
 

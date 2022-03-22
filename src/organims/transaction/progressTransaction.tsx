@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
 import { Animated, BackHandler, Platform, StyleSheet, Text, View } from "react-native";
 import { fadeIn, fadeOut } from "@/util/animation";
@@ -9,6 +9,7 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 import { QuestionCircle } from "@/components/icon/icon";
 
 const ProgressTransaction = () => {
+
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
     const fadeAnim_2 = useRef(new Animated.Value(0)).current;
     const fadeAnim_3 = useRef(new Animated.Value(0)).current;
@@ -17,14 +18,6 @@ const ProgressTransaction = () => {
     const animated = [ fadeAnim_1, fadeAnim_2, fadeAnim_3 ];
 
     const [counter, setCounter] = useState(0);
-
-    const networkDelay = useMemo(() => {
-        if(counter % 60 >= 15){ 
-            fadeIn(fadeAnim_notice);
-            return true;
-        }
-        return false;
-    }, [counter])
 
     const createTimerText = (time:number) => {
         let min:string|number = parseInt((time/60).toString());
@@ -35,12 +28,19 @@ const ProgressTransaction = () => {
 
         return min + " : " + sec;
     }
+
+    useEffect(() => {
+        if(counter % 60 >= 15){ 
+            fadeIn(fadeAnim_notice);
+        }
+    }, [counter])
     
     useEffect(() => {
         let index = -1;
         let inverse = true;
         let count = 0;
-        const timer = setInterval(() => {
+
+        const handleProgress = () => {
             count = count + 5;
             if(count === 10){
                 setCounter(counter => counter + 1);
@@ -53,10 +53,16 @@ const ProgressTransaction = () => {
             if(!inverse && (index >= 0 && index < 3)) fadeOut(animated[index]);
 
             if(index <= -1 || index >= 3) inverse = !inverse;
+        }
+
+        handleProgress();
+        let timerId = setTimeout(function progress() {
+            handleProgress();
+            timerId = setTimeout(progress, 500);
         }, 500);
 
         return () => {
-            clearInterval(timer);
+            clearTimeout(timerId);
         };
     }, []);
 

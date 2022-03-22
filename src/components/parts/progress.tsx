@@ -21,7 +21,8 @@ const Progress = () => {
     useEffect(() => {
         let index = -1;
         let inverse = true;
-        const timer = setInterval(() => {
+
+        const handleProgress = () => {
             if(inverse && index < 3) index = index + 1;
             if(!inverse && index >= 0) index = index - 1;
 
@@ -29,10 +30,16 @@ const Progress = () => {
             if(!inverse && (index >= 0 && index < 3)) fadeOut(animated[index]);
 
             if(index <= -1 || index >= 3) inverse = !inverse;
+        }
+        
+        handleProgress();
+        let timerId = setTimeout(function progress(){
+            handleProgress();
+            timerId = setTimeout(progress, 300);
         }, 300);
 
         return () => {
-            clearInterval(timer);
+            clearTimeout(timerId);
         };
     }, [])
 
