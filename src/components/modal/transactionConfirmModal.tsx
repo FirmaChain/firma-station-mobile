@@ -19,7 +19,7 @@ interface Props {
     fee: number;
     open: boolean;
     setOpenModal: Function;
-    transactionHandler: Function; 
+    transactionHandler: (password:string) => void; 
 }
 
 const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal, transactionHandler}: Props) => {
@@ -83,7 +83,7 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
         const result = useBio? passwordFromBio : password;
 
         isProcessing = false;
-        transactionHandler && transactionHandler(result);
+        transactionHandler(result);
         handleModal(false);
     }
 

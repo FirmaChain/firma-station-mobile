@@ -1,8 +1,9 @@
-import React, { useCallback } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { useGovernanceList } from "@/hooks/governance/hooks";
 import { BgColor } from "@/constants/theme";
@@ -13,6 +14,10 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governan
 
 const Governance = () => {
     const navigation:ScreenNavgationProps = useNavigation();
+    const isFocused = useIsFocused();
+
+    const {common} = useAppSelector(state => state);
+
     const { governanceState, handleGovernanceListPolling } = useGovernanceList();
 
     const handleMoveToDetail = (proposalId:number) => {
@@ -25,20 +30,22 @@ const Governance = () => {
         CommonActions.handleLoadingProgress(false);
     }
 
-    useFocusEffect(
-        useCallback(() => {
+    useEffect(() => {
+        if(isFocused && common.isNetworkChanged === false){
             refreshStates();
-        }, [])
-    )
+        }
+    }, [isFocused])
 
     return (
         <View style={styles.container}>
+            {(common.connect && common.isNetworkChanged === false) && 
             <View style={styles.listBox}>
                 <RefreshScrollView
                     refreshFunc={refreshStates}>
                     <ProposalList proposals={governanceState.list} handleDetail={handleMoveToDetail}/>
                 </RefreshScrollView>
             </View>
+            }
         </View>
     )
 }
@@ -51,7 +58,6 @@ const styles = StyleSheet.create({
     listBox: {
         flex: 1,
         marginHorizontal: 20,
-        marginTop: 32,
         marginBottom: 20,
         justifyContent: "center",
     }

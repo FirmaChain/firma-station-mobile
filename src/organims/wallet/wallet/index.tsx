@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useAppSelector } from "@/redux/hooks";
 import { BgColor } from "@/constants/theme";
@@ -50,6 +50,12 @@ const Wallet = () => {
         await currentHistoryRefetch();
         CommonActions.handleLoadingProgress(false);
     }
+    
+    useEffect(() => {
+        if(recentHistory !== undefined && common.isNetworkChanged === false){
+            refreshStates();
+        }
+    },[recentHistory])
 
     useEffect(() => {
         if(staking.stakingReward > 0 && isFocused)
@@ -57,21 +63,14 @@ const Wallet = () => {
     }, [staking.stakingReward, isFocused])
 
     useEffect(() => {
-        if(recentHistory !== undefined){
-            refreshStates();
-        }
-    },[recentHistory])
-
-    useFocusEffect(
-        useCallback(() => {
+        if(isFocused){
             currentHistoryRefetch();
             handleCurrentHistoryPolling(true);
-            return () => {
-                handleCurrentHistoryPolling(false);
-            }
-        }, [])
-    )
-
+        } else {
+            handleCurrentHistoryPolling(false);
+        }
+    }, [isFocused])
+    
     return (
         <View style={styles.container}>
             {(common.connect && common.isNetworkChanged === false) && 

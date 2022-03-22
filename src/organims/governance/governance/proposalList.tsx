@@ -43,7 +43,7 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
     }
 
     return (
-        <View>
+        <View style={styles.container}>
             {proposals.map((proposal, index) => {
                 const periodState = handlePeriodStatus(proposal);
                 return (
@@ -73,11 +73,7 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        marginHorizontal: 20,
-        marginTop: 32,
-        marginBottom: 20,
-        justifyContent: "center",
+        paddingTop: 32,
     },
     item: {
         paddingHorizontal: 20,

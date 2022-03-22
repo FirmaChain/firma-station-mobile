@@ -18,7 +18,6 @@ interface Props {
 }
 
 const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
-
     const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
@@ -44,16 +43,19 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
     }, [undelegationState]);
 
     useEffect(() => {
-        if(delegationList.length > 0){
-            let reward = 0;
-            delegationList.map(value => {
-                reward = reward + convertToFctNumber(value.reward);
-            })
-            StakingActions.updateStakingRewardState(reward);
+        if(isRefresh === false){
+            if(delegationList.length > 0){
+                let reward = 0;
+                delegationList.map(value => {
+                    reward = reward + convertToFctNumber(value.reward);
+                })
+                StakingActions.updateStakingRewardState(reward);
+            }
         }
     },[delegationList]);
 
     const refreshStakings = async() => {
+        StakingActions.loadDelegationList(false);
         await refetchValidatorDescList();
         await handleDelegationState();
         if(redelegationList.length > 0){
@@ -62,6 +64,7 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
         if(undelegationList.length > 0){
             await handleUndelegationState();
         }
+        StakingActions.loadDelegationList(true);
     }
 
     const handleOpenModal = (open:boolean) => {
@@ -70,36 +73,33 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
 
     const handleSelectSort = (index:number) => {
         setSelected(index);
+        pollingDelegations(index);
         handleOpenModal(false);
     }
 
-    useEffect(() => {
-        const pollingDelegations = async() => {
-            switch (selected) {
-                case 0:
-                    if(delegationList.length === 0){
-                        await handleDelegationState();
-                    }
-                    return;
-                case 1:
-                    if(redelegationList.length === 0){
-                        CommonActions.handleLoadingProgress(true);
-                        await handleRedelegationState();
-                        CommonActions.handleLoadingProgress(false);
-                    }
-                    return;
-                case 2:
-                    if(undelegationList.length === 0){
-                        CommonActions.handleLoadingProgress(true);
-                        await handleUndelegationState();
-                        CommonActions.handleLoadingProgress(false);
-                    }
-                    return;
-            }
+    const pollingDelegations = async(index:number) => {
+        switch (index) {
+            case 0:
+                if(delegationList.length === 0){
+                    await handleDelegationState();
+                }
+                return;
+            case 1:
+                if(redelegationList.length === 0){
+                    CommonActions.handleLoadingProgress(true);
+                    await handleRedelegationState();
+                    CommonActions.handleLoadingProgress(false);
+                }
+                return;
+            case 2:
+                if(undelegationList.length === 0){
+                    CommonActions.handleLoadingProgress(true);
+                    await handleUndelegationState();
+                    CommonActions.handleLoadingProgress(false);
+                }
+                return;
         }
-
-        pollingDelegations();
-    }, [selected])
+    }
 
     const listLength = useMemo(() => {
         switch (selected) {
@@ -126,8 +126,9 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
     }
 
     useEffect(() => {
-        if(isRefresh)
+        if(isRefresh){
             refreshStakings();
+        } 
     }, [isRefresh])
 
     const delegate = () => {

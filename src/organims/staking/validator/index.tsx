@@ -6,14 +6,12 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions, StakingActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { StakingState, useDelegationData, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
-import { getEstimateGasFromDelegation, getStakingFromvalidator } from "@/util/firma";
+import { getStakingFromvalidator } from "@/util/firma";
 import { BgColor, BoxColor } from "@/constants/theme";
 import { KeyValue, TRANSACTION_TYPE } from "@/constants/common";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import AlertModal from "@/components/modal/alertModal";
 import DescriptionBox from "./descriptionBox";
 import DelegationBox from "./delegationBox";
 import PercentageBox from "./percentageBox";
@@ -39,22 +37,12 @@ const Validator = ({validatorAddress}:Props) => {
         stakingReward: 0,
     });
 
-    const [withdrawGas, setWithdrawGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
-    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
-    const [alertDescription, setAlertDescription] = useState('');
-
-    const handleModalOpen = (open:boolean) => {
-        setIsAlertModalOpen(open);
-    }
-
-    const handleWithdraw = (password:string) => {
-        if(alertDescription !== '') return handleModalOpen(true);
-
+    const handleWithdraw = (password:string, gas:number) => {
         const transactionState = {
             type: TRANSACTION_TYPE["WITHDRAW"],
             password: password,
             operatorAddress : validatorAddress,
-            gas: withdrawGas,
+            gas: gas,
         }
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
@@ -63,7 +51,6 @@ const Validator = ({validatorAddress}:Props) => {
         let delegateState:KeyValue = {
             type: type,
             operatorAddress: validatorAddress,
-            // delegations: delegationState,
         }
 
         navigation.navigate(Screens.Delegate, {state: delegateState});
@@ -78,16 +65,6 @@ const Validator = ({validatorAddress}:Props) => {
             undelegate: state.undelegate,
             stakingReward: state.stakingReward,
         });
-
-        if(state.stakingReward > 0 && state.available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
-            try {
-                let gas = await getEstimateGasFromDelegation(wallet.name, validatorAddress);
-                setWithdrawGas(gas);
-            } catch (error) {
-                console.log(error);
-                setAlertDescription(String(error));
-            }
-        }
     }
 
     const refreshStates = async() => {
@@ -136,7 +113,13 @@ const Validator = ({validatorAddress}:Props) => {
                                 {validatorState &&
                                 <>
                                     <DescriptionBox validator={validatorState.description} />
-                                    <DelegationBox stakingState={stakingState} delegations={delegationState.length} gas={withdrawGas} handleDelegate={moveToDelegate} transactionHandler={handleWithdraw}/>
+                                    <DelegationBox 
+                                        walletName={wallet.name}
+                                        validatorAddress={validatorAddress}
+                                        stakingState={stakingState} 
+                                        delegations={delegationState.length} 
+                                        handleDelegate={moveToDelegate} 
+                                        transactionHandler={handleWithdraw}/>
                                     <View style={styles.infoBox}>
                                         <PercentageBox data={validatorState.percentageData} />
                                         <AddressBox title={"Operator address"} path={"validators"} address={validatorState.address.operatorAddress} />
@@ -144,14 +127,6 @@ const Validator = ({validatorAddress}:Props) => {
                                     </View>
                                 </>
                                 }
-
-                                <AlertModal
-                                    visible={isAlertModalOpen}
-                                    handleOpen={handleModalOpen}
-                                    title={"Failed"}
-                                    desc={alertDescription}
-                                    confirmTitle={"OK"}
-                                    type={"ERROR"}/>
                             </View>
                     </RefreshScrollView>
                 </ViewContainer>

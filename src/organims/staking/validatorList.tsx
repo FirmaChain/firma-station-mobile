@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { CommonActions, StakingActions } from "@/redux/actions";
 import { convertPercentage } from "@/util/common";
 import { useValidatorData } from "@/hooks/staking/hooks";
 import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
@@ -16,7 +17,6 @@ interface Props {
 }
 
 const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
-
     const { validators, handleValidatorsPolling } = useValidatorData();
 
     const sortItems = ['Commision', 'Voting Power', 'Uptime'];
@@ -24,16 +24,20 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
     const [sortWithDesc, setSortWithDesc] = useState(true);
     const [openModal, setOpenModal] = useState(false);
 
+    const validatorList = useMemo(() => {
+        return validators;
+    }, [validators]);
+
     useMemo(() => {
         switch (selected) {
         case 0:
-            return validators.sort((a:any, b:any) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
+            return validatorList.sort((a:any, b:any) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
         case 1:
-            return validators.sort((a:any, b:any) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
+            return validatorList.sort((a:any, b:any) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
         case 2:
-            return validators.sort((a:any, b:any) => sortWithDesc?(b.condition - a.condition):(a.condition - b.condition));
+            return validatorList.sort((a:any, b:any) => sortWithDesc?(b.condition - a.condition):(a.condition - b.condition));
         }
-    }, [selected, validators, sortWithDesc])
+    }, [selected, validatorList, sortWithDesc])
 
     const handleOpenModal = (open:boolean) => {
         setOpenModal(open);
@@ -45,14 +49,21 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
     }
 
     const refreshValidators = async() => {
-        await handleValidatorsPolling();
+        if(validatorList.length === 0) {
+            CommonActions.handleLoadingProgress(true);
+        }
+        StakingActions.loadValidatorList(false);
+        if(visible){
+            await handleValidatorsPolling();
+        }
+        StakingActions.loadValidatorList(true);
+        CommonActions.handleLoadingProgress(false);
     }
 
     useEffect(() => {
-        if(isRefresh)
+        if(isRefresh || visible)
             refreshValidators();
-    }, [isRefresh])
-    
+    }, [isRefresh, visible])
     
     return (
         <>
@@ -77,7 +88,7 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
     
                     </View>
                 </View>
-                {validators.map((vd:any, index:number) => {
+                {validatorList.map((vd:any, index:number) => {
                     return (
                         <TouchableOpacity key={index} onPress={() => navigateValidator(vd.validatorAddress)}>
                             <View style={styles.item}>

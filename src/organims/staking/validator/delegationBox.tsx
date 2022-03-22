@@ -1,23 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
-import { ARROW_ACCORDION } from "@/constants/images";
 import { degree, TurnToOpposite, TurnToOriginal } from "@/util/animation";
+import { getEstimateGasFromDelegation, getFeesFromGas } from "@/util/firma";
 import { convertAmount, resizeFontSize } from "@/util/common";
-import { getFeesFromGas } from "@/util/firma";
 import { StakingState } from "@/hooks/staking/hooks";
+import { ARROW_ACCORDION } from "@/constants/images";
+import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import SmallButton from "@/components/button/smallButton";
+import AlertModal from "@/components/modal/alertModal";
+import { CommonActions } from "@/redux/actions";
 
 interface Props {
+    walletName: string;
+    validatorAddress: string;
     stakingState: StakingState;
     delegations: number;
-    gas: number;
     handleDelegate: Function;
-    transactionHandler: Function;
+    transactionHandler: (password:string, gas:number) => void;
 }
 
-const DelegationBox = ({stakingState, delegations, gas, handleDelegate, transactionHandler}:Props) => {
+const DelegationBox = ({walletName, validatorAddress, stakingState, delegations, handleDelegate, transactionHandler}:Props) => {
     const arrowDeg = useRef(new Animated.Value(0)).current;
 
     const [openModal, setOpenModal] = useState(false);
@@ -25,15 +29,42 @@ const DelegationBox = ({stakingState, delegations, gas, handleDelegate, transact
     const [rewardTextSize, setRewardTextSize] = useState(20);
     const [accordionHeight, setAccordionHeight] = useState(0);
 
+    const [withdrawGas, setWithdrawGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alertDescription, setAlertDescription] = useState('');
+
     const onPressEvent = (type:string) => {
         handleDelegate(type);
     }
 
-    const handleWithdraw = (password:string) => {
-        setOpenModal(false);
-        if(password){
-            transactionHandler(password);
+    const handleWithdraw = async(open:boolean) => {
+        if(open){
+            await getGasFromDelegation();
         }
+        setOpenModal(open);
+    }
+
+    const getGasFromDelegation = async() => {
+        CommonActions.handleLoadingProgress(true);
+        if(stakingState.stakingReward > 0 && stakingState.available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
+            try {
+                let gas = await getEstimateGasFromDelegation(walletName, validatorAddress);
+                setWithdrawGas(gas);
+            } catch (error) {
+                console.log(error);
+                setAlertDescription(String(error));
+            }
+        }
+        CommonActions.handleLoadingProgress(false);
+    }
+
+    const handleTransaction = (password:string) => {
+        if(alertDescription !== '') return handleModalOpen(true);
+        transactionHandler(password, withdrawGas);
+    }
+
+    const handleModalOpen = (open:boolean) => {
+        setIsAlertModalOpen(open);
     }
 
     const handleOpenAccordion = () => {
@@ -113,7 +144,14 @@ const DelegationBox = ({stakingState, delegations, gas, handleDelegate, transact
                     <Animated.Image style={[styles.icon_arrow, {transform: [{rotate: degree(arrowDeg)}]}]} source={ARROW_ACCORDION} />
                 </TouchableOpacity>
             </View>
-            <TransactionConfirmModal transactionHandler={transactionHandler} title={"Withdraw"} amount={stakingState.stakingReward} fee={getFeesFromGas(gas)} open={openModal} setOpenModal={handleWithdraw} />
+            <AlertModal
+                visible={isAlertModalOpen}
+                handleOpen={handleModalOpen}
+                title={"Failed"}
+                desc={alertDescription}
+                confirmTitle={"OK"}
+                type={"ERROR"}/>
+            <TransactionConfirmModal transactionHandler={handleTransaction} title={"Withdraw"} amount={stakingState.stakingReward} fee={getFeesFromGas(withdrawGas)} open={openModal} setOpenModal={handleWithdraw} />
         </View>
     )
 }

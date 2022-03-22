@@ -2,26 +2,62 @@ import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ButtonPointLightColor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor } from "@/constants/theme";
 import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
-import { getFeesFromGas } from "@/util/firma";
+import { getEstimateGasFromAllDelegations, getFeesFromGas } from "@/util/firma";
 import SmallButton from "@/components/button/smallButton";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
+import AlertModal from "@/components/modal/alertModal";
+import { CommonActions } from "@/redux/actions";
 
 interface Props {
+    walletName: string;
+    available: number;
     reward: any;
-    gas: number;
-    transactionHandler: Function;
+    transactionHandler: (password:string, gas:number) => void;
 }
 
-const RewardBox = ({gas, reward, transactionHandler}:Props) => {
+const RewardBox = ({walletName, available, reward, transactionHandler}:Props) => {
     const [openModal, setOpenModal] = useState(false);
     const [rewardTextSize, setRewardTextSize] = useState(28);
+    
+    const [withdrawAllGas, setWithdrawAllGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alertDescription, setAlertDescription] = useState('');
+
+    const handleTransaction = (password:string) => {
+        if(alertDescription !== '') return handleModalOpen(true);
+        transactionHandler(password, withdrawAllGas);
+    }
     
     const stakingReward = useMemo(() => {
         return convertCurrent(makeDecimalPoint(reward));
     }, [reward]);
     
+    const handleModalOpen = (open:boolean) => {
+        setIsAlertModalOpen(open);
+    }
+
     const handleWithdraw = async(open:boolean) => {
+        if(open){
+            await getGasFromAllDelegations();
+        }
         setOpenModal(open);
+    }
+
+    const getGasFromAllDelegations = async() => {
+        CommonActions.handleLoadingProgress(true);
+        if(reward > 0 && available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
+            await getEstimateGasFromAllDelegations(walletName).then(value => {
+                setWithdrawAllGas(value);
+                setAlertDescription('');
+            })
+            .catch(error => {
+                console.log(error);
+                setAlertDescription(String(error));
+            });
+        }
+
+        CommonActions.handleLoadingProgress(false);
     }
 
     useEffect(() => {
@@ -42,7 +78,14 @@ const RewardBox = ({gas, reward, transactionHandler}:Props) => {
                 active={reward > 0}
                 color={ButtonPointLightColor}
                 onPressEvent={() => handleWithdraw(true)}/>
-            <TransactionConfirmModal transactionHandler={transactionHandler} title={"Withdraw All"} amount={reward} fee={getFeesFromGas(gas)} open={openModal} setOpenModal={handleWithdraw} />
+            <TransactionConfirmModal transactionHandler={handleTransaction} title={"Withdraw All"} amount={reward} fee={getFeesFromGas(withdrawAllGas)} open={openModal} setOpenModal={handleWithdraw} />
+            <AlertModal
+                    visible={isAlertModalOpen}
+                    handleOpen={handleModalOpen}
+                    title={"Failed"}
+                    desc={alertDescription}
+                    confirmTitle={"OK"}
+                    type={"ERROR"}/>
         </View>
     )
 }

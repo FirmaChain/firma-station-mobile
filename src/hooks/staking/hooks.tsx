@@ -83,8 +83,12 @@ export const useDelegationData = () => {
     const handleTotalDelegationPolling = async() => {
         await refetch();
         await handleDelegationState();
-        await handleRedelegationState();
-        await handleUndelegationState();
+        if(redelegationList.length > 0){
+            await handleRedelegationState();
+        }
+        if(undelegationList.length > 0){
+            await handleUndelegationState();
+        }
     }
 
     const handleDelegationState = async() => {
@@ -230,25 +234,28 @@ export const useValidatorData = () => {
     const {staking, common} = useAppSelector(state => state);
     const [validators, setValidators]:Array<any> = useState([]);
     const [totalVotingPower, setTotalVotingPower] = useState(0);
-
+    const [polling, setPolling] = useState(false);
     const { refetch, loading, data } = useValidatorsQuery();
 
     useEffect(() => {
-        if(loading === false) {
-            const stakingData = organizeStakingData(data);
-            const validatorsList = data.validator
-            .filter((validator: any) => {
-                return validator.validatorStatuses[0].jailed === false;
-            })
-            .map((validator: any) => {
-                return organizeValidatorData(validator, stakingData)
-            });
-
-            const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
-            const totalVotingPower = stakingData.totalVotingPower;
-
-            setTotalVotingPower(totalVotingPower);
-            setValidators(validators);
+        if(polling){
+            if(loading === false) {
+                const stakingData = organizeStakingData(data);
+                const validatorsList = data.validator
+                .filter((validator: any) => {
+                    return validator.validatorStatuses[0].jailed === false;
+                })
+                .map((validator: any) => {
+                    return organizeValidatorData(validator, stakingData)
+                });
+    
+                const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
+                const totalVotingPower = stakingData.totalVotingPower;
+    
+                setTotalVotingPower(totalVotingPower);
+                setValidators(validators);
+                setPolling(false);
+            }
         }
     }, [loading, data]);
 
@@ -261,12 +268,12 @@ export const useValidatorData = () => {
     }, [staking.validator]);
     
     const handleValidatorsPolling = async() => {
+        setPolling(true);
         return await refetch();
     }
 
     useEffect(() => {
         setValidators([]);
-        handleValidatorsPolling();
     }, [common.network])
 
     return {

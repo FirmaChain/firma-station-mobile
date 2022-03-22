@@ -3,6 +3,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AntDesignIcons from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Octicons from "react-native-vector-icons/Octicons";
 
 interface Props {
     size: number;
@@ -127,6 +128,12 @@ export const SortDESC = ({size, color}:Props) => {
 export const FingerPrint = ({size, color}:Props) => {
     return (
         <Ionicons name="ios-finger-print" size={size} color={color} />
+    )
+}
+
+export const ExternalLink = ({size, color}:Props) => {
+    return (
+        <Octicons name="link-external" size={size} color={color} />
     )
 }
 

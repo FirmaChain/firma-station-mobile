@@ -29,15 +29,15 @@ const Router = () => {
     });
 
     useEffect(() => {
-        if(common.connect === false) {
+        if(common.connect === false || common.isNetworkChanged) {
             CommonActions.handleLoadingProgress(true);
         }
-    }, [common.connect, common.loading]);
+    }, [common.connect, common.isNetworkChanged, common.loading]);
 
     useEffect(() => {
         wait(3000).then(() => {
-            CommonActions.handleLoadingProgress(false);
             CommonActions.handleIsNetworkChange(false);
+            CommonActions.handleLoadingProgress(false);
         })
     }, [common.network]);
 

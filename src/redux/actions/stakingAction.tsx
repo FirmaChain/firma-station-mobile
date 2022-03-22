@@ -1,6 +1,6 @@
 import { ValidatorState } from "@/hooks/staking/hooks"
 import { DelegateUpdateState } from "../reducers/stakingReducer"
-import { UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from "../types"
+import { LOAD_DELEGATION_LIST, LOAD_VALIDATOR_LIST, UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from "../types"
 
 export const updateDelegateState = (delegate:DelegateUpdateState) => (
     {
@@ -23,3 +23,16 @@ export const updateStakingRewardState = (reward:number) => (
     }
 )
 
+export const loadDelegationList = (loading:boolean) => (
+    {
+        type: LOAD_DELEGATION_LIST,
+        payload: loading
+    }
+)
+
+export const loadValidatorList = (loading:boolean) => (
+    {
+        type: LOAD_VALIDATOR_LIST,
+        payload: loading
+    }
+)

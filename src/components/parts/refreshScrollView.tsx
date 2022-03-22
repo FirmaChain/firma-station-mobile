@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { RefreshControl, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { RefreshControl, ScrollView, NativeSyntheticEvent, NativeScrollEvent, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { WhiteColor } from "@/constants/theme";
 import { wait } from "@/util/common";
@@ -44,7 +44,9 @@ const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparen
                     onRefresh={onRefresh}
                 />
             }>
-            {children}
+            <View style={{flex: 1}}>
+                {children}
+            </View>
         </ScrollView>
     )
 }

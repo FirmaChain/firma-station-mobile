@@ -1,19 +1,15 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import { CommonActions } from "@/redux/actions";
+import { CommonActions, StakingActions } from "@/redux/actions";
 import { useStakingData } from "@/hooks/staking/hooks";
 import { useHistoryData } from "@/hooks/wallet/hooks";
-import { getEstimateGasFromAllDelegations } from "@/util/firma";
-import { wait } from "@/util/common";
 import { BgColor } from "@/constants/theme";
 import { TRANSACTION_TYPE } from "@/constants/common";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
-import AlertModal from "@/components/modal/alertModal";
 import RewardBox from "./rewardBox";
 import BalanceBox from "./balanceBox";
 import StakingLists from "./stakingLists";
@@ -22,18 +18,13 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>
 
 const Staking = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-
-    const { wallet, staking, common } = useAppSelector(state => state);
     const isFocused = useIsFocused();
+    const { wallet, staking, common } = useAppSelector(state => state);
 
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
     const { recentHistory, currentHistoryPolling, refetchCurrentHistory } = useHistoryData();
 
     const [isRefresh, setIsRefresh] = useState(false);
-    const [withdrawAllGas, setWithdrawAllGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
-
-    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
-    const [alertDescription, setAlertDescription] = useState('');
 
     const currentHistoryRefetch = async() => {
         if(refetchCurrentHistory)
@@ -41,35 +32,24 @@ const Staking = () => {
     }
 
     const handleCurrentHistoryPolling = (polling:boolean) => {
+        currentHistoryRefetch();
         if(currentHistoryPolling) {
-            currentHistoryRefetch();
             currentHistoryPolling(polling);
         }
     }
 
     const refreshStates = async() => {
-        setIsRefresh(true);
         CommonActions.handleLoadingProgress(true);
         await getStakingState();
-        wait(1500).then(() => {
-            if(common.isNetworkChanged === false){
-                CommonActions.handleLoadingProgress(false);
-            }
-        });
-        setIsRefresh(false);
+        setIsRefresh(true);
     }
 
-    const handleModalOpen = (open:boolean) => {
-        setIsAlertModalOpen(open);
-    }
-
-    const handleWithdrawAll = (password:string) => {
-        if(alertDescription !== '') return handleModalOpen(true);
+    const handleWithdrawAll = (password:string, gas:number) => {
         const transactionState = {
             type: TRANSACTION_TYPE["WITHDRAW ALL"],
             password: password,
             address : wallet.address,
-            gas: withdrawAllGas,
+            gas: gas,
         }
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
@@ -87,57 +67,42 @@ const Staking = () => {
     }, [stakingState.stakingReward])
 
     useEffect(() => {
-        const getGasFromAllDelegations = async() => {
-            if(stakingState.stakingReward > 0 && stakingState.available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
-                await getEstimateGasFromAllDelegations(wallet.name).then(value => {
-                    setWithdrawAllGas(value);
-                    setAlertDescription('');
-                })
-                .catch(error => {
-                    console.log(error);
-                    setAlertDescription(String(error));
-                });
-            }
-        }
-
-        if(isFocused)
-            getGasFromAllDelegations();
-    }, [stakingState]);
-
-    useEffect(() => {
-        if(recentHistory !== undefined){
+        if(recentHistory !== undefined && common.isNetworkChanged === false){
             refreshStates();
         }
     },[recentHistory])
 
-    useFocusEffect(
-        useCallback(() => {
-            handleCurrentHistoryPolling(true);
-            return () => {
-                handleCurrentHistoryPolling(false);
+    useEffect(() => {
+        if(staking.loadDelegationList && staking.loadValidatorList){
+            if(common.isNetworkChanged === false){
+                CommonActions.handleLoadingProgress(false);
             }
-        }, [])
-    )
+            setIsRefresh(false);
+            StakingActions.loadDelegationList(false);
+            StakingActions.loadValidatorList(false);
+        }
+    }, [staking.loadDelegationList, staking.loadValidatorList])
+
+    useEffect(() => {
+        if(isFocused){
+            handleCurrentHistoryPolling(true);
+        } else {
+            handleCurrentHistoryPolling(false);
+        }
+    }, [isFocused])
 
     return (
         <View style={styles.container}>
             <RefreshScrollView
                 refreshFunc={refreshStates}>
-                {common.connect && 
-                <>
-                <View style={styles.box}>
-                    <RewardBox gas={withdrawAllGas} reward={staking.stakingReward} transactionHandler={handleWithdrawAll}/>
-                    <BalanceBox stakingValues={stakingState}/>
+                {(common.connect && common.isNetworkChanged === false) && 
+                <View>
+                    <View style={styles.box}>
+                        <RewardBox walletName={wallet.name} available={stakingState.available} reward={staking.stakingReward} transactionHandler={handleWithdrawAll}/>
+                        <BalanceBox stakingValues={stakingState}/>
+                    </View>
+                    <StakingLists isRefresh={isRefresh} navigateValidator={moveToValidator} />
                 </View>
-                <StakingLists isRefresh={isRefresh} navigateValidator={moveToValidator} />
-                <AlertModal
-                    visible={isAlertModalOpen}
-                    handleOpen={handleModalOpen}
-                    title={"Failed"}
-                    desc={alertDescription}
-                    confirmTitle={"OK"}
-                    type={"ERROR"}/>
-                </>
                 }
             </RefreshScrollView>
         </View>
@@ -148,9 +113,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: BgColor,
-        paddingTop: 32,
     },
     box: {
+        paddingTop: 32,
         marginHorizontal: 20,
         marginBottom: 20,
         borderRadius: 4,
