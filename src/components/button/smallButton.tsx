@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { DisableColor, Lato, PointColor, TextColor } from "@/constants/theme";
 
-const SmallButton: React.FC<{
+interface Props {
     title: string;
     onPressEvent: Function;
     size?: number;
     height?: number;
     color?: string;
     active?: boolean;
-}> = ({title, onPressEvent, size = 100, height, color = PointColor, active = true}) => {
+}
+
+const SmallButton = ({title, onPressEvent, size = 100, height, color = PointColor, active = true}:Props) => {
     const [buttonHeight, setButtonHeight] = useState(42);
     const handleOnPress = (value?:any) => {
         if(active === false) return;

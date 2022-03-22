@@ -2,12 +2,14 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { DisableColor, Lato, TextButtonColor, TextColor } from "@/constants/theme";
 
-const TextButton: React.FC<{
+interface Props {
     title: string;
     bgColor?: string;
     active?: boolean;
     onPressEvent: Function;
-}> = ({title, bgColor = TextButtonColor, active = true, onPressEvent}) => {
+}
+
+const TextButton = ({title, bgColor = TextButtonColor, active = true, onPressEvent}:Props) => {
     const backgroundColor = active? (bgColor? bgColor:TextButtonColor):DisableColor;
 
     const handleOnPress = (value?:any) => {

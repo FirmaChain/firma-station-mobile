@@ -4,7 +4,7 @@ import { convertToFctNumberForInput, handleDecimalPointLimit } from "@/util/comm
 import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 import TextButton from "../button/textButton";
 
-const InputSetVerticalForAmount: React.FC<{
+interface Props {
     title: string;
     placeholder: string;
     accent?: boolean;
@@ -14,7 +14,9 @@ const InputSetVerticalForAmount: React.FC<{
     enableMaxAmount?: boolean;
     onChangeMaxAmount?: Function;
     onChangeEvent: Function;
-}> = ({title, 
+}
+
+const InputSetVerticalForAmount = ({title, 
     placeholder, 
     accent = false, 
     limitValue, 
@@ -22,7 +24,7 @@ const InputSetVerticalForAmount: React.FC<{
     resetValues = false, 
     enableMaxAmount = false, 
     onChangeMaxAmount,
-    onChangeEvent}) => {
+    onChangeEvent}:Props) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
     const [maxAmount, setMaxAmount] = useState(false);

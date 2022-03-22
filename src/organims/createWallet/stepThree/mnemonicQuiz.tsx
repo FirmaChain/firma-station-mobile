@@ -3,10 +3,12 @@ import { Platform, StyleSheet, View } from "react-native";
 import MnemonicItems from "./mnemonicItems";
 import QuestionItem from "./questionItem";
 
-const MnemonicQuiz: React.FC<{
+interface Props {
     mnemonic: string;
     handleConfirm: Function;
-}> = ({mnemonic, handleConfirm}) => {
+}
+
+const MnemonicQuiz = ({mnemonic, handleConfirm}:Props) => {
     const [answer, setAnswer] = useState<String[]>([])
     const [selectQuiz, setSelectQuiz] = useState(0);
     const [selectAnswer, setSelectAnswer] = useState({

@@ -7,14 +7,16 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import TextButton from "../button/textButton";
 import QRCodeScannerModal from "../modal/qrCodeScanner";
 
-const InputSetVerticalForAddress: React.FC<{
+interface Props {
     title: string;
     numberOnly?: boolean;
     placeholder: string;
     secure?: boolean;
     resetValues?: boolean;
     onChangeEvent: Function;
-}> = ({title, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}) => {
+}
+
+const InputSetVerticalForAddress = ({title, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}:Props) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
     const [openModal, setOpenModal] = useState(false);

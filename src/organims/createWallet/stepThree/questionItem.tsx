@@ -2,12 +2,14 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 
-const QuestionItem: React.FC<{
+interface Props {
     title: string;
     value: string;
     focus: boolean;
     onPressEvent: Function;
-}> = ({title, value, focus, onPressEvent}) => {
+}
+
+const QuestionItem= ({title, value, focus, onPressEvent}:Props) => {
     const val = value;
     const bc = focus? WhiteColor : 'transparent';
 

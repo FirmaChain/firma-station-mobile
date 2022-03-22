@@ -8,9 +8,11 @@ import WarnContainer from "@/components/parts/containers/warnContainer";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
 
-const MnemonicGrid: React.FC<{
+interface Props {
     mnemonic: string;
-}> = ({mnemonic}) => {
+}
+
+const MnemonicGrid = ({mnemonic}:Props) => {
 
     const mnemonicArr = mnemonic.split(' ');
 

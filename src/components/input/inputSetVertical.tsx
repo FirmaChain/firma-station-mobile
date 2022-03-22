@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "@/constants/theme";
 
-const InputSetVertical: React.FC<{
+interface Props {
     title: string;
     message?: string;
     numberOnly?: boolean;
@@ -13,7 +13,9 @@ const InputSetVertical: React.FC<{
     forcedValue?: string;
     resetValues?: boolean;
     onChangeEvent: (value:string) => void;
-}> = ({title, message, numberOnly = false, validation, placeholder, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}) => {
+}
+
+const InputSetVertical = ({title, message, numberOnly = false, validation, placeholder, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}:Props) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 

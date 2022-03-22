@@ -5,11 +5,13 @@ import { ScreenWidth } from "@/util/getScreenSize";
 import ArrowButton from "../button/arrowButton";
 import { useAppSelector } from "@/redux/hooks";
 
-const Header:  React.FC<{
-        step: number,
-        bgColor?: string;
-        onPressEvent: Function;
-    }> = ({step, bgColor = BoxDarkColor, onPressEvent}) => {
+interface Props {
+    step: number,
+    bgColor?: string;
+    onPressEvent: Function;
+}
+
+const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:Props) => {
 
     const {common} = useAppSelector(state => state);
 
