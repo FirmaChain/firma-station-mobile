@@ -37,7 +37,13 @@ const HistoryList = ({historyList, pagination}:Props) => {
                                     </View>
                                     <View style={[styles.historyWrapper, {flex: 2, paddingHorizontal: 10}]}>
                                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Type</Text>
-                                        <Text style={[styles.contentItem, {fontSize: 14}]}>{value.type}</Text>
+                                        <Text style={[styles.contentItem, 
+                                            {fontSize: 14, 
+                                            paddingHorizontal: 5,
+                                            color: value.type.tagTheme, 
+                                            backgroundColor: value.type.tagTheme+"26",
+                                            borderRadius: 6,
+                                            overflow: "hidden"}]}>{value.type.tagDisplay}</Text>
                                     </View>
                                     <View style={[styles.historyWrapper, {flex: 1}]}>
                                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Result</Text>
@@ -93,7 +99,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "normal",
         color: TextCatTitleColor,
-        paddingTop: 6,
+        marginTop: 6,
+        paddingVertical: 5,
     },
     contentTitle: {
         fontFamily: Lato,

@@ -3,6 +3,8 @@ import { useCurrentHistoryByAddressQuery, useHistoryByAddressQuery } from "@/apo
 import { useAppSelector } from "@/redux/hooks";
 import { getBalanceFromAdr } from "@/util/firma";
 import { convertNumber } from "@/util/common";
+import { KeyValue, TRANSACTION_TYPE_MODEL } from "@/constants/common";
+import { PointColor } from "@/constants/theme";
 
 export interface BalanceState {
     available: number;
@@ -15,7 +17,10 @@ export interface BalanceState {
 export interface HistoryState {
     hash: any;
     success: string;
-    type: string | undefined;
+    type: {
+        tagTheme: string,
+        tagDisplay: string,
+    }
     timestamp: any;
     block: any;
 }
@@ -53,8 +58,14 @@ export const useHistoryData = () => {
     if(wallet.address === '' || wallet.address === undefined) return {historyList};
     
     const convertMsgType = (type:string) => {
-        const value = type.replace("Msg","").split(".");
-        const result = value.pop();
+        let result = TRANSACTION_TYPE_MODEL[type];
+        if(result === undefined || result === null){
+            const value = type.replace("Msg","").split(".");
+            result = {
+                tagTheme: PointColor,
+                tagDisplay: value.pop(),
+            }
+        }
         return result;
     }
 
@@ -126,7 +137,10 @@ export const useHistoryData = () => {
         setRecentHistory({
             hash: '',
             success: '',
-            type: '',
+            type: {
+                tagTheme: '',
+                tagDisplay: '',
+            },
             timestamp: '',
             block: 0,
         });

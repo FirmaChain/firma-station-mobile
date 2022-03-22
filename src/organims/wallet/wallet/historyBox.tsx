@@ -1,8 +1,8 @@
 import React, { useMemo } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, InputPlaceholderColor, Lato, PointLightColor, TextCatTitleColor } from "@/constants/theme";
-import { ExternalLink, ForwardArrow } from "@/components/icon/icon";
-import { convertTime, getGMT, getLocalDate } from "@/util/common";
+import { BoxColor, InputPlaceholderColor, Lato, TextAddressColor, TextCatTitleColor } from "@/constants/theme";
+import { ForwardArrow } from "@/components/icon/icon";
+import { convertTime, getGMT } from "@/util/common";
 import { EXPLORER_URL } from "@/constants/common";
 
 interface Props {
@@ -53,7 +53,13 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                     </View>
                     <View style={[styles.historyWrapper, {flex: 1.5}]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Type</Text>
-                        <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.type}</Text>
+                        <Text style={[styles.contentItem, 
+                            {fontSize: 14, 
+                            paddingHorizontal: 5,
+                            color: historyData.type.tagTheme,
+                            backgroundColor: historyData.type.tagTheme+"26",
+                            borderRadius: 6,
+                            overflow: "hidden"}]}>{historyData.type.tagDisplay}</Text>
                     </View>
                 </View>
                 <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "flex-start", flex: 3}]}>
@@ -68,12 +74,12 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                 </View>
 
                 <TouchableOpacity onPress={()=>moveToExplorer(historyData.hash)}>
-                <View style={[styles.wrapper, {paddingBottom: 10}]}>
+                <View style={[styles.wrapper, {paddingBottom: 0}]}>
                     <View style={[styles.historyWrapper]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Hash</Text>
                         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text 
-                                style={[styles.contentItem, {fontSize: 14, flex: 1, color: PointLightColor}]}
+                                style={[styles.contentItem, {fontSize: 14, flex: 1, color: TextAddressColor}]}
                                 numberOfLines={1}
                                 ellipsizeMode="middle">{historyData.hash}</Text>
                         </View>
@@ -122,7 +128,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "normal",
         color: TextCatTitleColor,
-        paddingTop: 6,
+        marginTop: 6,
+        paddingVertical: 5,
     },
     contentTitle: {
         fontFamily: Lato,
