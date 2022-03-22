@@ -46,7 +46,7 @@ const HistoryList = ({historyList, pagination}:Props) => {
                                 </View>
                             </View>
                             <View style={{justifyContent: "center"}}>
-                                    <ForwardArrow size={20} color={TextCatTitleColor}/>
+                                <ForwardArrow size={20} color={TextCatTitleColor}/>
                             </View>
                         </View>
                     </View>

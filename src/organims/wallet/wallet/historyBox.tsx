@@ -1,8 +1,8 @@
 import React, { useMemo } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
-import { ForwardArrow } from "@/components/icon/icon";
-import { convertTime } from "@/util/common";
+import { BoxColor, InputPlaceholderColor, Lato, PointLightColor, TextCatTitleColor } from "@/constants/theme";
+import { ExternalLink, ForwardArrow } from "@/components/icon/icon";
+import { convertTime, getGMT, getLocalDate } from "@/util/common";
 import { EXPLORER_URL } from "@/constants/common";
 
 interface Props {
@@ -56,27 +56,30 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.type}</Text>
                     </View>
                 </View>
-                <View style={styles.wrapper}>
-                    <View style={styles.historyWrapper}>
-                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Hash</Text>
-                        <TouchableOpacity onPress={()=>moveToExplorer(historyData.hash)}>
-                            <Text 
-                                style={[styles.contentItem, {fontSize: 14}]}
-                                numberOfLines={1}
-                                ellipsizeMode="middle">{historyData.hash}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
                 <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "flex-start", alignItems: "flex-start", flex: 3}]}>
                     <View style={[styles.historyWrapper, {flex: 1,}]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Result</Text>
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{historyData.success}</Text>
                     </View>
                     <View style={[styles.historyWrapper, {flex: 1.5,}]}>
-                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Time</Text>
+                        <Text style={[styles.contentTitle, {fontSize: 14}]}>{"Time (" + getGMT() + ")"}</Text>
                         <Text style={[styles.contentItem, {fontSize: 14}]}>{convertTime(historyData.timestamp, false, true)}</Text>
                     </View>
                 </View>
+
+                <TouchableOpacity onPress={()=>moveToExplorer(historyData.hash)}>
+                <View style={[styles.wrapper, {paddingBottom: 10}]}>
+                    <View style={[styles.historyWrapper]}>
+                        <Text style={[styles.contentTitle, {fontSize: 14}]}>Hash</Text>
+                        <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text 
+                                style={[styles.contentItem, {fontSize: 14, flex: 1, color: PointLightColor}]}
+                                numberOfLines={1}
+                                ellipsizeMode="middle">{historyData.hash}</Text>
+                        </View>
+                    </View>
+                </View>
+                </TouchableOpacity>
                 </>
                 }
             </TouchableOpacity>

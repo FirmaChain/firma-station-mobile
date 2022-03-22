@@ -1,4 +1,4 @@
-import moment, { locales } from "moment";
+import moment from "moment";
 import { Platform } from "react-native";
 
 export const wait = (timeout:number) => {
@@ -61,16 +61,29 @@ export const isValid = (data:any) => {
 export const convertTime = (time:string, fulltime:boolean, addTime?:boolean) => {
     if(time === undefined) return '';
     
+    const date = getLocalDate(time);
+    const GMT = getGMT();
+
+    if(fulltime) return moment(new Date(date)).format("YYYY-MM-DD HH:mm:ss") + ` (${GMT})`;
+    if(addTime)return moment(new Date(date)).format("YYYY-MM-DD HH:mm:ss");
+    return moment(new Date(date)).format("YYYY-MM-DD");
+}
+
+export const getGMT = () => {
+    let date = new Date();
+    const offset = date.getTimezoneOffset();
+    const GMT = (offset/60) < 0? "+"+(Math.abs(offset/60)):((offset/60) * -1);
+
+    return "GMT"+GMT;
+}
+
+export const getLocalDate = (time:string) => {
     let date = new Date(time);
     const offset = date.getTimezoneOffset();
     if(Platform.OS === "ios"){
         date.setHours(date.getHours() - (offset/60));
     }
-    const GMT = (offset/60) < 0? "+"+(Math.abs(offset/60)):((offset/60) * -1);
-
-    if(fulltime) return moment(new Date(date)).format("YYYY-MM-DD HH:mm:ss") + ` (GMT${GMT})`;
-    if(addTime)return moment(new Date(date)).format("YYYY-MM-DD HH:mm:ss");
-    return moment(new Date(date)).format("YYYY-MM-DD");
+    return date;
 }
 
 export const convertPercentage = (value: string | number) => {
