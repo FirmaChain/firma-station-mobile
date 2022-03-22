@@ -11,13 +11,14 @@ import RefreshScrollView from "@/components/parts/refreshScrollView";
 import AddressBox from "./addressBox";
 import BalanceBox from "./balanceBox";
 import HistoryBox from "./historyBox";
+import { CommonActions } from "@/redux/actions";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
 const Wallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const {wallet, staking} = useAppSelector(state => state);
+    const {wallet, staking, common} = useAppSelector(state => state);
 
     const { recentHistory, refetchCurrentHistory, currentHistoryPolling } = useHistoryData();
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
@@ -44,8 +45,10 @@ const Wallet = () => {
     }
 
     const refreshStates = async() => {
+        CommonActions.handleLoadingProgress(true);
         await getStakingState();
         await currentHistoryRefetch();
+        CommonActions.handleLoadingProgress(false);
     }
 
     useEffect(() => {
@@ -71,14 +74,16 @@ const Wallet = () => {
 
     return (
         <View style={styles.container}>
-            <AddressBox address={wallet.address} />
-            <RefreshScrollView
-                refreshFunc={refreshStates}>
-                <View style={styles.content}>
-                    <BalanceBox stakingValues={stakingState} handleSend={moveToSendScreen} handleStaking={moveToStakingTab}/>
-                    <HistoryBox handleHistory={moveToHistoryScreen} recentHistory={recentHistory}/>
-                </View>
-            </RefreshScrollView>
+            {(common.connect && common.isNetworkChanged === false) && 
+                <RefreshScrollView
+                    refreshFunc={refreshStates}>
+                    <View style={styles.content}>
+                        <AddressBox address={wallet.address} />
+                        <BalanceBox stakingValues={stakingState} handleSend={moveToSendScreen} handleStaking={moveToStakingTab}/>
+                        <HistoryBox handleHistory={moveToHistoryScreen} recentHistory={recentHistory}/>
+                    </View>
+                </RefreshScrollView>
+            }
         </View>
     )
 }
@@ -96,6 +101,7 @@ const styles = StyleSheet.create({
         color: '#aaa',
     },
     content: {
+        paddingTop: 32,
     }
 })
 
