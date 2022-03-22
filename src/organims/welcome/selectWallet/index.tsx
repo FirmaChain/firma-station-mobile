@@ -27,6 +27,7 @@ const SelectWallet = () => {
     const [items, setItems]:Array<any> = useState([]);
     const [selected, setSelected] = useState(-1);
     const [selectedWallet, setSelectedWallet] = useState('');
+    const [resetValues, setResetValues] = useState(false);
     
     const [openSelectModal, setOpenSelectModal] = useState(false);
 
@@ -44,6 +45,8 @@ const SelectWallet = () => {
     }
 
     const handleSelectWallet = (index:number) => {
+        if(index === selected) {return handleOpenSelectModal(false);}
+        setResetValues(true);
         setSelected(index);
         handleOpenSelectModal(false);
     }
@@ -51,6 +54,8 @@ const SelectWallet = () => {
     useEffect(() => {
         if(selected >= 0){
             setSelectedWallet(items[selected]);
+            setWalletInfo('');
+            setResetValues(false);
         }
     }, [selected])
 
@@ -139,6 +144,7 @@ const SelectWallet = () => {
                             validation={true}
                             placeholder={passwordText.placeholder} 
                             secure={true}
+                            resetValues={resetValues}
                             onChangeEvent={onChangePassword} />
                     </View>
                     <CustomModal visible={openSelectModal} handleOpen={handleOpenSelectModal}>
