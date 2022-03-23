@@ -107,9 +107,21 @@ export const SuccessCircle = ({size, color}:Props) => {
     )
 }
 
+export const SuccessFilledCircle = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="checkcircle" size={size} color={color} />
+    )
+}
+
 export const FailCircle = ({size, color}:Props) => {
     return (
         <AntDesignIcons name="closecircleo" size={size} color={color} />
+    )
+}
+
+export const FailFilledCircle = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="closecircle" size={size} color={color} />
     )
 }
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
 import { BgColor } from "@/constants/theme";
+import CustomToast from "../toast/customToast";
 
 interface Props {
     visible: boolean;
@@ -28,6 +29,7 @@ const CustomModal = ({visible, handleOpen, children}:Props) => {
                             <Pressable style={styles.modalBox} onPress={()=>Keyboard.dismiss()}>
                                 {children} 
                             </Pressable>
+                            <CustomToast />
                     </KeyboardAvoidingView>
             </Modal>
         </View>
