@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -22,7 +22,6 @@ const Setting = () => {
     const {wallet} = useAppSelector(state => state);
 
     const settingList = [
-        {title: 'Change Wallet name', path: 'ChangeWN'},
         {title: 'Change Password', path: 'ChangePW'},
         {title: 'Export Mnemonic', path: 'ExportMN'},
         {title: 'Export Private key', path: 'ExportPK'},
@@ -63,9 +62,15 @@ const Setting = () => {
                     <ScrollView 
                         keyboardShouldPersistTaps={"handled"}
                         style={{borderTopWidth: 1, borderTopColor: BgColor}}>
-                        <View style={styles.topButtonsBox}>
-                            <TextMenuItem title="Wallet" content={wallet.name} bgColor={AddressBoxColor}/>
-                        </View>
+                        <TouchableOpacity style={styles.topButtonsBox} onPress={()=>handleMenus("ChangeWN")}>
+                            <TextMenuItem 
+                                title="Wallet" 
+                                content={wallet.name} 
+                                bgColor={AddressBoxColor} 
+                                icon={true} 
+                                iconName={"pencil"} 
+                                iconType={"MaterialCommunityIcons"}/>
+                        </TouchableOpacity>
                         <BioAuthRadio wallet={wallet}/>
                         {settingList.map((item, index) => {
                             return (
