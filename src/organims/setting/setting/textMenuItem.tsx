@@ -4,7 +4,9 @@ import { BgColor, BoxColor, Lato, TextColor, WhiteColor } from "@/constants/them
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AntDesignIcons from "react-native-vector-icons/AntDesign";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Feather from "react-native-vector-icons/Feather";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 interface Props {
@@ -17,6 +19,7 @@ interface Props {
     iconColor?: string;
     iconType?: string;
     iconName?: string;
+    iconSize?: number;
 }
 
 const TextMenuItem = 
@@ -28,20 +31,25 @@ const TextMenuItem =
     icon = false, 
     iconColor = WhiteColor,
     iconType = "", 
-    iconName = ""}:Props) => {
+    iconName = "",
+    iconSize = 15}:Props) => {
 
     const Icon = () => {
         switch (iconType) {
             case "MaterialCommunityIcons":
-                return <MaterialCommunityIcons name={iconName} size={15} color={iconColor} />
+                return <MaterialCommunityIcons name={iconName} size={iconSize} color={iconColor} />
             case "MaterialIcons":
-                return <MaterialIcons name={iconName} size={15} color={iconColor} />
+                return <MaterialIcons name={iconName} size={iconSize} color={iconColor} />
             case "AntDesign":
-                return <AntDesignIcons name={iconName} size={15} color={iconColor} />
+                return <AntDesignIcons name={iconName} size={iconSize} color={iconColor} />
+            case "FontAwesome5":
+                return <FontAwesome5 name={iconName} size={iconSize} color={iconColor} />
             case "Ionicons":
-                return <Ionicons name={iconName} size={15} color={iconColor} />
+                return <Ionicons name={iconName} size={iconSize} color={iconColor} />
+            case "Feather":
+                return <Feather name={iconName} size={iconSize} color={iconColor} />
             case "SimpleLineIcons":
-                return <SimpleLineIcons name={iconName} size={15} color={iconColor} />
+                return <SimpleLineIcons name={iconName} size={iconSize} color={iconColor} />
             default:
                 break;
         }

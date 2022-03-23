@@ -69,8 +69,8 @@ const InputBox = ({wallet, validate, newWalletName, password, mnemonic}:Props) =
     }
 
     useEffect(() => {
-        validate(pwValidation)
-    }, [pwValidation])
+        validate(pwValidation && nameValidation)
+    }, [pwValidation, nameValidation])
 
     return (
         <Pressable style={styles.contents} onPress={() => Keyboard.dismiss()}>

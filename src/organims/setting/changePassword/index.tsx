@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
-import { getWalletList, removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet, setWalletLIst } from "@/util/wallet";
+import { getWalletList, removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet, setWalletList } from "@/util/wallet";
 import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import Button from "@/components/button/button";
@@ -58,22 +58,7 @@ const ChangePassword = () => {
     }
 
     const createNewPassword = async() => {
-        let newList:string = '';
-        await getWalletList().then(res => {
-            let arr = res !== undefined? res : [];
-            
-            if(arr.length > 1){
-                arr.filter(item => item !== wallet.name).map((item) => {
-                    newList += item + "/";
-                });
-                newList = newList.slice(0, -1);
-            }
-            setWalletLIst(newList);
-        }).catch(error => {
-            console.log(error)
-        });
-
-        await setNewWallet(wallet.name, newPassword, mnemonic)
+        await setNewWallet(wallet.name, newPassword, mnemonic, false)
             .then(() => {
                 setStatus(1);
                 setIsModalOpen(true);

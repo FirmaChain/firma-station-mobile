@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, Lato, TextColor } from "@/constants/theme";
-import { getWalletList, removeUseBioAuth, removeWallet, setWalletLIst } from "@/util/wallet";
+import { getWalletList, removeUseBioAuth, removeWallet, setWalletList } from "@/util/wallet";
 import DeleteWalletModal from "../modal/deleteWalletModal";
 
 interface Props {
@@ -30,7 +30,7 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
                 });
                 newList = newList.slice(0, -1);
             }
-            setWalletLIst(newList);
+            setWalletList(newList);
             handleDelModal(false);
             handleDisconnect();
         }).catch(error => {

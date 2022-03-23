@@ -127,13 +127,13 @@ export const FailFilledCircle = ({size, color}:Props) => {
 
 export const SortASC = ({size, color}:Props) => {
     return (
-        <MaterialCommunityIcons name="sort-ascending" size={size} color={color} />
+        <Octicons name="sort-asc" size={size} color={color} />
     )
 }
 
 export const SortDESC = ({size, color}:Props) => {
     return (
-        <MaterialCommunityIcons name="sort-descending" size={size} color={color} />
+        <Octicons name="sort-desc" size={size} color={color} />
     )
 }
 
@@ -149,3 +149,20 @@ export const ExternalLink = ({size, color}:Props) => {
     )
 }
 
+export const ListEdit = ({size, color}:Props) => {
+    return (
+        <MaterialCommunityIcons name="playlist-edit" size={size} color={color} />
+    )
+}
+
+export const ListEditDone = ({size, color}:Props) => {
+    return (
+        <MaterialCommunityIcons name="playlist-check" size={size} color={color} />
+    )
+}
+
+export const MenuIcon = ({size, color}:Props) => {
+    return (
+        <MaterialCommunityIcons name="menu" size={size} color={color} />
+    )
+}

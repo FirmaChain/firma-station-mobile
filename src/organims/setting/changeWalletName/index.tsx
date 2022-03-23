@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions, WalletActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
-import { getUseBioAuth, getWalletList, removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet, setUseBioAuth, setWalletLIst } from "@/util/wallet";
+import { getUseBioAuth, getWalletList, removePasswordViaBioAuth, removeUseBioAuth, removeWallet, setBioAuth, setNewWallet, setUseBioAuth, setWalletList } from "@/util/wallet";
 import { WALLETNAME_CHANGE_SUCCESS } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import Button from "@/components/button/button";
@@ -13,6 +13,7 @@ import AlertModal from "@/components/modal/alertModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputBox from "./inputBox";
+import { updateArray } from "@/util/common";
 
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangeWalletName>;
@@ -53,24 +54,25 @@ const ChangeWalletName = () => {
     const removeCurrentWallet = async() => {
         await removeWallet(wallet.name);
         await removePasswordViaBioAuth();
+        await removeUseBioAuth(wallet.name);
     }
 
     const createNewWallet = async() => {
         let newList:string = "";
         await getWalletList().then(res => {
-            let arr = res !== undefined? res : [];
+            let arr = res !== undefined? updateArray(res, wallet.name, newWalletName) : [];
             if(arr.length > 1){
-                arr.filter(item => item !== wallet.name).map((item) => {
+                arr.map((item) => {
                     newList += item + "/";
                 });
                 newList = newList.slice(0, -1);
             }
-            setWalletLIst(newList);
+            setWalletList(newList);
         }).catch(error => {
             console.log(error)
         });
 
-        await setNewWallet(newWalletName, password, mnemonic)
+        await setNewWallet(newWalletName, password, mnemonic, false)
             .then(() => {
                 setIsModalOpen(true);
             })

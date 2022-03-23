@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, StyleSheet, ScrollView, Text } from "react-native";
+import { Pressable, StyleSheet, ScrollView, Text, Platform } from "react-native";
 import { BorderColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { Radio } from "../icon/icon";
 
@@ -34,7 +34,7 @@ const ModalItems = ({initVal, data, onPressEvent}:Props) => {
 const styles = StyleSheet.create({
     modalContainer: {
         width: '100%',
-        marginBottom: 20,
+        marginBottom: Platform.select({android: 0, ios: 20}),
         maxHeight: 500,
     },
     modalContentBox: {

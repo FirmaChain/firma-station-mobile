@@ -4,7 +4,7 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import { AddressBoxColor, BgColor } from "@/constants/theme";
+import { AddressBoxColor, BgColor, TextCatTitleColor } from "@/constants/theme";
 import { removeWalletWithAutoLogin } from "@/util/wallet";
 import { VERSION } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
@@ -68,7 +68,9 @@ const Setting = () => {
                                 content={wallet.name} 
                                 bgColor={AddressBoxColor} 
                                 icon={true} 
-                                iconName={"pencil"} 
+                                iconColor={TextCatTitleColor}
+                                iconSize={20}
+                                iconName={"square-edit-outline"} 
                                 iconType={"MaterialCommunityIcons"}/>
                         </TouchableOpacity>
                         <BioAuthRadio wallet={wallet}/>

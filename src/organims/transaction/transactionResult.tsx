@@ -1,6 +1,6 @@
 import React from "react";
 import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BgColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
+import { BgColor, Lato, PointLightColor, TextAddressColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import { EXPLORER_URL } from "@/constants/common";
 import { FailCircle, SuccessCircle } from "@/components/icon/icon";
 import { ResultState } from ".";
@@ -36,7 +36,7 @@ const TransactionResult = ({result, handleBack}:Props) => {
                 <View style={styles.resultWrapper}>
                     {result.code !== -1 && <Text style={[styles.hash, {color: TextGrayColor}]}>HASH: </Text>}
                     <TouchableOpacity onPress={()=>openExplorer(result.result)}>
-                        <Text numberOfLines={result.code === -1?10:1} ellipsizeMode={"middle"} style={[styles.hash, {paddingHorizontal: 5}]}>{result.result}</Text>
+                        <Text numberOfLines={result.code === -1?10:1} ellipsizeMode={"middle"} style={[styles.hash, {color: result.code === -1? TextColor:TextAddressColor, paddingHorizontal: 5}]}>{result.result}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         textAlign: "center",
-        color: TextColor,
         paddingBottom: 20,
     }
 })
