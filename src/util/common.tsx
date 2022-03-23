@@ -5,6 +5,14 @@ export const wait = (timeout:number) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
+export const updateArray = (array:Array<any>, oldVal:any, newVal:any) => {
+    const index = array.indexOf(oldVal);
+    if(index !== -1){
+        array[index] = newVal;
+    }
+    return array;
+}
+
 export const convertNumber = (value: string | number | undefined) => {
     if(!Number(value)) return 0;
     return Number(value);

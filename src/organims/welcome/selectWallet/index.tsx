@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { WalletActions } from "@/redux/actions";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
-import { getWalletList, setBioAuth, setEncryptPassword, setWalletWithAutoLogin } from "@/util/wallet";
+import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from "@/util/wallet";
 import { getChain } from "@/util/secureKeyChain";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
@@ -16,8 +16,8 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import Button from "@/components/button/button";
 import CustomModal from "@/components/modal/customModal";
-import ModalItems from "@/components/modal/modalItems";
 import WalletSelector from "./walletSelector";
+import ModalWalletList from "@/components/modal/modalWalletList";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -46,13 +46,19 @@ const SelectWallet = () => {
 
     const handleSelectWallet = (index:number) => {
         if(index === selected) {return handleOpenSelectModal(false);}
-        setResetValues(true);
         setSelected(index);
+        setResetValues(true);
         handleOpenSelectModal(false);
+    }
+
+    const handleEditWalletList = async(list:string, newIndex: number) => {
+        setWalletList(list);
+        await WalletList();
+        setSelected(newIndex);
     }
     
     useEffect(() => {
-        if(selected >= 0){
+        if(selected >= 0 && selectedWallet !== items[selected]){
             setSelectedWallet(items[selected]);
             setWalletInfo('');
             setResetValues(false);
@@ -147,9 +153,11 @@ const SelectWallet = () => {
                             resetValues={resetValues}
                             onChangeEvent={onChangePassword} />
                     </View>
+                    {openSelectModal && 
                     <CustomModal visible={openSelectModal} handleOpen={handleOpenSelectModal}>
-                        <ModalItems initVal={selected} data={items} onPressEvent={handleSelectWallet}/>
+                        <ModalWalletList initVal={selected} data={items} handleEditWalletList={handleEditWalletList} onPressEvent={handleSelectWallet}/>
                     </CustomModal>
+                    }
                     <View style={styles.buttonBox}>
                         <Button title='Next' active={pwValidation} onPressEvent={onSelectWalletAndMoveToHome} />
                     </View>

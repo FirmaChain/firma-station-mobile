@@ -28,16 +28,18 @@ export const getWalletList = async() => {
     return result;
 }
 
-export const setNewWallet = async(name:string, password:string, mnemonic:string) => {
+export const setNewWallet = async(name:string, password:string, mnemonic:string, makeList:boolean) => {
     const walletKey:string = keyEncrypt(name, password);
         
     const encWallet = encrypt(mnemonic, walletKey.toString());
     setChain(name, encWallet);
-    let list = name;
-    await getChain(WALLET_LIST).then(res => {
-        if(res) list += '/' + res.password;
-    }).catch(error => console.log('error : ' + error));
-    setWalletLIst(list)
+    if(makeList){
+        let list = name;
+        await getChain(WALLET_LIST).then(res => {
+            if(res) list += '/' + res.password;
+        }).catch(error => console.log('error : ' + error));
+        setWalletList(list)
+    }
 
     let adr = null;
     await getAdrFromMnemonic(mnemonic).then(res => {
@@ -59,7 +61,7 @@ export const setNewWallet = async(name:string, password:string, mnemonic:string)
     return adr;
 }
 
-export const setWalletLIst = (list:string) => {
+export const setWalletList = (list:string) => {
     if(list === ''){
         removeChain(WALLET_LIST);
     } else {
@@ -243,7 +245,7 @@ export const setEncryptPassword = async(password:string) => {
 
 export const setWalletWithBioAuth = async(name:string, password:string, mnemonic:string) => {
     CommonActions.handleLoadingProgress(true);
-    const address = await setNewWallet(name, password, mnemonic);
+    const address = await setNewWallet(name, password, mnemonic, true);
     await setWalletWithAutoLogin(JSON.stringify({
         name: name,
         address: address,
