@@ -19,7 +19,7 @@ interface Props {
 const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
     const { validators, handleValidatorsPolling } = useValidatorData();
 
-    const sortItems = ['Commision', 'Voting Power', 'Uptime'];
+    const sortItems = ['Commission', 'Voting Power', 'Uptime'];
     const [selected, setSelected] = useState(0);
     const [sortWithDesc, setSortWithDesc] = useState(true);
     const [openModal, setOpenModal] = useState(false);
@@ -60,6 +60,16 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
         CommonActions.handleLoadingProgress(false);
     }
 
+    const renderSortIcon = () => {
+        let sort = sortItems[selected] === "Commission"? !sortWithDesc:sortWithDesc;
+        switch (sort) {
+            case true:
+                return (<SortDESC size={20} color={GrayColor} />)
+            case false:
+                return (<SortASC size={20} color={GrayColor} />)
+        }        
+    }
+
     useEffect(() => {
         if(isRefresh || visible)
             refreshValidators();
@@ -79,11 +89,7 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
                             <DownArrow size={12} color={GrayColor} />
                         </TouchableOpacity>
                         <TouchableOpacity style={{paddingLeft: 10, paddingVertical: 10,}} onPress={() => setSortWithDesc(!sortWithDesc)}>
-                            {sortWithDesc?
-                                <SortDESC size={20} color={GrayColor} />
-                                :
-                                <SortASC size={20} color={GrayColor} />
-                            }
+                            {renderSortIcon()}
                         </TouchableOpacity>
     
                     </View>
