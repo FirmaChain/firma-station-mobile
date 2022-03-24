@@ -8,6 +8,7 @@ import { wait } from "@/util/common";
 import TabContainer from "@/components/parts/containers/tabContainer";
 import TabNavigators from "@/navigators/tabNavigators";
 import SplashScreen from "react-native-splash-screen";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -27,6 +28,12 @@ const Home = ({title}:Props) => {
         navigation.navigate(Screens.History);
     }
 
+    const handleMoveToWeb = () => {
+        let key = title.toLowerCase()
+
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+    }
+
     useFocusEffect(
         useCallback(() => {
             wait(1500).then(() => {
@@ -41,6 +48,7 @@ const Home = ({title}:Props) => {
     return (
         <TabContainer
             title={title}
+            handleGuide={handleMoveToWeb}
             settingNavEvent={moveToSetting}
             historyNavEvent={moveToHistory}>
                 <TabNavigators />

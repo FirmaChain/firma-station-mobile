@@ -18,6 +18,7 @@ import Button from "@/components/button/button";
 import CustomModal from "@/components/modal/customModal";
 import WalletSelector from "./walletSelector";
 import ModalWalletList from "@/components/modal/modalWalletList";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -132,6 +133,10 @@ const SelectWallet = () => {
         }
     }, [])
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["selectWallet"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -139,6 +144,7 @@ const SelectWallet = () => {
     return (
         <Container
             title="Select wallet"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>

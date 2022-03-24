@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { AddressBoxColor, BgColor, TextCatTitleColor } from "@/constants/theme";
 import { removeWalletWithAutoLogin } from "@/util/wallet";
-import { VERSION } from "@/../config";
+import { GUIDE_URI, VERSION } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import BioAuthRadio from "./bioAuthRadio";
@@ -49,6 +49,10 @@ const Setting = () => {
         navigation.reset({routes: [{name: Screens.Welcome}]});
     }
 
+    const handleMoveToWeb = (key:string) => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -56,6 +60,7 @@ const Setting = () => {
     return (
         <Container
             title="Setting"
+            handleGuide={()=>handleMoveToWeb("setting")}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={{flex: 1}}>
@@ -73,7 +78,7 @@ const Setting = () => {
                                 iconName={"square-edit-outline"} 
                                 iconType={"MaterialCommunityIcons"}/>
                         </TouchableOpacity>
-                        <BioAuthRadio wallet={wallet}/>
+                        <BioAuthRadio wallet={wallet} handleGuide={handleMoveToWeb}/>
                         {settingList.map((item, index) => {
                             return (
                                 <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />
@@ -84,7 +89,7 @@ const Setting = () => {
                         </View>
                         <View style={styles.bottomButtonsBox}>
                             <Disconnect handleDisconnect={disconnectWallet} />
-                            <Delete wallet={wallet} handleDisconnect={disconnectWallet} />
+                            <Delete wallet={wallet} handleGuide={handleMoveToWeb} handleDisconnect={disconnectWallet} />
                         </View>
                     </ScrollView>
                 </View>

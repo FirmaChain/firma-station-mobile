@@ -1,16 +1,23 @@
 import React from "react";
-import { Keyboard, Pressable, StyleSheet, Text } from "react-native";
-import { Lato, TextColor } from "@/constants/theme";
+import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { GrayColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from "@/constants/theme";
 import { ScreenWidth } from "@/util/getScreenSize";
+import { QuestionFilledCircle } from "../icon/icon";
 
 interface Props {
     title: string;
+    handleGuide?: ()=>void;
 }
 
-const TitleBar = ({title}:Props) => {
+const TitleBar = ({title, handleGuide}:Props) => {
     return (
         <Pressable style={styles.container} onPress={()=>Keyboard.dismiss()}>
             <Text style={styles.title}>{title}</Text>
+            {handleGuide &&
+            <TouchableOpacity style={styles.guide} onPress={()=>handleGuide()}>
+                <QuestionFilledCircle size={18} color={GrayColor}/>
+            </TouchableOpacity>
+            }
         </Pressable>
     );
 };
@@ -20,9 +27,9 @@ const styles = StyleSheet.create({
         height: 50,
         width: ScreenWidth(),
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
         paddingHorizontal: 20,
         paddingBottom: 18,
     },
@@ -31,6 +38,12 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: TextColor,
+    },
+    guide: {
+        paddingLeft: 5,
+        paddingRight: 10,
+        paddingVertical: 5,
+        marginTop: 3,
     }
 })
 

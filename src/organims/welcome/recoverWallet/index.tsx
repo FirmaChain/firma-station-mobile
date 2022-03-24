@@ -14,6 +14,7 @@ import WarnContainer from "@/components/parts/containers/warnContainer";
 import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
 import RecoverMenus from "./recoverMenus";
 import Toast from "react-native-toast-message";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -21,10 +22,6 @@ const RecoverWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     
     const [active, setActive] = useState(false);
-
-    const handleBack = () => {
-        navigation.goBack();
-    }
 
     const recoverWalletViaQR = async(mnemonic: string) => {
         CommonActions.handleLoadingProgress(true);
@@ -36,7 +33,7 @@ const RecoverWallet = () => {
                 text1: CHECK_MNEMONIC,
             });
         }
-        navigation.navigate(Screens.CreateStepOne, {wallet: wallet});
+        navigation.navigate(Screens.CreateStepOne, {mnemonic: mnemonic});
     }
 
     const handleRecoverViaSeed = () => {
@@ -51,10 +48,18 @@ const RecoverWallet = () => {
         setActive(permissionGranted);
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["recoverWallet"]});
+    }
+
+    const handleBack = () => {
+        navigation.goBack();
+    }
 
     return (
         <Container
             title="Recover Wallet"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>

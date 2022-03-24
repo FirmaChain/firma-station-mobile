@@ -9,9 +9,10 @@ import Toast from "react-native-toast-message";
 
 interface Props {
     wallet: any;
+    handleGuide: (key:string)=>void;
 }
 
-const BioAuthRadio = ({wallet}:Props) => {
+const BioAuthRadio = ({wallet, handleGuide}:Props) => {
     const [openBioModal, setOpenBioModal] = useState(false);
     const [useBio, setUseBio] = useState(false);
 
@@ -54,6 +55,11 @@ const BioAuthRadio = ({wallet}:Props) => {
         }
     }
 
+    const handleMoveToGuide = (key:string) => {
+        closeBioModal(false);
+        handleGuide(key);
+    }
+
     useEffect(() => {
         const getUseBioAuthState = async() => {
             const result = await getUseBioAuth(wallet.name);
@@ -74,6 +80,7 @@ const BioAuthRadio = ({wallet}:Props) => {
             <BioAuthOnModal
                 walletName={wallet.name}
                 open={openBioModal}
+                handleGuide={handleMoveToGuide}
                 setOpenModal={closeBioModal}
                 bioAuthhandler={handleBioAuthState}/>
         </View>

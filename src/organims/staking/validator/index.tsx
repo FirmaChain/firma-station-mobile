@@ -16,6 +16,7 @@ import DescriptionBox from "./descriptionBox";
 import DelegationBox from "./delegationBox";
 import PercentageBox from "./percentageBox";
 import AddressBox from "./addressBox";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -75,6 +76,10 @@ const Validator = ({validatorAddress}:Props) => {
         CommonActions.handleLoadingProgress(false);
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["withdraw"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -117,7 +122,8 @@ const Validator = ({validatorAddress}:Props) => {
                                         walletName={wallet.name}
                                         validatorAddress={validatorAddress}
                                         stakingState={stakingState} 
-                                        delegations={delegationState.length} 
+                                        delegations={delegationState.length}
+                                        handleGuide={handleMoveToWeb} 
                                         handleDelegate={moveToDelegate} 
                                         transactionHandler={handleWithdraw}/>
                                     <View style={styles.infoBox}>

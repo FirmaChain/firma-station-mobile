@@ -4,7 +4,7 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import { CommonActions, StakingActions } from "@/redux/actions";
+import { CommonActions } from "@/redux/actions";
 import { useStakingData } from "@/hooks/staking/hooks";
 import { useHistoryData } from "@/hooks/wallet/hooks";
 import { BgColor } from "@/constants/theme";
@@ -13,6 +13,7 @@ import RefreshScrollView from "@/components/parts/refreshScrollView";
 import RewardBox from "./rewardBox";
 import BalanceBox from "./balanceBox";
 import StakingLists from "./stakingLists";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
@@ -42,6 +43,10 @@ const Staking = () => {
         CommonActions.handleLoadingProgress(true);
         await getStakingState();
         setIsRefresh(true);
+        if(common.isNetworkChanged === false){
+            CommonActions.handleLoadingProgress(false);
+        }
+        setIsRefresh(false);
     }
 
     const handleWithdrawAll = (password:string, gas:number) => {
@@ -60,6 +65,10 @@ const Staking = () => {
         });
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["withdrawAll"]});
+    }
+
     useEffect(() => {
         if(stakingState.stakingReward > 0) {
             updateStakingState(stakingState.stakingReward);
@@ -71,17 +80,6 @@ const Staking = () => {
             refreshStates();
         }
     },[recentHistory])
-
-    useEffect(() => {
-        if(staking.loadDelegationList && staking.loadValidatorList){
-            if(common.isNetworkChanged === false){
-                CommonActions.handleLoadingProgress(false);
-            }
-            setIsRefresh(false);
-            StakingActions.loadDelegationList(false);
-            StakingActions.loadValidatorList(false);
-        }
-    }, [staking.loadDelegationList, staking.loadValidatorList])
 
     useEffect(() => {
         if(isFocused){
@@ -98,7 +96,12 @@ const Staking = () => {
                 {(common.connect && common.isNetworkChanged === false) && 
                 <View>
                     <View style={styles.box}>
-                        <RewardBox walletName={wallet.name} available={stakingState.available} reward={staking.stakingReward} transactionHandler={handleWithdrawAll}/>
+                        <RewardBox 
+                            walletName={wallet.name} 
+                            available={stakingState.available} 
+                            reward={staking.stakingReward} 
+                            handleGuide={handleMoveToWeb} 
+                            transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
                     </View>
                     <StakingLists isRefresh={isRefresh} navigateValidator={moveToValidator} />

@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD, SETTING_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
-import { Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { GrayColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import CustomModal from "@/components/modal/customModal";
+import { QuestionFilledCircle } from "@/components/icon/icon";
 
 interface Props {
     walletName: string;
     open: boolean;
+    handleGuide: (key:string) => void;
     setOpenModal: (open:boolean) => void;
     bioAuthhandler: (value:string) => void;
 }
 
-const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props) => {
+const BioAuthOnModal = ({walletName, open, handleGuide, setOpenModal, bioAuthhandler}: Props) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
@@ -66,7 +68,12 @@ const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props)
             visible={open} 
             handleOpen={handleModal}>
                 <View style={styles.modalTextContents}>
-                    <Text style={[styles.title, {fontWeight: "bold"}]}>{SETTING_BIO_AUTH_MODAL_TEXT.title}</Text>
+                    <View style={{flexDirection: "row"}}>
+                        <Text style={[styles.title, {fontWeight: "bold"}]}>{SETTING_BIO_AUTH_MODAL_TEXT.title}</Text>
+                        <TouchableOpacity style={styles.guide} onPress={()=>handleGuide("useBioAuth")}>
+                            <QuestionFilledCircle size={18} color={GrayColor}/>
+                        </TouchableOpacity>
+                    </View>
                     <InputSetVertical
                         title={SETTING_BIO_AUTH_MODAL_TEXT.desc}
                         placeholder={PLACEHOLDER_FOR_PASSWORD}
@@ -108,6 +115,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         marginBottom: 5,
     },
+    guide: {
+        paddingLeft: 5,
+        paddingRight: 10,
+        paddingVertical: 3
+    }
 })
 
 export default BioAuthOnModal;

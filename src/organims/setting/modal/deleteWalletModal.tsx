@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD, SETTING_DELETE_WALLET_TEXT } from "@/constants/common";
-import { FailedColor, Lato, TextCatTitleColor } from "@/constants/theme";
+import { FailedColor, GrayColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import CustomModal from "@/components/modal/customModal";
 import InputSetVertical from "@/components/input/inputSetVertical";
+import { QuestionFilledCircle } from "@/components/icon/icon";
 
 interface Props {
     walletName: string;
     open: boolean;
+    handleGuide: (key:string) => void;
     setOpenModal: Function;
     deleteWallet: Function;
 }
 
-const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: Props) => {
+const DeleteWalletModal = ({walletName, open, handleGuide, setOpenModal, deleteWallet}: Props) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
@@ -65,7 +67,12 @@ const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: Props
             visible={open} 
             handleOpen={handleDelModal}>
                 <View style={styles.modalTextContents}>
-                    <Text style={styles.title}>{SETTING_DELETE_WALLET_TEXT.title}</Text>
+                    <View style={{flexDirection: "row"}}>
+                        <Text style={styles.title}>{SETTING_DELETE_WALLET_TEXT.title}</Text>
+                        <TouchableOpacity style={styles.guide} onPress={()=>handleGuide("deleteWallet")}>
+                            <QuestionFilledCircle size={18} color={GrayColor}/>
+                        </TouchableOpacity>
+                    </View>
                     <Text style={styles.desc}>{SETTING_DELETE_WALLET_TEXT.desc}</Text>
                     <InputSetVertical
                         title={"Password"}
@@ -103,6 +110,11 @@ const styles = StyleSheet.create({
         backgroundColor: FailedColor,
         alignItems: "center",
         justifyContent: "center"
+    },
+    guide: {
+        paddingLeft: 5,
+        paddingRight: 10,
+        paddingVertical: 3
     }
 })
 

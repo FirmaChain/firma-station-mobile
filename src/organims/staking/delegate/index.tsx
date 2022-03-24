@@ -9,7 +9,7 @@ import { useDelegationData } from "@/hooks/staking/hooks";
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from "@/util/firma";
 import { convertNumber } from "@/util/common";
 import { TRANSACTION_TYPE } from "@/constants/common";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
+import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
@@ -109,6 +109,12 @@ const Delegate = ({type, operatorAddress}:Props) => {
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
+    const handleMoveToWeb = () => {
+        let key = type.toLowerCase()
+
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -128,6 +134,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
     return (
         <Container
             title={type}
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
                 <ViewContainer>
                     <>

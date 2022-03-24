@@ -14,14 +14,15 @@ import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
 interface Props {
-    wallet?: any;
+    mnemonic?: any;
 }
 
-const StepOne = ({wallet = null}:Props) => {
+const StepOne = ({mnemonic = null}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation(); 
 
     const [walletName, setWalletName] = useState('');
@@ -53,7 +54,6 @@ const StepOne = ({wallet = null}:Props) => {
                 name: walletName,
                 password: password,
                 mnemonic: result.mnemonic,
-                privatekey: result.privateKey,
             }
             navigation.navigate(Screens.CreateStepTwo, {wallet: wallet});
         } catch (error) {
@@ -66,7 +66,7 @@ const StepOne = ({wallet = null}:Props) => {
     }
 
     const onCompleteRecoverWallet = async() => {
-        const useBioAuth = await setWalletWithBioAuth(walletName, password, wallet.mnemonic);
+        const useBioAuth = await setWalletWithBioAuth(walletName, password, mnemonic);
         if(useBioAuth){
             handleOpenBioAuthModal(true);
         } else {
@@ -86,24 +86,29 @@ const StepOne = ({wallet = null}:Props) => {
         }
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["newWallet"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
 
     return (
         <Container
-            title={wallet? "Recover Wallet" : "New Wallet"}
-            step={wallet? 0 : 1}
+            title={mnemonic? "Recover Wallet" : "New Wallet"}
+            handleGuide={mnemonic? undefined:handleMoveToWeb}
+            step={mnemonic? 0 : 1}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>
                     <InputBox walletInfo={handleWalletInfo}/>
-                    {wallet && <BioAuthModal walletName={walletName} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>}
+                    {mnemonic && <BioAuthModal walletName={walletName} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>}
                     <View style={styles.buttonBox}>
                         <Button 
-                            title={wallet? 'Recover' : 'Next'} 
+                            title={mnemonic? 'Recover' : 'Next'} 
                             active={validation} 
-                            onPressEvent={wallet? onCompleteRecoverWallet : onCreateWalletAndMoveToStepTwo} />
+                            onPressEvent={mnemonic? onCompleteRecoverWallet : onCreateWalletAndMoveToStepTwo} />
                     </View>
                 </Pressable>
             </ViewContainer>

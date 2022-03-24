@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
@@ -7,11 +7,12 @@ import { decrypt, keyEncrypt } from "@/util/keystore";
 import { convertAmount } from "@/util/common";
 import { getChain } from "@/util/secureKeyChain";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { BorderColor, BoxColor, GrayColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import InputSetVertical from "../input/inputSetVertical";
 import Button from "../button/button";
 import CustomModal from "./customModal";
+import { QuestionFilledCircle } from "../icon/icon";
 
 interface Props {
     title: string,
@@ -19,10 +20,11 @@ interface Props {
     fee: number;
     open: boolean;
     setOpenModal: Function;
+    handleGuide?: ()=> void;
     transactionHandler: (password:string) => void; 
 }
 
-const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal, transactionHandler}: Props) => {
+const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal, handleGuide, transactionHandler}: Props) => {
     const signMoalText = {
         title: title,
         confirmTitle: 'Confirm'
@@ -112,7 +114,14 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
             handleOpen={handleModal}>
                 <View style={styles.modalTextContents}>
                     <View style={styles.receiptBox}>
-                        <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
+                        <View style={[styles.boxH, {justifyContent: "flex-start", alignItems: "center"}]}>
+                            <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
+                            {handleGuide &&
+                                <TouchableOpacity style={styles.guide} onPress={()=>handleGuide()}>
+                                    <QuestionFilledCircle size={18} color={GrayColor}/>
+                                </TouchableOpacity>
+                            }
+                        </View>
                         {amount > 0 &&
                         <View style={[styles.boxH, styles.receiptDesc, {borderTopWidth: 1, borderTopColor: BorderColor}]}>
                             <Text style={styles.itemTitle}>Amount</Text>
@@ -165,7 +174,6 @@ const styles = StyleSheet.create({
         backgroundColor: BoxColor,
     },
     receiptTitle: {
-        width: "100%",
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: "bold",
@@ -186,6 +194,11 @@ const styles = StyleSheet.create({
         color: TextColor,
         fontWeight: "normal",
         fontSize: 16,
+    },
+    guide: {
+        paddingLeft: 5,
+        paddingRight: 10,
+        paddingVertical: 3
     }
 })
 

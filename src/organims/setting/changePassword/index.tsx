@@ -13,6 +13,7 @@ import AlertModal from "@/components/modal/alertModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputBox from "./inputBox";
+import { GUIDE_URI } from "@/../config";
 
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;
@@ -67,6 +68,10 @@ const ChangePassword = () => {
         setBioAuth(wallet.name, newPassword);
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["changePassword"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -74,6 +79,7 @@ const ChangePassword = () => {
     return (
         <Container
             title="Change password"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>

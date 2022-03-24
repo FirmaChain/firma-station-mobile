@@ -10,7 +10,7 @@ import { BgColor } from "@/constants/theme";
 import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from "@/constants/common";
 import { addressCheck, getEstimateGasSend, getFeesFromGas } from "@/util/firma";
 import { convertNumber } from "@/util/common";
-import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
+import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
@@ -104,6 +104,10 @@ const Send = () => {
         navigation.goBack();
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["send"]});
+    }
+
     useFocusEffect(
         useCallback(() => {
             getBalance();            
@@ -113,6 +117,7 @@ const Send = () => {
     return (
         <Container
             title="Send"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>

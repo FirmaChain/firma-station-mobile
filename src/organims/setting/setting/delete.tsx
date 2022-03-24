@@ -6,10 +6,11 @@ import DeleteWalletModal from "../modal/deleteWalletModal";
 
 interface Props {
     wallet: any;
+    handleGuide: (key:string) => void;
     handleDisconnect: () => void;
 }
 
-const Delete = ({wallet, handleDisconnect}:Props) => {
+const Delete = ({wallet, handleGuide, handleDisconnect}:Props) => {
 
     const [openDelModal, setOpenDelModal] = useState(false);
     const handleDelModal = (open:boolean) => {
@@ -37,6 +38,11 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
             console.log(error)
         });
     }
+
+    const handleMoveToGuide = (key:string) => {
+        handleDelModal(false);
+        handleGuide(key);
+    }
     
     return (
         <View>
@@ -49,6 +55,7 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
             <DeleteWalletModal
                 walletName={wallet.name} 
                 open={openDelModal} 
+                handleGuide={handleMoveToGuide}
                 setOpenModal={handleDelModal}
                 deleteWallet={handleDeleteWallet}/>
         </View>

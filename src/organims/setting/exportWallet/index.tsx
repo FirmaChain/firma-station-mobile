@@ -14,6 +14,7 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import ExportWalletModal from "./exportWalletModal";
 import InputBox from "./inputBox";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ExportWallet>;
 
@@ -91,6 +92,11 @@ const ExportWallet = ({type}:Props) => {
         }
     }, [mnemonic])
 
+    const handleMoveToWeb = () => {
+        let key = type.toLowerCase()
+
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+    }
     const handleBack = () => {
         setIsModalOpen(false);
         navigation.goBack();
@@ -99,6 +105,7 @@ const ExportWallet = ({type}:Props) => {
     return (
          <Container
             title={titleText}
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>

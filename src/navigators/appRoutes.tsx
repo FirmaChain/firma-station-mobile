@@ -7,9 +7,11 @@ import { ProposalParams } from "../screens/home/governance/proposal";
 import { DelegateParams } from "../screens/home/staking/delegate";
 import { DepositParams } from "@/screens/home/governance/deposit";
 import { TransactionParams } from '@/screens/transaction/transaction';
+import { WebParams } from '@/screens/webScreen';
 
 export enum Screens {
     LoginCheck = 'LoginCheck',
+    WebScreen = 'Web',
 
     Welcome = 'Welcome',
     CreateStepOne = 'CreateStepOne',
@@ -42,6 +44,7 @@ export enum Screens {
 
 export type StackParamList = {
     LoginCheck: undefined;
+    Web: WebParams;
 
     Welcome: undefined;
     CreateStepOne: CreateStepOneParams;

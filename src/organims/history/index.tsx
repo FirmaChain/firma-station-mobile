@@ -10,6 +10,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import HistoryList from "./historyList";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
@@ -21,15 +22,8 @@ const History = () => {
     const [pagination, setPagination] = useState(10);
 
     const onScrollEnd = (event:NativeSyntheticEvent<NativeScrollEvent>) => {
-        if(Platform.OS === 'ios'){
-            if(event.nativeEvent.targetContentOffset){
-                if(event.nativeEvent.contentOffset.y > event.nativeEvent.targetContentOffset.y) 
-                setPagination(pagination => pagination + 5);
-            }
-        } else {
-            if((event.nativeEvent.contentOffset.y + 50) >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
-            setPagination(pagination => pagination + 5);
-        }
+        if((event.nativeEvent.contentOffset.y + 50) >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
+        setPagination(pagination => pagination + 5);
     }
 
     const refreshStates = async() => {
@@ -38,6 +32,10 @@ const History = () => {
             await handleHisotyPolling();
             CommonActions.handleLoadingProgress(false);
         }
+    }
+
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["history"]});
     }
 
     const handleBack = () => {
@@ -53,6 +51,7 @@ const History = () => {
     return (
         <Container
             title="History"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <RefreshScrollView

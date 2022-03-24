@@ -3,9 +3,9 @@ import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
-import { BgColor, FailedColor, Lato, TextButtonColor, TextColor, WhiteColor } from "@/constants/theme";
+import { BgColor, FailedColor, GrayColor, Lato, TextButtonColor, TextColor, WhiteColor } from "@/constants/theme";
 import { ICON_HISTORY } from "@/constants/images";
-import { Setting } from "@/components/icon/icon";
+import { QuestionFilledCircle, Setting } from "@/components/icon/icon";
 import { setFirmaSDK } from "@/util/firma";
 import { setClient } from "@/apollo";
 import { setExplorerUrl } from "@/constants/common";
@@ -17,10 +17,11 @@ interface Props {
     title: string;
     settingNavEvent: Function;
     historyNavEvent: Function;
+    handleGuide?: ()=>void;
     children: JSX.Element;
 }
 
-const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props) => {
+const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, children}:Props) => {
     const {common} = useAppSelector(state => state);
     const networkList = ["MainNet", "TestNet"];
     const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
@@ -59,18 +60,25 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, children}:Props)
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
-                <Text style={styles.title}>{title}</Text>
-
                 <View style={styles.boxH}>
+                    <Text style={[styles.title, {paddingLeft: 10}]}>{title}</Text>
+                    {handleGuide &&
+                    <TouchableOpacity style={styles.guide} onPress={()=>handleGuide()}>
+                        <QuestionFilledCircle size={18} color={GrayColor}/>
+                    </TouchableOpacity>
+                    }
+                </View>
+
+                <View style={[styles.boxH, {justifyContent: "flex-end"}]}>
                     <TextButton
                         title={common.network}
                         bgColor={common.network === "MainNet"? TextButtonColor:FailedColor}
                         onPressEvent={() => handleNetworkSelectModal(true)}/>
-                    <TouchableOpacity style={{padding: 10}} onPress={() => handleMoveToHistory()}>
+                    <TouchableOpacity style={{paddingLeft: 10, paddingRight: 5}} onPress={() => handleMoveToHistory()}>
                         <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{padding: 10}} onPress={() => handleMoveToSetting()}>
+                    <TouchableOpacity style={{paddingLeft: 5, paddingRight: 10}} onPress={() => handleMoveToSetting()}>
                         <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
 
@@ -95,6 +103,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     titleContainer: {
+        width: "100%",
         height: 50,
         backgroundColor: BgColor,
         display: 'flex',
@@ -102,13 +111,19 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'row',
         marginTop: 15,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
     },
     title: {
         fontFamily: Lato,
         fontSize: 28,
         fontWeight: 'bold',
         color: TextColor,
+    },
+    guide: {
+        paddingLeft: 5,
+        paddingRight: 10,
+        paddingVertical: 10,
+        marginTop: 3,
     }
 })
 

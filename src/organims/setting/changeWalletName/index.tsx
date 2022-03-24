@@ -14,6 +14,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputBox from "./inputBox";
 import { updateArray } from "@/util/common";
+import { GUIDE_URI } from "@/../config";
 
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangeWalletName>;
@@ -91,6 +92,10 @@ const ChangeWalletName = () => {
         setBioAuth(newWalletName, password);
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["changeWalletName"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -98,6 +103,7 @@ const ChangeWalletName = () => {
     return (
         <Container
             title="Change wallet name"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>

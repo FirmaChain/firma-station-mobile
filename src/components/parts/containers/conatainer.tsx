@@ -12,10 +12,11 @@ interface Props {
     step?: number;
     bgColor?: string;
     backEvent: Function;
+    handleGuide?: ()=>void;
     children: JSX.Element;
 }
 
-const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0, backEvent, children}:Props) => {
+const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0, backEvent, handleGuide, children}:Props) => {
     const handleMoveBack = () => {
         backEvent && backEvent();
     }
@@ -23,7 +24,7 @@ const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0
     return (
         <View style={[styles.container, {backgroundColor: bgColor}]}>
             <Header step={step} bgColor={bgColor} onPressEvent={() => handleMoveBack()} />
-            {titleOn && <TitleBar title={title} />}
+            {titleOn && <TitleBar title={title} handleGuide={handleGuide}/>}
             {children}
         </View>
     )
