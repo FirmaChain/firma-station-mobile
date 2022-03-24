@@ -50,6 +50,10 @@ const Wallet = () => {
         await currentHistoryRefetch();
         CommonActions.handleLoadingProgress(false);
     }
+
+    const handleMoveToWeb = (uri:string) => {
+        navigation.navigate(Screens.WebScreen, {uri: uri});
+    }
     
     useEffect(() => {
         if(recentHistory !== undefined && common.isNetworkChanged === false){
@@ -79,7 +83,7 @@ const Wallet = () => {
                     <View style={styles.content}>
                         <AddressBox address={wallet.address} />
                         <BalanceBox stakingValues={stakingState} handleSend={moveToSendScreen} handleStaking={moveToStakingTab}/>
-                        <HistoryBox handleHistory={moveToHistoryScreen} recentHistory={recentHistory}/>
+                        <HistoryBox handleHistory={moveToHistoryScreen} recentHistory={recentHistory} handleExplorer={handleMoveToWeb}/>
                     </View>
                 </RefreshScrollView>
             }

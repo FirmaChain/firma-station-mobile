@@ -10,6 +10,7 @@ import RefreshScrollView from "@/components/parts/refreshScrollView";
 import DescriptionSection from "./descriptionSection";
 import TitleSection from "./titleSection";
 import VotingSection from "./votingSection";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Proposal>;
 
@@ -22,6 +23,10 @@ const Proposal = ({proposalId}:Props) => {
 
     const { proposalState, handleProposalPolling } = useProposalData(proposalId);
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["governance"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -29,6 +34,7 @@ const Proposal = ({proposalId}:Props) => {
     return (
         <Container
             title="Proposal"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <RefreshScrollView

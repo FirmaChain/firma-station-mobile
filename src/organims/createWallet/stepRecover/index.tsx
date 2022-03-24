@@ -12,6 +12,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
@@ -38,6 +39,10 @@ const StepRecover = () => {
         navigation.navigate(Screens.CreateStepOne, {mnemonic});
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["recoverWallet"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -45,6 +50,7 @@ const StepRecover = () => {
     return (
         <Container
             title="Recover Wallet"
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <View style={styles.container}>

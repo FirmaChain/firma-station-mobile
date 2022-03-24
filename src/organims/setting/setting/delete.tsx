@@ -6,11 +6,10 @@ import DeleteWalletModal from "../modal/deleteWalletModal";
 
 interface Props {
     wallet: any;
-    handleGuide: (key:string) => void;
     handleDisconnect: () => void;
 }
 
-const Delete = ({wallet, handleGuide, handleDisconnect}:Props) => {
+const Delete = ({wallet, handleDisconnect}:Props) => {
 
     const [openDelModal, setOpenDelModal] = useState(false);
     const handleDelModal = (open:boolean) => {
@@ -39,11 +38,6 @@ const Delete = ({wallet, handleGuide, handleDisconnect}:Props) => {
         });
     }
 
-    const handleMoveToGuide = (key:string) => {
-        handleDelModal(false);
-        handleGuide(key);
-    }
-    
     return (
         <View>
             <TouchableOpacity onPress={() => handleDelModal(true)}>
@@ -55,7 +49,6 @@ const Delete = ({wallet, handleGuide, handleDisconnect}:Props) => {
             <DeleteWalletModal
                 walletName={wallet.name} 
                 open={openDelModal} 
-                handleGuide={handleMoveToGuide}
                 setOpenModal={handleDelModal}
                 deleteWallet={handleDeleteWallet}/>
         </View>

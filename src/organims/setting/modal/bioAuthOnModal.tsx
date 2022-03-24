@@ -13,12 +13,11 @@ import { QuestionFilledCircle } from "@/components/icon/icon";
 interface Props {
     walletName: string;
     open: boolean;
-    handleGuide: (key:string) => void;
     setOpenModal: (open:boolean) => void;
     bioAuthhandler: (value:string) => void;
 }
 
-const BioAuthOnModal = ({walletName, open, handleGuide, setOpenModal, bioAuthhandler}: Props) => {
+const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
@@ -70,9 +69,6 @@ const BioAuthOnModal = ({walletName, open, handleGuide, setOpenModal, bioAuthhan
                 <View style={styles.modalTextContents}>
                     <View style={{flexDirection: "row"}}>
                         <Text style={[styles.title, {fontWeight: "bold"}]}>{SETTING_BIO_AUTH_MODAL_TEXT.title}</Text>
-                        <TouchableOpacity style={styles.guide} onPress={()=>handleGuide("useBioAuth")}>
-                            <QuestionFilledCircle size={18} color={GrayColor}/>
-                        </TouchableOpacity>
                     </View>
                     <InputSetVertical
                         title={SETTING_BIO_AUTH_MODAL_TEXT.desc}
@@ -114,11 +110,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: '#fff',
         marginBottom: 5,
-    },
-    guide: {
-        paddingLeft: 5,
-        paddingRight: 10,
-        paddingVertical: 3
     }
 })
 

@@ -16,7 +16,6 @@ import DescriptionBox from "./descriptionBox";
 import DelegationBox from "./delegationBox";
 import PercentageBox from "./percentageBox";
 import AddressBox from "./addressBox";
-import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -76,8 +75,8 @@ const Validator = ({validatorAddress}:Props) => {
         CommonActions.handleLoadingProgress(false);
     }
 
-    const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["withdraw"]});
+    const handleMoveToWeb = (uri:string) => {
+        navigation.navigate(Screens.WebScreen, {uri: uri});
     }
 
     const handleBack = () => {
@@ -123,13 +122,20 @@ const Validator = ({validatorAddress}:Props) => {
                                         validatorAddress={validatorAddress}
                                         stakingState={stakingState} 
                                         delegations={delegationState.length}
-                                        handleGuide={handleMoveToWeb} 
                                         handleDelegate={moveToDelegate} 
                                         transactionHandler={handleWithdraw}/>
                                     <View style={styles.infoBox}>
                                         <PercentageBox data={validatorState.percentageData} />
-                                        <AddressBox title={"Operator address"} path={"validators"} address={validatorState.address.operatorAddress} />
-                                        <AddressBox title={"Account address"} path={"accounts"} address={validatorState.address.accountAddress} />
+                                        <AddressBox 
+                                            title={"Operator address"} 
+                                            path={"validators"} 
+                                            address={validatorState.address.operatorAddress} 
+                                            handleExplorer={handleMoveToWeb}/>
+                                        <AddressBox 
+                                            title={"Account address"} 
+                                            path={"accounts"} 
+                                            address={validatorState.address.accountAddress} 
+                                            handleExplorer={handleMoveToWeb}/>
                                     </View>
                                 </>
                                 }

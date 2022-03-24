@@ -13,7 +13,7 @@ const width = ((Dimensions.get('window').width - 40) / cols) - (marginHorizontal
 
 interface Props {
     status: string;
-    transactionHandler: Function;
+    transactionHandler: (password:string)=>void;
     depositHandler: Function;
 }
 
@@ -69,7 +69,13 @@ const Voting = ({status, transactionHandler, depositHandler}:Props) => {
                     </View>
                 </View>
         </CustomModal>
-        <TransactionConfirmModal transactionHandler={transactionHandler} title={"Vote - " + selectedVote} amount={0} fee={0} open={openTransactionModal} setOpenModal={handleTransactionModal} />
+        <TransactionConfirmModal 
+            transactionHandler={transactionHandler} 
+            title={"Vote - " + selectedVote} 
+            amount={0} 
+            fee={0} 
+            open={openTransactionModal} 
+            setOpenModal={handleTransactionModal} />
         </>
     )
 }

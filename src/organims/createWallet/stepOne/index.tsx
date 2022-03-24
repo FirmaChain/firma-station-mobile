@@ -87,7 +87,7 @@ const StepOne = ({mnemonic = null}:Props) => {
     }
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["newWallet"]});
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[mnemonic?"recoverWallet":"newWallet"]});
     }
 
     const handleBack = () => {
@@ -97,7 +97,7 @@ const StepOne = ({mnemonic = null}:Props) => {
     return (
         <Container
             title={mnemonic? "Recover Wallet" : "New Wallet"}
-            handleGuide={mnemonic? undefined:handleMoveToWeb}
+            handleGuide={handleMoveToWeb}
             step={mnemonic? 0 : 1}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>

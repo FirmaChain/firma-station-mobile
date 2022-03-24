@@ -13,11 +13,10 @@ interface Props {
     walletName: string;
     available: number;
     reward: any;
-    handleGuide: ()=>void;
     transactionHandler: (password:string, gas:number) => void;
 }
 
-const RewardBox = ({walletName, available, reward, handleGuide, transactionHandler}:Props) => {
+const RewardBox = ({walletName, available, reward, transactionHandler}:Props) => {
     const [openModal, setOpenModal] = useState(false);
     const [rewardTextSize, setRewardTextSize] = useState(28);
     
@@ -61,11 +60,6 @@ const RewardBox = ({walletName, available, reward, handleGuide, transactionHandl
         CommonActions.handleLoadingProgress(false);
     }
 
-    const handleMoveToGuide = () => {
-        handleWithdraw(false);
-        handleGuide();
-    }
-
     useEffect(() => {
         setRewardTextSize(resizeFontSize(reward, 10000, 28));
     }, [reward]);
@@ -85,7 +79,6 @@ const RewardBox = ({walletName, available, reward, handleGuide, transactionHandl
                 color={ButtonPointLightColor}
                 onPressEvent={() => handleWithdraw(true)}/>
             <TransactionConfirmModal 
-                handleGuide={handleMoveToGuide}
                 transactionHandler={handleTransaction} 
                 title={"Withdraw All"} 
                 amount={reward} 

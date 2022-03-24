@@ -128,6 +128,10 @@ const Transaction = ({state}:Props) => {
         transaction();
     }, [mnemonic])
 
+    const handleMoveToWeb = (uri:string) => {
+        navigation.navigate(Screens.WebScreen, {uri: uri});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -137,7 +141,7 @@ const Transaction = ({state}:Props) => {
             full={true}
             bgColor={BgColor}>
                 {transactionResult.result !== ""?
-                <TransactionResult result={transactionResult} handleBack={handleBack}/> 
+                <TransactionResult result={transactionResult} handleExplorer={handleMoveToWeb} handleBack={handleBack}/> 
                 :
                 <ProgressTransaction />
                 }

@@ -10,6 +10,7 @@ import BioAuthModal from "@/components/modal/bioAuthModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import MnemonicQuiz from "./mnemonicQuiz";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -52,6 +53,10 @@ const StepThree = ({wallet}:Props) => {
         }
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["newWallet"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -60,6 +65,7 @@ const StepThree = ({wallet}:Props) => {
         <Container
             title="Confirm seed phrase"
             step={3}
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <>

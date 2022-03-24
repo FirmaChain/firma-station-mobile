@@ -7,18 +7,15 @@ interface Props {
     title: string;
     path: string;
     address: string;
+    handleExplorer: (uri:string)=>void;
 }
 
-const AddressBox = ({title, path, address}:Props) => {
-    const openExplorer = (URL:string) => {
-        Linking.openURL(EXPLORER_URL() + "/" + path + "/" + URL);
-    }
-
+const AddressBox = ({title, path, address, handleExplorer}:Props) => {
     return (
         <View style={styles.container}>
             <View style={[styles.box]}>
                 <Text style={styles.title}>{title}</Text>
-                <TouchableOpacity onPress={() => openExplorer(address)}>
+                <TouchableOpacity onPress={() => handleExplorer(EXPLORER_URL() + "/" + path + "/" + address)}>
                     <Text style={styles.content} numberOfLines={1} ellipsizeMode={"middle"}>{address}</Text>
                 </TouchableOpacity>
             </View>

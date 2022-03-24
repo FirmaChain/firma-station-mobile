@@ -34,8 +34,8 @@ const History = () => {
         }
     }
 
-    const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["history"]});
+    const handleMoveToWeb = (uri:string) => {
+        navigation.navigate(Screens.WebScreen, {uri: uri});
     }
 
     const handleBack = () => {
@@ -51,13 +51,13 @@ const History = () => {
     return (
         <Container
             title="History"
-            handleGuide={handleMoveToWeb}
+            handleGuide={()=>handleMoveToWeb(GUIDE_URI["history"])}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <RefreshScrollView
                     scrollEndFunc={onScrollEnd}
                     refreshFunc={refreshStates}>
-                    <HistoryList historyList={historyList} pagination={pagination} />
+                    <HistoryList historyList={historyList} pagination={pagination} handleExplorer={handleMoveToWeb} />
                 </RefreshScrollView>
             </ViewContainer>
         </Container>

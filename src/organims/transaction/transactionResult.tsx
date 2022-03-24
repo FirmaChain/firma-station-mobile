@@ -8,21 +8,16 @@ import Button from "@/components/button/button";
 
 interface Props {
     result: ResultState;
-    handleBack: () => void;
+    handleExplorer: (uri:string)=>void;
+    handleBack: ()=>void;
 }
 
-const TransactionResult = ({result, handleBack}:Props) => {
+const TransactionResult = ({result, handleExplorer, handleBack}:Props) => {
 
     const convertTransactionCodeToText = (code:number) => {
         if(code === 0) return "Transaction Success";
         return "Transaction Failed";
     }
-
-    const openExplorer = (hash:string) => {
-        if(result.code === -1) return;
-        Linking.openURL(EXPLORER_URL() + '/transactions/' + hash);
-    }
-
 
     return (
         <View style={styles.container}>
@@ -35,7 +30,7 @@ const TransactionResult = ({result, handleBack}:Props) => {
                 <Text style={[styles.result, {color: result.code === 0? PointLightColor:TextWarnColor}]}>{convertTransactionCodeToText(result.code)}</Text>
                 <View style={styles.resultWrapper}>
                     {result.code !== -1 && <Text style={[styles.hash, {color: TextGrayColor}]}>HASH: </Text>}
-                    <TouchableOpacity onPress={()=>openExplorer(result.result)}>
+                    <TouchableOpacity onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + result.result)}>
                         <Text numberOfLines={result.code === -1?10:1} ellipsizeMode={"middle"} style={[styles.hash, {color: result.code === -1? TextColor:TextAddressColor, paddingHorizontal: 5}]}>{result.result}</Text>
                     </TouchableOpacity>
                 </View>

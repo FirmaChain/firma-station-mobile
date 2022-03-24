@@ -78,7 +78,7 @@ const Setting = () => {
                                 iconName={"square-edit-outline"} 
                                 iconType={"MaterialCommunityIcons"}/>
                         </TouchableOpacity>
-                        <BioAuthRadio wallet={wallet} handleGuide={handleMoveToWeb}/>
+                        <BioAuthRadio wallet={wallet}/>
                         {settingList.map((item, index) => {
                             return (
                                 <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />
@@ -89,7 +89,7 @@ const Setting = () => {
                         </View>
                         <View style={styles.bottomButtonsBox}>
                             <Disconnect handleDisconnect={disconnectWallet} />
-                            <Delete wallet={wallet} handleGuide={handleMoveToWeb} handleDisconnect={disconnectWallet} />
+                            <Delete wallet={wallet} handleDisconnect={disconnectWallet} />
                         </View>
                     </ScrollView>
                 </View>

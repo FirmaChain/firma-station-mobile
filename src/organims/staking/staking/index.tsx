@@ -13,7 +13,6 @@ import RefreshScrollView from "@/components/parts/refreshScrollView";
 import RewardBox from "./rewardBox";
 import BalanceBox from "./balanceBox";
 import StakingLists from "./stakingLists";
-import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
@@ -65,10 +64,6 @@ const Staking = () => {
         });
     }
 
-    const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["withdrawAll"]});
-    }
-
     useEffect(() => {
         if(stakingState.stakingReward > 0) {
             updateStakingState(stakingState.stakingReward);
@@ -100,7 +95,6 @@ const Staking = () => {
                             walletName={wallet.name} 
                             available={stakingState.available} 
                             reward={staking.stakingReward} 
-                            handleGuide={handleMoveToWeb} 
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
                     </View>

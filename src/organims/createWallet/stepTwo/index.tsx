@@ -8,6 +8,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import MnemonicGrid from "./mnmonicGrid";
+import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 
@@ -22,6 +23,10 @@ const StepTwo = ({wallet}:Props) => {
         navigation.navigate(Screens.CreateStepThree, {wallet: wallet});
     }
 
+    const handleMoveToWeb = () => {
+        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["newWallet"]});
+    }
+
     const handleBack = () => {
         navigation.goBack();
     }
@@ -30,6 +35,7 @@ const StepTwo = ({wallet}:Props) => {
         <Container
             title="Write down seed phrase"
             step={2}
+            handleGuide={handleMoveToWeb}
             backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <>

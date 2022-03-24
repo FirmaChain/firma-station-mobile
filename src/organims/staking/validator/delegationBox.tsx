@@ -18,11 +18,10 @@ interface Props {
     stakingState: StakingState;
     delegations: number;
     handleDelegate: Function;
-    handleGuide: ()=>void;
     transactionHandler: (password:string, gas:number) => void;
 }
 
-const DelegationBox = ({walletName, validatorAddress, stakingState, delegations, handleDelegate, handleGuide, transactionHandler}:Props) => {
+const DelegationBox = ({walletName, validatorAddress, stakingState, delegations, handleDelegate, transactionHandler}:Props) => {
     const arrowDeg = useRef(new Animated.Value(0)).current;
 
     const [openModal, setOpenModal] = useState(false);
@@ -70,11 +69,6 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
 
     const handleOpenAccordion = () => {
         setOpenAccordion(!openAccordion);
-    }
-
-    const handleMoveToGuide = () => {
-        handleWithdraw(false);
-        handleGuide();
     }
 
     useEffect(() => {
@@ -157,7 +151,13 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                 desc={alertDescription}
                 confirmTitle={"OK"}
                 type={"ERROR"}/>
-            <TransactionConfirmModal transactionHandler={handleTransaction} handleGuide={handleMoveToGuide} title={"Withdraw"} amount={stakingState.stakingReward} fee={getFeesFromGas(withdrawGas)} open={openModal} setOpenModal={handleWithdraw} />
+            <TransactionConfirmModal 
+                transactionHandler={handleTransaction} 
+                title={"Withdraw"} 
+                amount={stakingState.stakingReward} 
+                fee={getFeesFromGas(withdrawGas)} 
+                open={openModal} 
+                setOpenModal={handleWithdraw} />
         </View>
     )
 }

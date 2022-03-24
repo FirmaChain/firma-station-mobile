@@ -8,9 +8,10 @@ import { EXPLORER_URL } from "@/constants/common";
 interface Props {
     recentHistory: any;
     handleHistory: Function;
+    handleExplorer: (uri:string)=>void;
 }
 
-const HistoryBox = ({recentHistory, handleHistory}:Props) => {
+const HistoryBox = ({recentHistory, handleHistory, handleExplorer}:Props) => {
     const historyData = useMemo(() => {
         if(recentHistory !== undefined) return recentHistory;
         return {
@@ -21,10 +22,6 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
         }
         
     }, [recentHistory])
-
-    const moveToExplorer = (hash:string) => {
-        Linking.openURL(EXPLORER_URL() + '/transactions/' + hash);
-    }
 
     const moveToHistory = () => {
         if(recentHistory === undefined) return;
@@ -73,7 +70,7 @@ const HistoryBox = ({recentHistory, handleHistory}:Props) => {
                     </View>
                 </View>
 
-                <TouchableOpacity onPress={()=>moveToExplorer(historyData.hash)}>
+                <TouchableOpacity onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + historyData.hash)}>
                 <View style={[styles.wrapper, {paddingBottom: 0}]}>
                     <View style={[styles.historyWrapper]}>
                         <Text style={[styles.contentTitle, {fontSize: 14}]}>Hash</Text>

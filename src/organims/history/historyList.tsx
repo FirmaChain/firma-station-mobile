@@ -1,5 +1,5 @@
 import React from "react";
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { HistoryListState } from "@/hooks/wallet/hooks";
 import { ForwardArrow } from "@/components/icon/icon";
 import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor } from "@/constants/theme";
@@ -9,20 +9,16 @@ import { EXPLORER_URL } from "@/constants/common";
 interface Props {
     historyList: HistoryListState;
     pagination: number;
+    handleExplorer: (uri:string)=>void;
 }
 
-const HistoryList = ({historyList, pagination}:Props) => {
-
-    const moveToExplorer = (hash:string) => {
-        Linking.openURL(EXPLORER_URL() + '/transactions/' + hash);
-    }
-
+const HistoryList = ({historyList, pagination, handleExplorer}:Props) => {
     return (
         <View style={styles.container}>
             {historyList !== undefined && historyList.list.map((value:any, index) => {
             if(index < pagination){
             return (
-                <TouchableOpacity key={index} onPress={()=>moveToExplorer(value.hash)}>
+                <TouchableOpacity key={index} onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + value.hash)}>
                     <View style={styles.box}>
                         <View style={styles.wrapperH}>
                             <View style={{flex: 2}}>
