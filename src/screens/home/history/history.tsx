@@ -1,7 +1,7 @@
 import React from "react";
 import History from "@/organims/history";
 
-const HistoryScreen: React.FunctionComponent = () => {
+const HistoryScreen = () => {
     return (
         <History />
     )

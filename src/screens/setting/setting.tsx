@@ -1,7 +1,7 @@
 import React from "react";
 import Setting from "@/organims/setting/setting";
 
-const SettingScreen: React.FunctionComponent = () => {
+const SettingScreen = () => {
     return (
         <Setting />
     )

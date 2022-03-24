@@ -52,11 +52,9 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
         if(validatorList.length === 0) {
             CommonActions.handleLoadingProgress(true);
         }
-        StakingActions.loadValidatorList(false);
         if(visible){
             await handleValidatorsPolling();
         }
-        StakingActions.loadValidatorList(true);
         CommonActions.handleLoadingProgress(false);
     }
 

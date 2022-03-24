@@ -101,6 +101,12 @@ export const QuestionCircle = ({size, color}:Props) => {
     )
 }
 
+export const QuestionFilledCircle = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="questioncircle" size={size} color={color} />
+    )
+}
+
 export const SuccessCircle = ({size, color}:Props) => {
     return (
         <AntDesignIcons name="checkcircleo" size={size} color={color} />
@@ -164,5 +170,11 @@ export const ListEditDone = ({size, color}:Props) => {
 export const MenuIcon = ({size, color}:Props) => {
     return (
         <MaterialCommunityIcons name="menu" size={size} color={color} />
+    )
+}
+
+export const ScrollToTop = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="upcircle" size={size} color={color} />
     )
 }

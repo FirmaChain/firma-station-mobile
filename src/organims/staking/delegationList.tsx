@@ -55,7 +55,6 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
     },[delegationList]);
 
     const refreshStakings = async() => {
-        StakingActions.loadDelegationList(false);
         await refetchValidatorDescList();
         await handleDelegationState();
         if(redelegationList.length > 0){
@@ -64,7 +63,6 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
         if(undelegationList.length > 0){
             await handleUndelegationState();
         }
-        StakingActions.loadDelegationList(true);
     }
 
     const handleOpenModal = (open:boolean) => {

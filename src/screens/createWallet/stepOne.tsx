@@ -2,18 +2,18 @@ import React from "react";
 import StepOne from "@/organims/createWallet/stepOne";
 
 export type CreateStepOneParams = {
-    wallet?: any;
+    mnemonic?: any;
 }
 
-interface CreateStepOneScreenProps {
+interface Props {
     route: {params: CreateStepOneParams};
 }
 
-const CreateStepOneScreen: React.FunctionComponent<CreateStepOneScreenProps> = (props) => {
-    const {wallet} = props.route.params;
+const CreateStepOneScreen = (props:Props) => {
+    const {mnemonic} = props.route.params;
    
     return (
-        <StepOne wallet={wallet} />
+        <StepOne mnemonic={mnemonic} />
     )
 }
 

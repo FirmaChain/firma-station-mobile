@@ -19,7 +19,6 @@ export interface Wallet {
     name?: string;
     password?: string;
     mnemonic?: string;
-    privatekey?: string;
 }
 
 export interface TransactionState {

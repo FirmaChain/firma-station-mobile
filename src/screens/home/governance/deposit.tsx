@@ -16,7 +16,7 @@ interface Props {
     navigation: ScreenNavgationProps;
 }
 
-const DepositScreen: React.FunctionComponent<Props> = (props) => {
+const DepositScreen = (props:Props) => {
     const {navigation} = props;
 
     const handleBack = () => {

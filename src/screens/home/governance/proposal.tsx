@@ -5,11 +5,11 @@ export type ProposalParams = {
     proposalId: number;
 }
 
-interface ProposalScreenProps {
+interface Props {
     route: {params: ProposalParams};
 }
 
-const ProposalScreen: React.FunctionComponent<ProposalScreenProps> = (props) => {
+const ProposalScreen = (props:Props) => {
     const {proposalId} = props.route.params;
 
     return (

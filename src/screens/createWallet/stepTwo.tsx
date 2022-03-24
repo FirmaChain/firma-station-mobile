@@ -7,11 +7,11 @@ export type CreateStepTwoParams = {
     wallet: any;
 }
 
-interface CreateStepTwoScreenProps {
+interface Props {
     route: {params: CreateStepTwoParams};
 }
 
-const CreateStepTwoScreen: React.FunctionComponent<CreateStepTwoScreenProps> = (props) => {
+const CreateStepTwoScreen = (props:Props) => {
     const {wallet} = props.route.params;
 
     useFocusEffect(

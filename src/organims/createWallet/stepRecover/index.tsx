@@ -35,7 +35,7 @@ const StepRecover = () => {
                 text1: CHECK_MNEMONIC,
             });
         }
-        navigation.navigate(Screens.CreateStepOne, {wallet: wallet});
+        navigation.navigate(Screens.CreateStepOne, {mnemonic});
     }
 
     const handleBack = () => {

@@ -5,11 +5,11 @@ export type CreateStepThreeParams = {
     wallet: any;
 }
 
-interface CreateStepThreeScreenProps {
+interface Props {
     route: {params: CreateStepThreeParams};
 }
 
-const CreateStepThreeScreen: React.FunctionComponent<CreateStepThreeScreenProps> = (props) => {
+const CreateStepThreeScreen = (props:Props) => {
     const {wallet} = props.route.params;
 
     return (
