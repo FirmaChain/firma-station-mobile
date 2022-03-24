@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Pressable, StyleSheet, ScrollView, Text, Platform } from "react-native";
-import { BorderColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
+import { Pressable, StyleSheet, ScrollView, Text, Platform, View } from "react-native";
+import { BgColor, BorderColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { Radio } from "../icon/icon";
 
 interface Props {
@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginBottom: Platform.select({android: 0, ios: 20}),
         maxHeight: 500,
+        backgroundColor: BoxDarkColor,
     },
     modalContentBox: {
         width: '100%',
@@ -44,8 +45,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: "center",
         justifyContent: 'space-between',
-        borderBottomWidth: .5,
-        borderBottomColor: BorderColor,
+        marginBottom: 1,
+        backgroundColor: BgColor,
     },
     itemTitle: {
         fontFamily: Lato,

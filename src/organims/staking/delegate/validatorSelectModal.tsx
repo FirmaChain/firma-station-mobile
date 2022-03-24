@@ -31,7 +31,7 @@ const ValidatorSelectModal = ({list, open, setOpenModal, setValue, resetValues}:
     
     return (
         <CustomModal visible={open} handleOpen={handleOpenModal}>
-            <ModalItemsForValidator initVal={selected} data={list} onPressEvent={handleSelectWallet}/>
+            <ModalItemsForValidator title={"Source Validator"} initVal={selected} data={list} onPressEvent={handleSelectWallet}/>
         </CustomModal>
     )
 }

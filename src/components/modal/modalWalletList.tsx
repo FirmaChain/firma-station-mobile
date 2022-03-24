@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
-import { BorderColor, BoxColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { MenuIcon, Radio } from "../icon/icon";
 
 interface Props {
@@ -62,7 +62,7 @@ const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Pro
         recreateList();
     }, [listData])
 
-    const renderItem = ({ item, index = 0, drag }: RenderItemParams<Item>) => (
+    const renderItem = ({ item, index = 0, drag, isActive }: RenderItemParams<Item>) => (
         <TouchableOpacity 
             key={index} 
             style={styles.modalContentBox} 
@@ -70,11 +70,14 @@ const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Pro
             <Text style={styles.itemTitle}>{item.label}</Text>
             {isEdit?
             <TouchableOpacity
+                style={{paddingVertical: 15, paddingRight: 20, paddingLeft: 50}}
                 onPressIn={drag}>
                 <MenuIcon size={20} color={WhiteColor} />
             </TouchableOpacity>
             :
-            <Radio size={20} color={WhiteColor} active={index === selected} />
+            <View style={{paddingHorizontal: 20}}>
+                <Radio size={20} color={WhiteColor} active={index === selected} />
+            </View>
             }
         </TouchableOpacity>
     );
@@ -105,6 +108,7 @@ const styles = StyleSheet.create({
         marginBottom: Platform.select({android: 0, ios: 20}),
         paddingBottom: Platform.select({android: 0, ios: 50}),
         maxHeight: 500,
+        backgroundColor: BoxDarkColor,
     },
     headerBox: {
         paddingHorizontal: 10,
@@ -133,19 +137,19 @@ const styles = StyleSheet.create({
     },
     modalContentBox: {
         width: '100%',
-        paddingVertical: 20,
-        paddingHorizontal: 20,
         flexDirection: 'row',
         alignItems: "center",
         justifyContent: 'space-between',
-        borderBottomWidth: .5,
-        borderBottomColor: BorderColor,
+        marginBottom: 1,
+        backgroundColor: BgColor,
     },
     itemTitle: {
         fontFamily: Lato,
         fontSize: 16,
         fontWeight: "normal",
         color: TextColor,
+        paddingVertical: 20,
+        paddingHorizontal: 20,
     },
 })
 
