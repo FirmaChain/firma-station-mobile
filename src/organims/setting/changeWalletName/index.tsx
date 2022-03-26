@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -55,7 +55,6 @@ const ChangeWalletName = () => {
     const removeCurrentWallet = async() => {
         await removeWallet(wallet.name);
         await removePasswordViaBioAuth();
-        await removeUseBioAuth(wallet.name);
     }
 
     const createNewWallet = async() => {
@@ -90,10 +89,12 @@ const ChangeWalletName = () => {
             setUseBioAuth(newWalletName);
         }
         setBioAuth(newWalletName, password);
+        await removeUseBioAuth(wallet.name);
     }
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["changeWalletName"]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["changeWalletName"]});
+        Linking.openURL(GUIDE_URI["changeWalletName"]);
     }
 
     const handleBack = () => {

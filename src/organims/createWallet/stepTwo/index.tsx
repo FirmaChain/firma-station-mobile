@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -24,7 +24,8 @@ const StepTwo = ({wallet}:Props) => {
     }
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["newWallet"]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["newWallet"]});
+        Linking.openURL(GUIDE_URI["newWallet"]);
     }
 
     const handleBack = () => {

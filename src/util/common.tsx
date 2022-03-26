@@ -88,9 +88,7 @@ export const getGMT = () => {
 export const getLocalDate = (time:string) => {
     let date = new Date(time);
     const offset = date.getTimezoneOffset();
-    if(Platform.OS === "ios"){
-        date.setHours(date.getHours() - (offset/60));
-    }
+    date.setHours(date.getHours() - (offset/60));
     return date;
 }
 

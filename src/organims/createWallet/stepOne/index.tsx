@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Keyboard, Pressable, StyleSheet, View } from "react-native";
+import { Keyboard, Linking, Pressable, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -87,7 +87,8 @@ const StepOne = ({mnemonic = null}:Props) => {
     }
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[mnemonic?"recoverWallet":"newWallet"]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[mnemonic?"recoverWallet":"newWallet"]});
+        Linking.openURL(GUIDE_URI[mnemonic?"recoverWallet":"newWallet"]);
     }
 
     const handleBack = () => {

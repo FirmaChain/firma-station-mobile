@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -111,8 +111,8 @@ const Delegate = ({type, operatorAddress}:Props) => {
 
     const handleMoveToWeb = () => {
         let key = type.toLowerCase()
-
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+        Linking.openURL(GUIDE_URI[key]);
     }
 
     const handleBack = () => {

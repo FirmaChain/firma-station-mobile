@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Pressable, Keyboard } from "react-native";
+import { StyleSheet, View, Pressable, Keyboard, Linking } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useNavigation } from "@react-navigation/native";
@@ -134,7 +134,8 @@ const SelectWallet = () => {
     }, [])
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["selectWallet"]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["selectWallet"]});
+        Linking.openURL(GUIDE_URI["selectWallet"]);
     }
 
     const handleBack = () => {

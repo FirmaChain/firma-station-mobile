@@ -11,6 +11,7 @@ import DescriptionSection from "./descriptionSection";
 import TitleSection from "./titleSection";
 import VotingSection from "./votingSection";
 import { GUIDE_URI } from "@/../config";
+import { Linking } from "react-native";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Proposal>;
 
@@ -24,7 +25,8 @@ const Proposal = ({proposalId}:Props) => {
     const { proposalState, handleProposalPolling } = useProposalData(proposalId);
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["governance"]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["governance"]});
+        Linking.openURL(GUIDE_URI["governance"]);
     }
 
     const handleBack = () => {

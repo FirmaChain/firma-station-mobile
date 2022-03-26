@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent, Platform } from "react-native";
+import { Linking, NativeScrollEvent, NativeSyntheticEvent, Platform } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -35,7 +35,8 @@ const History = () => {
     }
 
     const handleMoveToWeb = (uri:string) => {
-        navigation.navigate(Screens.WebScreen, {uri: uri});
+        // navigation.navigate(Screens.WebScreen, {uri: uri});
+        Linking.openURL(GUIDE_URI[uri]);
     }
 
     const handleBack = () => {

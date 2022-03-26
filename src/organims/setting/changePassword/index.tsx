@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -69,7 +69,8 @@ const ChangePassword = () => {
     }
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["changePassword"]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["changePassword"]});
+        Linking.openURL(GUIDE_URI["changePassword"]);
     }
 
     const handleBack = () => {

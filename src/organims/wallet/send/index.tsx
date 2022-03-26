@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -105,7 +105,8 @@ const Send = () => {
     }
 
     const handleMoveToWeb = () => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["send"]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["send"]});
+        Linking.openURL(GUIDE_URI["send"]);
     }
 
     useFocusEffect(

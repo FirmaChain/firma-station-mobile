@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -24,7 +24,7 @@ const Setting = () => {
     const settingList = [
         {title: 'Change Password', path: 'ChangePW'},
         {title: 'Export Mnemonic', path: 'ExportMN'},
-        {title: 'Export Private key', path: 'ExportPK'},
+        {title: 'Export Private Key', path: 'ExportPK'},
     ];
 
     const handleMenus = (path:string) => {
@@ -50,7 +50,8 @@ const Setting = () => {
     }
 
     const handleMoveToWeb = (key:string) => {
-        navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
+        Linking.openURL(GUIDE_URI[key]);
     }
 
     const handleBack = () => {

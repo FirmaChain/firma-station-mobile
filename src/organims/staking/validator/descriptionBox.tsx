@@ -10,12 +10,14 @@ interface Props {
 
 const DescriptionBox = ({validator}:Props) => {
 
-    const handleUrl = (url:string) => {
-        Linking.openURL(url);
+    const handleUrl = async(url:string) => {
+        let urlValid = url;
+        if(urlValid.includes("http") === false) urlValid = "https://" + urlValid;
+        await Linking.openURL(urlValid);
     }
 
     return (
-        <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20,}]}>
+        <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10, marginTop: -10}]}>
             {validator.avatar?
             <Image style={styles.avatar} source={{uri: validator.avatar}}/>
             :
