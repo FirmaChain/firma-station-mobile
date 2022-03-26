@@ -74,6 +74,7 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
 const styles = StyleSheet.create({
     container: {
         paddingTop: 32,
+        paddingHorizontal: 20,
     },
     item: {
         paddingHorizontal: 20,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -7,7 +7,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { useStakingData } from "@/hooks/staking/hooks";
 import { useHistoryData } from "@/hooks/wallet/hooks";
-import { BgColor } from "@/constants/theme";
+import { BgColor, BoxColor } from "@/constants/theme";
 import { TRANSACTION_TYPE } from "@/constants/common";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import RewardBox from "./rewardBox";
@@ -25,6 +25,10 @@ const Staking = () => {
     const { recentHistory, currentHistoryPolling, refetchCurrentHistory } = useHistoryData();
 
     const [isRefresh, setIsRefresh] = useState(false);
+
+    const stakingReward = useMemo(() => {
+        return stakingState.stakingReward;
+    }, [stakingState.stakingReward])
 
     const currentHistoryRefetch = async() => {
         if(refetchCurrentHistory)
@@ -65,10 +69,10 @@ const Staking = () => {
     }
 
     useEffect(() => {
-        if(stakingState.stakingReward > 0) {
-            updateStakingState(stakingState.stakingReward);
+        if(stakingReward > 0) {
+            updateStakingState(stakingReward);
         }
-    }, [stakingState.stakingReward])
+    }, [stakingReward])
 
     useEffect(() => {
         if(recentHistory !== undefined && common.isNetworkChanged === false){
@@ -87,6 +91,7 @@ const Staking = () => {
     return (
         <View style={styles.container}>
             <RefreshScrollView
+                background={BgColor}
                 refreshFunc={refreshStates}>
                 {(common.connect && common.isNetworkChanged === false) && 
                 <View>
@@ -94,7 +99,7 @@ const Staking = () => {
                         <RewardBox 
                             walletName={wallet.name} 
                             available={stakingState.available} 
-                            reward={staking.stakingReward} 
+                            reward={stakingReward} 
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
                     </View>
@@ -109,13 +114,14 @@ const Staking = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: BgColor,
+        backgroundColor: BoxColor,
     },
     box: {
-        paddingTop: 32,
-        marginHorizontal: 20,
-        marginBottom: 20,
-        borderRadius: 4,
+        marginTop: -10,
+        paddingTop: 42,
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        backgroundColor: BgColor,
     },
 })
 
