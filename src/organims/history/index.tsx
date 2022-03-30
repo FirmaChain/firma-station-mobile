@@ -35,8 +35,11 @@ const History = () => {
     }
 
     const handleMoveToWeb = (uri:string) => {
-        // navigation.navigate(Screens.WebScreen, {uri: uri});
-        Linking.openURL(GUIDE_URI[uri]);
+        if(uri === "history"){
+            Linking.openURL(GUIDE_URI[uri]);
+        } else {
+            navigation.navigate(Screens.WebScreen, {uri: uri});
+        }
     }
 
     const handleBack = () => {
@@ -52,7 +55,7 @@ const History = () => {
     return (
         <Container
             title="History"
-            handleGuide={()=>handleMoveToWeb(GUIDE_URI["history"])}
+            handleGuide={()=>handleMoveToWeb("history")}
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <RefreshScrollView
