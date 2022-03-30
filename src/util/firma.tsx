@@ -141,7 +141,7 @@ export const getEstimateGasSend = async(walletName:string, address:string, amoun
 }
 
 export const getFeesFromGas = (estimatedGas: number) => {
-    const fee = Math.round(estimatedGas * 0.1);
+    const fee = Math.ceil(estimatedGas * 0.1);
     return Math.max(fee, FIRMACHAIN_DEFAULT_CONFIG.defaultFee);
 };
 
