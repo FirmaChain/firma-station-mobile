@@ -1,11 +1,10 @@
-import { Alert } from "react-native";
-import { openSettings } from "react-native-permissions";
-import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
+import { Alert, Linking } from "react-native";
 import ReactNativeBiometrics from "react-native-biometrics";
+import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
 
 export const confirmViaBioAuth = async() => {
     let authResult:boolean = false;
-    const { biometryType } = await ReactNativeBiometrics.isSensorAvailable();
+    const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
 
     await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType })
     .then((result) => {
@@ -14,13 +13,15 @@ export const confirmViaBioAuth = async() => {
     })
     .catch((error) => {
         console.log(error);
-        Alert.alert(BIOMETRICS_PERMISSION_ALERT.title, BIOMETRICS_PERMISSION_ALERT.desc, [
-            {
-                text: "Cancel",
-                style: "cancel"
-            },
-            { text: "OK", onPress: () => openSettings() }
-        ])
+        if(available === false){
+            Alert.alert(BIOMETRICS_PERMISSION_ALERT.title, BIOMETRICS_PERMISSION_ALERT.desc, [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                { text: "OK", onPress: () => Linking.openSettings() }
+            ])
+        }
 
         authResult = false;
     })

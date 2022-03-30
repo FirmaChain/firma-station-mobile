@@ -1,5 +1,5 @@
-import { Alert, Platform } from "react-native";
-import { Permission, check, RESULTS, PERMISSIONS, openSettings } from "react-native-permissions"
+import { Alert, Linking, Platform } from "react-native";
+import { Permission, check, RESULTS, PERMISSIONS } from "react-native-permissions"
 import { CAMERA_PERMISSION_ALERT } from "@/constants/common";
 
 export const isPermissionGranted = async(permission:Permission) => {
@@ -29,7 +29,7 @@ export const checkCameraPermission = async() => {
                 text: "Cancel",
                 style: "cancel",
             },
-            { text: "OK", onPress: () => {openSettings()} }
+            { text: "OK", onPress: () => {Linking.openSettings()} }
         ])
         return false;
     } else {
