@@ -88,6 +88,7 @@ const InputBox = ({wallet, validate, newPassword, mnemonic}:Props) => {
         <Pressable style={styles.contents} onPress={() => Keyboard.dismiss()}>
             <InputSetVertical
                 title={currentPasswordTextObj.title}
+                message=""
                 placeholder={currentPasswordTextObj.placeholder} 
                 validation={true}
                 secure={true}

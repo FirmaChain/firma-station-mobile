@@ -117,3 +117,7 @@ export const resizeFontSize = (amount:number, reference:number, initSize:number)
     if(amount >= reference * 1000) fontSize = initSize - 5;
     return fontSize;
 }
+
+export const getTimeStamp = () => {
+    return Math.round((new Date()).getTime() / 1000).toString();
+}

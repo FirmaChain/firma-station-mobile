@@ -6,6 +6,7 @@ import { QRCodeIcon } from "../icon/icon";
 import Clipboard from "@react-native-clipboard/clipboard";
 import TextButton from "../button/textButton";
 import QRCodeScannerModal from "../modal/qrCodeScanner";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     title: string;
@@ -17,6 +18,8 @@ interface Props {
 }
 
 const InputSetVerticalForAddress = ({title, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}:Props) => {
+    const {common} = useAppSelector(state => state);
+    
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
     const [openModal, setOpenModal] = useState(false);
@@ -39,6 +42,12 @@ const InputSetVerticalForAddress = ({title, numberOnly = false, placeholder, sec
         const copied = await Clipboard.getString();
         handleInputChange(copied);
     }
+
+    useEffect(() => {
+        if(common.appState !== "active"){
+            handleModal(false);
+        }
+    }, [common.appState])
 
     useEffect(() => {
         if(resetValues) handleInputChange('');

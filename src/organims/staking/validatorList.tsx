@@ -19,7 +19,7 @@ interface Props {
 const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
     const { validators, handleValidatorsPolling } = useValidatorData();
 
-    const sortItems = ['Commission', 'Voting Power', 'Uptime'];
+    const sortItems = ['Voting Power', 'Commission', 'Uptime'];
     const [selected, setSelected] = useState(0);
     const [sortWithDesc, setSortWithDesc] = useState(true);
     const [openModal, setOpenModal] = useState(false);
@@ -31,9 +31,9 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
     useMemo(() => {
         switch (selected) {
         case 0:
-            return validatorList.sort((a:any, b:any) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
-        case 1:
             return validatorList.sort((a:any, b:any) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
+        case 1:
+            return validatorList.sort((a:any, b:any) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
         case 2:
             return validatorList.sort((a:any, b:any) => sortWithDesc?(b.condition - a.condition):(a.condition - b.condition));
         }

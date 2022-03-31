@@ -122,18 +122,13 @@ const Send = () => {
             backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
-                    <ScrollView
-                        keyboardShouldPersistTaps={"handled"}>
-                        <WalletInfo available={balance} />
-                        <SendInputBox handleSendInfo={handleSendInfo} available={balance} reset={resetInputValues}/>
-                        <TransactionConfirmModal
-                                transactionHandler={handleTransaction} 
-                                title={"Send"} 
-                                fee={getFeesFromGas(gas)}
-                                amount={sendInfoState.amount} 
-                                open={openTransactionModal} 
-                                setOpenModal={handleTransactionModal} />
-                    </ScrollView>
+                    <View style={{flex: 6}}>
+                        <ScrollView
+                            keyboardShouldPersistTaps={"handled"}>
+                            <WalletInfo available={balance} />
+                            <SendInputBox handleSendInfo={handleSendInfo} available={balance} reset={resetInputValues}/>
+                        </ScrollView>
+                    </View>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>
                         <Button
                             title="Send"
@@ -141,13 +136,21 @@ const Send = () => {
                             onPressEvent={handleSend}/>
                     </View>
 
+                    <TransactionConfirmModal
+                        transactionHandler={handleTransaction} 
+                        title={"Send"} 
+                        fee={getFeesFromGas(gas)}
+                        amount={sendInfoState.amount} 
+                        open={openTransactionModal} 
+                        setOpenModal={handleTransactionModal} />
+
                     <AlertModal
-                            visible={openAlertModal}
-                            handleOpen={handleAlertModalOpen}
-                            title={"Failed"}
-                            desc={alertDescription}
-                            confirmTitle={"OK"}
-                            type={"ERROR"}/>
+                        visible={openAlertModal}
+                        handleOpen={handleAlertModalOpen}
+                        title={"Failed"}
+                        desc={alertDescription}
+                        confirmTitle={"OK"}
+                        type={"ERROR"}/>
                 </View>
             </ViewContainer>
         </Container>

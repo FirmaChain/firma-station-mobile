@@ -49,9 +49,11 @@ const InputSetVertical = ({title, message, numberOnly = false, validation, place
                 onFocus={()=>setFocus(true)}
                 onBlur={()=>setFocus(false)}
                 onChangeText={text => handleInputChange(text)}/>
+            {message !== undefined &&
             <View style={styles.messageContainer}>
                 <Text style={[styles.message, {color: validation? 'green':TextWarnColor}]}>{message}</Text>
             </View>
+            }
         </View>
     )
 }
@@ -86,7 +88,8 @@ const styles = StyleSheet.create({
     },
     input: {
         color: TextColor,
-        padding: 12,
+        paddingHorizontal: 12,
+        height: 45,
         borderWidth: 1,
         backgroundColor: InputBgColor,
         marginBottom: 5,

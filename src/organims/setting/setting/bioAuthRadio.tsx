@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
-import { BIOAUTH_ACTIVATE } from "@/constants/common";
+import { BIOAUTH_ACTIVATE, SETTING_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
 import { getUseBioAuth, removePasswordViaBioAuth, removeUseBioAuth, setPasswordViaBioAuth, setUseBioAuth } from "@/util/wallet";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import BioAuthOnModal from "../modal/bioAuthOnModal";
+import RadioOnModal from "../modal/bioAuthOnModal";
 import Toast from "react-native-toast-message";
 
 interface Props {
@@ -71,9 +71,10 @@ const BioAuthRadio = ({wallet}:Props) => {
                     <View style={styles.radio} />
                 </View>
             </TouchableOpacity>
-            <BioAuthOnModal
+            <RadioOnModal
                 walletName={wallet.name}
                 open={openBioModal}
+                book={SETTING_BIO_AUTH_MODAL_TEXT}
                 setOpenModal={closeBioModal}
                 bioAuthhandler={handleBioAuthState}/>
         </View>

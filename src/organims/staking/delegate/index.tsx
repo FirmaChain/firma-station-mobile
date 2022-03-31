@@ -139,24 +139,26 @@ const Delegate = ({type, operatorAddress}:Props) => {
                 <ViewContainer>
                     <>
                     <View style={{flex: 1}}>
-                        <ScrollView
-                            keyboardShouldPersistTaps={"handled"}>
-                            <InputBox 
-                                type={type} 
-                                operatorAddress={delegateState.operatorAddressDst}
-                                delegationState={delegationState} 
-                                handleDelegateState={handleDelegateState} 
-                                resetRedelegateValues={resetRedelegateValues} 
-                                resetInputValues={resetInputValues} />
-                            <TransactionConfirmModal 
-                                transactionHandler={handleTransaction} 
-                                title={type} 
-                                amount={delegateState.amount} 
-                                fee={getFeesFromGas(delegateState.gas)} 
-                                open={isSignModalOpen} 
-                                setOpenModal={handleSignModal} />
-                        </ScrollView>
-                        <View style={[styles.buttonBox, {flex: 1, minHeight: 60}]}>
+                        <View style={{flex: 6}}>
+                            <ScrollView
+                                keyboardShouldPersistTaps={"handled"}>
+                                <InputBox 
+                                    type={type} 
+                                    operatorAddress={delegateState.operatorAddressDst}
+                                    delegationState={delegationState} 
+                                    handleDelegateState={handleDelegateState} 
+                                    resetRedelegateValues={resetRedelegateValues} 
+                                    resetInputValues={resetInputValues} />
+                                <TransactionConfirmModal 
+                                    transactionHandler={handleTransaction} 
+                                    title={type} 
+                                    amount={delegateState.amount} 
+                                    fee={getFeesFromGas(delegateState.gas)} 
+                                    open={isSignModalOpen} 
+                                    setOpenModal={handleSignModal} />
+                            </ScrollView>
+                        </View>
+                        <View style={[styles.buttonBox, {flex: 1}]}>
                             <Button
                                 title={"Next"}
                                 active={convertNumber(delegateState.amount) > 0}

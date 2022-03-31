@@ -103,7 +103,7 @@ export const getWalletWithAutoLogin = async() => {
 }
 
 export const setWalletWithAutoLogin = async(walletInfo:string) => {
-    let epochTimeSeconds = Math.round((new Date()).getTime() / 1000).toString()
+    let epochTimeSeconds = Math.round((new Date()).getTime() / 1000).toString();
     let key = {
         ...JSON.parse(walletInfo),
         timestamp: epochTimeSeconds

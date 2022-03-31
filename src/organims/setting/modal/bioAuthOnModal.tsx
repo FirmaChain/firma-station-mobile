@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PLACEHOLDER_FOR_PASSWORD, SETTING_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
-import { GrayColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { StyleSheet, Text, View } from "react-native";
+import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
+import { Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import CustomModal from "@/components/modal/customModal";
-import { QuestionFilledCircle } from "@/components/icon/icon";
 
 interface Props {
     walletName: string;
     open: boolean;
+    book: {
+        title: string;
+        desc: string;
+        confirmTitle: string;
+    }
     setOpenModal: (open:boolean) => void;
     bioAuthhandler: (value:string) => void;
 }
 
-const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props) => {
+const RadioOnModal = ({walletName, open, book, setOpenModal, bioAuthhandler}: Props) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
@@ -68,15 +72,15 @@ const BioAuthOnModal = ({walletName, open, setOpenModal, bioAuthhandler}: Props)
             handleOpen={handleModal}>
                 <View style={styles.modalTextContents}>
                     <View style={{flexDirection: "row"}}>
-                        <Text style={[styles.title, {fontWeight: "bold"}]}>{SETTING_BIO_AUTH_MODAL_TEXT.title}</Text>
+                        <Text style={[styles.title, {fontWeight: "bold"}]}>{book.title}</Text>
                     </View>
                     <InputSetVertical
-                        title={SETTING_BIO_AUTH_MODAL_TEXT.desc}
+                        title={book.desc}
                         placeholder={PLACEHOLDER_FOR_PASSWORD}
                         secure={true}
                         onChangeEvent={handleInputChange}/>
                     <Button
-                        title={SETTING_BIO_AUTH_MODAL_TEXT.confirmTitle}
+                        title={book.confirmTitle}
                         active={active}
                         onPressEvent={handleBioAuth}/>
                 </View>
@@ -113,4 +117,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default BioAuthOnModal;
+export default RadioOnModal;
