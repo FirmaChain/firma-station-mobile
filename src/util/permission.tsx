@@ -1,12 +1,13 @@
 import { Alert, Linking, Platform } from "react-native";
-import { Permission, check, RESULTS, PERMISSIONS } from "react-native-permissions"
+import { check, RESULTS, PERMISSIONS, Permission } from "react-native-permissions"
 import { CAMERA_PERMISSION_ALERT } from "@/constants/common";
 
 export const isPermissionGranted = async(permission:Permission) => {
     let granted = false;
     await check(permission)
     .then((result) => {
-        granted = (RESULTS.GRANTED === result)
+        if(RESULTS.DENIED === result || RESULTS.GRANTED === result){ granted = true;}
+        else {granted = false}
     })
     .catch((error) => {
         console.log(error)
@@ -19,11 +20,13 @@ export const isPermissionGranted = async(permission:Permission) => {
 export const checkCameraPermission = async() => {
     let permission = false;
     if(Platform.OS === "ios"){
+        // permission = true;
         permission = await isPermissionGranted(PERMISSIONS.IOS.CAMERA);
     } else if(Platform.OS === "android") {
         permission = await isPermissionGranted(PERMISSIONS.ANDROID.CAMERA);
     }
     if(permission === false) {
+
         Alert.alert(CAMERA_PERMISSION_ALERT.title, CAMERA_PERMISSION_ALERT.desc, [
             {
                 text: "Cancel",
