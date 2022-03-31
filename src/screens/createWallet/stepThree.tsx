@@ -13,7 +13,7 @@ const CreateStepThreeScreen = (props:Props) => {
     const {wallet} = props.route.params;
 
     return (
-        <StepThree wallet={wallet} />
+        <StepThree walletInfo={wallet} />
     )
 }
 

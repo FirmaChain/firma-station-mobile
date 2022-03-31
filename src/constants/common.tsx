@@ -54,6 +54,7 @@ export const CONNECTION_NOTICE = "Connection error.\nPlease check your network."
 export const COPIED_CLIPBOARD = "Copied your ";
 export const CHANGE_NETWORK_NOTICE = "Under changing into the ";
 export const BIOAUTH_ACTIVATE = "Bio Auth has been activated";
+export const APP_LOCK_ACTIVATE = "App lock has been inactivated.";
 export const FEE_INSUFFICIENT_NOTICE = "The fee is insufficient. Please check the balance.";
 
 // wallet
@@ -111,6 +112,10 @@ export const TRANSACTION_TYPE: KeyValue = {
     UNDELEGATE: "TRANSACTION_UNDELEGATE",
     WITHDRAW: "TRANSACTION_WITHDRAW",
 }
+
+// transaction & unlock
+export const TRANSACTION_AUTH_TEXT = "Enter your password to make a transaction.";
+export const UNLOCK_AUTH_TEXT = "Enter your password to unlock.";
 
 // proposal
 export const PROPOSAL_STATUS: KeyValue = {
@@ -381,6 +386,58 @@ export const TRANSACTION_TYPE_MODEL: KeyValue = {
       '/ibc.applications.transfer.v1.MsgTransfer': {
         tagTheme: TYPE_COLORS['ten'],
         tagDisplay: LABELS['txTransferLabel'],
+      },
+
+      // ========================
+      // firmachain transfer
+      // ========================
+      '/firmachain.firmachain.nft.MsgMint': {
+        tagTheme: TYPE_COLORS['four'],
+        tagDisplay: LABELS['txNFTMintLabel'],
+      },
+      '/firmachain.firmachain.nft.MsgTransfer': {
+        tagTheme: TYPE_COLORS['four'],
+        tagDisplay: LABELS['txNFTTransferLabel'],
+      },
+      '/firmachain.firmachain.nft.MsgBurn': {
+        tagTheme: TYPE_COLORS['four'],
+        tagDisplay: LABELS['txNFTBurnLabel'],
+      },
+      '/firmachain.firmachain.contract.MsgAddContractLog': {
+        tagTheme: TYPE_COLORS['four'],
+        tagDisplay: LABELS['txAddContractLogLabel'],
+      },
+      '/firmachain.firmachain.contract.MsgCreateContractFile': {
+        tagTheme: TYPE_COLORS['four'],
+        tagDisplay: LABELS['txCreateContractFileLabel'],
+      },
+      '/cosmos.feegrant.v1beta1.MsgGrantAllowance': {
+        tagTheme: TYPE_COLORS['two'],
+        tagDisplay: LABELS['txFeegrantGrantLabel'],
+      },
+      '/cosmos.feegrant.v1beta1.MsgRevokeAllowance': {
+        tagTheme: TYPE_COLORS['three'],
+        tagDisplay: LABELS['txFeegrantRevokeLabel'],
+      },
+      '/cosmos.authz.v1beta1.MsgGrant': {
+        tagTheme: TYPE_COLORS['two'],
+        tagDisplay: LABELS['txAuthzGrantLabel'],
+      },
+      '/firmachain.firmachain.token.MsgCreateToken': {
+        tagTheme: TYPE_COLORS['two'],
+        tagDisplay: LABELS['txTokenCreateLabel'],
+      },
+      '/firmachain.firmachain.token.MsgMint': {
+        tagTheme: TYPE_COLORS['two'],
+        tagDisplay: LABELS['txTokenMintLabel'],
+      },
+      '/firmachain.firmachain.token.MsgBurn': {
+        tagTheme: TYPE_COLORS['four'],
+        tagDisplay: LABELS['txTokenBurnLabel'],
+      },
+      '/firmachain.firmachain.token.MsgUpdateTokenURI': {
+        tagTheme: TYPE_COLORS['three'],
+        tagDisplay: LABELS['txTokenUpdateURILabel'],
       },
 }
   

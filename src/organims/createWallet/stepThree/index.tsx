@@ -1,25 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Linking, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { CommonActions } from "@/redux/actions";
 import { BgColor } from "@/constants/theme";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
+import { GUIDE_URI } from "@/../config";
 import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import MnemonicQuiz from "./mnemonicQuiz";
-import { GUIDE_URI } from "@/../config";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
 interface Props {
-    wallet: any;
+    walletInfo: any;
 }
 
-const StepThree = ({wallet}:Props) => {
+const StepThree = ({walletInfo}:Props) => {
     const navigation: ScreenNavgationProps = useNavigation();
+
+    const {wallet, common} = useAppSelector(state => state);
 
     const [confirm, setConfirm] = useState(false);
     const [openBioAuthModal, setOpenBioAuthModal] = useState(false);
@@ -33,7 +37,7 @@ const StepThree = ({wallet}:Props) => {
     
     const onCompleteCreateWallet = async() => {
         setConfirm(false);
-        const useBioAuth = await setWalletWithBioAuth(wallet.name, wallet.password, wallet.mnemonic);
+        const useBioAuth = await setWalletWithBioAuth(walletInfo.name, walletInfo.password, walletInfo.mnemonic);
         if(useBioAuth){
             handleOpenBioAuthModal(true);
         } else {
@@ -43,8 +47,8 @@ const StepThree = ({wallet}:Props) => {
 
     const MoveToHomeScreen = async(result:boolean) => {
         if(result){
-            await setPasswordViaBioAuth(wallet.password);
-            setUseBioAuth(wallet.name);
+            await setPasswordViaBioAuth(walletInfo.password);
+            setUseBioAuth(walletInfo.name);
             handleOpenBioAuthModal(false);
             navigation.reset({routes: [{name: Screens.Home}]});
         } else {
@@ -62,6 +66,20 @@ const StepThree = ({wallet}:Props) => {
         navigation.goBack();
     }
 
+    useEffect(() => {
+        if(common.appState !== "active"){
+            handleOpenBioAuthModal(false);
+        } else {
+            if(wallet.name !== ""){
+                if(common.lockStation === false){
+                    handleOpenBioAuthModal(true);
+                } else {
+                    handleOpenBioAuthModal(false);
+                }
+            }
+        }
+    }, [common.lockStation, common.appState])
+
     return (
         <Container
             title="Confirm seed phrase"
@@ -71,12 +89,12 @@ const StepThree = ({wallet}:Props) => {
             <ViewContainer bgColor={BgColor}>
                 <>
                 <View style={styles.contentBox}>
-                    <MnemonicQuiz mnemonic={wallet.mnemonic} handleConfirm={handleConfirm}/>
+                    <MnemonicQuiz mnemonic={walletInfo.mnemonic} handleConfirm={handleConfirm}/>
                 </View>
                 <View style={styles.buttonBox}>
                     <Button title='Confirm and finish' active={confirm} onPressEvent={onCompleteCreateWallet} />
                 </View>
-                <BioAuthModal walletName={wallet.name} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>
+                <BioAuthModal walletName={walletInfo.name} visible={openBioAuthModal} handleOpen={handleOpenBioAuthModal} handleResult={MoveToHomeScreen}/>
                 </>
             </ViewContainer>
         </Container>

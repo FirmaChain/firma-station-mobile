@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Linking, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -15,12 +15,14 @@ import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
 import RecoverMenus from "./recoverMenus";
 import Toast from "react-native-toast-message";
 import { GUIDE_URI } from "@/../config";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
 const RecoverWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    
+    const {common} = useAppSelector(state => state);
+
     const [active, setActive] = useState(false);
 
     const recoverWalletViaQR = async(mnemonic: string) => {
@@ -56,6 +58,12 @@ const RecoverWallet = () => {
     const handleBack = () => {
         navigation.goBack();
     }
+
+    useEffect(() => {
+        if(common.appState !== "active"){
+            handleRecoverViaQR(false);
+        }
+    }, [common.appState])
 
     return (
         <Container

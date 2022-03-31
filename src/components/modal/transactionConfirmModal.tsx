@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useAppSelector } from "@/redux/hooks";
-import { getPasswordViaBioAuth, getUseBioAuth } from "@/util/wallet";
-import { WalletNameValidationCheck } from "@/util/validationCheck";
-import { decrypt, keyEncrypt } from "@/util/keystore";
 import { convertAmount } from "@/util/common";
-import { getChain } from "@/util/secureKeyChain";
-import { confirmViaBioAuth } from "@/util/bioAuth";
 import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
-import InputSetVertical from "../input/inputSetVertical";
 import Button from "../button/button";
 import CustomModal from "./customModal";
+import ValidationModal from "./validationModal";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     title: string,
@@ -23,66 +17,19 @@ interface Props {
 }
 
 const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal, transactionHandler}: Props) => {
+    const {common} = useAppSelector(state => state);
+
     const signMoalText = {
         title: title,
         confirmTitle: 'Confirm'
     }
 
-    const {wallet} = useAppSelector(state => state);
-
-    const [password, setPassword] = useState('');
-    const [active, setActive] = useState(false);
-    const [useBio, setUseBio] = useState(false);
-
-    const handleInputChange = async(val:string) => {
-        setPassword(val);
-
-        if(val.length >= 10){
-            let nameCheck = await WalletNameValidationCheck(wallet.name);
-        
-            if(nameCheck){
-                const key:string = keyEncrypt(wallet.name, val);
-                await getChain(wallet.name).then(res => {
-                    if(res){
-                        let w = decrypt(res.password, key);
-                        if(w !== null) {
-                            setActive(true);
-                        } else {
-                            setActive(false);
-                        }
-                    }
-                }).catch(error => {
-                    console.log(error);
-                    setActive(false);
-                });
-            } 
-        } else {
-            setActive(false);
-        }
+    const [openValidationModal, setOpenValidationModal] = useState(false);
+    const handleValidation = (open:boolean) => {
+        setOpenValidationModal(open);
     }
 
-    let isProcessing = false;
-    const handleTransaction = async() => {
-        if(active === false) return;
-        
-        if(isProcessing === true) return;
-        isProcessing = true;
-
-        let passwordFromBio = '';
-        if(useBio){
-            const auth = await confirmViaBioAuth();
-            if(auth){
-                await getPasswordViaBioAuth().then(res => {
-                    passwordFromBio = res;
-                }).catch(error => console.log(error));
-            } else {
-                isProcessing = false;
-                return;
-            }
-        }
-        const result = useBio? passwordFromBio : password;
-
-        isProcessing = false;
+    const handleTransaction = (result: string) => {
         transactionHandler(result);
         handleModal(false);
     }
@@ -91,26 +38,17 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
         setOpenModal && setOpenModal(open);
     }
 
-    const getUseBioAuthState = async() => {
-        const result = await getUseBioAuth(wallet.name);
-        setActive(result);
-        setUseBio(result);
-    }
 
     useEffect(() => {
-        if(open){
-            getUseBioAuthState();
-        } else {
-            setPassword('');
-            setActive(false);
-        }
-    }, [open])
+        if(common.appState === "background") handleModal(false);
+    }, [common.appState])
 
     return (
         <CustomModal
             visible={open}
             handleOpen={handleModal}>
-                <View style={styles.modalTextContents}>
+                <>
+                <View style={[styles.modalTextContents, {display: openValidationModal? "none":"flex"}]}>
                     <View style={styles.receiptBox}>
                         <View style={[styles.boxH, {justifyContent: "flex-start", alignItems: "center"}]}>
                             <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
@@ -127,21 +65,18 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
                         </View>
                     </View>
                     <View style={styles.modalPWBox}>
-                        {!useBio &&
-                        <InputSetVertical
-                            title="Password"
-                            message=""
-                            validation={true}
-                            secure={true}
-                            placeholder={PLACEHOLDER_FOR_PASSWORD}
-                            onChangeEvent={handleInputChange}/>
-                        }
                         <Button
                             title={signMoalText.confirmTitle}
-                            active={active}
-                            onPressEvent={handleTransaction}/>
+                            active={true}
+                            onPressEvent={() => handleValidation(true)}/>
                     </View>
                 </View>
+                <ValidationModal
+                    type={"transaction"}
+                    open={openValidationModal}
+                    setOpenModal={handleValidation}
+                    validationHandler={handleTransaction}/>
+                </>
         </CustomModal>
     )
 }

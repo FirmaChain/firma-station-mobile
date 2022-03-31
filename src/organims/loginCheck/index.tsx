@@ -37,6 +37,7 @@ const LoginCheck = () => {
         if(common.connect){
             if(!loading){
                 if(wallet.name !== ""){
+                    CommonActions.handleLockStation(true);
                     navigation.reset({routes: [{name: Screens.Home}]});
                 } else {
                     navigation.reset({routes: [{name: Screens.Welcome}]});

@@ -3,6 +3,11 @@ export type Action = {
     payload?: any,
 }
 
+export const LOCK_STATION = "LOCK_STATION";
+export const APP_STATE = "APP_STATE";
+export const APP_PAUSED_TIME = "APP_PAUSED_TIME";
+export const IS_BIOAUTH_IN_PROGRESS = "IS_BIOAUTH_IN_PROGRESS";
+
 export const IS_CONNECTION = "IS_CONNECTION";
 export const HANDLE_LOADING_PROGRESS = "HANDLE_LOADING_PROGRESS";
 export const HANDLE_NETWORK = "HANDLE_NETWORK";

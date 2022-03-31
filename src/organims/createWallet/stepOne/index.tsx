@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Keyboard, Linking, Pressable, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -15,6 +15,7 @@ import BioAuthModal from "@/components/modal/bioAuthModal";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
 import { GUIDE_URI } from "@/../config";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
@@ -24,6 +25,7 @@ interface Props {
 
 const StepOne = ({mnemonic = null}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation(); 
+    const {wallet, common} = useAppSelector(state => state);
 
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
@@ -94,6 +96,16 @@ const StepOne = ({mnemonic = null}:Props) => {
     const handleBack = () => {
         navigation.goBack();
     }
+
+    useEffect(() => {
+        if(common.appState !== "active"){
+            handleOpenBioAuthModal(false);
+        } else {
+            if(wallet.name !== "" && common.lockStation === false){
+                handleOpenBioAuthModal(true);
+            }
+        }
+    }, [common.lockStation, common.appState])
 
     return (
         <Container

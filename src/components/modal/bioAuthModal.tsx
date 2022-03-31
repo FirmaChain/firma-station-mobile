@@ -11,7 +11,7 @@ import { FingerPrint } from "@/components/icon/icon";
 interface Props {
     walletName: string;
     visible: boolean;
-    handleOpen: Function;
+    handleOpen: (open:boolean)=>void;
     handleResult: (result:boolean) => void;
 }
 
@@ -33,6 +33,7 @@ const BioAuthModal = (props:Props) => {
     return (
         <CustomModal
             visible={visible} 
+            lockBackButton={true}
             handleOpen={handleOpen}>
                 <View style={styles.modalTextContents}>
                     <View style={styles.textBox}>

@@ -5,13 +5,17 @@ import CustomToast from "../toast/customToast";
 
 interface Props {
     visible: boolean;
-    handleOpen: Function;
+    keyboardAvoiing?: boolean;
+    lockBackButton?: boolean;
+    handleOpen: (open:boolean) => void;
     children: JSX.Element;
 }
 
-const CustomModal = ({visible, handleOpen, children}:Props) => {
+const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, handleOpen, children}:Props) => {
+
     const closeModal = () => {
-        handleOpen && handleOpen(false);
+        if(lockBackButton) return;
+        handleOpen(false);
     }
 
     return (
@@ -22,7 +26,7 @@ const CustomModal = ({visible, handleOpen, children}:Props) => {
                 onRequestClose={closeModal}
                 visible={visible}>
                     <KeyboardAvoidingView
-                        enabled 
+                        enabled={keyboardAvoiing}
                         behavior={Platform.select({android: undefined, ios: 'padding'})} 
                         style={{flex: 1}}>
                             <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
@@ -61,7 +65,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: BgColor,
         borderRadius: 4,
-        paddingBottom: 20,
         zIndex: 9999,
     }
 })

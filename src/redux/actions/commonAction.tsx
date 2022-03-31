@@ -1,4 +1,11 @@
-import { HANDLE_LOADING_PROGRESS, HANDLE_NETWORK, IS_CONNECTION, IS_NETWORK_CHANGED } from "../types"
+import { APP_PAUSED_TIME, 
+    APP_STATE, 
+    HANDLE_LOADING_PROGRESS, 
+    HANDLE_NETWORK, 
+    IS_BIOAUTH_IN_PROGRESS, 
+    IS_CONNECTION, 
+    IS_NETWORK_CHANGED, 
+    LOCK_STATION } from "../types"
 
 export const handleIsConnection = (connect:boolean) => (
     {
@@ -25,5 +32,33 @@ export const handleIsNetworkChange = (change:boolean) => (
     {
         type: IS_NETWORK_CHANGED,
         payload: change,
+    }
+)
+
+export const handleLockStation = (lock:boolean) => (
+    {
+        type: LOCK_STATION,
+        payload: lock,
+    }
+)
+
+export const handleAppState = (state:string) => (
+    {
+        type: APP_STATE,
+        payload: state,
+    }
+)
+
+export const handleAppPausedTime = (time:string) => (
+    {
+        type: APP_PAUSED_TIME,
+        payload: time,
+    }
+)
+
+export const handleBioAuthInProgress = (progress:boolean) => (
+    {
+        type: IS_BIOAUTH_IN_PROGRESS,
+        payload: progress,
     }
 )

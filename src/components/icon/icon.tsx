@@ -4,6 +4,8 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AntDesignIcons from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Octicons from "react-native-vector-icons/Octicons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 interface Props {
     size: number;
@@ -176,5 +178,23 @@ export const MenuIcon = ({size, color}:Props) => {
 export const ScrollToTop = ({size, color}:Props) => {
     return (
         <AntDesignIcons name="upcircle" size={size} color={color} />
+    )
+}
+
+export const SendIcon = ({size, color}:Props) => {
+    return (
+        <FontAwesome name="send" size={size} color={color} />
+    )
+}
+
+export const LockIcon = ({size, color}:Props) => {
+    return (
+        <SimpleLineIcons name="lock" size={size} color={color} />
+    )
+}
+
+export const ValidateIcon = ({size, color}:Props) => {
+    return (
+        <AntDesignIcons name="rightsquare" size={size} color={color} />
     )
 }

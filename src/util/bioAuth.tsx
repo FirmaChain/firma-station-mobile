@@ -1,8 +1,11 @@
-import { Alert, Linking } from "react-native";
+import { Alert, Linking, Platform } from "react-native";
 import ReactNativeBiometrics from "react-native-biometrics";
 import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
+import { CommonActions } from "@/redux/actions";
+import { wait } from "./common";
 
 export const confirmViaBioAuth = async() => {
+    CommonActions.handleBioAuthInProgress(true);
     let authResult:boolean = false;
     const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
 
@@ -11,8 +14,12 @@ export const confirmViaBioAuth = async() => {
         const {success} = result
         authResult =  success;
     })
+    .finally(() => {
+        wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
+    })
     .catch((error) => {
         console.log(error);
+        wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
         if(available === false){
             Alert.alert(BIOMETRICS_PERMISSION_ALERT.title, BIOMETRICS_PERMISSION_ALERT.desc, [
                 {
@@ -22,10 +29,10 @@ export const confirmViaBioAuth = async() => {
                 { text: "OK", onPress: () => Linking.openSettings() }
             ])
         }
-
         authResult = false;
     })
-    return authResult;
+    
+     return authResult;
 }
 
 export const checkBioMetrics = async() => {

@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
+import { AppState, StyleSheet } from "react-native";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { setFirmaSDK } from "@/util/firma";
-import { wait } from "@/util/common";
+import { convertNumber, getTimeStamp, wait } from "@/util/common";
 import { setExplorerUrl } from "@/constants/common";
+import { BgColor } from "@/constants/theme";
 import { ApolloProvider, getClient, setClient } from "@/apollo";
 import Progress from "@/components/parts/progress";
 import CustomToast from "@/components/toast/customToast";
@@ -51,11 +53,11 @@ const Router = () => {
 
     return (
         <ApolloProvider client={getClient()}>
-        <NavigationContainer theme={DarkTheme}>
-            <StackNavigator/>
-            {common.loading && <Progress />}
-            <CustomToast />
-        </NavigationContainer>
+            <NavigationContainer theme={DarkTheme}>
+                <StackNavigator/>
+                {common.loading && <Progress />}
+                <CustomToast />
+            </NavigationContainer>
         </ApolloProvider>
     )
 }
