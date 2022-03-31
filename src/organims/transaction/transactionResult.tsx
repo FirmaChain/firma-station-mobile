@@ -1,5 +1,5 @@
 import React from "react";
-import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, Lato, PointLightColor, TextAddressColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import { EXPLORER_URL } from "@/constants/common";
 import { FailCircle, SuccessCircle } from "@/components/icon/icon";
@@ -30,7 +30,7 @@ const TransactionResult = ({result, handleExplorer, handleBack}:Props) => {
                 <Text style={[styles.result, {color: result.code === 0? PointLightColor:TextWarnColor}]}>{convertTransactionCodeToText(result.code)}</Text>
                 <View style={styles.resultWrapper}>
                     {result.code !== -1 && <Text style={[styles.hash, {color: TextGrayColor}]}>HASH: </Text>}
-                    <TouchableOpacity onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + result.result)}>
+                    <TouchableOpacity disabled={result.code !== 0} onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + result.result)}>
                         <Text numberOfLines={result.code === -1?10:1} ellipsizeMode={"middle"} style={[styles.hash, {color: result.code === -1? TextColor:TextAddressColor, paddingHorizontal: 5}]}>{result.result}</Text>
                     </TouchableOpacity>
                 </View>

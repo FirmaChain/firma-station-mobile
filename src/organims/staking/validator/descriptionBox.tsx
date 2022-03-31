@@ -12,7 +12,7 @@ const DescriptionBox = ({validator}:Props) => {
 
     const handleUrl = async(url:string) => {
         let urlValid = url;
-        if(urlValid.includes("http") === false) urlValid = "https://" + urlValid;
+        if(urlValid.includes("://") === false) urlValid = "https://" + urlValid;
         await Linking.openURL(urlValid);
     }
 
