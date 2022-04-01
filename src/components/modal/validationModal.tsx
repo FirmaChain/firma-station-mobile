@@ -9,10 +9,10 @@ import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { getChain } from "@/util/secureKeyChain";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import { LayoutAnim, SpringAnim } from "@/util/animation";
+import { LayoutAnim, easeInAndOutAnim } from "@/util/animation";
 import { ScreenHeight } from "@/util/getScreenSize";
 import { wait } from "@/util/common";
-import { LockIcon, SendIcon, ValidateIcon } from "../icon/icon";
+import { ForwardArrow, LockIcon, SendIcon, SquareIcon } from "../icon/icon";
 import InputSetVertical from "../input/inputSetVertical";
 import ArrowButton from "../button/arrowButton";
 import CustomModal from "./customModal";
@@ -113,7 +113,7 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
                 }).catch(error => console.log(error));
             } else {
                 LayoutAnim();
-                SpringAnim();
+                easeInAndOutAnim();
                 isProcessing = false;
                 setDimActive(false);
                 return;
@@ -139,6 +139,7 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
         setDimActive(true);
         setActive(false);
         setUseBio(false);
+        setBackbuttonLock(true);
     }
 
     useEffect(() => {
@@ -150,7 +151,6 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
     }, [open])
 
     useEffect(() => {
-        setDimActive(useBio);
         if(useBio){
             wait(600).then(()=>{
                 handleValidation(useBio);
@@ -160,14 +160,23 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
                     }
                 })
             })
+        } else {
+            if(type === "transaction"){
+                setBackbuttonLock(false);
+            }
         }
     }, [useBio])
 
     useEffect(() => {
         if(common.appState === "background") {
-            initValues();
             if(type === "transaction"){
                 handleModal(false);
+            }
+        }
+        
+        if(common.appState === "active" && common.isBioAuthInProgress === false){
+            if(type === "lock"){
+                handleValidation(useBio);
             }
         }
     }, [common.appState])
@@ -189,7 +198,7 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
                 keyboardAvoiing={false}
                 handleOpen={handleModal}>
                 <Pressable style={styles.container} onPress={()=>{Keyboard.dismiss()}}>
-                    <View style={[styles.backArrowButton, {display: type === "transaction"?"flex":"none"}]}>
+                    <View style={[styles.backArrowButton, {display: type === "transaction"?backbuttonLock?"none":"flex":"none"}]}>
                         <ArrowButton onPressEvent={()=>handleModal(false)}/>
                     </View>
                     <Animated.View 
@@ -217,7 +226,10 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
                                 </View>
                                 }
                                 <TouchableOpacity style={styles.confirmButton} disabled={active === false} onPress={()=>handleValidation(false)}>
-                                    <ValidateIcon size={52} color={active? PointColor:DisableColor} />
+                                    <SquareIcon size={55} color={active? PointColor:DisableColor}/>
+                                    <View style={[styles.buttonArrow]}>
+                                        <ForwardArrow size={25} color={active? WhiteColor:BgColor}/>
+                                    </View>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -273,8 +285,15 @@ const styles = StyleSheet.create({
         left: 0,
     },
     confirmButton: {
-        paddingLeft: 5,
-        marginBottom: 9,
+        marginLeft: 2,
+        marginBottom: 6,
+    },
+    buttonArrow: {
+        position: "absolute",
+        width: 25,
+        height: 25,
+        top: 17.5,
+        left: 14,
     }
 });
 

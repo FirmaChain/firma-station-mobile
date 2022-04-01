@@ -60,3 +60,6 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+#Config
+config.ts

@@ -36,7 +36,7 @@ const AppStateManager = () => {
             CommonActions.handleAppPausedTime("");
         }
         if(common.appPausedTime !== "" && common.appState === "active"){
-            if(convertNumber(getTimeStamp()) - convertNumber(common.appPausedTime) >= 5){
+            if(convertNumber(getTimeStamp()) - convertNumber(common.appPausedTime) >= 60){
                 CommonActions.handleLockStation(true);
             } else {
                 CommonActions.handleAppPausedTime("");
@@ -56,13 +56,11 @@ const AppStateManager = () => {
         <>
         {(common.isBioAuthInProgress === false && common.appState !== "active") && <View style={styles.dim}/>}
         {common.appPausedTime !== "" && <View style={styles.dim}/>}
-        {(common.appState !== "background" && common.lockStation) &&
-            <ValidationModal 
-                type="lock" 
-                open={common.lockStation}
-                setOpenModal={handleUnlock} 
-                validationHandler={handleUnlock}/>
-        }
+        <ValidationModal 
+            type="lock" 
+            open={common.lockStation}
+            setOpenModal={handleUnlock} 
+            validationHandler={handleUnlock}/>
         </>
         }
         </>

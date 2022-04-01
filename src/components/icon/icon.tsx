@@ -198,3 +198,9 @@ export const ValidateIcon = ({size, color}:Props) => {
         <AntDesignIcons name="rightsquare" size={size} color={color} />
     )
 }
+
+export const SquareIcon = ({size, color}:Props) => {
+    return (
+        <Ionicons name="ios-square" size={size} color={color} />
+    )
+}

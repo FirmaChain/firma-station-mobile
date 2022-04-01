@@ -47,6 +47,6 @@ export const LayoutAnim = () => {
     }
 };
 
-export const SpringAnim = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+export const easeInAndOutAnim = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 }

@@ -6,7 +6,9 @@ import { wait } from "./common";
 
 export const confirmViaBioAuth = async() => {
     CommonActions.handleBioAuthInProgress(true);
+    
     let authResult:boolean = false;
+    
     const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
 
     await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType })
