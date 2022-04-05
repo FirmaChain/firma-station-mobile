@@ -31,7 +31,7 @@ const ProgressTransaction = () => {
 
     useEffect(() => {
         if(counter % 60 >= 15){ 
-            fadeIn(fadeAnim_notice);
+            fadeIn(Animated, fadeAnim_notice, 300);
         }
     }, [counter])
     
@@ -49,8 +49,8 @@ const ProgressTransaction = () => {
             if(inverse && index < 3) index = index + 1;
             if(!inverse && index >= 0) index = index - 1;
 
-            if(inverse && (index >= 0  && index < 3)) fadeIn(animated[index]);
-            if(!inverse && (index >= 0 && index < 3)) fadeOut(animated[index]);
+            if(inverse && (index >= 0  && index < 3)) fadeIn(Animated, animated[index], 300);
+            if(!inverse && (index >= 0 && index < 3)) fadeOut(Animated, animated[index], 300);
 
             if(index <= -1 || index >= 3) inverse = !inverse;
         }

@@ -1,12 +1,12 @@
 import React, { useEffect, useState }from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import { ARROW_DISABLE, ARROW_ENABLE, FIRMA_LOGO } from "@/constants/images";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 
 interface Props {
     title: string;
-    desc: string;
+    desc?: string;
 }
 
 const Description = ({title, desc}:Props) => {
@@ -30,18 +30,20 @@ const Description = ({title, desc}:Props) => {
     }, []);
 
     return (
-        <View style={styles.styledView}>
-            <Text style={styles.title}>{title}</Text>
-            <View style={styles.box}>
-                <WalletIcon name={'ios-wallet-outline'} size={50} color={GrayColor}/>
-                <View style={styles.arrowBox}>
-                    <Image style={styles.arrow} source={arrowIndex === 0? ARROW_ENABLE : ARROW_DISABLE} />
-                    <Image style={styles.arrow}  source={arrowIndex === 1? ARROW_ENABLE : ARROW_DISABLE} />
-                    <Image style={styles.arrow}  source={arrowIndex === 2? ARROW_ENABLE : ARROW_DISABLE} />
+        <View style={[styles.styledView]}>
+            <View>
+                <Text style={styles.title}>{title}</Text>
+                <View style={styles.box}>
+                    <WalletIcon name={'ios-wallet-outline'} size={50} color={GrayColor}/>
+                    <View style={styles.arrowBox}>
+                        <Image style={styles.arrow} source={arrowIndex === 0? ARROW_ENABLE : ARROW_DISABLE} />
+                        <Image style={styles.arrow}  source={arrowIndex === 1? ARROW_ENABLE : ARROW_DISABLE} />
+                        <Image style={styles.arrow}  source={arrowIndex === 2? ARROW_ENABLE : ARROW_DISABLE} />
+                    </View>
+                    <Image style={styles.logo} source={FIRMA_LOGO} />
                 </View>
-                <Image style={styles.logo} source={FIRMA_LOGO} />
+                {desc && <Text style={styles.desc}>{desc}</Text>}
             </View>
-            <Text style={styles.desc}>{desc}</Text>
         </View>
     )
 }
@@ -50,9 +52,7 @@ export default Description;
 
 const styles = StyleSheet.create({
     styledView: {
-        flex: 2,
-        marginTop: -25,
-        display: "flex",
+        width: "100%",
         alignItems: "center",
         justifyContent: "center",
     },
@@ -68,6 +68,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "normal",
         color: TextGrayColor,
+        textAlign: "center",
+    },
+    accent: {
+        fontFamily: Lato,
+        fontSize: 20,
+        fontWeight: "bold",
+        color: TextWarnColor,
         textAlign: "center",
     },
     box: {

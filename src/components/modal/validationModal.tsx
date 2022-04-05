@@ -65,6 +65,7 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
 
     const getUseBioAuthState = async() => {
         const result = await getUseBioAuth(wallet.name);
+        setDimActive(result);
         setUseBio(result);
     }
 
@@ -120,7 +121,6 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
             }
         }
         const result = viaBioAuth? passwordFromBio : password;
-
         isProcessing = false;
         validationHandler(result);
         handleModal(false);
@@ -234,7 +234,6 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
                             </View>
                         </View>
                     </Animated.View>
-                    {dimActive && <View style={styles.dim} />}
                 </Pressable>
             </CustomModal>
         </View>

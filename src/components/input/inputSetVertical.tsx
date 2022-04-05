@@ -62,7 +62,7 @@ export default InputSetVertical;
 
 const styles = StyleSheet.create({
     viewContainer: {
-        marginBottom: 8,
+        paddingBottom: 8,
     },
     textContainer: {
         display: 'flex',

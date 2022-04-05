@@ -84,10 +84,10 @@ const Welcome = () => {
 
 const styles = StyleSheet.create({
     viewContainer: {
-        flex: 1,
+        height: "100%",
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-around",
+        justifyContent: "space-between",
         paddingTop: Platform.select({android: 0, ios: getStatusBarHeight()}),
     },
     network: {
@@ -102,7 +102,6 @@ const styles = StyleSheet.create({
     buttonBox: {
         width: "100%", 
         paddingHorizontal: 20, 
-        flex: 1, 
         justifyContent: "flex-end"
     },
     dividerWrapper: {
