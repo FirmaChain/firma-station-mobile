@@ -53,10 +53,11 @@ const RewardBox = ({walletName, available, reward, transactionHandler}:Props) =>
             })
             .catch(error => {
                 console.log(error);
+                CommonActions.handleLoadingProgress(false);
                 setAlertDescription(String(error));
+                return;
             });
         }
-
         CommonActions.handleLoadingProgress(false);
     }
 

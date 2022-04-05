@@ -90,8 +90,10 @@ const Delegate = ({type, operatorAddress}:Props) => {
             setStatus(status + 1);
         } catch (error) {
             console.log(error); 
+            CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
             setIsAlertModalOpen(true);
+            return;
         }
         CommonActions.handleLoadingProgress(false);
     }

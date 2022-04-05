@@ -82,7 +82,7 @@ const Send = () => {
         const isValidAddress = addressCheck(sendInfoState.address);
         CommonActions.handleLoadingProgress(true);
         try {
-            if(isValidAddress){
+            if(isValidAddress){                
                 let gas = await getEstimateGasSend(wallet.name, sendInfoState.address, sendInfoState.amount);
                 setGas(gas);
             } else {
@@ -93,8 +93,10 @@ const Send = () => {
             }
         } catch (error){
             console.log(error);
+            CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
             setOpenAlertModal(true);
+            return;
         }
         CommonActions.handleLoadingProgress(false);
         handleTransactionModal(true);
