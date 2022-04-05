@@ -5,10 +5,14 @@ import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import { convertNumber, convertToFctNumber } from "./common";
 import { getDecryptPassword, getWallet } from "./wallet";
 
-let firmaSDK = new FirmaMobileSDK(CHAIN_NETWORK["MainNet"].FIRMACHAIN_CONFIG);
+let firmaSDK: FirmaMobileSDK;
 
 export const setFirmaSDK = (network:string) => {
-    firmaSDK = new FirmaMobileSDK(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG);
+    if(network === "MainNet"){
+        firmaSDK = new FirmaMobileSDK(FIRMACHAIN_DEFAULT_CONFIG);
+    } else {
+        firmaSDK = new FirmaMobileSDK(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG);
+    }
 }
 
 const getFirmaSDK = () => {
@@ -132,7 +136,6 @@ export const getEstimateGasRedelegate = async(walletName:string, validatorSrcAdd
     const gasEstimation = await getFirmaSDK().Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
     return gasEstimation;
 }
-
 
 export const getEstimateGasSend = async(walletName:string, address:string, amount:number) => {
     let wallet = await getDecryptWalletInfo(walletName);
