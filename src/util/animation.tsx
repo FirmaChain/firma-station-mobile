@@ -1,31 +1,31 @@
 import { Animated, LayoutAnimation, Platform, UIManager } from "react-native";
 
-export const fadeIn = (value:Animated.Value) => {
-    Animated.timing(value, {
+export const fadeIn = (animated:any, value:Animated.Value, duration:number) => {
+    animated.timing(value, {
         toValue: 1,
-        duration: 300,
+        duration: duration,
         useNativeDriver: true,
     }).start();
 };
 
-export const fadeOut = (value:Animated.Value) => {
-    Animated.timing(value, {
+export const fadeOut = (animated:any, value:Animated.Value, duration:number) => {
+    animated.timing(value, {
         toValue: 0,
-        duration: 300,
+        duration: duration,
         useNativeDriver: true,
     }).start();
 };
 
-export const TurnToOpposite = (value:Animated.Value) => {
-    Animated.timing(value, {
+export const TurnToOpposite = (animated:any, value:Animated.Value) => {
+    animated.timing(value, {
         toValue: 1,
         duration: 100,
         useNativeDriver: true,
     }).start();
 };
 
-export const TurnToOriginal = (value:Animated.Value) => {
-    Animated.timing(value, {
+export const TurnToOriginal = (animated:any, value:Animated.Value) => {
+    animated.timing(value, {
         toValue: 0,
         duration: 100,
         useNativeDriver: true,

@@ -52,7 +52,9 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                 setWithdrawGas(gas);
             } catch (error) {
                 console.log(error);
+                CommonActions.handleLoadingProgress(false);
                 setAlertDescription(String(error));
+                return;
             }
         }
         CommonActions.handleLoadingProgress(false);
@@ -74,10 +76,10 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
     useEffect(() => {
         if(openAccordion){
             setAccordionHeight(65);
-            TurnToOpposite(arrowDeg);
+            TurnToOpposite(Animated, arrowDeg);
         } else {
             setAccordionHeight(0);
-            TurnToOriginal(arrowDeg);
+            TurnToOriginal(Animated, arrowDeg);
         }
     }, [openAccordion]);
     
