@@ -4,17 +4,16 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import { decrypt, keyEncrypt } from "@/util/keystore";
 import { PasswordValidationCheck } from "@/util/validationCheck";
 import { getPrivateKeyFromMnemonic } from "@/util/firma";
-import { getChain } from "@/util/secureKeyChain";
+import { getMnemonic } from "@/util/wallet";
 import { BgColor } from "@/constants/theme";
+import { GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import ExportWalletModal from "./exportWalletModal";
 import InputBox from "./inputBox";
-import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ExportWallet>;
 
@@ -57,20 +56,13 @@ const ExportWallet = ({type}:Props) => {
     }
 
     const getMnemonicFromChain = async(password:string) => {
-        const key:string = keyEncrypt(wallet.name, password);
-        await getChain(wallet.name).then(res => {
-            if(res){
-                let w = decrypt(res.password, key.toString());
-                if(w !== null) {
-                    setMnemonic(w);
-                    setIsModalOpen(false);
-                } else {
-                    setIsModalOpen(true);
-                }
-            }
-        }).catch(error => {
-            console.log(error);
-        });
+        let result = await getMnemonic(wallet.name, password);
+        if(result){
+            setMnemonic(result);
+            setIsModalOpen(false);
+        } else {
+            setIsModalOpen(true);
+        }
     }
 
     useEffect(() => {

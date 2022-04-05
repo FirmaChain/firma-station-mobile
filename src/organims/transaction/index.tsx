@@ -3,10 +3,10 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import { BgColor } from "@/constants/theme";
-import { getWallet } from "@/util/wallet";
-import { TRANSACTION_TYPE } from "@/constants/common";
+import { getMnemonic } from "@/util/wallet";
 import { delegate, redelegate, sendFCT, undelegate, withdrawAllRewards, withdrawRewards } from "@/util/firma";
+import { BgColor } from "@/constants/theme";
+import { TRANSACTION_TYPE } from "@/constants/common";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import ProgressTransaction from "./progressTransaction";
 import TransactionResult from "./transactionResult";
@@ -33,10 +33,13 @@ const Transaction = ({state}:Props) => {
     });
 
     useEffect(() => {
-        const getMnemonic = async() => {
-            await getWallet(wallet.name, state.password).then(res => {if(res) setMnemonic(res)});
+        const getMnemonicFromChain = async() => {
+            let result = await getMnemonic(wallet.name, state.password);
+            if(result){
+                setMnemonic(result);
+            }
         }
-        getMnemonic();
+        getMnemonicFromChain();
     }, []);
 
     useEffect(() => {

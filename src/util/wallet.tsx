@@ -75,18 +75,21 @@ export const removeWallet = async(name:string) => {
     .catch(error => console.log(error));
 }
 
-export const getWallet = async(name:string, password:string) => {
-    const walletKey:string = keyEncrypt(name, password);
-    let result = '';
-    await getChain(name).then(res => {
-        if(res === false) return null;
-        result = decrypt(res.password, walletKey); 
+export const getMnemonic = async(walletName: string, password: string) => {
+    let mnemonic = null;
+    const key:string = keyEncrypt(walletName, password);
+    await getChain(walletName).then(res => {
+        if(res){
+            let w = decrypt(res.password, key.toString());
+            if(w !== null) {
+                mnemonic = w;
+            }
+        }
     }).catch(error => {
         console.log(error);
-        return null;
-    })
-    
-    return result;
+    });
+
+    return mnemonic;
 }
 
 export const getWalletWithAutoLogin = async() => {

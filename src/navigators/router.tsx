@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
-import { AppState, StyleSheet } from "react-native";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { setFirmaSDK } from "@/util/firma";
-import { convertNumber, getTimeStamp, wait } from "@/util/common";
+import { wait } from "@/util/common";
 import { setExplorerUrl } from "@/constants/common";
-import { BgColor } from "@/constants/theme";
 import { ApolloProvider, getClient, setClient } from "@/apollo";
 import Progress from "@/components/parts/progress";
 import CustomToast from "@/components/toast/customToast";
@@ -31,7 +29,7 @@ const Router = () => {
     });
 
     useEffect(() => {
-        if(common.connect === false || common.isNetworkChanged) {
+        if(common.lockStation === false && (common.connect === false || common.isNetworkChanged)) {
             CommonActions.handleLoadingProgress(true);
         }
     }, [common.connect, common.isNetworkChanged, common.loading]);
@@ -44,10 +42,11 @@ const Router = () => {
     }, [common.network]);
 
     useEffect(() => {
+        CommonActions.handleLoggedIn(false);
+        CommonActions.handleIsConnection(true);
         setClient(common.network);
         setFirmaSDK(common.network);
         setExplorerUrl(common.network);
-        CommonActions.handleIsConnection(true);
         unsubscribe();
     }, []);
 

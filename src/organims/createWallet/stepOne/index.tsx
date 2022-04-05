@@ -99,7 +99,9 @@ const StepOne = ({mnemonic = null}:Props) => {
 
     useEffect(() => {
         if(common.appState !== "active"){
-            handleOpenBioAuthModal(false);
+            if(common.isBioAuthInProgress === false){
+                handleOpenBioAuthModal(false);
+            }
         } else {
             if(wallet.name !== "" && common.lockStation === false){
                 handleOpenBioAuthModal(true);

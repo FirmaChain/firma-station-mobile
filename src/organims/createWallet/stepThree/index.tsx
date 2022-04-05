@@ -68,7 +68,9 @@ const StepThree = ({walletInfo}:Props) => {
 
     useEffect(() => {
         if(common.appState !== "active"){
-            handleOpenBioAuthModal(false);
+            if(common.isBioAuthInProgress === false){
+                handleOpenBioAuthModal(false);
+            }
         } else {
             if(wallet.name !== ""){
                 if(common.lockStation === false){

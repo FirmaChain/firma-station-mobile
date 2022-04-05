@@ -30,13 +30,19 @@ How to build and run firma-station-mobile
 </pre>
 <pre>
   <code>
-  yarn add --dev babel-plugin-module-resolver
-  yarn add react-native-vector-icons
-  yarn add --dev @types/react-native-vector-icons
   npm i react-native-splash-screen --save
   npm install redux-thunk redux react-redux
   npm install --save-dev redux-tools
   npm install @types/react-redux -D
+  npm install redux-persist
+  npm install --save @react-native-community/netinfo
+  npm install react-native-vector-icons
+  npm install -dev @types/react-native-vector-icons
+  npm install -dev babel-plugin-module-resolver
+  npm install --save react-native-draggable-flatlist
+  yarn add react-native-reanimated
+  npm install --save react-native-webview
+  npm i --save-dev @types/crypto-js
   yarn add @react-native-async-storage/async-storage
   </code>
 </pre>

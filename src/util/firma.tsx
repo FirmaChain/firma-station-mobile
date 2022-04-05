@@ -3,7 +3,7 @@ import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletSer
 import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import { convertNumber, convertToFctNumber } from "./common";
-import { getDecryptPassword, getWallet } from "./wallet";
+import { getDecryptPassword, getMnemonic } from "./wallet";
 
 let firmaSDK: FirmaMobileSDK;
 
@@ -102,7 +102,8 @@ const organizeWallet = async(wallet:FirmaWalletService) => {
 
 export const getDecryptWalletInfo = async(walletName:string) => {
     let password = await getDecryptPassword();
-    let mnemonic = await getWallet(walletName, password);
+    let result = await getMnemonic(walletName, password);
+    let mnemonic = result === null? "" : result;
     return await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
 }
 

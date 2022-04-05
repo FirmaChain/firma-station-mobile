@@ -7,10 +7,8 @@ import { WalletActions } from "@/redux/actions";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from "@/util/wallet";
-import { getChain } from "@/util/secureKeyChain";
-import { WalletNameValidationCheck } from "@/util/validationCheck";
+import { PasswordCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
-import { decrypt, keyEncrypt } from "@/util/keystore";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputSetVertical from "@/components/input/inputSetVertical";
@@ -34,7 +32,7 @@ const SelectWallet = () => {
 
     const [pwValidation, setPwValidation] = useState(false);
     const [password, setPassword] = useState('');
-    const [walletInfo, setWalletInfo] = useState('');
+    const [mnemonic, setMnemonic] = useState('');
 
     const passwordText = {
         title : 'Password',
@@ -61,7 +59,7 @@ const SelectWallet = () => {
     useEffect(() => {
         if(selected >= 0 && selectedWallet !== items[selected]){
             setSelectedWallet(items[selected]);
-            setWalletInfo('');
+            setMnemonic('');
             setResetValues(false);
         }
     }, [selected])
@@ -74,32 +72,13 @@ const SelectWallet = () => {
         })
     }
 
-    const onChangePassword = (value: string) => {
+    const onChangePassword = async(value: string) => {
         setPassword(value);
-        PasswordCheck(value);
-    }
-
-    const PasswordCheck = async(password: string) => {
-        if(password.length >= 10){
-            let nameCheck = await WalletNameValidationCheck(selectedWallet);
-            
-            if(nameCheck){
-                const key:string = keyEncrypt(selectedWallet, password);
-                await getChain(selectedWallet).then(res => {
-                    if(res){
-                        let w = decrypt(res.password, key.toString());
-                        if(w !== null) {
-                            setPwValidation(true);
-                            setWalletInfo(w);
-                        } else {
-                            setPwValidation(false);
-                        }
-                    }
-                }).catch(error => {
-                    console.log(error);
-                    setPwValidation(false);
-                });
-            } 
+        
+        let result = await PasswordCheck(selectedWallet, value);
+        if(result){
+            setPwValidation(true);
+            setMnemonic(result);
         } else {
             setPwValidation(false);
         }
@@ -107,7 +86,7 @@ const SelectWallet = () => {
 
     const onSelectWalletAndMoveToHome = async() => {
         let adr = '';
-        await getAdrFromMnemonic(walletInfo).then(res => {
+        await getAdrFromMnemonic(mnemonic).then(res => {
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
 

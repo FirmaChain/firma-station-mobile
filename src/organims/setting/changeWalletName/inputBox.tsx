@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
-import { decrypt, keyEncrypt } from "@/util/keystore";
-import { getChain } from "@/util/secureKeyChain";
-import { WalletNameValidationCheck } from "@/util/validationCheck";
+import { PasswordCheck, WalletNameValidationCheck } from "@/util/validationCheck";
 import { InputBgColor, Lato, TextGrayColor } from "@/constants/theme";
 import { PLACEHOLDER_FOR_PASSWORD, 
     PLACEHOLDER_FOR_WALLET_NAME, 
@@ -44,25 +42,11 @@ const InputBox = ({wallet, validate, newWalletName, password, mnemonic}:Props) =
     }
 
     const handlePassword = async(value: string) => {
-        if(value.length >= 10){
-            const key:string = keyEncrypt(wallet.name, value);
-            await getChain(wallet.name).then(res => {
-                if(res){
-                    let w = decrypt(res.password, key.toString());
-                    if(w !== null) {
-                        mnemonic(w);
-                        password(value);
-                        setPwValidation(true);
-                    } else {
-                        password('');
-                        setPwValidation(false);
-                    }
-                }
-            }).catch(error => {
-                console.log(error);
-                password('');
-                setPwValidation(false);
-            });
+        let result = await PasswordCheck(wallet.name, value);
+        if(result){
+            mnemonic(result);
+            password(value);
+            setPwValidation(true);
         } else {
             setPwValidation(false);
         }

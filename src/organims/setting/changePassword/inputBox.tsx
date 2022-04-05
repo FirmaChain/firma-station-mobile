@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Keyboard, Pressable, StyleSheet } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_PASSWORD_CONFIRM, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
-import { decrypt, keyEncrypt } from "@/util/keystore";
-import { getChain } from "@/util/secureKeyChain";
-import { PasswordValidationCheck } from "@/util/validationCheck";
+import { PasswordCheck, PasswordValidationCheck } from "@/util/validationCheck";
 import InputSetVertical from "@/components/input/inputSetVertical";
 
 interface Props {
@@ -37,22 +35,10 @@ const InputBox = ({wallet, validate, newPassword, mnemonic}:Props) => {
     const [confirmPwValidation, setConfirmPwValidation] = useState(false);
 
     const handleCurrentPassword = async(value: string) => {
-        if(value.length >= 10){
-            const key:string = keyEncrypt(wallet.name, value);
-            await getChain(wallet.name).then(res => {
-                if(res){
-                    let w = decrypt(res.password, key.toString());
-                    if(w !== null) {
-                        mnemonic(w);
-                        setPwValidation(true);
-                    } else {
-                        setPwValidation(false);
-                    }
-                }
-            }).catch(error => {
-                console.log(error);
-                setPwValidation(false);
-            });
+        let result = await PasswordCheck(wallet.name, value);
+        if(result){
+            mnemonic(result);
+            setPwValidation(true);
         } else {
             setPwValidation(false);
         }
