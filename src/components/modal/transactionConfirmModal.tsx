@@ -30,7 +30,9 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
     }
 
     const handleTransaction = (result: string) => {
-        transactionHandler(result);
+        if(common.appState === "active"){
+            transactionHandler(result);
+        }
         handleModal(false);
     }
 
@@ -38,9 +40,8 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
         setOpenModal && setOpenModal(open);
     }
 
-
     useEffect(() => {
-        if(common.appState === "background") handleModal(false);
+        if(common.appState !== "active" && common.isBioAuthInProgress === false) handleModal(false);
     }, [common.appState])
 
     return (

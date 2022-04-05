@@ -5,7 +5,8 @@ import { APP_PAUSED_TIME,
     IS_BIOAUTH_IN_PROGRESS, 
     IS_CONNECTION, 
     IS_NETWORK_CHANGED, 
-    LOCK_STATION } from "../types"
+    LOCK_STATION, 
+    LOGGEDIN} from "../types"
 
 export const handleIsConnection = (connect:boolean) => (
     {
@@ -49,6 +50,13 @@ export const handleAppState = (state:string) => (
     }
 )
 
+export const handleLoggedIn = (login:boolean) => (
+    {
+        type: LOGGEDIN,
+        payload: login,
+    }
+)
+
 export const handleAppPausedTime = (time:string) => (
     {
         type: APP_PAUSED_TIME,
@@ -61,4 +69,4 @@ export const handleBioAuthInProgress = (progress:boolean) => (
         type: IS_BIOAUTH_IN_PROGRESS,
         payload: progress,
     }
-)
+) 

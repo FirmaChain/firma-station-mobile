@@ -10,6 +10,7 @@ const AppStateManager = () => {
     const {wallet, common} = useAppSelector(state => state);
 
     const handleUnlock = (result: string) => {
+        CommonActions.handleLoggedIn(true);
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime("");
     }
@@ -52,12 +53,12 @@ const AppStateManager = () => {
 
     return (
         <>
-        {wallet.name !== "" &&
+        {(wallet.name !== "" && common.loggedIn) &&
         <>
         {(common.isBioAuthInProgress === false && common.appState !== "active") && <View style={styles.dim}/>}
-        {common.appPausedTime !== "" && <View style={styles.dim}/>}
+        {(common.isBioAuthInProgress === false && common.appPausedTime !== "")&& <View style={styles.dim}/>}
         <ValidationModal 
-            type="lock" 
+            type={"lock"} 
             open={common.lockStation}
             setOpenModal={handleUnlock} 
             validationHandler={handleUnlock}/>

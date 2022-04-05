@@ -6,7 +6,8 @@ import { Action,
         IS_CONNECTION, 
         IS_NETWORK_CHANGED, 
         LOCK_STATION,
-        IS_BIOAUTH_IN_PROGRESS,  } from "../types";
+        IS_BIOAUTH_IN_PROGRESS,
+        LOGGEDIN,  } from "../types";
 
 export interface CommonReduceState {
     connect: boolean;
@@ -16,6 +17,7 @@ export interface CommonReduceState {
     locakStationActivation: boolean;
     lockStation: boolean;
     appState: string;
+    loggedIn: boolean;
     appPausedTime: string;
     isBioAuthInProgress: boolean;
 }
@@ -28,6 +30,7 @@ const initialState = {
     locakStationActivation: false,
     lockStation: false,
     appState: "active",
+    loggedIn: false,
     appPausedTime: "",
     isBioAuthInProgress: false,
 };
@@ -63,6 +66,11 @@ const reducer = (state = initialState, action:Action) => {
             return {
                 ...state,
                 appState: action.payload,
+            }
+        case LOGGEDIN:
+            return {
+                ...state,
+                loggedIn: action.payload,
             }
         case APP_PAUSED_TIME:
             return {
