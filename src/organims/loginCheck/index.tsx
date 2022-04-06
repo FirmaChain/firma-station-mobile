@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, BackHandler, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, BackHandler, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -7,31 +7,24 @@ import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions, WalletActions } from "@/redux/actions";
 import { BgColor, Lato, TextCatTitleColor } from "@/constants/theme";
-import { JAILBREAK_ALERT, LOGIN_DESCRIPTION, PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
+import { JAILBREAK_ALERT, LOGIN_DESCRIPTION } from "@/constants/common";
 import { getPasswordViaBioAuth, 
     getUseBioAuth, 
-    getWalletList, 
     getWalletWithAutoLogin, 
     removeWalletWithAutoLogin, 
     setBioAuth, 
     setEncryptPassword, 
-    setWalletList, 
     setWalletWithAutoLogin } from "@/util/wallet";
 import { easeInAndOutAnim, fadeIn, LayoutAnim } from "@/util/animation";
-import { PasswordCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { Detect, removeAllData } from "@/util/detect";
 import SplashScreen from "react-native-splash-screen";
 import ViewContainer from "@/components/parts/containers/viewContainer";
-import CustomModal from "@/components/modal/customModal";
-import ModalWalletList from "@/components/modal/modalWalletList";
-import InputSetVertical from "@/components/input/inputSetVertical";
-import Button from "@/components/button/button";
 import Description from "../welcome/description";
-import WalletSelector from "../welcome/selectWallet/walletSelector";
 import AlertModal from "@/components/modal/alertModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import InputBox from "./inputBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -44,39 +37,12 @@ const LoginCheck = () => {
 
     const Title: string = 'LOGIN';
     const Desc: string = LOGIN_DESCRIPTION;
-    const passwordText = {
-        title : 'Password',
-        placeholder: PLACEHOLDER_FOR_PASSWORD,
-    }
 
     const [isKeyboardShown, setIsKeyboardShown] = useState(false);
-    const [items, setItems]:Array<any> = useState([]);
-
     const [dimActive, setDimActive] = useState(true);
     const [useBio, setUseBio] = useState(false);
-    const [selected, setSelected] = useState(-1);
-    const [selectedWallet, setSelectedWallet] = useState('');
-    const [resetValues, setResetValues] = useState(false);
-    const [openSelectModal, setOpenSelectModal] = useState(false);
-    const [openAlertModal, setOpenAlertModal] = useState(false);
-
-    const [pwValidation, setPwValidation] = useState(false);
-    const [password, setPassword] = useState('');
-    const [mnemonic, setMnemonic] = useState('');
-
     const [loading, setLoading] = useState(true);
-
-    const WalletList = async() => {
-        await getWalletList().then(res => {            
-            setItems(res);
-        }).catch(error => {
-            console.log('error : ' + error);
-        })
-    }
-
-    const handleOpenSelectModal = (open:boolean) => {
-        setOpenSelectModal(open);
-    }
+    const [openAlertModal, setOpenAlertModal] = useState(false);
 
     const handleAlertModalOpen = (open:boolean) => {
         if(Platform.OS === "ios") return;
@@ -84,53 +50,28 @@ const LoginCheck = () => {
         BackHandler.exitApp();
     }
 
-    const handleSelectWallet = (index:number) => {
-        if(index === selected) {return handleOpenSelectModal(false);}
-        setSelected(index);
-        setResetValues(true);
-        handleOpenSelectModal(false);
-    }
-
-    const handleEditWalletList = async(list:string, newIndex: number) => {
-        setWalletList(list);
-        await WalletList();
-        setSelected(newIndex);
-    }
-
-    const onChangePassword = async(value: string) => {
-        setPassword(value);
-
-        let result = await PasswordCheck(selectedWallet, value);
-        if(result){
-            setPwValidation(true);
-            setMnemonic(result);
-        } else {
-            setPwValidation(false);
-        }
-    }
-
-    const onSelectWalletAndMoveToHome = async() => {
+    const handleLogin = async(mnemonic:string, name:string, password:string) => {
         let adr = '';
         await getAdrFromMnemonic(mnemonic).then(res => {
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
 
         await setWalletWithAutoLogin(JSON.stringify({
-            name: selectedWallet,
+            name: name,
             address: adr,
         }));
         
         await setEncryptPassword(password);
 
-        WalletActions.handleWalletName(selectedWallet);
+        WalletActions.handleWalletName(name);
         WalletActions.handleWalletAddress(adr);
 
-        setBioAuth(selectedWallet, password);
+        setBioAuth(name, password);
         navigation.reset({routes: [{name: Screens.Home}]});
     }
 
     let isProcessing = false;
-    const handleValidation = async() => {
+    const handleLoginViaBioAuth = async() => {
         if(isProcessing === true) return;
         isProcessing = true;
 
@@ -177,35 +118,24 @@ const LoginCheck = () => {
     }
 
     useEffect(() => {
-        if(common.connect){
-            if(!loading){
-                if(Detect() === false){
-                    if(wallet.name !== ""){
-                        SplashScreen.hide();
-                        setSelectedWallet(items[items.indexOf(wallet.name)]);
-                        setSelected(items.indexOf(wallet.name));
-                        getUseBioAuthState().then(res => {
-                            setDimActive(res);
-                            setUseBio(res);
-                            if(res){
-                                handleValidation();
-                            }
-                        })
-                    }
-                } else {
-                    return setOpenAlertModal(true);
+        if(common.connect && loading === false){
+            if(Detect() === false){
+                if(wallet.name !== ""){
+                    SplashScreen.hide();
+                    getUseBioAuthState()
+                    .then(res => {
+                        setDimActive(res);
+                        setUseBio(res);
+                        if(res){
+                            handleLoginViaBioAuth();
+                        }
+                    })
                 }
+            } else {
+                return setOpenAlertModal(true);
             }
         }
     }, [loading, common.connect]);
-
-    useEffect(() => {
-        if(selected >= 0 && selectedWallet !== items[selected]){
-            setSelectedWallet(items[selected]);
-            setMnemonic('');
-            setResetValues(false);
-        }
-    }, [selected])
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);
@@ -234,8 +164,6 @@ const LoginCheck = () => {
                 removeAllData().then(()=>getWalletForAutoLogin());
                 AsyncStorage.setItem('alreadyLaunched', "Launched");
             } else {
-                WalletList();
-                setPwValidation(false);
                 getWalletForAutoLogin();
             }
         })
@@ -243,7 +171,6 @@ const LoginCheck = () => {
         return () => {
             showSubscription.remove();
             hideSubscription.remove();
-            setItems([]);
         }
     }, []);
 
@@ -261,29 +188,8 @@ const LoginCheck = () => {
                             <Text style={styles.disconnectText}>Disconnect</Text>
                         </TouchableOpacity>}
                         <Description title={Title} desc={Desc}/>
-                        {dimActive === false && 
-                        <Animated.View 
-                            style={[styles.buttonBox, {opacity: useBio?fadeAnim:1}]}>
-                            <View style={{paddingBottom: 20}}>
-                                <WalletSelector selectedWallet={selectedWallet} handleOpenModal={handleOpenSelectModal} />
-                                <InputSetVertical
-                                    title={passwordText.title}
-                                    message={''}
-                                    validation={true}
-                                    placeholder={passwordText.placeholder} 
-                                    secure={true}
-                                    resetValues={resetValues}
-                                    onChangeEvent={onChangePassword} />
-                            </View>
-                            {openSelectModal && 
-                            <CustomModal visible={openSelectModal} handleOpen={handleOpenSelectModal}>
-                                <ModalWalletList initVal={selected} data={items} handleEditWalletList={handleEditWalletList} onPressEvent={handleSelectWallet}/>
-                            </CustomModal>
-                            }
-                            <Button title='Connect' active={pwValidation} onPressEvent={onSelectWalletAndMoveToHome} />
-                        </Animated.View>}
+                        {dimActive === false && <InputBox walletName={wallet.name} useBio={useBio} fadeIn={fadeAnim} loginHandler={handleLogin}/>}
                     </Animated.View>
-
                     <AlertModal
                         visible={openAlertModal}
                         handleOpen={handleAlertModalOpen}
@@ -304,12 +210,6 @@ const styles = StyleSheet.create({
         alignItems: "flex-end",
         justifyContent: "space-between",
         paddingTop: Platform.select({android: 0, ios: getStatusBarHeight()}),
-    },
-    buttonBox: {
-        width: "100%", 
-        paddingHorizontal: 20, 
-        justifyContent: "flex-end",
-        backgroundColor: BgColor,
     },
     disconnect: {
         height: 25,
