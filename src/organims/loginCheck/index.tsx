@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, BackHandler, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions, WalletActions } from "@/redux/actions";
 import { BgColor, Lato, TextCatTitleColor } from "@/constants/theme";
-import { PLACEHOLDER_FOR_PASSWORD, WELCOME_DESCRIPTION } from "@/constants/common";
+import { JAILBREAK_ALERT, LOGIN_DESCRIPTION, PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import { getPasswordViaBioAuth, 
     getUseBioAuth, 
     getWalletList, 
@@ -18,11 +18,10 @@ import { getPasswordViaBioAuth,
     setWalletList, 
     setWalletWithAutoLogin } from "@/util/wallet";
 import { easeInAndOutAnim, fadeIn, LayoutAnim } from "@/util/animation";
-import { WalletNameValidationCheck } from "@/util/validationCheck";
-import { decrypt, keyEncrypt } from "@/util/keystore";
+import { PasswordCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import { getChain } from "@/util/secureKeyChain";
+import { Detect } from "@/util/detect";
 import SplashScreen from "react-native-splash-screen";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import CustomModal from "@/components/modal/customModal";
@@ -31,7 +30,7 @@ import InputSetVertical from "@/components/input/inputSetVertical";
 import Button from "@/components/button/button";
 import Description from "../welcome/description";
 import WalletSelector from "../welcome/selectWallet/walletSelector";
-import { ScreenHeight } from "@/util/getScreenSize";
+import AlertModal from "@/components/modal/alertModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -43,7 +42,7 @@ const LoginCheck = () => {
     const {wallet, common} = useAppSelector(state => state);
 
     const Title: string = 'LOGIN';
-    const Desc: string = WELCOME_DESCRIPTION;
+    const Desc: string = LOGIN_DESCRIPTION;
     const passwordText = {
         title : 'Password',
         placeholder: PLACEHOLDER_FOR_PASSWORD,
@@ -53,14 +52,16 @@ const LoginCheck = () => {
     const [items, setItems]:Array<any> = useState([]);
 
     const [dimActive, setDimActive] = useState(true);
+    const [useBio, setUseBio] = useState(false);
     const [selected, setSelected] = useState(-1);
     const [selectedWallet, setSelectedWallet] = useState('');
     const [resetValues, setResetValues] = useState(false);
     const [openSelectModal, setOpenSelectModal] = useState(false);
+    const [openAlertModal, setOpenAlertModal] = useState(false);
 
     const [pwValidation, setPwValidation] = useState(false);
     const [password, setPassword] = useState('');
-    const [walletInfo, setWalletInfo] = useState('');
+    const [mnemonic, setMnemonic] = useState('');
 
     const [loading, setLoading] = useState(true);
 
@@ -76,6 +77,12 @@ const LoginCheck = () => {
         setOpenSelectModal(open);
     }
 
+    const handleAlertModalOpen = (open:boolean) => {
+        if(Platform.OS === "ios") return;
+        setOpenAlertModal(open);
+        BackHandler.exitApp();
+    }
+
     const handleSelectWallet = (index:number) => {
         if(index === selected) {return handleOpenSelectModal(false);}
         setSelected(index);
@@ -89,32 +96,13 @@ const LoginCheck = () => {
         setSelected(newIndex);
     }
 
-    const onChangePassword = (value: string) => {
+    const onChangePassword = async(value: string) => {
         setPassword(value);
-        PasswordCheck(value);
-    }
 
-    const PasswordCheck = async(password: string) => {
-        if(password.length >= 10){
-            let nameCheck = await WalletNameValidationCheck(selectedWallet);
-            
-            if(nameCheck){
-                const key:string = keyEncrypt(selectedWallet, password);
-                await getChain(selectedWallet).then(res => {
-                    if(res){
-                        let w = decrypt(res.password, key.toString());
-                        if(w !== null) {
-                            setPwValidation(true);
-                            setWalletInfo(w);
-                        } else {
-                            setPwValidation(false);
-                        }
-                    }
-                }).catch(error => {
-                    console.log(error);
-                    setPwValidation(false);
-                });
-            } 
+        let result = await PasswordCheck(selectedWallet, value);
+        if(result){
+            setPwValidation(true);
+            setMnemonic(result);
         } else {
             setPwValidation(false);
         }
@@ -122,7 +110,7 @@ const LoginCheck = () => {
 
     const onSelectWalletAndMoveToHome = async() => {
         let adr = '';
-        await getAdrFromMnemonic(walletInfo).then(res => {
+        await getAdrFromMnemonic(mnemonic).then(res => {
             if(res !== undefined) adr = res;
         }).catch(error => console.log('error : ' + error));
 
@@ -142,33 +130,34 @@ const LoginCheck = () => {
 
     let isProcessing = false;
     const handleValidation = async() => {
-        const useBio = await getUseBioAuth(wallet.name);
-        setDimActive(useBio);
-
         if(isProcessing === true) return;
         isProcessing = true;
 
         let passwordFromBio = '';
-        if(useBio){
-            const auth = await confirmViaBioAuth();
-            if(auth){
-                await getPasswordViaBioAuth().then(res => {
-                    passwordFromBio = res;
-                }).catch(error => console.log(error));
-            } else {
-                LayoutAnim();
-                easeInAndOutAnim();
-                isProcessing = false;
-                setDimActive(false);
-                fadeIn(Animated, fadeAnim, 950);
-                return;
-            }
+        const auth = await confirmViaBioAuth();
+        if(auth){
+            await getPasswordViaBioAuth().then(res => {
+                passwordFromBio = res;
+            }).catch(error => console.log(error));
+        } else {
+            LayoutAnim();
+            easeInAndOutAnim();
+            isProcessing = false;
+            setDimActive(false);
+            fadeIn(Animated, fadeAnim, 950);
+            return;
         }
-        const result = useBio? passwordFromBio : password;
+
+        const result = passwordFromBio;
         if(common.appState === "active" && result !== ""){
             isProcessing = false;
             navigation.reset({routes: [{name: Screens.Home}]});
         }
+    }
+
+    const getUseBioAuthState = async() => {
+        const useBio = await getUseBioAuth(wallet.name);
+        return useBio;
     }
 
     const handleDisconnect = () => {
@@ -189,11 +178,21 @@ const LoginCheck = () => {
     useEffect(() => {
         if(common.connect){
             if(!loading){
-                if(wallet.name !== ""){
-                    SplashScreen.hide();
-                    setSelectedWallet(items[items.indexOf(wallet.name)]);
-                    setSelected(items.indexOf(wallet.name));
-                    handleValidation();
+                if(Detect() === false){
+                    if(wallet.name !== ""){
+                        SplashScreen.hide();
+                        setSelectedWallet(items[items.indexOf(wallet.name)]);
+                        setSelected(items.indexOf(wallet.name));
+                        getUseBioAuthState().then(res => {
+                            setDimActive(res);
+                            setUseBio(res);
+                            if(res){
+                                handleValidation();
+                            }
+                        })
+                    }
+                } else {
+                    return setOpenAlertModal(true);
                 }
             }
         }
@@ -202,7 +201,7 @@ const LoginCheck = () => {
     useEffect(() => {
         if(selected >= 0 && selectedWallet !== items[selected]){
             setSelectedWallet(items[selected]);
-            setWalletInfo('');
+            setMnemonic('');
             setResetValues(false);
         }
     }, [selected])
@@ -225,7 +224,10 @@ const LoginCheck = () => {
                 }
                 setLoading(false);
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                console.log(error)
+                setLoading(false);
+            })
         }
         getWalletForAutoLogin();
         
@@ -252,7 +254,7 @@ const LoginCheck = () => {
                         <Description title={Title} desc={Desc}/>
                         {dimActive === false && 
                         <Animated.View 
-                            style={[styles.buttonBox, {opacity: fadeAnim}]}>
+                            style={[styles.buttonBox, {opacity: useBio?fadeAnim:1}]}>
                             <View style={{paddingBottom: 20}}>
                                 <WalletSelector selectedWallet={selectedWallet} handleOpenModal={handleOpenSelectModal} />
                                 <InputSetVertical
@@ -272,6 +274,14 @@ const LoginCheck = () => {
                             <Button title='Connect' active={pwValidation} onPressEvent={onSelectWalletAndMoveToHome} />
                         </Animated.View>}
                     </Animated.View>
+
+                    <AlertModal
+                        visible={openAlertModal}
+                        handleOpen={handleAlertModalOpen}
+                        title={"Jailbroken detected"}
+                        desc={JAILBREAK_ALERT}
+                        confirmTitle={"OK"}
+                        type={"ERROR"}/>
                 </Pressable>
                 }
             </KeyboardAvoidingView>
