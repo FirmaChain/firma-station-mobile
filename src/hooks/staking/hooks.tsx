@@ -130,12 +130,14 @@ export const useDelegationData = () => {
     }
 
     useEffect(() => {
-        setDelegationList([]);
-        setRedelegationList([]);
-        setUndelegationList([]);
-        setValidatorsDescList([]);
-        handleTotalDelegationPolling();
-    }, [common.network])
+        if(common.lockStation === false){
+            setDelegationList([]);
+            setRedelegationList([]);
+            setUndelegationList([]);
+            setValidatorsDescList([]);
+            handleTotalDelegationPolling();
+        }
+    }, [common.network, common.lockStation])
 
     return {
         delegationState,
@@ -178,16 +180,18 @@ export const useStakingData = () => {
     }
 
     useEffect(() => {
-        if(wallet.address === '' || wallet.address === undefined) {
-            return setStakingState({
-                available: 0,
-                delegated: 0,
-                undelegate: 0,
-                stakingReward: 0,
-            })
-        };
-        getStakingState();
-    }, [common.network]);
+        if(common.lockStation === false){
+            if(wallet.address === '' || wallet.address === undefined) {
+                return setStakingState({
+                    available: 0,
+                    delegated: 0,
+                    undelegate: 0,
+                    stakingReward: 0,
+                })
+            };
+            getStakingState();
+        }
+    }, [common.network, common.lockStation]);
 
     return { 
         stakingState,
@@ -273,8 +277,10 @@ export const useValidatorData = () => {
     }
 
     useEffect(() => {
-        setValidators([]);
-    }, [common.network])
+        if(common.lockStation === false){
+            setValidators([]);
+        }
+    }, [common.network, common.lockStation])
 
     return {
         validators,

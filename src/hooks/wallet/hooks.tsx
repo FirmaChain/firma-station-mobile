@@ -39,8 +39,10 @@ export const useBalanceData = () => {
     }
 
     useEffect(() => {
-        getBalance();
-    }, [common.network]);
+        if(common.lockStation === false){
+            getBalance();
+        }
+    }, [common.network, common.lockStation]);
 
     return {
         balance,
@@ -133,23 +135,25 @@ export const useHistoryData = () => {
     }
 
     useEffect(() => {
-        setHistoryList({list:[]});
-        setRecentHistory({
-            hash: '',
-            success: '',
-            type: {
-                tagTheme: '',
-                tagDisplay: '',
-            },
-            timestamp: '',
-            block: 0,
-        });
-        const changeChainNetwork = async() => {
-            await refetchCurrentHistory();
-            await handleHisotyPolling();
+        if(common.lockStation === false){
+            setHistoryList({list:[]});
+            setRecentHistory({
+                hash: '',
+                success: '',
+                type: {
+                    tagTheme: '',
+                    tagDisplay: '',
+                },
+                timestamp: '',
+                block: 0,
+            });
+            const changeChainNetwork = async() => {
+                await refetchCurrentHistory();
+                await handleHisotyPolling();
+            }
+            changeChainNetwork();
         }
-        changeChainNetwork();
-    }, [common.network]);
+    }, [common.network, common.lockStation]);
 
     return {
         historyList, 

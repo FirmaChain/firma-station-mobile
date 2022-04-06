@@ -79,8 +79,10 @@ export const useGovernanceList = () => {
     }
 
     useEffect(() => {
-        handleGovernanceListPolling();
-    }, [common.network])
+        if(common.lockStation === false){
+            handleGovernanceListPolling();
+        }
+    }, [common.network, common.lockStation])
     
 
     return {
