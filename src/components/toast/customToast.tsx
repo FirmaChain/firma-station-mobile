@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import { Lato, toastError, toastInfo, toastSuccess } from "@/constants/theme";
 import Toast, { BaseToast, ErrorToast} from 'react-native-toast-message';
+import { wait } from "@/util/common";
 
 const CustomToast = () => {
+
+    const [display, setDisplay] = useState("none");
+
     const toastConfig = {
         success: (props: any) => (
             <BaseToast
                 {...props}
-                style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastSuccess }}
+                style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastSuccess, display: display }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
                 text2Style={styles.text2Style}
@@ -17,7 +21,7 @@ const CustomToast = () => {
         info: (props: any) => (
             <BaseToast
                 {...props}
-                style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastInfo, color: 'white' }}
+                style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastInfo, color: 'white', display: display }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
                 text2Style={styles.text2Style}
@@ -26,7 +30,7 @@ const CustomToast = () => {
         error: (props: any) => (
             <ErrorToast
                 {...props}
-                style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastError, color: 'white' }}
+                style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastError, color: 'white', display: display }}
                 text1Style={styles.text1Style}
                 text2Style={styles.text2Style}
             />
@@ -34,7 +38,7 @@ const CustomToast = () => {
       };
 
     return (
-        <Toast config={toastConfig} visibilityTime={2000}/>
+        <Toast config={toastConfig} visibilityTime={2000} onShow={()=>setDisplay("flex")} onHide={()=>wait(100).then(()=>setDisplay("none"))}/>
     );
 };
 

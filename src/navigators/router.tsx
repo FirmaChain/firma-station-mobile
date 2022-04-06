@@ -35,10 +35,12 @@ const Router = () => {
     }, [common.connect, common.isNetworkChanged, common.loading]);
 
     useEffect(() => {
-        wait(3000).then(() => {
-            CommonActions.handleIsNetworkChange(false);
-            CommonActions.handleLoadingProgress(false);
-        })
+        if(common.loggedIn){
+            wait(3000).then(() => {
+                CommonActions.handleIsNetworkChange(false);
+                CommonActions.handleLoadingProgress(false);
+            })
+        }
     }, [common.network]);
 
     useEffect(() => {

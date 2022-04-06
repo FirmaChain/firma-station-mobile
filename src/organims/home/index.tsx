@@ -4,7 +4,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
-import { wait } from "@/util/common";
 import TabContainer from "@/components/parts/containers/tabContainer";
 import TabNavigators from "@/navigators/tabNavigators";
 import { GUIDE_URI } from "@/../config";
@@ -38,11 +37,6 @@ const Home = ({title}:Props) => {
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime("");
         CommonActions.handleLoggedIn(true);
-        wait(1500).then(() => {
-            if(common.connect === true) {
-                CommonActions.handleLoadingProgress(!common.connect);
-            }
-        })
     }, [])
     
 

@@ -44,7 +44,6 @@ const InputBox = ({handleMnemonic, activateRecover}:Props) => {
                     style={styles.input}
                     value={mnemonic}
                     selectionColor={WhiteColor}
-                    keyboardType="url"
                     onChangeText={text => handleMnemonicInput(text)} 
                     onFocus={()=>setFocus(true)}
                     onBlur={()=>setFocus(false)}/>
