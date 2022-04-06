@@ -63,3 +63,6 @@ buck-out/
 
 #Config
 config.ts
+
+#Gemfile
+Gemfile.lock
