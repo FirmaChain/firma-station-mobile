@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -20,6 +20,7 @@ interface Props {
     iconType?: string;
     iconName?: string;
     iconSize?: number;
+    onPressEvent?: ()=>void;
 }
 
 const TextMenuItem = 
@@ -32,7 +33,8 @@ const TextMenuItem =
     iconColor = WhiteColor,
     iconType = "", 
     iconName = "",
-    iconSize = 15}:Props) => {
+    iconSize = 15,
+    onPressEvent}:Props) => {
 
     const Icon = () => {
         switch (iconType) {
@@ -61,9 +63,13 @@ const TextMenuItem =
             <View style={styles.contentWrapper}>
                 <Text style={[styles.content, {color: contentColor, paddingRight: icon? 5:0}]}>{content}</Text>
                 {icon && 
-                <View style={{paddingTop: 1}}>
-                    {Icon()}
-                </View>
+                <TouchableOpacity 
+                    hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
+                    onPress={()=>{onPressEvent && onPressEvent()}}>
+                    <View style={{paddingTop: 1}}>
+                        {Icon()}
+                    </View>
+                </TouchableOpacity>
                 }
             </View>
         </View>

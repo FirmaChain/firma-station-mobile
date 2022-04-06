@@ -68,7 +68,7 @@ const Setting = () => {
                     <ScrollView 
                         keyboardShouldPersistTaps={"handled"}
                         style={{borderTopWidth: 1, borderTopColor: BgColor}}>
-                        <TouchableOpacity style={styles.topButtonsBox} onPress={()=>handleMenus("ChangeWN")}>
+                        <View style={styles.topButtonsBox}>
                             <TextMenuItem 
                                 title="Wallet" 
                                 content={wallet.name} 
@@ -77,8 +77,9 @@ const Setting = () => {
                                 iconColor={TextCatTitleColor}
                                 iconSize={20}
                                 iconName={"square-edit-outline"} 
-                                iconType={"MaterialCommunityIcons"}/>
-                        </TouchableOpacity>
+                                iconType={"MaterialCommunityIcons"}
+                                onPressEvent={()=>handleMenus("ChangeWN")}/>
+                        </View>
                         <BioAuthRadio wallet={wallet}/>
                         {settingList.map((item, index) => {
                             return (
