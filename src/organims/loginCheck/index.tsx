@@ -21,7 +21,7 @@ import { easeInAndOutAnim, fadeIn, LayoutAnim } from "@/util/animation";
 import { PasswordCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import { Detect } from "@/util/detect";
+import { Detect, removeAllData } from "@/util/detect";
 import SplashScreen from "react-native-splash-screen";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import CustomModal from "@/components/modal/customModal";
@@ -31,6 +31,7 @@ import Button from "@/components/button/button";
 import Description from "../welcome/description";
 import WalletSelector from "../welcome/selectWallet/walletSelector";
 import AlertModal from "@/components/modal/alertModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -209,8 +210,6 @@ const LoginCheck = () => {
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);
         const hideSubscription = Keyboard.addListener('keyboardWillHide', onKeyboardDidHide);
-        WalletList();
-        setPwValidation(false);
         
         const getWalletForAutoLogin = async() => {
             await getWalletWithAutoLogin()
@@ -229,7 +228,17 @@ const LoginCheck = () => {
                 setLoading(false);
             })
         }
-        getWalletForAutoLogin();
+
+        AsyncStorage.getItem("alreadyLaunched").then(value => {
+            if(value == null){
+                removeAllData().then(()=>getWalletForAutoLogin());
+                AsyncStorage.setItem('alreadyLaunched', "Launched");
+            } else {
+                WalletList();
+                setPwValidation(false);
+                getWalletForAutoLogin();
+            }
+        })
         
         return () => {
             showSubscription.remove();

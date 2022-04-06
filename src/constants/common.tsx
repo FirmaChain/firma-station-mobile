@@ -17,6 +17,8 @@ export const EXPLORER_URL = () => {
 }
 
 export const WELCOME_DESCRIPTION = "Use seed phrases to create\nnew wallets or restore existing wallets.";
+export const LOGIN_DESCRIPTION = "Select a wallet and connect it.";
+export const JAILBREAK_ALERT = "Firma Station is not supported on jailbroken devices.\nPlease restore your device to a non-jailbroken state.";
 
 export const MNEMONIC_WARN_MESSAGE = "If you lose your seed phrase it's gone forever. Station doesn't store any data.";
 export const RECOVER_INFO_MESSAGE = "Generate QR code from setting menu of\nFirma Station desktop or extionsion";
