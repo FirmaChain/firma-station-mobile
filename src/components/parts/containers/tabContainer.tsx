@@ -26,6 +26,7 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, chi
     const networkList = ["MainNet", "TestNet"];
     const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
     const [openNetworkSelectModal, setOpenNetworkSelectModal] = useState(false);
+    const [tabCount, setTabCount] = useState(0);
     
     const handleMoveToSetting = () => {
         settingNavEvent && settingNavEvent();
@@ -36,7 +37,11 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, chi
     }
 
     const handleNetworkSelectModal = (open: boolean) => {
-        setOpenNetworkSelectModal(open);
+        if(tabCount >= 50){
+            setOpenNetworkSelectModal(open);
+        } else {
+            setTabCount(tabCount + 1);
+        }
     }
 
     const handleSelectNetwork = (index:number) => {
@@ -73,6 +78,7 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, chi
                     <TextButton
                         title={common.network}
                         bgColor={common.network === "MainNet"? TextButtonColor:FailedColor}
+                        opacity={false}
                         onPressEvent={() => handleNetworkSelectModal(true)}/>
                     <TouchableOpacity style={{paddingLeft: 10, paddingRight: 5}} onPress={() => handleMoveToHistory()}>
                         <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />
