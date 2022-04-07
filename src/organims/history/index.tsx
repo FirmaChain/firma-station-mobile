@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Linking, NativeScrollEvent, NativeSyntheticEvent, Platform } from "react-native";
+import { Linking, NativeScrollEvent, NativeSyntheticEvent, Platform, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -57,15 +57,22 @@ const History = () => {
             title="History"
             handleGuide={()=>handleMoveToWeb("history")}
             backEvent={handleBack}>
-            <ViewContainer bgColor={BgColor}>
+            <View style={[styles.listBox, {justifyContent: historyList.list.length > 0? "space-between":"center"}]}>
                 <RefreshScrollView
                     scrollEndFunc={onScrollEnd}
                     refreshFunc={refreshStates}>
                     <HistoryList historyList={historyList} pagination={pagination} handleExplorer={handleMoveToWeb} />
                 </RefreshScrollView>
-            </ViewContainer>
+            </View>
         </Container>
     )
 }
+
+const styles = StyleSheet.create({
+    listBox: {
+        flex: 1,
+        backgroundColor: BgColor,
+    }
+})
 
 export default History;

@@ -3,7 +3,7 @@ import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { BoxColor, InputPlaceholderColor, Lato, TextAddressColor, TextCatTitleColor } from "@/constants/theme";
 import { ForwardArrow } from "@/components/icon/icon";
 import { convertTime, getGMT } from "@/util/common";
-import { EXPLORER_URL } from "@/constants/common";
+import { EXPLORER_URL, HISTORY_NOT_EXIST } from "@/constants/common";
 
 interface Props {
     recentHistory: any;
@@ -39,7 +39,7 @@ const HistoryBox = ({recentHistory, handleHistory, handleExplorer}:Props) => {
                 </View>
                 {(recentHistory === undefined || recentHistory.hash === "")? 
                 <View style={[styles.wrapperH, styles.wrapper, {justifyContent: "center", alignItems: "center" ,paddingTop: 18}]}>
-                    <Text style={[styles.contentItem, {fontSize: 14}]}>There's no history yet</Text>
+                    <Text style={[styles.contentItem, {fontSize: 14}]}>{HISTORY_NOT_EXIST}</Text>
                 </View>
                 :
                 <>

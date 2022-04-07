@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     },
     listBox: {
         flex: 1,
-        marginBottom: 20,
         justifyContent: "center",
     }
 })

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from "@/constants/common";
+import { PROPOSAL_NOT_REGISTERED, PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from "@/constants/common";
 import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
 import { convertNumber, convertTime } from "@/util/common";
 import { ProposalItemState } from "@/hooks/governance/hooks";
@@ -44,29 +44,33 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
 
     return (
         <View style={styles.container}>
-            {proposals.map((proposal, index) => {
-                const periodState = handlePeriodStatus(proposal);
-                return (
-                    <TouchableOpacity 
-                        key={index} 
-                        style={styles.item} 
-                        onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}>
-                            <View style={[styles.wrapperH, {paddingBottom: 10}]}>
-                                <Text style={styles.id}># {proposal.proposalId}</Text>
-                                <Text style={[styles.status, {backgroundColor: STATUS_BACKGROUND_COLOR[proposal.status], color: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
-                            </View>
-                            <View style={[styles.wrapperH, {paddingBottom: 10}]}>
-                                <Text style={styles.title}>{proposal.title}</Text>
-                            </View>
-                            <View style={styles.wrapperH}>
-                                <Text style={[styles.period, {color: TextDisableColor}]}>
-                                    {periodState.period}
-                                </Text>
-                                <Text style={[styles.period, {color: TextCatTitleColor, fontWeight: "600"}]}>{periodState.dDay}</Text>
-                            </View>
-                    </TouchableOpacity>
-                )
-            })}
+            {proposals.length > 0?
+                proposals.map((proposal, index) => {
+                    const periodState = handlePeriodStatus(proposal);
+                    return (
+                        <TouchableOpacity 
+                            key={index} 
+                            style={styles.item} 
+                            onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}>
+                                <View style={[styles.wrapperH, {paddingBottom: 10}]}>
+                                    <Text style={styles.id}># {proposal.proposalId}</Text>
+                                    <Text style={[styles.status, {backgroundColor: STATUS_BACKGROUND_COLOR[proposal.status], color: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
+                                </View>
+                                <View style={[styles.wrapperH, {paddingBottom: 10}]}>
+                                    <Text style={styles.title}>{proposal.title}</Text>
+                                </View>
+                                <View style={styles.wrapperH}>
+                                    <Text style={[styles.period, {color: TextDisableColor}]}>
+                                        {periodState.period}
+                                    </Text>
+                                    <Text style={[styles.period, {color: TextCatTitleColor, fontWeight: "600"}]}>{periodState.dDay}</Text>
+                                </View>
+                        </TouchableOpacity>
+                    )
+                })
+            :
+                <Text style={styles.notice}>{PROPOSAL_NOT_REGISTERED}</Text>
+            }
         </View>
     )
 }
@@ -74,6 +78,7 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
 const styles = StyleSheet.create({
     container: {
         paddingTop: 32,
+        paddingBottom: 20,
         paddingHorizontal: 20,
     },
     item: {
@@ -126,6 +131,14 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
     },
+    notice: {
+        width: "100%",
+        textAlign: "center",
+        fontFamily: Lato,
+        fontSize: 18,
+        color: TextDarkGrayColor,
+        opacity: .8,
+    }
 })
 
 export default React.memo(ProposalList);

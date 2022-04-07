@@ -79,6 +79,8 @@ export const CREATE_WALLET_FAILED = "Wallet creation failed. Please try again.";
 export const WRONG_ADDRESS = "Wrong address";
 export const CHECK_MNEMONIC = "Check your mnemonic again.";
 
+export const HISTORY_NOT_EXIST = "There's no history yet.";
+
 // setting
 export const SETTING_BIO_AUTH_MODAL_TEXT = {
     title: 'Use Bio Auth',
@@ -93,6 +95,10 @@ export const SETTING_DELETE_WALLET_TEXT = {
 }
 
 // delegate
+export const DELEGATE_NOT_EXIST = "Delegate does not exist.";
+export const REDELEGATE_NOT_EXIST = "Redelegate does not exist.";
+export const UNDELEGATE_NOT_EXIST = "Undelegate does not exist.";
+
 export const AUTO_ENTERED_AMOUNT_TEXT = "The entire amount is automatically entered except 0.1FCT, which will be used as a transaction fee.";
 export const UNDELEGATE_NOTICE_TEXT = [
     "A 21 day period is required when undelegating your tokens. During the 21 day period, you will not receive any rewards. And you can't send and delegate that amount during 21 days.",
@@ -120,6 +126,8 @@ export const TRANSACTION_AUTH_TEXT = "Enter your password to make a transaction.
 export const UNLOCK_AUTH_TEXT = "Enter your password to unlock.";
 
 // proposal
+export const PROPOSAL_NOT_REGISTERED = "No proposal registered.";
+
 export const PROPOSAL_STATUS: KeyValue = {
     PROPOSAL_STATUS_DEPOSIT_PERIOD: "DEPOSIT PERIOD",
     PROPOSAL_STATUS_VOTING_PERIOD: "VOTING PERIOD",
@@ -442,4 +450,134 @@ export const TRANSACTION_TYPE_MODEL: KeyValue = {
         tagDisplay: LABELS['txTokenUpdateURILabel'],
       },
 }
-  
+
+export const CHAIN_CURRENCY:KeyValue = {
+  BTC:"Bitcoin",
+  ETH:"Ether",
+  LTC:"Litecoin",
+  BCH:"Bitcoin Cash",
+  BNB:"Binance Coin",
+  EOS:"EOS",
+  XRP:"XRP",
+  XLM:"Lumens",
+  LINK:"Chainlink",
+  DOT:"Polkadot",
+  YFI:"Yearn.finance",
+  BITS:"Bits",
+  SATS:"Satoshi",
+  XAG: "Silver - Troy Ounce",
+  XAU: "Gold - Troy Ounce",
+}
+
+export const CURRENCY_SYMBOL:KeyValue = {
+  ALL:"Lek",
+  AFN:"؋",
+  ARS:"$",
+  AWG:"ƒ",
+  AUD:"$",
+  AZN:"₼",
+  BSD:"$",
+  BBD:"$",
+  BYN:"Br",
+  BZD:"BZ$",
+  BMD:"$",
+  BOB:"$b",
+  BAM:"KM",
+  BWP:"P",
+  BGN:"лв",
+  BRL:"R$",
+  BND:"$",
+  KHR:"៛",
+  CAD:"$",
+  KYD:"$",
+  CLP:"$",
+  CNY:"¥",
+  COP:"$",
+  CRC:"₡",
+  HRK:"kn",
+  CUP:"₱",
+  CZK:"Kč",
+  DKK:"kr",
+  DOP:"RD$",
+  XCD:"$",
+  EGP:"£",
+  SVC:"$",
+  EUR:"€",
+  FKP:"£",
+  FJD:"$",
+  GHS:"¢",
+  GIP:"£",
+  GTQ:"Q",
+  GGP:"£",
+  GYD:"$",
+  HNL:"L",
+  HKD:"$",
+  HUF:"Ft",
+  ISK:"kr",
+  INR:"₹",
+  IDR:"Rp",
+  IRR:"﷼",
+  IMP:"£",
+  ILS:"₪",
+  JMD:"J$",
+  JPY:"¥",
+  JEP:"£",
+  KZT:"лв",
+  KPW:"₩",
+  KRW:"₩",
+  KGS:"лв",
+  LAK:"₭",
+  LBP:"£",
+  LRD:"$",
+  MKD:"ден",
+  MYR:"RM",
+  MUR:"₨",
+  MXN:"$",
+  MNT:"₮",
+  MZN:"MT",
+  NAD:"$",
+  NPR:"₨",
+  ANG:"ƒ",
+  NZD:"$",
+  NIO:"C$",
+  NGN:"₦",
+  NOK:"kr",
+  OMR:"﷼",
+  PKR:"₨",
+  PAB:"B/.",
+  PYG:"Gs",
+  PEN:"S/.",
+  PHP:"₱",
+  PLN:"zł",
+  QAR:"﷼",
+  RON:"lei",
+  RUB:"₽",
+  SHP:"£",
+  SAR:"﷼",
+  RSD:"Дин.",
+  SCR:"₨",
+  SGD:"$",
+  SBD:"$",
+  SOS:"S",
+  ZAR:"R",
+  LKR:"₨",
+  SEK:"kr",
+  CHF:"CHF",
+  SRD:"$",
+  SYP:"£",
+  TWD:"NT$",
+  THB:"฿",
+  TTD:"TT$",
+  TRY:"₺",
+  TVD:"$",
+  UAH:"₴",
+  AED:"د.إ",
+  GBP:"£",
+  USD:"$",
+  UYU:"$U",
+  UZS:"лв",
+  VEF:"Bs",
+  VND:"₫",
+  YER:"﷼",
+  ZWD:"Z$",
+}
