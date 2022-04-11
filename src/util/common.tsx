@@ -93,7 +93,7 @@ export const getLocalDate = (time:string) => {
 }
 
 export const convertPercentage = (value: string | number) => {
-    let percent = Number(value) * 100;
+    let percent = convertNumber(value) * 100;
     
     let result = convertCurrent(makeDecimalPoint(percent));
     if (percent >= 1e3 && percent < 1e6) {

@@ -7,6 +7,7 @@ import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUnd
 import { BLOCKS_PER_YEAR } from "@/../config";
 
 export interface ValidatorState {
+    jailed: string;
     description: ValidatorDescription;
     address: ValidatorAddress;
     percentageData: ValidatorData;
@@ -300,12 +301,11 @@ export const useValidatorDataFromAddress = (address:string) => {
         if(loading === false){
             const stakingData = organizeStakingData(data);
             const validator = data.validator
-            .filter((data: any) => {
-                return data.validatorStatuses[0].jailed === false;
-            })
             .map((data: any) => {
                 return organizeValidatorData(data, stakingData)
             });
+
+            const jailed = validator[0].jailed;
 
             const description:ValidatorDescription = {
                 avatar: validator[0].validatorAvatar,
@@ -343,10 +343,13 @@ export const useValidatorDataFromAddress = (address:string) => {
             }
 
             setValidatorState({
+                jailed,
                 description,
                 address,
                 percentageData
             });
+
+
         }
     }, [loading, data])
     
@@ -423,7 +426,8 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     let validatorWebsite = validatorDescription.validatorWebsite;
 
     const selfDelegateAddress = validator.validatorInfo.selfDelegateAddress;
-    const votingPower = validator.validatorVotingPowers[0].votingPower;
+    const votingPowerExist = validator.validatorVotingPowers.length > 0;
+    const votingPower = votingPowerExist? validator.validatorVotingPowers[0].votingPower : 0;
     const votingPowerPercent = convertNumber((votingPower / stakingData.totalVotingPower) * 100).toFixed(2);
 
     const totalDelegations = validator.delegations.reduce((prev: number, current: any) => {
@@ -440,7 +444,8 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     const delegations = validator.delegations.map((value: any) => {
         return { address: value.delegatorAddress, amount: convertNumber(value.amount.amount) };
     });
-    const missedBlockCounter = validator.validatorSigningInfos[0].missedBlocksCounter;
+    const missedBlockCounterExist = validator.validatorSigningInfos.length > 0;
+    const missedBlockCounter = missedBlockCounterExist? validator.validatorSigningInfos[0].missedBlocksCounter : 0;
     const commission = makeDecimalPoint(validator.validatorCommissions[0].commission * 100);
     const conditionOrigin = ((1 - missedBlockCounter / stakingData.signed_blocks_window) * 100)
     const condition = makeDecimalPoint(conditionOrigin, 2);
@@ -449,7 +454,8 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     const jailed = validator.validatorStatuses[0].jailed;
 
     const rewardPerYear = stakingData.mintCoinPerYear * (votingPower / stakingData.totalVotingPower) * 0.98 * (1 - validator.validatorCommissions[0].commission);
-    const APR = rewardPerYear / votingPower;
+    
+    const APR = rewardPerYear > 0?rewardPerYear / votingPower : 0;
     const APRPerDay = APR / 365;
     const APY = convertNumber(((1 + APRPerDay) ** 365 - 1).toFixed(2));
 

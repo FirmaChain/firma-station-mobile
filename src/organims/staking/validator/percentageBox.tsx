@@ -1,7 +1,7 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { ValidatorData } from "@/hooks/staking/hooks";
-import { convertAmount } from "@/util/common";
+import { convertAmount, convertNumber } from "@/util/common";
 import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextGrayColor } from "@/constants/theme";
 
 interface Props {
@@ -40,7 +40,7 @@ const PercentageBox = ({data}:Props) => {
                                     <View style={[styles.wrapperV, {alignItems:"center", flex: 1}]}>
                                         <Text style={[styles.title, {fontSize: 14, paddingBottom: 10}]}>{item.title}</Text>
                                         <Text style={[styles.data, {fontSize: 22, paddingBottom: 6}]}>{item.data}%</Text>
-                                        {item?.amount && <Text style={styles.desc}>{convertAmount(item.amount, false)} FCT</Text>}
+                                        {item.amount === undefined? null:<Text style={styles.desc}>{convertAmount(item.amount, false)} FCT</Text>}
                                     </View>
                                     {(index < grid.row.length - 1) && <View style={[styles.divider, {height: 54}]}/>}
                                 </View>
