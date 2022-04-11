@@ -64,7 +64,7 @@ const Wallet = () => {
     useEffect(() => {
         if(staking.stakingReward > 0 && isFocused)
             updateStakingState(staking.stakingReward);
-    }, [staking.stakingReward, isFocused])
+    }, [isFocused])
 
     useEffect(() => {
         if(isFocused){

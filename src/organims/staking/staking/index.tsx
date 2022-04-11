@@ -69,10 +69,10 @@ const Staking = () => {
     }
 
     useEffect(() => {
-        if(stakingReward > 0) {
-            updateStakingState(stakingReward);
+        if(staking.stakingReward > 0 && isFocused) {
+            updateStakingState(staking.stakingReward);
         }
-    }, [stakingReward])
+    }, [isFocused])
 
     useEffect(() => {
         if(recentHistory !== undefined && common.isNetworkChanged === false){
@@ -96,10 +96,10 @@ const Staking = () => {
                 {(common.connect && common.isNetworkChanged === false) && 
                 <View>
                     <View style={styles.box}>
-                        <RewardBox 
-                            walletName={wallet.name} 
-                            available={stakingState.available} 
-                            reward={stakingReward} 
+                        <RewardBox
+                            walletName={wallet.name}
+                            available={stakingState.available}
+                            reward={stakingReward}
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
                     </View>
