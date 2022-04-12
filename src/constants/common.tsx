@@ -43,12 +43,12 @@ export const TRANSACTION_PROCESS_NOTICE_TEXT = "Depending on the condition of th
 export const WRONG_TARGET_ADDRESS_WARN_TEXT = "Invalid address. Please check again.";
 
 export const BIOMETRICS_PERMISSION_ALERT = {
-    title: "Biometrics not authrized",
+    title: "Biometrics not authorized",
     desc: "Move to settings to enable Biometrics permissions?"
 }
 
 export const CAMERA_PERMISSION_ALERT = {
-    title: "Camera not authrized",
+    title: "Camera not authorized",
     desc: "Move to settings to enable camera permissions?"
 }
 

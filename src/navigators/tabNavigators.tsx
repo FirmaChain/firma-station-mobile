@@ -1,6 +1,6 @@
 import React from "react";
-import { Image } from "react-native";
-import { BoxDarkColor, GrayColor, WhiteColor } from "@/constants/theme";
+import { Image, Platform } from "react-native";
+import { BoxDarkColor, GrayColor, Lato, WhiteColor } from "@/constants/theme";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 import StakingIcon from "react-native-vector-icons/AntDesign";
@@ -16,9 +16,19 @@ const TabNavigators = () => {
         <Tab.Navigator 
             screenOptions={{ 
                 headerShown: false, 
-                tabBarStyle: { backgroundColor: BoxDarkColor, borderTopColor: BoxDarkColor},
+                tabBarStyle: { 
+                    backgroundColor: BoxDarkColor, 
+                    borderTopColor: BoxDarkColor,
+                    height: Platform.OS === "android"? 58:82,
+                    paddingTop: 4,
+                    paddingBottom: Platform.OS === "android"?10:30,
+                },
                 tabBarActiveTintColor: WhiteColor,
                 tabBarInactiveTintColor: GrayColor,
+                tabBarLabelStyle: {
+                    fontFamily: Lato,
+                    fontSize: 12,
+                }
             }}
             initialRouteName="Wallet">
         

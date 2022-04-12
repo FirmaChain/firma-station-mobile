@@ -1,15 +1,16 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { DisableColor, Lato, TextButtonColor, TextColor } from "@/constants/theme";
 
 interface Props {
     title: string;
     bgColor?: string;
     active?: boolean;
+    opacity?: boolean;
     onPressEvent: Function;
 }
 
-const TextButton = ({title, bgColor = TextButtonColor, active = true, onPressEvent}:Props) => {
+const TextButton = ({title, bgColor = TextButtonColor, active = true, opacity = true, onPressEvent}:Props) => {
     const backgroundColor = active? (bgColor? bgColor:TextButtonColor):DisableColor;
 
     const handleOnPress = (value?:any) => {
@@ -17,9 +18,17 @@ const TextButton = ({title, bgColor = TextButtonColor, active = true, onPressEve
     }
 
     return (
-        <TouchableOpacity disabled={!active} style={{flexDirection: "row"}} onPress={()=>handleOnPress()}>
+        <>
+        {opacity?
+            <TouchableOpacity disabled={!active} style={{flexDirection: "row"}} onPress={()=>handleOnPress()}>
+                <Text style={[styles.title, styles.button, {backgroundColor: backgroundColor}]}>{title}</Text>
+            </TouchableOpacity>
+        :
+        <Pressable disabled={!active} style={{flexDirection: "row"}} onPress={()=>handleOnPress()}>
             <Text style={[styles.title, styles.button, {backgroundColor: backgroundColor}]}>{title}</Text>
-        </TouchableOpacity>
+        </Pressable>
+        }
+        </>
     )
 }
 
