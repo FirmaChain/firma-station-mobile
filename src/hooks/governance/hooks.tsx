@@ -122,7 +122,7 @@ export const useProposalData = (id:number) => {
             }
         
             const calculateCurrentTurnout = () => {
-                const totalVotingPower = convertNumber(data.stakingPool[0].totalVotingPower);
+                const totalVotingPower = convertNumber(data.proposal[0].staking_pool_snapshot.bonded_tokens);
                 const votes = data.proposalTallyResult[0];
                 
                 if(votes === undefined) return 0;
@@ -165,7 +165,7 @@ export const useProposalData = (id:number) => {
                 quorum: convertNumber(data.govParams[0].tallyParams.quorum),
                 currentTurnout: calculateCurrentTurnout(),
                 stakingPool: data.stakingPool[0],
-                totalVotingPower: convertNumber(data.stakingPool[0].totalVotingPower),
+                totalVotingPower: convertNumber(data.proposal[0].staking_pool_snapshot.bonded_tokens),
                 proposalTally: data.proposalTallyResult[0],
             })
         

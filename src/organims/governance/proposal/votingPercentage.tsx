@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { BgColor, BorderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { convertAmount, convertNumber, convertPercentage } from "@/util/common";
 import { CaretUp } from "@/components/icon/icon";
+import { ScreenWidth } from "@/util/getScreenSize";
 
 interface Props {
     data: any;
@@ -46,10 +47,15 @@ const VotingPercentage = ({data}:Props) => {
         }
     }
     
-    const calculateRatio = (value:number, max:number|string) => {
+    const calculateRatio = (value:number, max:number|string, graph:boolean = false) => {
         if(value === 0 || max === 0 || max === undefined) return 0;
         const ratio = Number(value) / Number(max);
-        return ratio;
+        if(graph){
+            const result = convertNumber(ratio.toFixed(2));
+            return result;
+        } else {
+            return ratio;
+        }
     }
 
     return (
@@ -57,13 +63,15 @@ const VotingPercentage = ({data}:Props) => {
             <View style={styles.background}>
                 {tally.map((item, index) => {
                     if(item.title !== "Abstain"){
+                        const ratio = calculateRatio(item.vote, data.totalVotingPower, true);
                         return (
                             <View key={index} 
                             style={
                                 [styles.percentage, 
                                 {
                                     backgroundColor: votingColor(item.title), 
-                                    flex: calculateRatio(item.vote, data.totalVotingPower), 
+                                    display: ratio > 0? "flex":"none",
+                                    flex: ratio, 
                                     marginLeft: -10, 
                                     paddingLeft: 10,
                                     zIndex: 5 - index,
@@ -83,7 +91,7 @@ const VotingPercentage = ({data}:Props) => {
                 {tally.map((item, index) => {
                     const odd = (index + 1) % 2;
                     return (
-                    <View key={index} style={[styles.voteBox, {marginRight: odd === 1? 11:0, marginBottom: 11}]}>
+                    <View key={index} style={[styles.voteBox, {marginRight: ScreenWidth() > 153*4? 11:odd === 1? 11:0, marginBottom: 11}]}>
                         <View style={[styles.boxH, {paddingBottom: 8}]}>
                             <View style={[styles.voteDot, {backgroundColor: votingColor(item.title)}]} />
                             <Text style={[styles.vote, {color: votingColor(item.title)}]}>{item.title}</Text>

@@ -201,6 +201,7 @@ export const useValidatorFromAddressQuery = ({ address }: IQueryParam) => {
           }
           validatorSigningInfos: validator_signing_infos(order_by: {height: desc}, limit: 1) {
             missedBlocksCounter: missed_blocks_counter
+            tombstoned
           }
           validator_descriptions {
             avatar_url
@@ -262,6 +263,9 @@ export const useProposalQuery = ({ proposalId }: IQueryParam) => {
           proposalDeposits: proposal_deposits {
             amount
             depositorAddress: depositor_address
+          }
+          staking_pool_snapshot {
+            bonded_tokens
           }
         }
         govParams: gov_params (limit: 1, order_by: {height: desc}) {
