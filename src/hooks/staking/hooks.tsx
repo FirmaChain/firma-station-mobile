@@ -7,7 +7,8 @@ import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUnd
 import { BLOCKS_PER_YEAR } from "@/../config";
 
 export interface ValidatorState {
-    jailed: string;
+    jailed: boolean;
+    tombstoned: boolean;
     description: ValidatorDescription;
     address: ValidatorAddress;
     percentageData: ValidatorData;
@@ -306,6 +307,7 @@ export const useValidatorDataFromAddress = (address:string) => {
             });
 
             const jailed = validator[0].jailed;
+            const tombstoned = validator[0].tombstoned;
 
             const description:ValidatorDescription = {
                 avatar: validator[0].validatorAvatar,
@@ -344,6 +346,7 @@ export const useValidatorDataFromAddress = (address:string) => {
 
             setValidatorState({
                 jailed,
+                tombstoned,
                 description,
                 address,
                 percentageData
@@ -446,6 +449,7 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     });
     const missedBlockCounterExist = validator.validatorSigningInfos.length > 0;
     const missedBlockCounter = missedBlockCounterExist? validator.validatorSigningInfos[0].missedBlocksCounter : 0;
+    const tombstoned = missedBlockCounterExist? validator.validatorSigningInfos[0].tombstoned : false;
     const commission = makeDecimalPoint(validator.validatorCommissions[0].commission * 100);
     const conditionOrigin = ((1 - missedBlockCounter / stakingData.signed_blocks_window) * 100)
     const condition = makeDecimalPoint(conditionOrigin, 2);
@@ -475,6 +479,7 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
         condition,
         status,
         jailed,
+        tombstoned,
         APR,
         APY,
     };

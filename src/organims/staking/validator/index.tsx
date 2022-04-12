@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -7,7 +7,7 @@ import { CommonActions, StakingActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { StakingState, useDelegationData, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
 import { getStakingFromvalidator } from "@/util/firma";
-import { BgColor, BoxColor } from "@/constants/theme";
+import { BgColor, BoxColor, FailedColor, Lato, TextColor } from "@/constants/theme";
 import { KeyValue, TRANSACTION_TYPE } from "@/constants/common";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import Container from "@/components/parts/containers/conatainer";
@@ -36,6 +36,14 @@ const Validator = ({validatorAddress}:Props) => {
         undelegate: 0,
         stakingReward: 0,
     });
+
+    const AlertText = useMemo(() => {
+        if(validatorState){
+            if(validatorState.jailed === true) return "JAILED";
+            if(validatorState.tombstoned === true) return "TOMBSTONED";
+        }
+        return "";
+    }, [validatorState])
 
     const handleWithdraw = (password:string, gas:number) => {
         const transactionState = {
@@ -116,6 +124,13 @@ const Validator = ({validatorAddress}:Props) => {
                             <View style={{backgroundColor: BoxColor}}>
                                 {validatorState &&
                                 <>
+                                    <View style={styles.jailedBox}>
+                                        <Text 
+                                            style={[styles.jailedText, 
+                                            {display: (validatorState.jailed === true || validatorState.tombstoned === true)? "flex":"none"}]}>
+                                                {AlertText}
+                                        </Text>
+                                    </View>
                                     <DescriptionBox validator={validatorState.description} />
                                     <DelegationBox 
                                         walletName={wallet.name}
@@ -152,6 +167,25 @@ const styles = StyleSheet.create({
         backgroundColor: BgColor,
         paddingTop: 30,
     },
+    jailedBox: {
+        paddingHorizontal: 20,
+        marginTop: -10,
+        paddingTop: 10,
+        backgroundColor: BoxColor,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    jailedText: {
+        borderRadius: 8,
+        backgroundColor: FailedColor,
+        overflow: "hidden",
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        fontFamily: Lato,
+        fontSize: 16,
+        textAlign: "center",
+        color: TextColor,
+    }
 });
 
 export default Validator;

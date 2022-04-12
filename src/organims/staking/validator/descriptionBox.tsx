@@ -17,7 +17,7 @@ const DescriptionBox = ({validator}:Props) => {
     }
 
     return (
-        <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10, marginTop: -10}]}>
+        <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10}]}>
             {validator.avatar?
             <Image style={styles.avatar} source={{uri: validator.avatar}}/>
             :
