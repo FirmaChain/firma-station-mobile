@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, TouchableOpacity, StyleSheet, Text, View } from "react-native";
+import { useAppSelector } from "@/redux/hooks";
 import { BoxColor, FailedColor, Lato, PointColor, TextCatTitleColor, TextColor } from "@/constants/theme";
 
 interface Props {
@@ -12,10 +13,15 @@ interface Props {
 }
 
 const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type}:Props) => {
+    const {common} = useAppSelector(state => state);
 
     const closeModal = () => {
         handleOpen && handleOpen(false);
     }
+
+    useEffect(() => {
+        if(common.appState !== "active" && common.isBioAuthInProgress === false) closeModal();
+    }, [common.appState])
 
     return (
         <View style={[styles.container, {display: visible? "flex":"none", flex: visible? 1:0}]}>
@@ -33,7 +39,7 @@ const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type}:Props
                             </View>
                             <View style={styles.buttonBox}>
                                 <TouchableOpacity 
-                                    style={[styles.button, {backgroundColor: type === "ERROR"? FailedColor:PointColor, padding: 17, borderBottomEndRadius: 4, borderBottomStartRadius: 4}]} 
+                                    style={[styles.button, {backgroundColor: type === "ERROR"? FailedColor:PointColor, borderBottomEndRadius: 4, borderBottomStartRadius: 4}]} 
                                     onPress={()=>closeModal()}>
                                     <Text style={styles.buttonTitle}>{confirmTitle}</Text>
                                 </TouchableOpacity>
@@ -106,6 +112,7 @@ const styles = StyleSheet.create({
         zIndex: 99,
         flex: 1,
         width: 150,
+        height: 50,
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: PointColor,

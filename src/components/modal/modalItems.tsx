@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, ScrollView, Text, Platform, View } from "react-native";
-import { BgColor, BorderColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { BgColor, BoxDarkColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { Radio } from "../icon/icon";
 
 interface Props {
     initVal: number;
     data: any[];
+    subData?: any[];
     onPressEvent: (index:number) => void;
 }
 
-const ModalItems = ({initVal, data, onPressEvent}:Props) => {
+const ModalItems = ({initVal, data, subData, onPressEvent}:Props) => {
     const [selected, setSelected] = useState(initVal);
 
     const handleSelect = (index:number) => {
@@ -22,7 +23,10 @@ const ModalItems = ({initVal, data, onPressEvent}:Props) => {
             {data.map((item, index) => {
                 return(
                     <Pressable key={index} style={styles.modalContentBox} onPress={() => handleSelect(index)}>
-                        <Text style={styles.itemTitle}>{item}</Text>
+                        <View style={styles.itemWrapper}>
+                            <Text style={styles.itemTitle}>{item}</Text>
+                            {subData && <Text style={styles.itemSubTitle}>{subData[index]}</Text>}
+                        </View>
                         <Radio size={20} color={WhiteColor} active={index === selected} />
                     </Pressable>
                 )
@@ -48,12 +52,26 @@ const styles = StyleSheet.create({
         marginBottom: 1,
         backgroundColor: BgColor,
     },
+    itemWrapper: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "flex-start",
+    },
     itemTitle: {
         fontFamily: Lato,
         fontSize: 16,
         fontWeight: "normal",
         color: TextColor,
     },
+    itemSubTitle: {
+        fontFamily: Lato,
+        fontSize: 11,
+        fontWeight: "normal",
+        color: TextColor,
+        opacity: .5,
+        paddingLeft: 5,
+        paddingBottom: 1,
+    }
 })
 
 export default ModalItems;

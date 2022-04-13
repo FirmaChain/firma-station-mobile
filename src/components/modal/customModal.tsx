@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
+import { useAppSelector } from "@/redux/hooks";
 import { BgColor } from "@/constants/theme";
 import CustomToast from "../toast/customToast";
 
@@ -13,10 +14,16 @@ interface Props {
 
 const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, handleOpen, children}:Props) => {
 
+    const {common} = useAppSelector(state => state);
+
     const closeModal = () => {
         if(lockBackButton) return;
         handleOpen(false);
     }
+
+    useEffect(() => {
+        if(common.appState !== "active" && common.isBioAuthInProgress === false) closeModal();
+    }, [common.appState])
 
     return (
         <View style={[styles.container, {display: visible? "flex":"none", flex: visible? 1:0}]}>
