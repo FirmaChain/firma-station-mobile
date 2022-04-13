@@ -35,6 +35,7 @@ How to build and run firma-station-mobile
   npm install --save-dev redux-tools
   npm install @types/react-redux -D
   npm install redux-persist
+  npm i jail-monkey
   npm install --save @react-native-community/netinfo
   npm install react-native-vector-icons
   npm install -dev @types/react-native-vector-icons
