@@ -46,8 +46,10 @@ const RecoverWallet = () => {
         let permissionGranted = value;
         if(value){
             permissionGranted = await checkCameraPermission();    
+            setActive(permissionGranted);
+        } else {
+            setActive(value);
         }
-        setActive(permissionGranted);
     }
 
     const handleMoveToWeb = () => {

@@ -28,8 +28,10 @@ const InputSetVerticalForAddress = ({title, numberOnly = false, placeholder, sec
         let permissionGranted = value;
         if(value){
             permissionGranted = await checkCameraPermission();    
+            setOpenModal(permissionGranted);
+        } else {
+            setOpenModal(value);
         }
-        setOpenModal(permissionGranted);
     }
 
     const handleInputChange = (value: string) => {

@@ -5,8 +5,7 @@ import { getWalletList, removePasswordViaBioAuth, removeUseBioAuth, removeWallet
 
 export const Detect = () => {
     const jail = JailMonkey.isJailBroken();
-
-    return false;
+    return jail;
 }
 
 export const removeAllData = async() => {
