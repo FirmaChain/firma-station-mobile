@@ -1,16 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useAppSelector } from "@/redux/hooks";
+import { CommonActions } from "@/redux/actions";
 import { StakingState } from "@/hooks/staking/hooks";
 import { convertAmount, 
         convertCurrent, 
         convertToFctNumber, 
         makeDecimalPoint, 
         resizeFontSize } from "@/util/common";
-import { ForwardArrow } from "@/components/icon/icon";
+import { DownArrow, ForwardArrow } from "@/components/icon/icon";
 import { FIRMA_LOGO } from "@/constants/images";
-import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
+import { CHAIN_CURRENCY, CURRENCY_LIST, CURRENCY_SYMBOL } from "@/constants/common";
+import { BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { COINGECKO } from "@/../config";
 import SmallButton from "@/components/button/smallButton";
+import CustomModal from "@/components/modal/customModal";
+import ModalItems from "@/components/modal/modalItems";
 
 interface Props {
     stakingValues: StakingState;
@@ -19,12 +24,42 @@ interface Props {
 }
 
 const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
+    const {common} = useAppSelector(state => state);
+    
     const [chainInfo, setChainInfo]:Array<any> = useState([]);
+    const [currencyIndex, setCurrencyIndex] = useState(0);
+    const [openCurrencySelectModal, setOpenCurrencySelectModal] = useState(false);
+
+    const currencyList = useMemo(() => {
+        if(chainInfo?.market_data === undefined) return [];
+        const allList = Object.keys(chainInfo.market_data.current_price);
+        let list:string[] = [];
+        allList
+            .filter(key => CURRENCY_LIST.includes(key.toUpperCase()))
+            .map(value => {list[CURRENCY_LIST.indexOf(value.toUpperCase())] = value.toUpperCase();});
+        return list.filter(value => value !== undefined).map(value => {return value});
+    }, [chainInfo]);
+
+    const symbolList = useMemo(() => {
+        if(currencyList.length === 0) return [];
+        let result = currencyList.map(value => {
+            if(CURRENCY_SYMBOL[value.toUpperCase()] === undefined){
+                if(CHAIN_CURRENCY[value.toUpperCase()] === undefined){
+                    return value.toUpperCase();
+                } else {
+                    return CHAIN_CURRENCY[value.toUpperCase()];
+                }
+            } else {
+                return CURRENCY_SYMBOL[value.toUpperCase()];
+            }
+        })
+        return result;
+    }, [currencyList])
 
     const currentPrice = useMemo(() => {
         if(chainInfo?.market_data === undefined) return 0;
-        return Number(chainInfo.market_data.current_price.usd);
-    }, [chainInfo]);
+        return Number(chainInfo.market_data.current_price[common.currency.toLowerCase()]);
+    }, [chainInfo, common.currency]);
 
     const available = useMemo(() => {
         return stakingValues.available;
@@ -43,12 +78,49 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
     }, [stakingValues]);
     
     const exchangeData = useMemo(() => {
-        return convertCurrent(makeDecimalPoint((convertToFctNumber(available) * currentPrice)));
+        let decimal = 2;
+        const fct = convertToFctNumber(available) * currentPrice;
+        if(["BTC","ETH"].includes(common.currency)){
+            decimal = 6;
+            if(fct > 10) decimal = 5;
+            if(fct > 100) decimal = 4;
+            if(fct > 1000) decimal = 3;
+            if(fct > 10000) decimal = 2;
+        }
+        return convertCurrent(makeDecimalPoint(fct, decimal));
     }, [currentPrice, available])
 
     const balanceTextSize = useMemo(() => {
         return resizeFontSize(available, 10000, 28);
     }, [available])
+
+    const handleCurrencySelectModal = (open: boolean) => {
+        setOpenCurrencySelectModal(open);
+    }
+
+    const CurrencyText = () => {
+        if(CURRENCY_SYMBOL[common.currency] === undefined){
+            return (
+                <View style={styles.currencyWrapper}>
+                    <Text style={[styles.balance, {fontSize: 16}]}>{exchangeData}</Text>
+                    <Text style={[styles.balance, {fontSize: 10, paddingBottom: 1}]}>{common.currency}</Text>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.currencyWrapper}>
+                    <Text style={[styles.balance, {fontSize: 16}]}>{CURRENCY_SYMBOL[common.currency]}</Text>
+                    <Text style={[styles.balance, {fontSize: 16}]}>{exchangeData}</Text>
+                </View>
+            )
+        }
+    }
+
+    const handleSelectCurrency = (index:number) => {
+        setCurrencyIndex(index);
+        CommonActions.handleCurrency(currencyList[index]);
+        setOpenCurrencySelectModal(false);
+    }
 
     const getChainInfo = async() => {
         await fetch(COINGECKO)
@@ -80,8 +152,19 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
                 </View>
                 <View style={styles.divider} />
                 <View style={[styles.wrapperH, {justifyContent: "space-between", paddingTop: 12}]}>
-                    <Text style={[styles.chainName, {fontSize: 16}]}>USD</Text>
-                    <Text style={[styles.balance, {fontSize: 16}]}>$ {exchangeData}</Text>
+                    <TouchableOpacity style={styles.currency} onPress={()=>handleCurrencySelectModal(true)}>
+                        <Text style={[styles.chainName, {fontSize: 16, paddingRight: 4}]}>{common.currency}</Text>
+                        <DownArrow size={12} color={GrayColor} />
+                    </TouchableOpacity>
+                    {CurrencyText()}
+                    <CustomModal visible={openCurrencySelectModal} handleOpen={handleCurrencySelectModal}>
+                        <>
+                        <View style={styles.headerBox}>
+                            <Text style={styles.headerTitle}>Currency</Text>
+                        </View>
+                        <ModalItems initVal={currencyIndex} data={currencyList} subData={symbolList} onPressEvent={handleSelectCurrency}/>
+                        </>
+                    </CustomModal>
                 </View>
             </View>
 
@@ -168,6 +251,31 @@ const styles = StyleSheet.create({
         width: .5,
         height: 50,
         backgroundColor: DisableColor,
+    },
+    headerBox: {
+        width: "100%",
+        paddingHorizontal: 10,
+        paddingVertical: 15,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: BoxColor,
+    },
+    headerTitle: {
+        fontFamily: Lato,
+        fontSize: 18,
+        color: TextCatTitleColor,
+        paddingHorizontal: 10,
+    },
+    currencyWrapper: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "flex-end",
+    },
+    currency: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
     }
 })
 

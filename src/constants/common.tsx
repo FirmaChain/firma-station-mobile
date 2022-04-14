@@ -451,9 +451,11 @@ export const TRANSACTION_TYPE_MODEL: KeyValue = {
       },
 }
 
+export const CURRENCY_LIST = ["USD", "KRW", "SGD", "IDR", "THB", "RUB", "EUR", "JPY", "BTC", "ETH"];
+
 export const CHAIN_CURRENCY:KeyValue = {
   BTC:"Bitcoin",
-  ETH:"Ether",
+  ETH:"Ethereum",
   LTC:"Litecoin",
   BCH:"Bitcoin Cash",
   BNB:"Binance Coin",
