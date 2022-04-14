@@ -1,13 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AppState, Platform, StyleSheet, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { convertNumber, getTimeStamp } from "@/util/common";
 import { BgColor } from "@/constants/theme";
 import ValidationModal from "@/components/modal/validationModal";
+import AlertModal from "@/components/modal/alertModal";
+import { JAILBREAK_ALERT } from "@/constants/common";
+import { Detect } from "@/util/detect";
 
 const AppStateManager = () => {
     const {wallet, common} = useAppSelector(state => state);
+
+    const [openAlertModal, setOpenAlertModal] = useState(false);
+
+    const handleAlertModalOpen = (open:boolean) => {
+        if(open){
+            setOpenAlertModal(open);
+        } else {
+            return;
+        }
+    }
 
     const handleUnlock = (result: string) => {
         CommonActions.handleLoggedIn(true);
@@ -33,15 +46,20 @@ const AppStateManager = () => {
     }, [wallet.name]);
 
     useEffect(() => {
-        if(wallet.name === ""){
-            CommonActions.handleAppPausedTime("");
-        }
-        if(common.appPausedTime !== "" && common.appState === "active"){
-            if(convertNumber(getTimeStamp()) - convertNumber(common.appPausedTime) >= 60){
-                CommonActions.handleLockStation(true);
-            } else {
+        if(Detect() === false){
+            setOpenAlertModal(false);
+            if(wallet.name === ""){
                 CommonActions.handleAppPausedTime("");
             }
+            if(common.appPausedTime !== "" && common.appState === "active"){
+                if(convertNumber(getTimeStamp()) - convertNumber(common.appPausedTime) >= 60){
+                    CommonActions.handleLockStation(true);
+                } else {
+                    CommonActions.handleAppPausedTime("");
+                }
+            }
+        } else {
+            return setOpenAlertModal(true);
         }
     }, [common.appState, common.appPausedTime]);
 
@@ -49,12 +67,14 @@ const AppStateManager = () => {
         CommonActions.handleAppPausedTime("");
         CommonActions.handleAppState("active");
         CommonActions.handleLockStation(false);
+        if(common.currency === undefined){
+            CommonActions.handleCurrency("USD");
+        }
     }, [])
 
     return (
         <>
-        {(wallet.name !== "" && common.loggedIn) &&
-        <>
+        {(wallet.name !== "" && common.loggedIn) &&<>
         {(common.isBioAuthInProgress === false && common.appState !== "active") && <View style={styles.dim}/>}
         {(common.isBioAuthInProgress === false && common.appPausedTime !== "")&& <View style={styles.dim}/>}
         <ValidationModal 
@@ -62,8 +82,17 @@ const AppStateManager = () => {
             open={common.lockStation}
             setOpenModal={handleUnlock} 
             validationHandler={handleUnlock}/>
-        </>
-        }
+        </>}
+        {openAlertModal && <>
+        <View style={styles.dim}/>
+        <AlertModal
+            visible={openAlertModal}
+            handleOpen={handleAlertModalOpen}
+            title={"Jailbroken detected"}
+            desc={JAILBREAK_ALERT}
+            confirmTitle={"OK"}
+            type={"ERROR"}/>
+        </>}
         </>
     )
 }

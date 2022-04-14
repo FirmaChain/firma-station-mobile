@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, BackHandler, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions, WalletActions } from "@/redux/actions";
 import { BgColor, Lato, TextCatTitleColor } from "@/constants/theme";
-import { JAILBREAK_ALERT, LOGIN_DESCRIPTION } from "@/constants/common";
+import { LOGIN_DESCRIPTION } from "@/constants/common";
 import { getPasswordViaBioAuth, 
     getUseBioAuth, 
     getWalletWithAutoLogin, 
@@ -18,11 +18,10 @@ import { getPasswordViaBioAuth,
 import { easeInAndOutAnim, fadeIn, LayoutAnim } from "@/util/animation";
 import { getAdrFromMnemonic } from "@/util/firma";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import { Detect, removeAllData } from "@/util/detect";
+import { removeAllData } from "@/util/detect";
 import SplashScreen from "react-native-splash-screen";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Description from "../welcome/description";
-import AlertModal from "@/components/modal/alertModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import InputBox from "./inputBox";
 
@@ -42,13 +41,6 @@ const LoginCheck = () => {
     const [dimActive, setDimActive] = useState(true);
     const [useBio, setUseBio] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [openAlertModal, setOpenAlertModal] = useState(false);
-
-    const handleAlertModalOpen = (open:boolean) => {
-        if(Platform.OS === "ios") return;
-        setOpenAlertModal(open);
-        BackHandler.exitApp();
-    }
 
     const handleLogin = async(mnemonic:string, name:string, password:string) => {
         let adr = '';
@@ -119,20 +111,16 @@ const LoginCheck = () => {
 
     useEffect(() => {
         if(common.connect && loading === false){
-            if(Detect() === false){
-                if(wallet.name !== ""){
-                    SplashScreen.hide();
-                    getUseBioAuthState()
-                    .then(res => {
-                        setDimActive(res);
-                        setUseBio(res);
-                        if(res){
-                            handleLoginViaBioAuth();
-                        }
-                    })
-                }
-            } else {
-                return setOpenAlertModal(true);
+            if(wallet.name !== ""){
+                SplashScreen.hide();
+                getUseBioAuthState()
+                .then(res => {
+                    setDimActive(res);
+                    setUseBio(res);
+                    if(res){
+                        handleLoginViaBioAuth();
+                    }
+                })
             }
         }
     }, [loading, common.connect]);
@@ -190,13 +178,6 @@ const LoginCheck = () => {
                         <Description title={Title} desc={Desc}/>
                         {dimActive === false && <InputBox walletName={wallet.name} useBio={useBio} fadeIn={fadeAnim} loginHandler={handleLogin}/>}
                     </Animated.View>
-                    <AlertModal
-                        visible={openAlertModal}
-                        handleOpen={handleAlertModalOpen}
-                        title={"Jailbroken detected"}
-                        desc={JAILBREAK_ALERT}
-                        confirmTitle={"OK"}
-                        type={"ERROR"}/>
                 </Pressable>
                 }
             </KeyboardAvoidingView>
