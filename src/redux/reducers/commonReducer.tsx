@@ -7,10 +7,12 @@ import { Action,
         IS_NETWORK_CHANGED, 
         LOCK_STATION,
         IS_BIOAUTH_IN_PROGRESS,
-        LOGGEDIN,  } from "../types";
+        LOGGEDIN,
+        HANDLE_CURRENCY,  } from "../types";
 
 export interface CommonReduceState {
     connect: boolean;
+    currency: string;
     loading: boolean;
     network: string;
     isNetworkChanged: boolean;
@@ -24,6 +26,7 @@ export interface CommonReduceState {
 
 const initialState = {
     connect: true,
+    currency: "USD",
     loading: false,
     network: "MainNet",
     isNetworkChanged: false,
@@ -41,6 +44,11 @@ const reducer = (state = initialState, action:Action) => {
             return {
                 ...state, 
                 connect: action.payload,
+            }
+        case HANDLE_CURRENCY : 
+            return{
+                ...state, 
+                currency: action.payload,
             }
         case HANDLE_LOADING_PROGRESS: 
             return {

@@ -1,5 +1,6 @@
 import { APP_PAUSED_TIME, 
     APP_STATE, 
+    HANDLE_CURRENCY, 
     HANDLE_LOADING_PROGRESS, 
     HANDLE_NETWORK, 
     IS_BIOAUTH_IN_PROGRESS, 
@@ -7,11 +8,18 @@ import { APP_PAUSED_TIME,
     IS_NETWORK_CHANGED, 
     LOCK_STATION, 
     LOGGEDIN} from "../types"
-
+    
 export const handleIsConnection = (connect:boolean) => (
     {
         type: IS_CONNECTION,
         payload: connect,
+    }
+)
+
+export const handleCurrency = (currency:string) => (
+    {
+        type: HANDLE_CURRENCY,
+        payload: currency,
     }
 )
 
