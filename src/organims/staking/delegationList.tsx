@@ -3,14 +3,13 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { CommonActions, StakingActions } from "@/redux/actions";
 import { useDelegationData } from "@/hooks/staking/hooks";
 import { convertAmount, convertTime, convertToFctNumber } from "@/util/common";
-import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextDarkGrayColor, TextGrayColor } from "@/constants/theme";
+import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextGrayColor } from "@/constants/theme";
 import { DownArrow } from "@/components/icon/icon";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
 import MonikerSectionForRedelegate from "./parts/list/monikerSectionForRedelegate";
-import { DELEGATE_NOT_EXIST } from "@/constants/common";
 
 interface Props {
     visible: boolean;
