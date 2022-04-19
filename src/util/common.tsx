@@ -1,5 +1,5 @@
+import { FirmaUtil } from "@firmachain/firma-js";
 import moment from "moment";
-import { Platform } from "react-native";
 
 export const wait = (timeout:number) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -34,7 +34,7 @@ export const convertToFctNumberForInput = (value: number | string) => {
 }
 
 export const convertToFctNumber = (value: string | number) => {
-    return Number(value) / 1000000;
+    return convertNumber(FirmaUtil.getFCTStringFromUFCT(Number(value)));
 }
 
 export const makeDecimalPoint = (value: string | number, point: number = 2) => {

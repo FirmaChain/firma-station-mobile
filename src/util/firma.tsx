@@ -338,11 +338,8 @@ export const getUndelegations = async(address:string) => {
 
 export const getStaking = async(address:string) => {
     const balance = await getBalanceFromAdr(address);
-    
     const available = convertNumber(balance);
-
     const totalReward = await getTotalReward(address);
-    
     const stakingReward = convertToFctNumber(totalReward.total);
 
     const delegateListOrigin = await getDelegateList(address);
