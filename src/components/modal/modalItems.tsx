@@ -38,7 +38,7 @@ const ModalItems = ({initVal, data, subData, onPressEvent}:Props) => {
 const styles = StyleSheet.create({
     modalContainer: {
         width: '100%',
-        marginBottom: Platform.select({android: 0, ios: 20}),
+        marginBottom: Platform.select({android: 0, ios: 25}),
         maxHeight: 500,
         backgroundColor: BoxDarkColor,
     },

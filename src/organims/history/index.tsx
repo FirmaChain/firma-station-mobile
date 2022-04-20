@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Linking, NativeScrollEvent, NativeSyntheticEvent, Platform, StyleSheet, View } from "react-native";
+import { Linking, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -7,7 +7,6 @@ import { CommonActions } from "@/redux/actions";
 import { useHistoryData } from "@/hooks/wallet/hooks";
 import { BgColor } from "@/constants/theme";
 import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import HistoryList from "./historyList";
 import { GUIDE_URI } from "@/../config";
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
     listBox: {
         flex: 1,
         backgroundColor: BgColor,
-    }
+    },
 })
 
 export default History;

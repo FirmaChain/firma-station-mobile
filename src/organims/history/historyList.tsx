@@ -16,7 +16,7 @@ const HistoryList = ({historyList, pagination, handleExplorer}:Props) => {
     return (
         <View style={styles.container}>
             {historyList.list.length > 0?
-                historyList.list.map((value:any, index) => {
+            historyList.list.map((value:any, index) => {
                 if(index < pagination){
                 return (
                     <TouchableOpacity key={index} onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + value.hash)}>
@@ -54,10 +54,12 @@ const HistoryList = ({historyList, pagination, handleExplorer}:Props) => {
                         </View>
                     </TouchableOpacity>
                 )
-                }})
+            }})
             :
+            <View style={{flex:1, justifyContent: "center"}}>
                 <Text style={styles.notice}>{HISTORY_NOT_EXIST}</Text>
-            }
+            </View>
+        }
         </View>
     )
 }

@@ -105,8 +105,7 @@ const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Pro
 const styles = StyleSheet.create({
     modalContainer: {
         width: '100%',
-        marginBottom: Platform.select({android: 0, ios: 20}),
-        paddingBottom: Platform.select({android: 0, ios: 50}),
+        marginBottom: Platform.select({android: 0, ios:25}),
         maxHeight: 500,
         backgroundColor: BoxDarkColor,
     },

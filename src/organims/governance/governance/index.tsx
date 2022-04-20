@@ -6,7 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { useGovernanceList } from "@/hooks/governance/hooks";
-import { BgColor } from "@/constants/theme";
+import { BgColor, Lato, TextDarkGrayColor } from "@/constants/theme";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import ProposalList from "./proposalList";
 
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     listBox: {
         flex: 1,
         justifyContent: "center",
-    }
+    },
 })
 
 

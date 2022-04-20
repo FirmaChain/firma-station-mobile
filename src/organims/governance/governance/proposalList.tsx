@@ -45,31 +45,33 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
     return (
         <View style={styles.container}>
             {proposals.length > 0?
-                proposals.map((proposal, index) => {
-                    const periodState = handlePeriodStatus(proposal);
-                    return (
-                        <TouchableOpacity 
-                            key={index} 
-                            style={styles.item} 
-                            onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}>
-                                <View style={[styles.wrapperH, {paddingBottom: 10}]}>
-                                    <Text style={styles.id}># {proposal.proposalId}</Text>
-                                    <Text style={[styles.status, {backgroundColor: STATUS_BACKGROUND_COLOR[proposal.status], color: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
-                                </View>
-                                <View style={[styles.wrapperH, {paddingBottom: 10}]}>
-                                    <Text style={styles.title}>{proposal.title}</Text>
-                                </View>
-                                <View style={styles.wrapperH}>
-                                    <Text style={[styles.period, {color: TextDisableColor}]}>
-                                        {periodState.period}
-                                    </Text>
-                                    <Text style={[styles.period, {color: TextCatTitleColor, fontWeight: "600"}]}>{periodState.dDay}</Text>
-                                </View>
-                        </TouchableOpacity>
-                    )
-                })
+            proposals.map((proposal, index) => {
+                const periodState = handlePeriodStatus(proposal);
+                return (
+                    <TouchableOpacity 
+                        key={index} 
+                        style={styles.item} 
+                        onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}>
+                            <View style={[styles.wrapperH, {paddingBottom: 10}]}>
+                                <Text style={styles.id}># {proposal.proposalId}</Text>
+                                <Text style={[styles.status, {backgroundColor: STATUS_BACKGROUND_COLOR[proposal.status], color: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
+                            </View>
+                            <View style={[styles.wrapperH, {paddingBottom: 10}]}>
+                                <Text style={styles.title}>{proposal.title}</Text>
+                            </View>
+                            <View style={styles.wrapperH}>
+                                <Text style={[styles.period, {color: TextDisableColor}]}>
+                                    {periodState.period}
+                                </Text>
+                                <Text style={[styles.period, {color: TextCatTitleColor, fontWeight: "600"}]}>{periodState.dDay}</Text>
+                            </View>
+                    </TouchableOpacity>
+                )
+            })
             :
+            <View style={{flex: 1, justifyContent: "center"}}>
                 <Text style={styles.notice}>{PROPOSAL_NOT_REGISTERED}</Text>
+            </View>
             }
         </View>
     )
@@ -77,6 +79,7 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingTop: 32,
         paddingBottom: 20,
         paddingHorizontal: 20,

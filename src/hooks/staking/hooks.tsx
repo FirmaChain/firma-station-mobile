@@ -95,7 +95,7 @@ export const useDelegationData = () => {
 
     const handleDelegationState = async() => {
         const result:Array<StakeInfo> = await getDelegations(wallet.address);
-        setDelegationList(result.filter(value => value.amount > 0 && value.reward >= 0.000001));
+        setDelegationList(result.filter(value => value.amount >= 0 && value.reward >= 1));
     }
 
     const handleRedelegationState = async() => {

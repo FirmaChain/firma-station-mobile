@@ -141,7 +141,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 8, paddingBottom: 19}]}>
                     <View style={[styles.wrapperH, {alignItems: "center"}]}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />
-                        <Text style={[styles.balance, {fontSize:balanceTextSize}]}>{convertAmount(available)}
+                        <Text style={[styles.balance, {fontSize:balanceTextSize, paddingLeft: 6}]}>{convertAmount(available)}
                             <Text style={styles.chainName}>   FCT</Text>
                         </Text>
                     </View>
@@ -175,7 +175,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
                     <Text style={styles.title}>Staking</Text>
                     <ForwardArrow size={20} color={TextCatTitleColor}/>
                 </View>
-                <View style={[styles.wrapperH, {flex: 3, justifyContent: "space-between", alignItems: "center" ,paddingTop: 18}]}>
+                <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 18}]}>
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Delegated</Text>
                         <Text style={[styles.balance, {fontSize: 16}]}>{delegated}</Text>
@@ -228,7 +228,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         textAlign: "center",
         color: TextColor,
-        paddingLeft: 6,
     },
     chainName: {
         fontFamily: Lato,
