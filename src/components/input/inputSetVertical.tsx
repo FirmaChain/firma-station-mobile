@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from "@/constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     title: string;
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
     },
     message: {
         fontSize: 14,

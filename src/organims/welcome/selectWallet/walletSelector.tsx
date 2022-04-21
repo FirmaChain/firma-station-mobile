@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { DownArrow } from "@/components/icon/icon";
 
 interface Props {
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
         marginBottom: 5,
     },
     walletBox: {

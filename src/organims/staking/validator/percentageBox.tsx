@@ -1,8 +1,8 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { ValidatorData } from "@/hooks/staking/hooks";
-import { convertAmount, convertNumber } from "@/util/common";
-import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextGrayColor } from "@/constants/theme";
+import { convertAmount } from "@/util/common";
+import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextGrayColor } from "@/constants/theme";
 
 interface Props {
     data: ValidatorData;
@@ -38,7 +38,7 @@ const PercentageBox = ({data}:Props) => {
                                 return (
                                 <View key={index} style={[styles.wrapperH, {flex: 1, alignItems: "center"}]}>
                                     <View style={[styles.wrapperV, {alignItems:"center", flex: 1}]}>
-                                        <Text style={[styles.title, {fontSize: 14, paddingBottom: 10}]}>{item.title}</Text>
+                                        <Text style={[styles.title, {fontSize: 14, paddingBottom: 10, color: TextDarkGrayColor}]}>{item.title}</Text>
                                         <Text style={[styles.data, {fontSize: 22, paddingBottom: 6}]}>{item.data}%</Text>
                                         {item.amount === undefined? null:<Text style={styles.desc}>{convertAmount(item.amount, false)} FCT</Text>}
                                     </View>

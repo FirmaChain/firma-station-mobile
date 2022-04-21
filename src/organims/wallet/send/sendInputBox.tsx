@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { DisableColor, Lato, PointColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { DisableColor, Lato, PointColor, TextCatTitleColor, WhiteColor } from "@/constants/theme";
 import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAddress";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import InputSetVertical from "@/components/input/inputSetVertical";
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
         marginBottom: 5,
     },
     radioBox: {

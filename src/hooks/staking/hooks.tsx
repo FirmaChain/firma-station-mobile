@@ -5,6 +5,7 @@ import { useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidat
 import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
 import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
 import { BLOCKS_PER_YEAR } from "@/../config";
+import { FirmaUtil } from "@firmachain/firma-js";
 
 export interface ValidatorState {
     jailed: boolean;
@@ -95,7 +96,10 @@ export const useDelegationData = () => {
 
     const handleDelegationState = async() => {
         const result:Array<StakeInfo> = await getDelegations(wallet.address);
-        setDelegationList(result.filter(value => value.amount >= 0 && value.reward >= 1));
+        setDelegationList(
+            result.filter(value => 
+                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 && 
+                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0));
     }
 
     const handleRedelegationState = async() => {

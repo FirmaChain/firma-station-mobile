@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { BorderColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { BorderColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from "@/constants/theme";
 import { convertAmount } from "@/util/common";
 
 interface Props {
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 18,
         fontWeight: "normal",
-        color: TextGrayColor,
+        color: TextCatTitleColor,
     },
     balance: {
         fontSize: 20,

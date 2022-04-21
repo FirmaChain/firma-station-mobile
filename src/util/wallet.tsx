@@ -71,7 +71,6 @@ export const setWalletList = (list:string) => {
 
 export const removeWallet = async(name:string) => {
     await removeChain(name)
-    .then(res => console.log(res))
     .catch(error => console.log(error));
 }
 
@@ -144,7 +143,6 @@ export const getUseBioAuth = async(name:string) => {
 
 export const removeUseBioAuth = async(name:string) => {
     await removeChain(USE_BIO_AUTH + name)
-            .then(res => console.log(res))
             .catch(error => console.log(error));
 }
 

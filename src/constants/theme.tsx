@@ -20,7 +20,7 @@ export const TextCatTitleColor = '#c5c5d1';
 export const TextAddressColor = '#50b5ff';
 
 export const InputBgColor = '#2a2932';
-export const InputPlaceholderColor = '#696974';
+export const InputPlaceholderColor = '#8d8d91';
 
 export const PointColor = '#3252d3';
 export const PointLightColor = '#0a84ff';
@@ -35,6 +35,11 @@ export const TextButtonColor = '#0f3f92';
 export const ButtonPointLightColor = '#5b75dc';
 export const AddressBoxColor = '#2741aa';
 export const AddressTextColor = '#efefef';
+
+export const YesColor = '#3dd598';
+export const NoColor = '#ffc542';
+export const NoWithVetoColor = '#de3d3d';
+export const AbstainColor = '#92929d';
 
 export const toastSuccess = PointColor;
 export const toastInfo = PointLightColor;

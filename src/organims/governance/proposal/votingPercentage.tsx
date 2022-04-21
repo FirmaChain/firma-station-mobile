@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { BgColor, BorderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { AbstainColor, BgColor, BorderColor, Lato, NoColor, NoWithVetoColor, TextCatTitleColor, TextColor, WhiteColor, YesColor } from "@/constants/theme";
 import { convertAmount, convertNumber, convertPercentage } from "@/util/common";
 import { CaretUp } from "@/components/icon/icon";
 import { ScreenWidth } from "@/util/getScreenSize";
@@ -37,13 +37,13 @@ const VotingPercentage = ({data}:Props) => {
     const votingColor = (vote:string) => {
         switch (vote) {
             case "YES":
-                return "#3dd598";
+                return YesColor;
             case "NO":
-                return "#ffc542";
+                return NoColor;
             case "NoWithVeto":
-                return "#de3d3d";
+                return NoWithVetoColor;
             case "Abstain":
-                return "#92929d";
+                return AbstainColor;
         }
     }
     

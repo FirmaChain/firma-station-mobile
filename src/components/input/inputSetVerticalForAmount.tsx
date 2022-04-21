@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { convertToFctNumberForInput, handleDecimalPointLimit } from "@/util/common";
-import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import TextButton from "../button/textButton";
 
 interface Props {
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
     },
     input: {
         color: TextColor,

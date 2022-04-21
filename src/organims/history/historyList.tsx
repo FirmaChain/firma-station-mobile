@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { HistoryListState } from "@/hooks/wallet/hooks";
 import { ForwardArrow } from "@/components/icon/icon";
-import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextDarkGrayColor } from "@/constants/theme";
+import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { convertTime } from "@/util/common";
 import { EXPLORER_URL, HISTORY_NOT_EXIST } from "@/constants/common";
 
@@ -89,17 +89,11 @@ const styles = StyleSheet.create({
     wrapper: {
         paddingBottom: 5,
     },
-    title: {
-        fontFamily: Lato,
-        fontSize: 20,
-        fontWeight: "bold",
-        color: TextCatTitleColor,
-    },
     contentItem: {
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: "normal",
-        color: TextCatTitleColor,
+        color: TextColor,
         marginTop: 6,
         paddingVertical: 5,
     },
@@ -107,7 +101,7 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: "bold",
-        color: InputPlaceholderColor,
+        color: TextDarkGrayColor,
     },
     notice: {
         textAlign: "center",

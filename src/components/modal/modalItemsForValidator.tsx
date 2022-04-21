@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, ScrollView, Text, Image, View } from "react-native";
 import { StakeInfo } from "@/hooks/staking/hooks";
-import { BgColor, BorderColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
-import { NO_DELEGATION } from "@/constants/common";
-import { Person, Radio } from "../icon/icon";
+import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from "@/constants/theme";
+import { ExclamationCircle, Person, Radio } from "../icon/icon";
 
 interface Props {
     title: string;
     initVal: string;
     data: Array<StakeInfo>;
+    myAddress: string;
     onPressEvent: Function;
 }
 
-const ModalItemsForValidator = ({title, initVal, data, onPressEvent}:Props) => {
+const ModalItemsForValidator = ({title, initVal, data, myAddress, onPressEvent}:Props) => {
     const [selected, setSelected] = useState(initVal);
 
     const handleSelect = (address:string) => {
@@ -25,11 +25,12 @@ const ModalItemsForValidator = ({title, initVal, data, onPressEvent}:Props) => {
             <View style={styles.headerBox}>
                 <Text style={styles.headerTitle}>{title}</Text>
             </View>
-            {data.length > 0?
-                <View>
-                    {data.map((item, index) => {
-                        return(
-                            <Pressable key={index} style={styles.modalContentBox} onPress={() => handleSelect(item.validatorAddress)}>
+            <View>
+                {data.map((item, index) => {
+                    const mine = myAddress === item.validatorAddress;
+                    return(
+                        <View key={index} style={styles.modalContentBox}>
+                            <Pressable disabled={mine} style={[styles.modalPressBox, mine && {opacity: .15}]} onPress={() => handleSelect(item.validatorAddress)}>
                                 {item.avatarURL?
                                     <Image
                                         style={styles.avatar}
@@ -42,12 +43,14 @@ const ModalItemsForValidator = ({title, initVal, data, onPressEvent}:Props) => {
                                 <Text style={styles.moniker}>{item.moniker}</Text>
                                 <Radio size={20} color={WhiteColor} active={item.validatorAddress === selected} />
                             </Pressable>
-                        )
-                    })}
-                </View>
-                :
-                <Text style={styles.notice}>{NO_DELEGATION}</Text>
-            }
+                            <View style={[styles.noticeBox, {display: mine?"flex":"none"}]}>
+                                <ExclamationCircle size={15} color={TextWarnColor} />
+                                <Text style={[styles.notice]}>Not allowed to same validator</Text>
+                            </View>
+                        </View>
+                    )
+                })}
+            </View>
         </ScrollView>
     )
 }
@@ -73,6 +76,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     modalContentBox: {
+        position: "relative",
+        backgroundColor: BgColor,
+    },
+    modalPressBox: {
         width: "100%",
         paddingVertical: 20,
         paddingHorizontal: 20,
@@ -80,7 +87,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginBottom: 1,
-        backgroundColor: BgColor,
     },
     avatar: {
         width: 32,
@@ -100,14 +106,21 @@ const styles = StyleSheet.create({
     icon: {
         marginRight: 10,
     },
+    noticeBox: {
+        width: "100%",
+        position: "absolute",
+        paddingVertical: 20,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center"
+    },
     notice: {
-        paddingHorizontal: 20,
-        paddingTop: 30,
         fontFamily: Lato,
         fontSize: 16,
+        lineHeight: 32,
         textAlign: "center",
-        color: TextDarkGrayColor,
-
+        color: TextWarnColor,
+        paddingLeft: 5,
     }
 })
 

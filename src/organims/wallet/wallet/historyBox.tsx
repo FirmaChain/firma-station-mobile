@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, InputPlaceholderColor, Lato, TextAddressColor, TextCatTitleColor } from "@/constants/theme";
+import { BoxColor, InputPlaceholderColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { ForwardArrow } from "@/components/icon/icon";
 import { convertTime, getGMT } from "@/util/common";
 import { EXPLORER_URL, HISTORY_NOT_EXIST } from "@/constants/common";
@@ -124,15 +124,15 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: "normal",
-        color: TextCatTitleColor,
+        color: TextColor,
         marginTop: 6,
         paddingVertical: 5,
     },
     contentTitle: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: "bold",
-        color: InputPlaceholderColor,
+        fontWeight: "normal",
+        color: TextDarkGrayColor,
     },
 })
 

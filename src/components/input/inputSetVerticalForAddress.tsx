@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { checkCameraPermission } from "@/util/permission";
 import { QRCodeIcon } from "../icon/icon";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
     },
     message: {
         fontSize: 14,

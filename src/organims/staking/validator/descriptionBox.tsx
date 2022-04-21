@@ -9,7 +9,6 @@ interface Props {
 }
 
 const DescriptionBox = ({validator}:Props) => {
-
     const handleUrl = async(url:string) => {
         let urlValid = url;
         if(urlValid.includes("://") === false) urlValid = "https://" + urlValid;
@@ -18,6 +17,7 @@ const DescriptionBox = ({validator}:Props) => {
 
     return (
         <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10}]}>
+            <View style={{height: "100%", justifyContent: "flex-start"}}>
             {validator.avatar?
             <Image style={styles.avatar} source={{uri: validator.avatar}}/>
             :
@@ -25,9 +25,10 @@ const DescriptionBox = ({validator}:Props) => {
                 <Person size={68} color={WhiteColor}/>
             </View>
             }
+            </View>
             <View style={[styles.boxV, {flex: 1}]}>
                 <Text style={styles.moniker}>{validator.moniker}</Text>
-                <Text style={styles.desc}>{validator.description}</Text>
+                {validator.description && <Text style={styles.desc}>{validator.description}</Text>}
                 {validator.website &&
                 <TouchableOpacity onPress={()=>handleUrl(validator.website)}>
                     <Text style={styles.url}>{validator.website}</Text>
@@ -41,6 +42,7 @@ const DescriptionBox = ({validator}:Props) => {
 const styles = StyleSheet.create({
     boxH: {
         flexDirection: "row",
+        alignItems: "center",
     },
     boxV: {
         alignItems: "flex-start",

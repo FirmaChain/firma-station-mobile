@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { degree, TurnToOpposite, TurnToOriginal } from "@/util/animation";
 import { getEstimateGasFromDelegation, getFeesFromGas } from "@/util/firma";
-import { convertAmount, resizeFontSize } from "@/util/common";
+import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
 import { StakingState } from "@/hooks/staking/hooks";
 import { ARROW_ACCORDION } from "@/constants/images";
 import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
@@ -11,6 +11,7 @@ import TransactionConfirmModal from "@/components/modal/transactionConfirmModal"
 import SmallButton from "@/components/button/smallButton";
 import AlertModal from "@/components/modal/alertModal";
 import { CommonActions } from "@/redux/actions";
+import { FirmaUtil } from "@firmachain/firma-js";
 
 interface Props {
     walletName: string;
@@ -82,7 +83,6 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
             TurnToOriginal(Animated, arrowDeg);
         }
     }, [openAccordion]);
-    
 
     useEffect(() => {
         setRewardTextSize(resizeFontSize(0, 100000, 20));
@@ -139,7 +139,7 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                         title={"Undelegate"}
                         size={142}
                         height={accordionHeight}
-                        active={stakingState.delegated > 0}
+                        active={convertNumber(FirmaUtil.getFCTStringFromUFCT(stakingState.delegated)) > 0}
                         onPressEvent={() => onPressEvent('Undelegate')}/>
                 </View>
                 <TouchableOpacity style={styles.boxArrow} onPress={() => handleOpenAccordion()}>

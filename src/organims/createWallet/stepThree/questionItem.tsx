@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     title: string;
@@ -18,7 +18,7 @@ const QuestionItem= ({title, value, focus, onPressEvent}:Props) => {
             <Text style={styles.text}>{title}</Text>
             <TouchableOpacity
                 onPress={() => onPressEvent()}>
-                <Text style={[styles.quiz, {borderColor: bc, color: val === 'select'? TextGrayColor : TextColor}]}>{val}</Text>
+                <Text style={[styles.quiz, {borderColor: bc, color: val === 'select'? InputPlaceholderColor : TextColor}]}>{val}</Text>
             </TouchableOpacity>
         </View>
     )
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     text: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
         marginBottom: 5,
     },
     quiz: {
