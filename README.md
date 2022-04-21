@@ -9,13 +9,13 @@ How to build and run firma-station-mobile
 =========================================
 ### 1. install
 
-1. Create the project via git clone.
+1. Create a project with git clone.
 2. Create a new project and copy the following files from a project created as a clone.
   * src
   * react-native.config.js
   * tsconfig.json
   * babel.config.js
-3. Connect fonts via link.
+3. Connect the fonts through the following code:
 <pre>
   <code>
   react-native link  
@@ -25,7 +25,7 @@ How to build and run firma-station-mobile
 4. Install the following modules.
 <pre>
   <code>
-  yarn add react-native-gesture-handler react-navigation react-native-safe-area-context react-native-screens @react-native-community/masked-view @react-navigation/native @react-navigation/stack @react-native-clipboard/clipboard react-native-status-bar-height react-native-iphone-x-helper react-native-toast-message asyncstorage-down moment @react-navigation/bottom-tabs crypto-js@3.3.0 react-native-keychain @apollo/client@3.4.16 @apollo/react-hooks@4.0.0 graphql@15.7.1 apollo-boost@0.4.9 react-native-biometrics react-native-device-info react-native-camera react-native-qrcode-scanner react-native-permissions react-native-svg react-native-qrcode-svg
+  yarn add react-native-gesture-handler react-navigation react-native-safe-area-context react-native-screens @react-native-community/masked-view @react-navigation/native @react-navigation/stack @react-native-clipboard/clipboard react-native-status-bar-height react-native-iphone-x-helper react-native-toast-message asyncstorage-down moment @react-navigation/bottom-tabs crypto-js@3.3.0 react-native-keychain @apollo/client@3.4.16 @apollo/react-hooks@4.0.0 graphql@15.7.1 apollo-boost@0.4.9 react-native-biometrics react-native-device-info react-native-camera react-native-qrcode-scanner react-native-permissions react-native-svg react-native-qrcode-svg react-native-reanimated @react-native-async-storage/async-storage
   </code>
 </pre>
 <pre>
@@ -41,10 +41,8 @@ How to build and run firma-station-mobile
   npm install -dev @types/react-native-vector-icons
   npm install -dev babel-plugin-module-resolver
   npm install --save react-native-draggable-flatlist
-  yarn add react-native-reanimated
   npm install --save react-native-webview
   npm i --save-dev @types/crypto-js
-  yarn add @react-native-async-storage/async-storage
   </code>
 </pre>
 
@@ -54,13 +52,30 @@ How to build and run firma-station-mobile
   <code>
   // android/src/build.gradle
   apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+  ...
+  ...
+  android {
+    defaultConfig {
+      ...
+      missingDimensionStrategy 'react-native-camera', 'general'
+      missingDimensionStrategy 'react-native-camera', 'mlkit'
+    }
+  }
+
 
   // ios/Podfile
   // below the target.
+  ...
+  target 'firma_station_mobile' do
+  ...
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  ...
+  ...
+  
   </code>
 </pre>
-
       // ios/PROJECT_NAME/Info.plist
       // between UIAppFons array
 
