@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -12,6 +12,7 @@ import AddressBox from "./addressBox";
 import BalanceBox from "./balanceBox";
 import HistoryBox from "./historyBox";
 import { CommonActions } from "@/redux/actions";
+import { COINGECKO } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
@@ -22,6 +23,8 @@ const Wallet = () => {
 
     const { recentHistory, refetchCurrentHistory, currentHistoryPolling } = useHistoryData();
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
+
+    const [chainInfo, setChainInfo]:Array<any> = useState([]);
     
     const moveToSendScreen = () => {
         navigation.navigate(Screens.Send);
@@ -54,7 +57,15 @@ const Wallet = () => {
     const handleMoveToWeb = (uri:string) => {
         navigation.navigate(Screens.WebScreen, {uri: uri});
     }
-    
+
+    const getChainInfo = async() => {
+        await fetch(COINGECKO)
+        .then((res) => res.json())
+        .then((resJson) => {
+            setChainInfo(resJson);
+        })
+    }
+
     useEffect(() => {
         if(recentHistory !== undefined && common.isNetworkChanged === false){
             refreshStates();
@@ -62,14 +73,13 @@ const Wallet = () => {
     },[recentHistory])
 
     useEffect(() => {
-        if(staking.stakingReward > 0 && isFocused)
-            updateStakingState(staking.stakingReward);
-    }, [isFocused])
-
-    useEffect(() => {
         if(isFocused){
+            getChainInfo();
             currentHistoryRefetch();
             handleCurrentHistoryPolling(true);
+            if(staking.stakingReward > 0 && isFocused){
+                updateStakingState(staking.stakingReward);
+            }
         } else {
             handleCurrentHistoryPolling(false);
         }
@@ -82,7 +92,7 @@ const Wallet = () => {
                     refreshFunc={refreshStates}>
                     <View style={styles.content}>
                         <AddressBox address={wallet.address} />
-                        <BalanceBox stakingValues={stakingState} handleSend={moveToSendScreen} handleStaking={moveToStakingTab}/>
+                        <BalanceBox stakingValues={stakingState} handleSend={moveToSendScreen} handleStaking={moveToStakingTab} chainInfo={chainInfo}/>
                         <HistoryBox handleHistory={moveToHistoryScreen} recentHistory={recentHistory} handleExplorer={handleMoveToWeb}/>
                     </View>
                 </RefreshScrollView>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
@@ -12,7 +12,6 @@ import { DownArrow, ForwardArrow } from "@/components/icon/icon";
 import { FIRMA_LOGO } from "@/constants/images";
 import { CHAIN_CURRENCY, CURRENCY_LIST, CURRENCY_SYMBOL } from "@/constants/common";
 import { BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
-import { COINGECKO } from "@/../config";
 import SmallButton from "@/components/button/smallButton";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
@@ -21,17 +20,17 @@ interface Props {
     stakingValues: StakingState;
     handleSend: Function;
     handleStaking: Function;
+    chainInfo: any;
 }
 
-const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
+const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props) => {
     const {common} = useAppSelector(state => state);
     
-    const [chainInfo, setChainInfo]:Array<any> = useState([]);
     const [currencyIndex, setCurrencyIndex] = useState(0);
     const [openCurrencySelectModal, setOpenCurrencySelectModal] = useState(false);
 
     const currencyList = useMemo(() => {
-        if(chainInfo?.market_data === undefined) return [];
+        if(chainInfo.market_data === undefined) return [];
         const allList = Object.keys(chainInfo.market_data.current_price);
         let list:string[] = [];
         allList
@@ -61,6 +60,11 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
         return Number(chainInfo.market_data.current_price[common.currency.toLowerCase()]);
     }, [chainInfo, common.currency]);
 
+    const currentExchange = useMemo(() => {
+        if(chainInfo?.market_data === undefined) return 0;
+        return makeDecimalPoint(chainInfo.market_data.current_price['usd'], 3)
+    }, [chainInfo])
+
     const available = useMemo(() => {
         return stakingValues.available;
     }, [stakingValues])
@@ -77,7 +81,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
         return convertCurrent(makeDecimalPoint((stakingValues.stakingReward)));
     }, [stakingValues]);
     
-    const exchangeData = useMemo(() => {
+    const currencyData = useMemo(() => {
         let decimal = 2;
         const fct = convertToFctNumber(available) * currentPrice;
         if(["BTC","ETH"].includes(common.currency)){
@@ -102,15 +106,15 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
         if(CURRENCY_SYMBOL[common.currency] === undefined){
             return (
                 <View style={styles.currencyWrapper}>
-                    <Text style={[styles.balance, {fontSize: 16}]}>{exchangeData}</Text>
-                    <Text style={[styles.balance, {fontSize: 10, paddingBottom: 1}]}>{common.currency}</Text>
+                    <Text style={[styles.balance, {fontSize: 16}]}>{currencyData}</Text>
+                    <Text style={[styles.balance, {fontSize: 10, paddingBottom: 1, paddingLeft: 4}]}>{common.currency}</Text>
                 </View>
             )
         } else {
             return (
                 <View style={styles.currencyWrapper}>
                     <Text style={[styles.balance, {fontSize: 16}]}>{CURRENCY_SYMBOL[common.currency]}</Text>
-                    <Text style={[styles.balance, {fontSize: 16}]}>{exchangeData}</Text>
+                    <Text style={[styles.balance, {fontSize: 16, paddingLeft: 4}]}>{currencyData}</Text>
                 </View>
             )
         }
@@ -121,18 +125,6 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
         CommonActions.handleCurrency(currencyList[index]);
         setOpenCurrencySelectModal(false);
     }
-
-    const getChainInfo = async() => {
-        await fetch(COINGECKO)
-        .then((res) => res.json())
-        .then((resJson) => {
-            setChainInfo(resJson);
-        })
-    }
-
-    useEffect(() => {
-        getChainInfo();
-    }, [])
 
     return (
         <View style={styles.container}>
@@ -165,6 +157,15 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking}:Props) => {
                         <ModalItems initVal={currencyIndex} data={currencyList} subData={symbolList} onPressEvent={handleSelectCurrency}/>
                         </>
                     </CustomModal>
+                </View>
+                <View style={[styles.wrapperH, {justifyContent: "flex-end", paddingTop: 5}]}>
+                    <Text 
+                        style={[styles.balance, 
+                            {fontSize: 12, 
+                            fontWeight: "normal", 
+                            color: TextDarkGrayColor}]}>
+                            {"(1 FCT = $ "+ currentExchange +")"}
+                    </Text>
                 </View>
             </View>
 
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
-    }
+    },
 })
 
 export default BalanceBox;
