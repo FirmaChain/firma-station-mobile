@@ -1,17 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { useAppSelector } from "@/redux/hooks";
-import { CommonActions } from "@/redux/actions";
-import { BgColor, FailedColor, GrayColor, Lato, TextButtonColor, TextColor, WhiteColor } from "@/constants/theme";
+import { BgColor, GrayColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { ICON_HISTORY } from "@/constants/images";
 import { QuestionFilledCircle, Setting } from "@/components/icon/icon";
-import { setFirmaSDK } from "@/util/firma";
-import { setClient } from "@/apollo";
-import { setExplorerUrl } from "@/constants/common";
-import TextButton from "@/components/button/textButton";
-import CustomModal from "@/components/modal/customModal";
-import ModalItems from "@/components/modal/modalItems";
+import { useAppSelector } from "@/redux/hooks";
+import NetworkBadge from "../networkBadge";
 
 interface Props {
     title: string;
@@ -22,11 +16,8 @@ interface Props {
 }
 
 const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, children}:Props) => {
+
     const {common} = useAppSelector(state => state);
-    const networkList = ["MainNet", "TestNet"];
-    const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
-    const [openNetworkSelectModal, setOpenNetworkSelectModal] = useState(false);
-    const [tabCount, setTabCount] = useState(0);
     
     const handleMoveToSetting = () => {
         settingNavEvent && settingNavEvent();
@@ -36,36 +27,10 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, chi
         historyNavEvent && historyNavEvent();
     }
 
-    const handleNetworkSelectModal = (open: boolean) => {
-        if(tabCount >= 50){
-            setOpenNetworkSelectModal(open);
-        } else {
-            setTabCount(tabCount + 1);
-        }
-    }
-
-    const handleSelectNetwork = (index:number) => {
-        if(index === selectedNetworkIndex) return setOpenNetworkSelectModal(false);
-        CommonActions.handleIsNetworkChange(true);
-        CommonActions.handleLoadingProgress(true);
-        setFirmaSDK(networkList[index]);
-        setClient(networkList[index]);
-        setExplorerUrl(networkList[index]);
-        CommonActions.handleNetwork(networkList[index]);
-        setSelectedNetworkIndex(index);
-        setOpenNetworkSelectModal(false);
-    }
-
-    useEffect(() => {
-        for(var i=0; i<networkList.length; i++){
-            if(common.network === networkList[i])setSelectedNetworkIndex(i);
-        }
-    }, [])
-
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
-                <View style={styles.boxH}>
+                <View style={[styles.boxH, {paddingLeft: 10}]}>
                     <Text style={[styles.title, {paddingLeft: 10}]}>{title}</Text>
                     {handleGuide &&
                     <TouchableOpacity style={styles.guide} onPress={()=>handleGuide()}>
@@ -74,24 +39,18 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, chi
                     }
                 </View>
 
-                <View style={[styles.boxH, {justifyContent: "flex-end"}]}>
-                    <TextButton
-                        title={common.network}
-                        bgColor={common.network === "MainNet"? TextButtonColor:FailedColor}
-                        opacity={false}
-                        onPressEvent={() => handleNetworkSelectModal(true)}/>
-                    <TouchableOpacity style={{paddingLeft: 10, paddingRight: 5}} onPress={() => handleMoveToHistory()}>
+                <View style={[styles.boxH, {justifyContent: "flex-end", paddingRight: 10}]}>
+                    <TouchableOpacity style={{paddingLeft: 10, paddingRight: 10, marginRight: 10}} onPress={() => handleMoveToHistory()}>
                         <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{paddingLeft: 5, paddingRight: 10}} onPress={() => handleMoveToSetting()}>
                         <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
-
-                    <CustomModal visible={openNetworkSelectModal} handleOpen={handleNetworkSelectModal}>
-                        <ModalItems initVal={selectedNetworkIndex} data={networkList} onPressEvent={handleSelectNetwork}/>
-                    </CustomModal>
                 </View>
+                {common.network === "TestNet" &&
+                    <NetworkBadge top={-20} title={common.network} />
+                }
             </View>
             {children}
         </View>
@@ -117,7 +76,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'row',
         marginTop: 15,
-        paddingHorizontal: 10,
     },
     title: {
         fontFamily: Lato,

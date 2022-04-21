@@ -4,6 +4,7 @@ import { BorderColor, BoxDarkColor, FailedColor, Lato, PointColor, TextColor } f
 import { ScreenWidth } from "@/util/getScreenSize";
 import ArrowButton from "../button/arrowButton";
 import { useAppSelector } from "@/redux/hooks";
+import NetworkBadge from "../parts/networkBadge";
 
 interface Props {
     step: number,
@@ -18,9 +19,8 @@ const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:Props) => {
     return (
         <Pressable style={[styles.container, {backgroundColor: bgColor}]} onPress={()=>Keyboard.dismiss()}>
             <ArrowButton onPressEvent={onPressEvent}/>
+            {step > 0?
             <View style={styles.stepBox}>
-            {step > 0? 
-            <>
                 <View style={step === 1? styles.step : styles.stepNone}>
                     <Text style={[styles.stepText, step === 1 && {opacity: 1}]}>{step}</Text>
                 </View>
@@ -32,11 +32,10 @@ const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:Props) => {
                 <View style={step === 3? styles.step : styles.stepNone}>
                     <Text style={[styles.stepText, step === 3 && {opacity: 1}]}>{step}</Text>
                 </View>
-            </>
-            :
-                <Text style={styles.network}>{common.network !== "MainNet" && common.network}</Text>
-            }
             </View>
+            :
+            common.network === "TestNet" && <NetworkBadge top={-5} title={common.network} />
+            }
         </Pressable>
     );
 };

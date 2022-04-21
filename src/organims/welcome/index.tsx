@@ -14,6 +14,7 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import SplashScreen from "react-native-splash-screen";
 import Description from "./description";
 import { WalletActions } from "@/redux/actions";
+import NetworkBadge from "@/components/parts/networkBadge";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -62,7 +63,11 @@ const Welcome = () => {
     return (
         <ViewContainer bgColor={BgColor}>
             <View style={styles.viewContainer}>
-                <Text style={styles.network}>{common.network !== "MainNet" && common.network}</Text>
+                <View style={styles.network}>
+                    {common.network === "TestNet" &&
+                    <NetworkBadge top={-5} title={common.network} />
+                    }
+                </View>
                 <Description title={Title} desc={Desc} />
                 <View style={styles.buttonBox}>
                     {walletExist && 
@@ -97,7 +102,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: "right", 
         color: FailedColor,
-        paddingHorizontal: 20,
     },
     buttonBox: {
         width: "100%", 
