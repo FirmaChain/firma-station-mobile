@@ -6,19 +6,24 @@ import { getUseBioAuth, removePasswordViaBioAuth, removeUseBioAuth, setPasswordV
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import RadioOnModal from "../modal/bioAuthOnModal";
 import Toast from "react-native-toast-message";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     wallet: any;
 }
 
 const BioAuthRadio = ({wallet}:Props) => {
+    const {common} = useAppSelector(state => state);
+
     const [openBioModal, setOpenBioModal] = useState(false);
     const [useBio, setUseBio] = useState(false);
 
     const closeBioModal = (open:boolean) => {
         setOpenBioModal(open);
-        setUseBio(open);
-        handleBioAuthState();
+        if(common.appState === "active"){
+            setUseBio(open);
+            handleBioAuthState();
+        }
     }
 
     const handleBioAuth = async(value:boolean) => {
@@ -48,7 +53,7 @@ const BioAuthRadio = ({wallet}:Props) => {
                 }
             });
             setOpenBioModal(false);
-        } else {
+        } else {            
             removePasswordViaBioAuth();
             removeUseBioAuth(wallet.name);
         }
