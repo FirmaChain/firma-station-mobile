@@ -18,6 +18,7 @@ export const TextDisableColor = '#92929d';
 export const TextWarnColor = '#ffc542';
 export const TextCatTitleColor = '#c5c5d1';
 export const TextAddressColor = '#50b5ff';
+export const TextStakingReward = '#b7c2f0';
 
 export const InputBgColor = '#2a2932';
 export const InputPlaceholderColor = '#8d8d91';
@@ -33,6 +34,8 @@ export const SuccessColor = '#2BA891';
 
 export const TextButtonColor = '#0f3f92';
 export const ButtonPointLightColor = '#5b75dc';
+export const DisableButtonColor = '#3B3B45';
+export const DiableButtonPointcolor = '#2b419e';
 export const AddressBoxColor = '#2741aa';
 export const AddressTextColor = '#efefef';
 

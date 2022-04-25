@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { convertAmount, resizeFontSize } from "@/util/common";
+import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
 import { StakingState } from "@/hooks/staking/hooks";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { FirmaUtil } from "@firmachain/firma-js";
 
 interface Props {
     stakingValues: StakingState;
@@ -31,13 +32,13 @@ const BalanceBox = ({stakingValues}:Props) => {
         <View style={styles.container}>
             <View style={[styles.box, {flex: 3}]}>
                 {StakingValues.map((item, index) => {
-                    const originSize = 16;
-                    // const resize = resizeFontSize(item.ufct?item.data / 100000000 : item.data, 1000000, originSize);
+                    const originSize = 18;
+                    const resize = resizeFontSize(item.ufct?convertNumber(FirmaUtil.getFCTStringFromUFCT(item.data)): item.data, 1000000, originSize);
                     return (
                         <View key={index} style={[styles.box, {flex: 1}, (index < StakingValues.length - 1) && {borderRightColor: DisableColor, borderRightWidth: 1}]}>
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, {fontSize: originSize}]}>{convertAmount(item.data, item.ufct)}</Text>
+                                <Text style={[styles.desc, {fontSize: resize}]}>{convertAmount(item.data, item.ufct)}</Text>
                             </View>
                         </View>
                     )

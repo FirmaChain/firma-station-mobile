@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { DisableColor, Lato, PointColor, TextColor } from "@/constants/theme";
+import { BgColor, DisableButtonColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     title: string;
@@ -9,14 +9,28 @@ interface Props {
     height?: number;
     color?: string;
     active?: boolean;
+    border?: boolean;
+    disableColor?: string;
 }
 
-const SmallButton = ({title, onPressEvent, size = 100, height, color = PointColor, active = true}:Props) => {
+const SmallButton = ({title, onPressEvent, size = 100, height, color = PointColor, active = true, border = false, disableColor = DisableButtonColor}:Props) => {
     const [buttonHeight, setButtonHeight] = useState(42);
     const handleOnPress = (value?:any) => {
         if(active === false) return;
         onPressEvent && onPressEvent(value);
     }
+
+    const backgroundColor = useMemo(() => {
+        if(active){
+            if(border){
+                return BgColor;
+            } else {
+                return color;
+            }
+        } else {
+            return disableColor;
+        }
+    }, [active, border])
 
     useEffect(() => {
         if(height === 0) return setButtonHeight(0);
@@ -27,11 +41,13 @@ const SmallButton = ({title, onPressEvent, size = 100, height, color = PointColo
         <TouchableOpacity 
             disabled={!active}
             style={[styles.button, 
-                {maxWidth: size, 
+                {width: size, 
                 height: buttonHeight, 
-                backgroundColor: active?color:DisableColor}]} 
+                borderWidth: (border && active)? 1:0,
+                borderColor: WhiteColor,
+                backgroundColor: backgroundColor}]} 
             onPress={()=>handleOnPress()}>
-            <Text style={[styles.buttonText, {opacity: active? 1: 0.5}]}>{title}</Text>
+            <Text style={[styles.buttonText, {opacity: active? 1: 0.5, color: TextColor}]}>{title}</Text>
         </TouchableOpacity>
     )
 }
@@ -40,9 +56,6 @@ export default SmallButton;
 
 const styles = StyleSheet.create({
     button: {
-        flex: 1,
-        width: "100%",
-        minWidth: 100,
         height: 42,
         overflow: "hidden",
         borderRadius: 4,

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ButtonPointLightColor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor } from "@/constants/theme";
+import { ButtonPointLightColor, DiableButtonPointcolor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor, TextStakingReward } from "@/constants/theme";
 import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
 import { getEstimateGasFromAllDelegations, getFeesFromGas } from "@/util/firma";
 import SmallButton from "@/components/button/smallButton";
@@ -68,7 +68,7 @@ const RewardBox = ({walletName, available, reward, transactionHandler}:Props) =>
     return (
         <View style={styles.rewardBox}>
             <View style={styles.boxV}>
-                <Text style={[styles.title, {marginBottom: 6}]}>Staking Reward</Text>
+                <Text style={[styles.title, {color: TextStakingReward, marginBottom: 6}]}>Staking Reward</Text>
                 <Text style={[styles.desc, {fontSize: rewardTextSize}]}>{stakingReward}
                     <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
                 </Text>
@@ -78,6 +78,7 @@ const RewardBox = ({walletName, available, reward, transactionHandler}:Props) =>
                 size={125}
                 active={reward > 0}
                 color={ButtonPointLightColor}
+                disableColor={DiableButtonPointcolor}
                 onPressEvent={() => handleWithdraw(true)}/>
             <TransactionConfirmModal 
                 transactionHandler={handleTransaction} 

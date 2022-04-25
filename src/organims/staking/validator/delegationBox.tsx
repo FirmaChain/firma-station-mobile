@@ -132,14 +132,14 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                         title={"Redelegate"}
                         size={142}
                         height={accordionHeight}
-                        active={delegations > 0}
+                        active={delegations > 0 && accordionHeight > 0}
                         onPressEvent={() => onPressEvent('Redelegate')}/>
                     <View style={{width: 15}}/>
                     <SmallButton
                         title={"Undelegate"}
                         size={142}
                         height={accordionHeight}
-                        active={convertNumber(FirmaUtil.getFCTStringFromUFCT(stakingState.delegated)) > 0}
+                        active={convertNumber(FirmaUtil.getFCTStringFromUFCT(stakingState.delegated)) > 0 && accordionHeight > 0}
                         onPressEvent={() => onPressEvent('Undelegate')}/>
                 </View>
                 <TouchableOpacity style={styles.boxArrow} onPress={() => handleOpenAccordion()}>

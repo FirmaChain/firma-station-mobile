@@ -72,9 +72,9 @@ const Welcome = () => {
                 <View style={styles.buttonBox}>
                     {walletExist && 
                     <View style={{paddingBottom: 10}}>
-                        <Button title={'Select Wallet'} active={true}onPressEvent={handleSelectWallet}/>
+                        <Button title={'Select Wallet'} active={true} onPressEvent={handleSelectWallet}/>
                     </View>}
-                    <Button title={'New Wallet'} active={true} border={true} onPressEvent={handleCreateStepOne} />
+                    <Button title={'New Wallet'} active={true} border={walletExist?true:false} onPressEvent={handleCreateStepOne} />
                     <View style={styles.dividerWrapper}>
                         <View style={styles.divider}/>
                         <Text style={styles.dividerText}>OR</Text>
