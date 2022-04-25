@@ -5,6 +5,7 @@ import { CommonActions } from "@/redux/actions";
 import { StakingState } from "@/hooks/staking/hooks";
 import { convertAmount, 
         convertCurrent, 
+        convertNumber, 
         convertToFctNumber, 
         makeDecimalPoint, 
         resizeFontSize } from "@/util/common";
@@ -15,6 +16,7 @@ import { BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, 
 import SmallButton from "@/components/button/smallButton";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
+import { FirmaUtil } from "@firmachain/firma-js";
 
 interface Props {
     stakingValues: StakingState;
@@ -95,7 +97,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
     }, [currentPrice, available])
 
     const balanceTextSize = useMemo(() => {
-        return resizeFontSize(available, 10000, 28);
+        return resizeFontSize(convertNumber(FirmaUtil.getFCTStringFromUFCT(available)), 1000000, 28);
     }, [available])
 
     const handleCurrencySelectModal = (open: boolean) => {
@@ -128,18 +130,19 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
 
     return (
         <View style={styles.container}>
-            <View style={styles.box}>
+            <View style={[styles.box, {paddingBottom: 20}]}>
                 <Text style={styles.title}>Available</Text>
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 8, paddingBottom: 19}]}>
                     <View style={[styles.wrapperH, {alignItems: "center"}]}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />
-                        <Text style={[styles.balance, {fontSize:balanceTextSize, paddingLeft: 6}]}>{convertAmount(available)}
-                            <Text style={styles.chainName}>   FCT</Text>
+                        <Text style={[styles.balance, {fontSize:balanceTextSize, paddingLeft: 5,}]}>{convertAmount(available)}
+                            <Text style={[styles.chainName, {paddingLeft: 2}]}> FCT</Text>
                         </Text>
                     </View>
                     <SmallButton
                         title="Send"
                         active={available > 0}
+                        size={90}
                         onPressEvent={handleSend}/>
                 </View>
                 <View style={styles.divider} />
@@ -179,17 +182,17 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
                 <View style={[styles.wrapperH, {justifyContent: "space-between", alignItems: "center", paddingTop: 18}]}>
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Delegated</Text>
-                        <Text style={[styles.balance, {fontSize: 16}]}>{delegated}</Text>
+                        <Text style={[styles.balance, {fontSize: 18}]}>{delegated}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Undelegate</Text>
-                        <Text style={[styles.balance, {fontSize: 16}]}>{undelegate}</Text>
+                        <Text style={[styles.balance, {fontSize: 18}]}>{undelegate}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
                         <Text style={[styles.chainName, {fontSize: 14}]}>Reward</Text>
-                        <Text style={[styles.balance, {fontSize: 16}]}>{reward}</Text>
+                        <Text style={[styles.balance, {fontSize: 18}]}>{reward}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
