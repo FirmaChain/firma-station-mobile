@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { useFocusEffect } from "@react-navigation/native";
 import { StakeInfo } from "@/hooks/staking/hooks";
 import { useBalanceData } from "@/hooks/wallet/hooks";
-import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
 import { DownArrow } from "@/components/icon/icon";
 import WarnContainer from "@/components/parts/containers/warnContainer";
@@ -35,7 +35,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
     const [limitAvailable, setLimitAvailable] = useState(0);
 
     const redelegationList = useMemo(() => {
-        return delegationState.filter((item:any) => item.validatorAddress !== operatorAddress);
+        return delegationState;
     }, [delegationState]);
 
     const available = useMemo(() => {
@@ -208,7 +208,13 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                 <WalletInfo available={available}/>
             </View>
             {ClassifyByType()}
-            <ValidatorSelectModal list={redelegationList} open={openSelectModal} setOpenModal={handleSelectModal} setValue={handleSelectValidator} resetValues={resetRedelegateValues}/> 
+            <ValidatorSelectModal 
+                myAddress={operatorAddress}
+                list={redelegationList} 
+                open={openSelectModal} 
+                setOpenModal={handleSelectModal} 
+                setValue={handleSelectValidator} 
+                resetValues={resetRedelegateValues}/> 
         </ScrollView>
     )
 }
@@ -224,7 +230,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
         marginBottom: 5,
     },
     select: {
