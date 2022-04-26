@@ -68,8 +68,8 @@ const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparen
                 scrollEventThrottle={16}
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{flexGrow: 1}}
-                onMomentumScrollEnd={(event:NativeSyntheticEvent<NativeScrollEvent>) => onScrollEnd(event)}
-                onScroll={(event:NativeSyntheticEvent<NativeScrollEvent>) => onScroll(event)}
+                onScroll={(event:NativeSyntheticEvent<NativeScrollEvent>) => onScrollEnd(event)}
+                // onScroll={(event:NativeSyntheticEvent<NativeScrollEvent>) => onScroll(event)}
                 refreshControl={
                     <RefreshControl 
                         tintColor={WhiteColor}

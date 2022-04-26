@@ -41,7 +41,6 @@ const History = () => {
         if(handleHisotyPolling !== undefined){
             setHistoryRefresh(true);
             CommonActions.handleLoadingProgress(true);
-            setLoadedHistoryList([]);
             handleHisotyPolling();
             wait(800).then(()=>{
                 CommonActions.handleLoadingProgress(false);
