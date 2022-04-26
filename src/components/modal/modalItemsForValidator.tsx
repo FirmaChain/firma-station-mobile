@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     modalContentBox: {
         position: "relative",
         backgroundColor: BgColor,
+        marginBottom: 1,
     },
     modalPressBox: {
         width: "100%",
