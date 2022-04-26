@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
@@ -55,6 +55,10 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
             }
         })
         return result;
+    }, [currencyList]);
+
+    useEffect(() => {
+        setCurrencyIndex(currencyList.indexOf(common.currency));
     }, [currencyList])
 
     const currentPrice = useMemo(() => {

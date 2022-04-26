@@ -4,6 +4,8 @@ import { useQuery } from "@apollo/react-hooks";
 interface IQueryParam {
   proposalId?: string;
   address?: string;
+  offset?: number;
+  limit?: number;
 }
 
 export const useBlockDataQuery = () => {
@@ -325,7 +327,7 @@ export const useCurrentHistoryByAddressQuery = ({ address }: IQueryParam) => {
   );
 };
 
-export const useHistoryByAddressQuery = ({ address }: IQueryParam) => {
+export const useHistoryByAddressQuery = ({ address, offset, limit }: IQueryParam) => {
   return useQuery(
     gql`
       query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
@@ -350,7 +352,8 @@ export const useHistoryByAddressQuery = ({ address }: IQueryParam) => {
       notifyOnNetworkStatusChange: true,
       variables: {
         address,
-        limit: 99999,
+        limit,
+        offset,
       },
     }
   );
