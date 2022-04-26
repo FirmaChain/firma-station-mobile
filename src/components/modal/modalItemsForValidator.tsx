@@ -16,42 +16,47 @@ const ModalItemsForValidator = ({title, initVal, data, myAddress, onPressEvent}:
     const [selected, setSelected] = useState(initVal);
 
     const handleSelect = (address:string) => {
+        if(myAddress === address) return;
         onPressEvent && onPressEvent(address);
         setSelected(address);
     }
 
     return (
-        <ScrollView style={[styles.modalContainer, {marginBottom: data.length > 0? 20:10}]}>
+        <View style={[styles.modalContainer, {marginBottom: data.length > 0? 20:10}]}>
             <View style={styles.headerBox}>
                 <Text style={styles.headerTitle}>{title}</Text>
             </View>
-            <View>
-                {data.map((item, index) => {
-                    const mine = myAddress === item.validatorAddress;
-                    return(
-                        <View key={index} style={styles.modalContentBox}>
-                            <Pressable disabled={mine} style={[styles.modalPressBox, mine && {opacity: .15}]} onPress={() => handleSelect(item.validatorAddress)}>
-                                {item.avatarURL?
-                                    <Image
-                                        style={styles.avatar}
-                                        source={{uri: item.avatarURL}}/>
-                                    :
-                                    <View style={styles.icon}>
-                                        <Person size={32} color={WhiteColor}/>
+            <ScrollView>
+                <View>
+                    {data.map((item, index) => {
+                        const mine = myAddress === item.validatorAddress;
+                        return(
+                            <View key={index} style={styles.modalContentBox}>
+                                <Pressable onPress={() => handleSelect(item.validatorAddress)}>
+                                    <View style={[styles.modalPressBox, mine && {opacity: .15}]}>
+                                        {item.avatarURL?
+                                            <Image
+                                                style={styles.avatar}
+                                                source={{uri: item.avatarURL}}/>
+                                            :
+                                            <View style={styles.icon}>
+                                                <Person size={32} color={WhiteColor}/>
+                                            </View>
+                                        }
+                                        <Text style={styles.moniker}>{item.moniker}</Text>
+                                        <Radio size={20} color={WhiteColor} active={item.validatorAddress === selected} />
                                     </View>
-                                }
-                                <Text style={styles.moniker}>{item.moniker}</Text>
-                                <Radio size={20} color={WhiteColor} active={item.validatorAddress === selected} />
-                            </Pressable>
-                            <View style={[styles.noticeBox, {display: mine?"flex":"none"}]}>
-                                <ExclamationCircle size={15} color={TextWarnColor} />
-                                <Text style={[styles.notice]}>Not allowed to same validator</Text>
+                                    <View style={[styles.noticeBox, {display: mine?"flex":"none"}]}>
+                                        <ExclamationCircle size={15} color={TextWarnColor} />
+                                        <Text style={[styles.notice]}>Not allowed to same validator</Text>
+                                    </View>
+                                </Pressable>
                             </View>
-                        </View>
-                    )
-                })}
-            </View>
-        </ScrollView>
+                        )
+                    })}
+                </View>
+            </ScrollView>
+        </View>
     )
 }
 
