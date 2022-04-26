@@ -1,35 +1,52 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Linking, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions } from "@/redux/actions";
-import { useHistoryData } from "@/hooks/wallet/hooks";
+import { useAppSelector } from "@/redux/hooks";
+import { HistoryState, useHistoryData } from "@/hooks/wallet/hooks";
 import { BgColor } from "@/constants/theme";
+import { wait } from "@/util/common";
+import { GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import HistoryList from "./historyList";
-import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
 const History = () => {
+    const {common} = useAppSelector(state => state);
     const navigation:ScreenNavgationProps = useNavigation();
-
-    const { historyList, handleHisotyPolling } = useHistoryData();
-
-    const [pagination, setPagination] = useState(10);
+    
+    const { historyList, handleHistoryOffset, handleHisotyPolling } = useHistoryData();
+    const [historyRefresh, setHistoryRefresh] = useState(false);
+    const [loadedHistoryList, setLoadedHistoryList] = useState<Array<HistoryState>>([]);
 
     const onScrollEnd = (event:NativeSyntheticEvent<NativeScrollEvent>) => {
-        if((event.nativeEvent.contentOffset.y + 50) >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height) 
-        setPagination(pagination => pagination + 5);
+        if(common.loading === false && historyRefresh === false){
+            if(event.nativeEvent.contentOffset.y > 0 
+                && ((event.nativeEvent.contentOffset.y + 50) >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height)){
+                CommonActions.handleLoadingProgress(true);
+                historyOffsetHandler(false);
+            }
+        }
     }
 
-    const refreshStates = async() => {
+    const historyOffsetHandler = (reset:boolean) => {
+        handleHistoryOffset && handleHistoryOffset(reset);
+    }
+
+    const refreshStates = () => {
         if(handleHisotyPolling !== undefined){
+            setHistoryRefresh(true);
             CommonActions.handleLoadingProgress(true);
-            await handleHisotyPolling();
-            CommonActions.handleLoadingProgress(false);
+            setLoadedHistoryList([]);
+            handleHisotyPolling();
+            wait(800).then(()=>{
+                CommonActions.handleLoadingProgress(false);
+                setHistoryRefresh(false);
+            });
         }
     }
 
@@ -45,9 +62,26 @@ const History = () => {
         navigation.goBack();
     }
 
+    useEffect(() => {
+        if(historyList !== undefined){
+            if(historyRefresh){
+                setLoadedHistoryList(historyList.list);
+            } else {
+                setLoadedHistoryList(loadedHistoryList.concat(historyList.list));
+            }
+        }
+    }, [historyList])
+
+    useEffect(() => {
+        if(loadedHistoryList.length > 0){
+            wait(100).then(()=>CommonActions.handleLoadingProgress(false))
+        }
+    }, [loadedHistoryList])
+
     useFocusEffect(
         useCallback(() => {
-            refreshStates();
+            CommonActions.handleLoadingProgress(true);
+            wait(800).then(()=>CommonActions.handleLoadingProgress(false));
         }, [])
     )
 
@@ -58,9 +92,10 @@ const History = () => {
             backEvent={handleBack}>
             <View style={[styles.listBox, {justifyContent: historyList.list.length > 0? "space-between":"center"}]}>
                 <RefreshScrollView
+                    toTopButton={true}
                     scrollEndFunc={onScrollEnd}
                     refreshFunc={refreshStates}>
-                    <HistoryList historyList={historyList} pagination={pagination} handleExplorer={handleMoveToWeb} />
+                    <HistoryList historyList={loadedHistoryList} isEmpty={loadedHistoryList.length === 0} handleExplorer={handleMoveToWeb} />
                 </RefreshScrollView>
             </View>
         </Container>

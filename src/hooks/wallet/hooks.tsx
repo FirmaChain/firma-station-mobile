@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useCurrentHistoryByAddressQuery, useHistoryByAddressQuery } from "@/apollo/gqls";
 import { useAppSelector } from "@/redux/hooks";
 import { getBalanceFromAdr } from "@/util/firma";
-import { convertNumber } from "@/util/common";
-import { KeyValue, TRANSACTION_TYPE_MODEL } from "@/constants/common";
+import { convertNumber, wait } from "@/util/common";
+import { TRANSACTION_TYPE_MODEL } from "@/constants/common";
 import { PointColor } from "@/constants/theme";
 
 export interface BalanceState {
@@ -56,8 +56,13 @@ export const useHistoryData = () => {
         list: [],
     });
     const [recentHistory, setRecentHistory] = useState<HistoryState>();
+    const [historyOffset, setHistoryOffset] = useState(0);
 
     if(wallet.address === '' || wallet.address === undefined) return {historyList};
+
+    const handleHistoryOffset = (reset: boolean) => {
+        setHistoryOffset(reset? 0:historyOffset + 30);
+    }
     
     const convertMsgType = (type:string) => {
         let result = TRANSACTION_TYPE_MODEL[type];
@@ -76,7 +81,9 @@ export const useHistoryData = () => {
         return "Failed"
     }
 
-    const {refetch: startHistoryPoling, loading: historyLoading, data: historyData } = useHistoryByAddressQuery({address: `{${wallet.address}}`});
+    const {refetch: startHistoryPoling, 
+        loading: historyLoading, 
+        data: historyData } = useHistoryByAddressQuery({address: `{${wallet.address}}`, offset: historyOffset, limit: 30});
 
     useEffect(() => {
         if(historyLoading === false){
@@ -96,7 +103,11 @@ export const useHistoryData = () => {
             }));
         }
     }, [historyLoading, historyData])
-    
+
+    const handleHisotyPolling = () => {
+        handleHistoryOffset(true);
+        wait(100).then(async() => await startHistoryPoling());
+    }
 
     const {startPolling: startCurrentHistoryPolling, 
         stopPolling: stopCurrentHistoryPolling, 
@@ -122,10 +133,6 @@ export const useHistoryData = () => {
         }
     }, [currentHistoryLoading, currentHistoryData]);
 
-    const handleHisotyPolling = async() => {
-        return await startHistoryPoling();
-    }
-
     const currentHistoryPolling = (polling: boolean) => {
         if(polling) {
             startCurrentHistoryPolling(30000)
@@ -149,7 +156,7 @@ export const useHistoryData = () => {
             });
             const changeChainNetwork = async() => {
                 await refetchCurrentHistory();
-                await handleHisotyPolling();
+                handleHisotyPolling();
             }
             changeChainNetwork();
         }
@@ -161,5 +168,6 @@ export const useHistoryData = () => {
         refetchCurrentHistory,
         handleHisotyPolling,
         currentHistoryPolling,
+        handleHistoryOffset,
     }
 }

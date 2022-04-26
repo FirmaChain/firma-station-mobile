@@ -1,23 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { HistoryListState } from "@/hooks/wallet/hooks";
+import { HistoryListState, HistoryState } from "@/hooks/wallet/hooks";
 import { ForwardArrow } from "@/components/icon/icon";
 import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
-import { convertTime } from "@/util/common";
+import { convertTime, wait } from "@/util/common";
 import { EXPLORER_URL, HISTORY_NOT_EXIST } from "@/constants/common";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
-    historyList: HistoryListState;
-    pagination: number;
+    historyList: Array<HistoryState>;
+    isEmpty: boolean;
     handleExplorer: (uri:string)=>void;
 }
 
-const HistoryList = ({historyList, pagination, handleExplorer}:Props) => {
+const HistoryList = ({historyList, isEmpty, handleExplorer}:Props) => {
+    const {common} = useAppSelector(state => state);
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        wait(800).then(()=>setLoaded(true));
+        return () => {
+            setLoaded(false);
+        }
+    }, [])
+    
     return (
         <View style={styles.container}>
-            {historyList.list.length > 0?
-            historyList.list.map((value:any, index) => {
-                if(index < pagination){
+            {isEmpty === false?
+            historyList.map((value:any, index) => {
                 return (
                     <TouchableOpacity key={index} onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + value.hash)}>
                         <View style={styles.box}>
@@ -54,8 +64,9 @@ const HistoryList = ({historyList, pagination, handleExplorer}:Props) => {
                         </View>
                     </TouchableOpacity>
                 )
-            }})
+            })
             :
+            (common.loading === false && loaded) &&
             <View style={{flex:1, justifyContent: "center"}}>
                 <Text style={styles.notice}>{HISTORY_NOT_EXIST}</Text>
             </View>
@@ -67,7 +78,7 @@ const HistoryList = ({historyList, pagination, handleExplorer}:Props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent:"space-between",
+        justifyContent:"flex-start",
         margin: 20,
     },
     historyWrapper: {
