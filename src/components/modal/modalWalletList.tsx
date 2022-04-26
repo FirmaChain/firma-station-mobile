@@ -93,7 +93,7 @@ const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Pro
             <GestureHandlerRootView>
                 <DraggableFlatList
                     data={listData}
-                    style={{height: 450}}
+                    style={{maxHeight: 450}}
                     renderItem={renderItem}
                     keyExtractor={(item, index) => index.toString()}
                     onDragEnd={({ data }) => setListData(data)}
