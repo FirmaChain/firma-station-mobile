@@ -62,7 +62,7 @@ const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Pro
         recreateList();
     }, [listData])
 
-    const renderItem = ({ item, index = 0, drag, isActive }: RenderItemParams<Item>) => (
+    const renderItem = ({ item, index = 0, drag }: RenderItemParams<Item>) => (
         <TouchableOpacity 
             key={index} 
             style={styles.modalContentBox} 
@@ -93,6 +93,7 @@ const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Pro
             <GestureHandlerRootView>
                 <DraggableFlatList
                     data={listData}
+                    style={{height: 450}}
                     renderItem={renderItem}
                     keyExtractor={(item, index) => index.toString()}
                     onDragEnd={({ data }) => setListData(data)}
