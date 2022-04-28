@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
+import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { ValidatorDescription } from "@/hooks/staking/hooks";
-import { Person } from "@/components/icon/icon";
+import { VALIDATOR_PROFILE } from "@/constants/images";
 
 interface Props {
     validator: ValidatorDescription;
 }
 
 const DescriptionBox = ({validator}:Props) => {
+    
+    const [avatarError, setAvatarError] = useState(false);
+
     const handleUrl = async(url:string) => {
         let urlValid = url;
         if(urlValid.includes("://") === false) urlValid = "https://" + urlValid;
@@ -18,16 +21,13 @@ const DescriptionBox = ({validator}:Props) => {
     return (
         <View style={[styles.boxH, {backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10}]}>
             <View style={{height: "100%", justifyContent: "flex-start"}}>
-            {validator.avatar?
-            <Image style={styles.avatar} source={{uri: validator.avatar}}/>
-            :
-            <View style={styles.avatar}>
-                <Person size={68} color={WhiteColor}/>
-            </View>
-            }
+            <Image 
+                style={styles.avatar} 
+                onError={() => {setAvatarError(true)}}
+                source={(avatarError || validator.avatar === null)?VALIDATOR_PROFILE:{uri: validator.avatar}}/>
             </View>
             <View style={[styles.boxV, {flex: 1}]}>
-                <Text style={styles.moniker}>{validator.moniker}</Text>
+                <Text style={[styles.moniker , {paddingBottom: (validator.description || validator.website)?8:0}]}>{validator.moniker}</Text>
                 {validator.description && <Text style={styles.desc}>{validator.description}</Text>}
                 {validator.website &&
                 <TouchableOpacity onPress={()=>handleUrl(validator.website)}>
@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontWeight: "bold",
         color: TextColor,
-        paddingBottom: 8,
     },
     desc: {
         width: "auto",

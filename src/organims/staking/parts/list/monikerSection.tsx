@@ -1,7 +1,8 @@
-import React from 'react';
-import { ForwardArrow, Person } from '@/components/icon/icon';
-import { DarkGrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
+import React, { useState } from 'react';
+import { ForwardArrow } from '@/components/icon/icon';
+import { DarkGrayColor, Lato, TextColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { VALIDATOR_PROFILE } from '@/constants/images';
 
 interface Props {
     validator: {
@@ -11,23 +12,21 @@ interface Props {
 }
 
 const MonikerSection = ({validator}:Props) => {
-  return (
-    <View style={[styles.vdWrapperH, {alignItems: "center"}]}>
-        <View style={styles.moniikerWrapperH}>
-            {validator.avatarURL?
-            <Image
-                style={styles.avatar}
-                source={{uri: validator.avatarURL}}/>
-            :
-            <View style={styles.icon}>
-                <Person size={32} color={WhiteColor}/>
+
+    const [avatarError, setAvatarError] = useState(false);
+
+    return (
+        <View style={[styles.vdWrapperH, {alignItems: "center"}]}>
+            <View style={styles.moniikerWrapperH}>
+                <Image
+                    style={styles.avatar}
+                    onError={() => {setAvatarError(true)}}
+                    source={(avatarError || validator.avatarURL === null)?VALIDATOR_PROFILE:{uri: validator.avatarURL}}/>
+                <Text numberOfLines={1} ellipsizeMode='middle' style={styles.moniker}>{validator.moniker}</Text>
             </View>
-            }
-            <Text numberOfLines={1} ellipsizeMode='middle' style={styles.moniker}>{validator.moniker}</Text>
+            <ForwardArrow size={24} color={DarkGrayColor}/>
         </View>
-        <ForwardArrow size={24} color={DarkGrayColor}/>
-    </View>
-  )
+    )
 }
 
 const styles = StyleSheet.create({
@@ -44,6 +43,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         paddingRight: 20,
+        borderRadius: 50,
     },
     avatar: {
         width: 32,
