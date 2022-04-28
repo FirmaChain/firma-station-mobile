@@ -48,7 +48,7 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, chi
                         <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
                 </View>
-                {common.network === "TestNet" &&
+                {common.network !== "MainNet" &&
                     <NetworkBadge top={-20} title={common.network} />
                 }
             </View>

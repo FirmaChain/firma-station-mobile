@@ -34,7 +34,7 @@ const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:Props) => {
                 </View>
             </View>
             :
-            common.network === "TestNet" && <NetworkBadge top={-5} title={common.network} />
+            common.network !== "MainNet" && <NetworkBadge top={-5} title={common.network} />
             }
         </Pressable>
     );

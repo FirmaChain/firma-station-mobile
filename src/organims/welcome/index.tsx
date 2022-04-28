@@ -64,7 +64,7 @@ const Welcome = () => {
         <ViewContainer bgColor={BgColor}>
             <View style={styles.viewContainer}>
                 <View style={styles.network}>
-                    {common.network === "TestNet" &&
+                    {common.network !== "MainNet" &&
                     <NetworkBadge top={-5} title={common.network} />
                     }
                 </View>
