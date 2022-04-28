@@ -7,8 +7,8 @@ import { CommonActions, StakingActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { StakingState, useDelegationData, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
 import { getStakingFromvalidator } from "@/util/firma";
-import { BgColor, BoxColor, FailedColor, Lato, TextColor } from "@/constants/theme";
-import { KeyValue, TRANSACTION_TYPE } from "@/constants/common";
+import { BgColor, BoxColor, FailedColor, Lato } from "@/constants/theme";
+import { KeyValue, TRANSACTION_TYPE, TYPE_COLORS } from "@/constants/common";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
@@ -39,11 +39,26 @@ const Validator = ({validatorAddress}:Props) => {
 
     const AlertText = useMemo(() => {
         if(validatorState){
-            if(validatorState.jailed === true) return "JAILED";
             if(validatorState.tombstoned === true) return "TOMBSTONED";
+            if(validatorState.status === 1) return "UNBONDED";
+            if(validatorState.status === 2 && validatorState.jailed === false) return "UNBONDING";
+            if(validatorState.status === 2 && validatorState.jailed === true) return "JAILED";
         }
         return "";
     }, [validatorState])
+
+    const AlertColor = useMemo(() => {
+        switch (AlertText) {
+            case "UNBONDED":
+                return TYPE_COLORS["zero"];
+            case "UNBONDING":
+                return TYPE_COLORS["three"];
+            case "JAILED":
+                return TYPE_COLORS["two"];
+            case "TOMBSTONED":
+                return FailedColor;
+        }
+    }, [AlertText])
 
     const handleWithdraw = (password:string, gas:number) => {
         const transactionState = {
@@ -127,7 +142,7 @@ const Validator = ({validatorAddress}:Props) => {
                                     <View style={styles.jailedBox}>
                                         <Text 
                                             style={[styles.jailedText, 
-                                            {display: (validatorState.jailed === true || validatorState.tombstoned === true)? "flex":"none"}]}>
+                                            {display: AlertText !== ""? "flex":"none", backgroundColor: AlertColor}]}>
                                                 {AlertText}
                                         </Text>
                                     </View>
@@ -177,14 +192,13 @@ const styles = StyleSheet.create({
     },
     jailedText: {
         borderRadius: 8,
-        backgroundColor: FailedColor,
         overflow: "hidden",
         paddingHorizontal: 20,
         paddingVertical: 5,
         fontFamily: Lato,
         fontSize: 16,
         textAlign: "center",
-        color: TextColor,
+        color: BoxColor,
     }
 });
 

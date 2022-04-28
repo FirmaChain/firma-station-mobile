@@ -8,6 +8,7 @@ import { BLOCKS_PER_YEAR } from "@/../config";
 import { FirmaUtil } from "@firmachain/firma-js";
 
 export interface ValidatorState {
+    status: number;
     jailed: boolean;
     tombstoned: boolean;
     description: ValidatorDescription;
@@ -98,7 +99,7 @@ export const useDelegationData = () => {
         const result:Array<StakeInfo> = await getDelegations(wallet.address);
         setDelegationList(
             result.filter(value => 
-                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 && 
+                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 || 
                 convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0));
     }
 
@@ -253,7 +254,10 @@ export const useValidatorData = () => {
                 const stakingData = organizeStakingData(data);
                 const validatorsList = data.validator
                 .filter((validator: any) => {
-                    return validator.validatorStatuses[0].jailed === false;
+                    return (validator.validatorStatuses[0].jailed === false &&
+                        validator.validatorStatuses[0].status === 3 &&
+                        validator.validatorSigningInfos[0].tombstoned === false
+                        );
                 })
                 .map((validator: any) => {
                     return organizeValidatorData(validator, stakingData)
@@ -310,6 +314,7 @@ export const useValidatorDataFromAddress = (address:string) => {
                 return organizeValidatorData(data, stakingData)
             });
 
+            const status = validator[0].status;
             const jailed = validator[0].jailed;
             const tombstoned = validator[0].tombstoned;
 
@@ -349,6 +354,7 @@ export const useValidatorDataFromAddress = (address:string) => {
             }
 
             setValidatorState({
+                status,
                 jailed,
                 tombstoned,
                 description,

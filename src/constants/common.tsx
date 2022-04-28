@@ -174,7 +174,7 @@ export const PROPOSAL_STATUS_REJECTED = "PROPOSAL_STATUS_REJECTED";
 export const PROPOSAL_STATUS_FAILED = "PROPOSAL_STATUS_FAILED";
 export const PROPOSAL_STATUS_INVALID = "PROPOSAL_STATUS_INVALID";
 
-const TYPE_COLORS: KeyValue = {
+export const TYPE_COLORS: KeyValue = {
     zero: '#E8E8E8',
     one: '#2460FA',
     two: '#2BA891',

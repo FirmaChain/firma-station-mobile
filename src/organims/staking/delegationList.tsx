@@ -47,9 +47,9 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
             if(delegationList.length > 0){
                 let reward = 0;
                 delegationList.map(value => {
-                    reward = reward + convertToFctNumber(value.reward);
+                    reward = reward + value.reward;
                 })
-                StakingActions.updateStakingRewardState(reward);
+                StakingActions.updateStakingRewardState(convertToFctNumber(reward));
             }
         }
     },[delegationList]);
@@ -129,6 +129,14 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
         } 
     }, [isRefresh])
 
+    const convertDelegateAmount = (amount:number) => {
+        if(amount >= 10000){ return convertAmount(amount, true, 2)}
+        if(amount >= 1000){ return convertAmount(amount, true, 3)}
+        if(amount >= 100){ return convertAmount(amount, true, 4)}
+        if(amount >= 10){ return convertAmount(amount, true, 5)}
+        if(amount >= 0){ return convertAmount(amount, true, 6)}
+    }
+
     const delegate = () => {
         return (
             <>
@@ -137,7 +145,7 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
                     <TouchableOpacity key={index} onPress={() => navigateValidator(value.validatorAddress)}>
                         <View style={[styles.item]}>
                             <MonikerSection validator={value} />
-                            <DataSection title="Delegated" data={convertAmount(value.amount) + " FCT"} />
+                            <DataSection title="Delegated" data={convertDelegateAmount(value.amount) + " FCT"} />
                             <DataSection title="Reward" data={convertAmount(value.reward, true, 6) + " FCT"} />
                             <View style={{paddingBottom: 22}} />
                         </View>

@@ -139,6 +139,7 @@ export const useValidatorsQuery = () => {
           }
           validatorSigningInfos: validator_signing_infos(order_by: { height: desc }, limit: 1) {
             missedBlocksCounter: missed_blocks_counter
+            tombstoned
           }
           validator_descriptions {
             avatar_url
