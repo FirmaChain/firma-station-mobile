@@ -3,16 +3,16 @@ import { StyleSheet, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { BgColor } from "@/constants/theme";
 import { useHistoryData } from "@/hooks/wallet/hooks";
 import { useStakingData } from "@/hooks/staking/hooks";
+import { COINGECKO } from "@/../config";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import AddressBox from "./addressBox";
 import BalanceBox from "./balanceBox";
 import HistoryBox from "./historyBox";
-import { CommonActions } from "@/redux/actions";
-import { COINGECKO } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
@@ -80,6 +80,7 @@ const Wallet = () => {
             if(staking.stakingReward > 0 && isFocused){
                 updateStakingState(staking.stakingReward);
             }
+            CommonActions.handleLoadingProgress(false);
         } else {
             handleCurrentHistoryPolling(false);
         }

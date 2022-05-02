@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { CommonActions, StakingActions } from "@/redux/actions";
+import { CommonActions } from "@/redux/actions";
 import { convertPercentage } from "@/util/common";
 import { useValidatorData } from "@/hooks/staking/hooks";
 import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";

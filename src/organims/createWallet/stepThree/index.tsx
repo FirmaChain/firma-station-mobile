@@ -3,7 +3,6 @@ import { Linking, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { CommonActions } from "@/redux/actions";
 import { BgColor } from "@/constants/theme";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { GUIDE_URI } from "@/../config";

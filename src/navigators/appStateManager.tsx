@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { AppState, Platform, StyleSheet, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
-import { CommonActions } from "@/redux/actions";
+import { CommonActions, StorageActions } from "@/redux/actions";
 import { convertNumber, getTimeStamp } from "@/util/common";
+import { Detect } from "@/util/detect";
 import { BgColor } from "@/constants/theme";
+import { JAILBREAK_ALERT } from "@/constants/common";
 import ValidationModal from "@/components/modal/validationModal";
 import AlertModal from "@/components/modal/alertModal";
-import { JAILBREAK_ALERT } from "@/constants/common";
-import { Detect } from "@/util/detect";
 
 const AppStateManager = () => {
-    const {wallet, common} = useAppSelector(state => state);
+    const {wallet, storage, common} = useAppSelector(state => state);
 
     const [openAlertModal, setOpenAlertModal] = useState(false);
 
@@ -67,8 +67,8 @@ const AppStateManager = () => {
         CommonActions.handleAppPausedTime("");
         CommonActions.handleAppState("active");
         CommonActions.handleLockStation(false);
-        if(common.currency === undefined){
-            CommonActions.handleCurrency("USD");
+        if(storage.currency === undefined){
+            StorageActions.handleCurrency("USD");
         }
     }, [])
 

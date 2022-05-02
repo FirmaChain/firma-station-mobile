@@ -4,18 +4,18 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@/redux/actions";
+import { useAppSelector } from "@/redux/hooks";
 import { recoverFromMnemonic } from "@/util/firma";
 import { checkCameraPermission } from "@/util/permission";
 import { CHECK_MNEMONIC, RECOVER_INFO_MESSAGE } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
+import { GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
 import RecoverMenus from "./recoverMenus";
 import Toast from "react-native-toast-message";
-import { GUIDE_URI } from "@/../config";
-import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 

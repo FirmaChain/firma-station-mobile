@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { CommonActions } from "@/redux/actions";
 import { ButtonPointLightColor, DiableButtonPointcolor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor, TextStakingReward } from "@/constants/theme";
 import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
 import { getEstimateGasFromAllDelegations, getFeesFromGas } from "@/util/firma";
-import SmallButton from "@/components/button/smallButton";
-import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
+import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
+import SmallButton from "@/components/button/smallButton";
 import AlertModal from "@/components/modal/alertModal";
-import { CommonActions } from "@/redux/actions";
 
 interface Props {
     walletName: string;

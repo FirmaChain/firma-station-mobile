@@ -54,7 +54,7 @@ export interface ProposalVoteState {
 }
 
 export const useGovernanceList = () => {
-    const {common} = useAppSelector(state => state);
+    const {common, storage} = useAppSelector(state => state);
     const [governanceState, setGovernanceList] = useState<GovernanceState>({
         list: [],
     });
@@ -82,7 +82,7 @@ export const useGovernanceList = () => {
         if(common.lockStation === false){
             handleGovernanceListPolling();
         }
-    }, [common.network, common.lockStation])
+    }, [storage.network, common.lockStation])
     
 
     return {

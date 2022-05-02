@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
-import { CommonActions } from "@/redux/actions";
+import { StorageActions } from "@/redux/actions";
 import { StakingState } from "@/hooks/staking/hooks";
 import { convertAmount, 
         convertCurrent, 
@@ -26,7 +26,7 @@ interface Props {
 }
 
 const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props) => {
-    const {common} = useAppSelector(state => state);
+    const {storage: common} = useAppSelector(state => state);
     
     const [currencyIndex, setCurrencyIndex] = useState(0);
     const [openCurrencySelectModal, setOpenCurrencySelectModal] = useState(false);
@@ -128,7 +128,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
 
     const handleSelectCurrency = (index:number) => {
         setCurrencyIndex(index);
-        CommonActions.handleCurrency(currencyList[index]);
+        StorageActions.handleCurrency(currencyList[index]);
         setOpenCurrencySelectModal(false);
     }
 

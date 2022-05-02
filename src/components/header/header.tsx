@@ -14,7 +14,7 @@ interface Props {
 
 const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:Props) => {
 
-    const {common} = useAppSelector(state => state);
+    const {storage} = useAppSelector(state => state);
 
     return (
         <Pressable style={[styles.container, {backgroundColor: bgColor}]} onPress={()=>Keyboard.dismiss()}>
@@ -34,7 +34,7 @@ const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:Props) => {
                 </View>
             </View>
             :
-            common.network !== "MainNet" && <NetworkBadge top={-5} title={common.network} />
+            storage.network !== "MainNet" && <NetworkBadge top={-5} title={storage.network} />
             }
         </Pressable>
     );

@@ -13,7 +13,7 @@ import SplashScreen from "react-native-splash-screen";
 import StackNavigator from "./stackNavigators";
 
 const Router = () => {
-    const {common} = useAppSelector(state => state);
+    const {storage, common} = useAppSelector(state => state);
 
     const unsubscribe = NetInfo.addEventListener(state => {
         if(state.isConnected !== null){
@@ -41,14 +41,14 @@ const Router = () => {
                 CommonActions.handleLoadingProgress(false);
             })
         }
-    }, [common.network]);
+    }, [storage.network]);
 
     useEffect(() => {
         CommonActions.handleLoggedIn(false);
         CommonActions.handleIsConnection(true);
-        setClient(common.network);
-        setFirmaSDK(common.network);
-        setExplorerUrl(common.network);
+        setClient(storage.network);
+        setFirmaSDK(storage.network);
+        setExplorerUrl(storage.network);
         unsubscribe();
     }, []);
 

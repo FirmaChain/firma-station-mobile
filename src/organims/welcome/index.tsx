@@ -21,7 +21,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>
 const Welcome = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     
-    const {common} = useAppSelector(state => state);
+    const {storage: common} = useAppSelector(state => state);
 
     const [walletExist, setWalletExist] = useState(false);
 

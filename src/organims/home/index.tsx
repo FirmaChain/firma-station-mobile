@@ -3,7 +3,6 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions } from "@/redux/actions";
-import { useAppSelector } from "@/redux/hooks";
 import TabContainer from "@/components/parts/containers/tabContainer";
 import TabNavigators from "@/navigators/tabNavigators";
 import { GUIDE_URI } from "@/../config";
@@ -17,7 +16,6 @@ interface Props {
 
 const Home = ({title}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const {common} = useAppSelector(state => state);
 
     const moveToSetting = () => {
         navigation.navigate(Screens.Setting);

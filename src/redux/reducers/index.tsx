@@ -1,14 +1,14 @@
 import { combineReducers } from "redux";
-import CommonReducer from "./commonReducer";
+import StorageReducer from "./storageReducer";
 import WalletReducer from "./walletReducer";
 import StakingReducer from "./stakingReducer";
-import RemovableReducer from "./removeableReducer";
+import CommonReducer from "./commonReducer";
 
 const appReducer = combineReducers({
     wallet: WalletReducer,
-    common: CommonReducer,
+    storage: StorageReducer,
     staking: StakingReducer,
-    removeable: RemovableReducer,
+    common: CommonReducer,
 });
 
 export default appReducer;

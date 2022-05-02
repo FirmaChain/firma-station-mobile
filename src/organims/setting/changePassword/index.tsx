@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
-import { getWalletList, removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet, setWalletList } from "@/util/wallet";
+import { removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet } from "@/util/wallet";
 import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import Button from "@/components/button/button";

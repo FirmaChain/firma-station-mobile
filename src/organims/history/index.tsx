@@ -27,7 +27,7 @@ const History = () => {
         if(common.loading === false && historyRefresh === false){
             if(event.nativeEvent.contentOffset.y > 0 
                 && ((event.nativeEvent.contentOffset.y + 50) >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height)){
-                CommonActions.handleLoadingProgress(true);
+                    CommonActions.handleLoadingProgress(true);
                 historyOffsetHandler(false);
             }
         }

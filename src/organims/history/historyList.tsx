@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { HistoryListState, HistoryState } from "@/hooks/wallet/hooks";
+import {  HistoryState } from "@/hooks/wallet/hooks";
 import { ForwardArrow } from "@/components/icon/icon";
-import { BoxColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
+import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { convertTime, wait } from "@/util/common";
 import { EXPLORER_URL, HISTORY_NOT_EXIST } from "@/constants/common";
 import { useAppSelector } from "@/redux/hooks";

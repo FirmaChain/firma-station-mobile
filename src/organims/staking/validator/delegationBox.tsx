@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CommonActions } from "@/redux/actions";
+import { FirmaUtil } from "@firmachain/firma-js";
 import { degree, TurnToOpposite, TurnToOriginal } from "@/util/animation";
 import { getEstimateGasFromDelegation, getFeesFromGas } from "@/util/firma";
 import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
@@ -10,8 +12,6 @@ import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import SmallButton from "@/components/button/smallButton";
 import AlertModal from "@/components/modal/alertModal";
-import { CommonActions } from "@/redux/actions";
-import { FirmaUtil } from "@firmachain/firma-js";
 
 interface Props {
     walletName: string;

@@ -4,18 +4,18 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@/redux/actions";
+import { useAppSelector } from "@/redux/hooks";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { createNewWallet, Wallet } from "@/util/firma";
 import { CREATE_WALLET_FAILED } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
+import { GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
 import InputBox from "./inputBox";
 import Toast from "react-native-toast-message";
-import { GUIDE_URI } from "@/../config";
-import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 

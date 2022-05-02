@@ -17,7 +17,7 @@ interface Props {
 
 const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, children}:Props) => {
 
-    const {common} = useAppSelector(state => state);
+    const {storage: common} = useAppSelector(state => state);
     
     const handleMoveToSetting = () => {
         settingNavEvent && settingNavEvent();

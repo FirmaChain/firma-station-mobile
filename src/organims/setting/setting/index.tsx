@@ -14,7 +14,7 @@ import MenuItem from "./menuItem";
 import Disconnect from "./disconnect";
 import Delete from "./delete";
 import TextMenuItem from "./textMenuItem";
-import { CommonActions, RemoveableActions } from "@/redux/actions";
+import { CommonActions, StorageActions } from "@/redux/actions";
 import { setFirmaSDK } from "@/util/firma";
 import { setClient } from "@/apollo";
 import { setExplorerUrl } from "@/constants/common";
@@ -25,7 +25,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>
 
 const Setting = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const {wallet, common, removeable} = useAppSelector(state => state);
+    const {wallet, storage: common, common: removeable} = useAppSelector(state => state);
 
     const networkList = ["MainNet", "TestNet"];
     const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
@@ -68,7 +68,7 @@ const Setting = () => {
 
     const handleNetworkSelectModal = (open: boolean) => {
         if(tabCount >= 50){
-            RemoveableActions.handleNetworkChangeActivate(true);
+            CommonActions.handleNetworkChangeActivate(true);
             setOpenNetworkSelectModal(open);
         } else {
             setTabCount(tabCount + 1);
@@ -82,7 +82,7 @@ const Setting = () => {
         setFirmaSDK(networkList[index]);
         setClient(networkList[index]);
         setExplorerUrl(networkList[index]);
-        CommonActions.handleNetwork(networkList[index]);
+        StorageActions.handleNetwork(networkList[index]);
         setSelectedNetworkIndex(index);
         setOpenNetworkSelectModal(false);
     }

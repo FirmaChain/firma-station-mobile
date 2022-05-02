@@ -70,7 +70,7 @@ export interface StakingState {
 }
 
 export const useDelegationData = () => {
-    const {wallet, staking, common} = useAppSelector(state => state);
+    const {wallet, staking, common, storage} = useAppSelector(state => state);
     const [delegationList, setDelegationList] = useState<Array<StakeInfo>>([]);
     const [redelegationList, setRedelegationList] = useState<Array<RedelegationInfo>>([]);
     const [undelegationList, setUndelegationList] = useState<Array<UndelegationInfo>>([]);
@@ -144,7 +144,7 @@ export const useDelegationData = () => {
             setValidatorsDescList([]);
             handleTotalDelegationPolling();
         }
-    }, [common.network, common.lockStation])
+    }, [storage.network, common.lockStation])
 
     return {
         delegationState,
@@ -160,7 +160,7 @@ export const useDelegationData = () => {
 }
 
 export const useStakingData = () => {
-    const {wallet, common} = useAppSelector(state => state);
+    const {wallet, common, storage} = useAppSelector(state => state);
     const [stakingState, setStakingState] = useState<StakingState>({
         available: 0,
         delegated: 0,
@@ -198,7 +198,7 @@ export const useStakingData = () => {
             };
             getStakingState();
         }
-    }, [common.network, common.lockStation]);
+    }, [storage.network, common.lockStation]);
 
     return { 
         stakingState,
@@ -242,7 +242,7 @@ export const useValidatorDescriptionForRedelegation = (redelegations:Array<Redel
 }
 
 export const useValidatorData = () => {
-    const {staking, common} = useAppSelector(state => state);
+    const {staking, common, storage} = useAppSelector(state => state);
     const [validators, setValidators]:Array<any> = useState([]);
     const [totalVotingPower, setTotalVotingPower] = useState(0);
     const [polling, setPolling] = useState(false);
@@ -290,7 +290,7 @@ export const useValidatorData = () => {
         if(common.lockStation === false){
             setValidators([]);
         }
-    }, [common.network, common.lockStation])
+    }, [storage.network, common.lockStation])
 
     return {
         validators,

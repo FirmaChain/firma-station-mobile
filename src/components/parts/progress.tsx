@@ -8,7 +8,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { CHANGE_NETWORK_NOTICE, CONNECTION_NOTICE } from "@/constants/common";
 
 const Progress = () => {
-    const {common} = useAppSelector(state => state);
+    const {common, storage} = useAppSelector(state => state);
 
     const opacity = (common.connect === false || common.isNetworkChanged)? 1:.5;
 
@@ -61,7 +61,7 @@ const Progress = () => {
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_2}]} source={LOADING_LOGO_2} />
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
             </View>
-            {common.isNetworkChanged && <Text style={styles.network}>{CHANGE_NETWORK_NOTICE + common.network}</Text>}
+            {common.isNetworkChanged && <Text style={styles.network}>{CHANGE_NETWORK_NOTICE + storage.network}</Text>}
             {common.connect === false && <Text style={styles.network}>{CONNECTION_NOTICE}</Text>}
         </View>
     )

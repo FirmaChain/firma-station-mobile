@@ -1,10 +1,11 @@
-import React, { useCallback, useRef, useState } from "react";
-import { NativeSyntheticEvent, NativeScrollEvent, View, StyleSheet, Animated, TouchableOpacity, RefreshControl, ScrollView, Platform } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import React, { useRef, useState } from "react";
+import { NativeSyntheticEvent, NativeScrollEvent, View, StyleSheet, Animated, TouchableOpacity, RefreshControl, ScrollView } from "react-native";
 import { TextCatTitleColor, WhiteColor } from "@/constants/theme";
 import { ScrollToTop } from "../icon/icon";
 import { fadeIn, fadeOut } from "@/util/animation";
 import { useEffect } from "react";
+import { useAppSelector } from "@/redux/hooks";
+import { CommonActions } from "@/redux/actions";
 
 interface Props {
     scrollEndFunc?: Function;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparent", toTopButton = false, children}:Props) => {
+    const {common: removeable} = useAppSelector(state => state);
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
     
@@ -43,6 +45,7 @@ const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparen
 
     const handleScrollToTop = (animated:boolean) => {
         scrollRef.current?.scrollTo({ y: 0, animated: animated});
+        CommonActions.handleScrollToTop(false);
     }
 
     useEffect(() => {
@@ -53,13 +56,11 @@ const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparen
         }
     }, [activeButton])
 
-    useFocusEffect(
-        useCallback(() => {
-            handleScrollToTop(false);
-            return () => {
-            }
-        },[])
-    )
+    useEffect(() => {
+        if(removeable.scrollToTop){
+            handleScrollToTop(true);
+        }
+    }, [removeable.scrollToTop])
 
     return (
         <View style={{flex: 1}}>
