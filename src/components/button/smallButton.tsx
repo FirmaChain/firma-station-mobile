@@ -30,7 +30,7 @@ const SmallButton = ({title, onPressEvent, size = 100, height, color = PointColo
         } else {
             return disableColor;
         }
-    }, [active, border])
+    }, [active, border, color])
 
     useEffect(() => {
         if(height === 0) return setButtonHeight(0);

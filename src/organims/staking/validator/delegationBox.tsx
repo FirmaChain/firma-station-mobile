@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { CommonActions } from "@/redux/actions";
 import { FirmaUtil } from "@firmachain/firma-js";
-import { degree, TurnToOpposite, TurnToOriginal } from "@/util/animation";
+import { degree, springCustomAnim, TurnToOpposite, TurnToOriginal } from "@/util/animation";
 import { getEstimateGasFromDelegation, getFeesFromGas } from "@/util/firma";
 import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
 import { StakingState } from "@/hooks/staking/hooks";
 import { ARROW_ACCORDION } from "@/constants/images";
-import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
+import { BgColor, BoxColor, DividerColor, Lato, PointColor, TextColor, TextDisableColor } from "@/constants/theme";
 import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import SmallButton from "@/components/button/smallButton";
@@ -71,6 +71,7 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
     }
 
     const handleOpenAccordion = () => {
+        springCustomAnim(350);
         setOpenAccordion(!openAccordion);
     }
 
@@ -119,7 +120,6 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                         onPressEvent={() => setOpenModal(true)}/>
                 </View>
             </View>
-
             <View style={[styles.delegationBox, {marginTop: 12, paddingTop: 22, paddingBottom: 12}]}>
                 <View style={styles.boxH}>
                     <Text style={styles.title}>My Delegations</Text>
@@ -127,20 +127,22 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                         <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
                     </Text>
                 </View>
-                <View style={[styles.boxH, {justifyContent: "center", height: accordionHeight}, accordionHeight > 0 && {paddingTop: 22}]}>
-                    <SmallButton
-                        title={"Redelegate"}
-                        size={142}
-                        height={accordionHeight}
-                        active={delegations > 0 && accordionHeight > 0}
-                        onPressEvent={() => onPressEvent('Redelegate')}/>
-                    <View style={{width: 15}}/>
-                    <SmallButton
-                        title={"Undelegate"}
-                        size={142}
-                        height={accordionHeight}
-                        active={convertNumber(FirmaUtil.getFCTStringFromUFCT(stakingState.delegated)) > 0 && accordionHeight > 0}
-                        onPressEvent={() => onPressEvent('Undelegate')}/>
+                <View style={{width: "100%", height: accordionHeight}}>
+                    <View style={[styles.boxH, {justifyContent: "center", paddingTop: 22}]}>
+                        <SmallButton
+                            title={"Redelegate"}
+                            size={142}
+                            height={accordionHeight}
+                            active={delegations > 0}
+                            onPressEvent={() => onPressEvent('Redelegate')}/>
+                        <View style={{width: 15}}/>
+                        <SmallButton
+                            title={"Undelegate"}
+                            size={142}
+                            height={accordionHeight}
+                            active={convertNumber(FirmaUtil.getFCTStringFromUFCT(stakingState.delegated)) > 0}
+                            onPressEvent={() => onPressEvent('Undelegate')}/>
+                    </View>
                 </View>
                 <TouchableOpacity style={styles.boxArrow} onPress={() => handleOpenAccordion()}>
                     <Animated.Image style={[styles.icon_arrow, {transform: [{rotate: degree(arrowDeg)}]}]} source={ARROW_ACCORDION} />

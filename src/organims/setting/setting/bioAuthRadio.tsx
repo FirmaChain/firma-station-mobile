@@ -7,6 +7,7 @@ import { confirmViaBioAuth } from "@/util/bioAuth";
 import RadioOnModal from "../modal/bioAuthOnModal";
 import Toast from "react-native-toast-message";
 import { useAppSelector } from "@/redux/hooks";
+import { springCustomAnim, LayoutAnim } from "@/util/animation";
 
 interface Props {
     wallet: any;
@@ -27,6 +28,8 @@ const BioAuthRadio = ({wallet}:Props) => {
     }
 
     const handleBioAuth = async(value:boolean) => {
+        LayoutAnim();
+        springCustomAnim(350);
         if(value === false){
             handleBioAuthState();
         }
