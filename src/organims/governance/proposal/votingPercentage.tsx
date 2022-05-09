@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AbstainColor, BgColor, BorderColor, Lato, NoColor, NoWithVetoColor, TextCatTitleColor, TextColor, WhiteColor, YesColor } from "@/constants/theme";
-import { convertAmount, convertNumber, convertPercentage } from "@/util/common";
+import { convertAmount, convertNumber, convertPercentage, makeDecimalPoint } from "@/util/common";
 import { CaretUp } from "@/components/icon/icon";
 import { ScreenWidth } from "@/util/getScreenSize";
 
@@ -51,7 +51,7 @@ const VotingPercentage = ({data}:Props) => {
         if(value === 0 || max === 0 || max === undefined) return 0;
         const ratio = Number(value) / Number(max);
         if(graph){
-            const result = convertNumber(ratio.toFixed(2));
+            const result = convertNumber(makeDecimalPoint(ratio, 2));
             return result;
         } else {
             return ratio;

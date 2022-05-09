@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { convertAmount } from "@/util/common";
+import { convertAmount, convertNumber } from "@/util/common";
 import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
 import Button from "../button/button";
 import CustomModal from "./customModal";
@@ -62,7 +62,7 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
                         }
                         <View style={[styles.boxH, styles.receiptDesc]}>
                             <Text style={styles.itemTitle}>Fee</Text>
-                            <Text style={styles.itemBalance}>{Number(fee / 1000000).toFixed(6)}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={styles.itemBalance}>{convertNumber(convertAmount((fee / 1000000), false, 6))}<Text style={styles.itemTitle}>  FCT</Text></Text>
                         </View>
                     </View>
                     <View style={styles.modalPWBox}>

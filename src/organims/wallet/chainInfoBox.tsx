@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TextColor } from "@/constants/theme";
+import { makeDecimalPoint } from "@/util/common";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {
@@ -17,7 +18,7 @@ const ChainInfoBox = ({chainInfo}:Props) => {
 
     const priceChangePercentage = useMemo(() => {
         if(data?.market_data === undefined) return 0;
-        return data.market_data.price_change_percentage_24h.toFixed(2);
+        return makeDecimalPoint(data.market_data.price_change_percentage_24h, 2);
     }, [data]);
     const isMinus = priceChangePercentage < 0;
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { BgColor, DisableButtonColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from "@/constants/theme";
+import { BgColor, DisableButtonColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     title: string;

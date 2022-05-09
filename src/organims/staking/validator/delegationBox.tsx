@@ -7,7 +7,7 @@ import { getEstimateGasFromDelegation, getFeesFromGas } from "@/util/firma";
 import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
 import { StakingState } from "@/hooks/staking/hooks";
 import { ARROW_ACCORDION } from "@/constants/images";
-import { BgColor, BoxColor, DividerColor, Lato, PointColor, TextColor, TextDisableColor } from "@/constants/theme";
+import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
 import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import SmallButton from "@/components/button/smallButton";

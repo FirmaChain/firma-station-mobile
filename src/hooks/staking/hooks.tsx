@@ -256,7 +256,7 @@ export const useValidatorData = () => {
                 .filter((validator: any) => {
                     return (validator.validatorStatuses[0].jailed === false &&
                         validator.validatorStatuses[0].status === 3 &&
-                        validator.validatorSigningInfos[0].tombstoned === false
+                        (validator.validatorSigningInfos.length > 0 && validator.validatorSigningInfos[0].tombstoned === false)
                         );
                 })
                 .map((validator: any) => {
@@ -441,7 +441,7 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     const selfDelegateAddress = validator.validatorInfo.selfDelegateAddress;
     const votingPowerExist = validator.validatorVotingPowers.length > 0;
     const votingPower = votingPowerExist? validator.validatorVotingPowers[0].votingPower : 0;
-    const votingPowerPercent = convertNumber((votingPower / stakingData.totalVotingPower) * 100).toFixed(2);
+    const votingPowerPercent = makeDecimalPoint(convertNumber((votingPower / stakingData.totalVotingPower) * 100), 2);
 
     const totalDelegations = validator.delegations.reduce((prev: number, current: any) => {
         return prev + convertNumber(current.amount.amount);
@@ -453,7 +453,7 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     let self = 0;
     if (selfDelegation) self = convertNumber(selfDelegation.amount.amount);
 
-    const selfPercent = convertNumber((self / (totalDelegations || 1)) * 100).toFixed(2);
+    const selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
     const delegations = validator.delegations.map((value: any) => {
         return { address: value.delegatorAddress, amount: convertNumber(value.amount.amount) };
     });
@@ -467,11 +467,11 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     const status = validator.validatorStatuses[0].status;
     const jailed = validator.validatorStatuses[0].jailed;
 
-    const rewardPerYear = stakingData.mintCoinPerYear * (votingPower / stakingData.totalVotingPower) * 0.98 * (1 - validator.validatorCommissions[0].commission);
+    const rewardPerYear = stakingData.mintCoinPerYear * (votingPower / stakingData.totalVotingPower) * 0.97 * (1 - validator.validatorCommissions[0].commission);
     
     const APR = rewardPerYear > 0?rewardPerYear / votingPower : 0;
     const APRPerDay = APR / 365;
-    const APY = convertNumber(((1 + APRPerDay) ** 365 - 1).toFixed(2));
+    const APY = convertNumber(makeDecimalPoint(((1 + APRPerDay) ** 365 - 1), 2));
 
     return {
         validatorAddress,
