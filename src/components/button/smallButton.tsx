@@ -13,8 +13,8 @@ interface Props {
     disableColor?: string;
 }
 
-const SmallButton = ({title, onPressEvent, size = 100, height, color = PointColor, active = true, border = false, disableColor = DisableButtonColor}:Props) => {
-    const [buttonHeight, setButtonHeight] = useState(42);
+const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor}:Props) => {
+    const [buttonHeight, setButtonHeight] = useState(height);
     const handleOnPress = (value?:any) => {
         if(active === false) return;
         onPressEvent && onPressEvent(value);
