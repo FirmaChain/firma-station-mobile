@@ -51,16 +51,17 @@ export const easeInAndOutAnim = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 }
 
-export const springCustomAnim = (duration: number) => {
+export const easeInAndOutCustomAnim = (duration: number) => {
     var CustomAnimation = {
         duration: duration,
         create: {
-          type: LayoutAnimation.Types.spring,
-          property: LayoutAnimation.Properties.scaleY,
+          type: LayoutAnimation.Types.easeInEaseOut,
+          property: LayoutAnimation.Properties.opacity,
           springDamping: 0.7
         },
         update: {
-          type: LayoutAnimation.Types.spring,
+          type: LayoutAnimation.Types.easeInEaseOut,
+          property: LayoutAnimation.Properties.opacity,
           springDamping: 0.7
         }
       }

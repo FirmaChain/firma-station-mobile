@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { CommonActions } from "@/redux/actions";
 import { FirmaUtil } from "@firmachain/firma-js";
-import { degree, springCustomAnim, TurnToOpposite, TurnToOriginal } from "@/util/animation";
+import { degree, LayoutAnim, easeInAndOutCustomAnim, TurnToOpposite, TurnToOriginal } from "@/util/animation";
 import { getEstimateGasFromDelegation, getFeesFromGas } from "@/util/firma";
 import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
 import { StakingState } from "@/hooks/staking/hooks";
@@ -71,11 +71,12 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
     }
 
     const handleOpenAccordion = () => {
-        springCustomAnim(350);
         setOpenAccordion(!openAccordion);
     }
 
     useEffect(() => {
+        LayoutAnim();
+        easeInAndOutCustomAnim(150);
         if(openAccordion){
             setAccordionHeight(65);
             TurnToOpposite(Animated, arrowDeg);
