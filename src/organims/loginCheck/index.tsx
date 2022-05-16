@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -24,6 +24,9 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import Description from "../welcome/description";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import InputBox from "./inputBox";
+import SmallButton from "@/components/button/smallButton";
+import Button from "@/components/button/button";
+import { wait } from "@/util/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -31,6 +34,7 @@ const LoginCheck = () => {
     const navigation:ScreenNavgationProps = useNavigation();
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const fadeAnimEnterButton = useRef(new Animated.Value(0)).current;
     
     const {wallet, common} = useAppSelector(state => state);
 
@@ -74,11 +78,8 @@ const LoginCheck = () => {
                 passwordFromBio = res;
             }).catch(error => console.log(error));
         } else {
-            LayoutAnim();
-            easeInAndOutAnim();
+            openSelectWallet();
             isProcessing = false;
-            setDimActive(false);
-            fadeIn(Animated, fadeAnim, 950);
             return;
         }
 
@@ -109,6 +110,13 @@ const LoginCheck = () => {
         setIsKeyboardShown(false);
     }
 
+    const openSelectWallet = () => {
+        LayoutAnim();
+        easeInAndOutAnim();
+        setDimActive(false);
+        fadeIn(Animated, fadeAnim, 950);
+    }
+
     useEffect(() => {
         if(common.connect && loading === false){
             if(wallet.name !== ""){
@@ -117,6 +125,7 @@ const LoginCheck = () => {
                 .then(res => {
                     setDimActive(res);
                     setUseBio(res);
+                    wait(3000).then(()=>fadeIn(Animated, fadeAnimEnterButton, 500));
                     if(res){
                         handleLoginViaBioAuth();
                     }
@@ -176,6 +185,10 @@ const LoginCheck = () => {
                             <Text style={styles.disconnectText}>Disconnect</Text>
                         </TouchableOpacity>}
                         <Description title={Title} desc={Desc}/>
+                        {dimActive && 
+                        <Animated.View style={[styles.enterButtonBox,{opacity: fadeAnimEnterButton}]}>
+                            <Button title='Enter' active={true} onPressEvent={()=>openSelectWallet()} />
+                        </Animated.View>}
                         {dimActive === false && <InputBox walletName={wallet.name} useBio={useBio} fadeIn={fadeAnim} loginHandler={handleLogin}/>}
                     </Animated.View>
                 </Pressable>
@@ -202,6 +215,13 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         color: TextCatTitleColor,
+    },
+    enterButtonBox: {
+        position:"absolute", 
+        bottom: 0, 
+        width: "100%", 
+        justifyContent: "flex-end", 
+        paddingHorizontal: 20
     }
 });
 
