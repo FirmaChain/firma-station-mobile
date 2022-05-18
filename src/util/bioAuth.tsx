@@ -11,15 +11,12 @@ export const confirmViaBioAuth = async() => {
     
     const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
 
-    await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType })
-    .then((result) => {
-        const {success} = result
-        authResult =  success;
-    })
-    .finally(() => {
-        wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
-    })
-    .catch((error) => {
+    try {
+        const result = await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType }).finally(() => {
+            wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
+        });
+        authResult = result.success;
+    } catch (error) {
         console.log(error);
         wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
         if(available === false){
@@ -32,9 +29,9 @@ export const confirmViaBioAuth = async() => {
             ])
         }
         authResult = false;
-    })
-    
-     return authResult;
+    }
+
+    return authResult;
 }
 
 export const checkBioMetrics = async() => {
