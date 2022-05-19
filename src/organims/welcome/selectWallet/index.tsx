@@ -140,7 +140,7 @@ const SelectWallet = () => {
                             onChangeEvent={onChangePassword} />
                     </View>
                     {openSelectModal && 
-                    <CustomModal visible={openSelectModal} handleOpen={handleOpenSelectModal}>
+                    <CustomModal visible={openSelectModal} bgColor={BgColor} handleOpen={handleOpenSelectModal}>
                         <ModalWalletList initVal={selected} data={items} handleEditWalletList={handleEditWalletList} onPressEvent={handleSelectWallet}/>
                     </CustomModal>
                     }

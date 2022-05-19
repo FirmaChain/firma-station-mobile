@@ -194,6 +194,7 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
         <View style={[styles.container, {display: open?"flex":"none"}]} >
             <CustomModal
                 visible={open}
+                bgColor={BgColor}
                 lockBackButton={backbuttonLock}
                 keyboardAvoiing={false}
                 handleOpen={handleModal}>

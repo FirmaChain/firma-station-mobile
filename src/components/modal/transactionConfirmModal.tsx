@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { convertAmount, convertNumber } from "@/util/common";
-import { BorderColor, BoxColor, Lato, TextColor, TextGrayColor } from "@/constants/theme";
+import { AbstainColor, BorderColor, DisableColor, Lato, NoColor, NoWithVetoColor, TextCatTitleColor, TextDarkGrayColor, TextDisableColor, WhiteColor, YesColor } from "@/constants/theme";
 import Button from "../button/button";
 import CustomModal from "./customModal";
 import ValidationModal from "./validationModal";
@@ -11,17 +11,31 @@ interface Props {
     title: string,
     amount: number;
     fee: number;
+    vote?: string;
     open: boolean;
     setOpenModal: Function;
     transactionHandler: (password:string) => void; 
 }
 
-const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal, transactionHandler}: Props) => {
+const TransactionConfirmModal = ({title, amount = 0, fee = 0, vote = "", open, setOpenModal, transactionHandler}: Props) => {
     const {common} = useAppSelector(state => state);
 
     const signMoalText = {
         title: title,
         confirmTitle: 'Confirm'
+    }
+
+    const votingColor = (vote:string) => {
+        switch (vote) {
+            case "YES":
+                return YesColor;
+            case "NO":
+                return NoColor;
+            case "NoWithVeto":
+                return NoWithVetoColor;
+            case "Abstain":
+                return AbstainColor;
+        }
     }
 
     const [openValidationModal, setOpenValidationModal] = useState(false);
@@ -50,22 +64,34 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, open, setOpenModal
             handleOpen={handleModal}>
                 <>
                 <View style={[styles.modalTextContents, {display: openValidationModal? "none":"flex"}]}>
+                    <View style={[styles.boxH, {justifyContent: "flex-start", alignItems: "center"}]}>
+                        <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
+                    </View>
                     <View style={styles.receiptBox}>
-                        <View style={[styles.boxH, {justifyContent: "flex-start", alignItems: "center"}]}>
-                            <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
+                        {vote !== "" &&
+                        <View style={[styles.boxH, styles.receiptDesc, {borderBottomWidth: 1, borderBottomColor: BorderColor}]}>
+                            <Text style={styles.itemTitle}>Vote</Text>
+                            <Text style={[styles.itemBalance, {color: WhiteColor, fontWeight: "bold"}]}>{vote}</Text>
                         </View>
+                        }
                         {amount > 0 &&
-                        <View style={[styles.boxH, styles.receiptDesc, {borderTopWidth: 1, borderTopColor: BorderColor}]}>
+                        <View style={[styles.boxH, styles.receiptDesc, {borderBottomWidth: 1, borderBottomColor: BorderColor}]}>
                             <Text style={styles.itemTitle}>Amount</Text>
-                            <Text style={styles.itemBalance}>{convertAmount(amount, false, 6)}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={styles.itemBalance}>
+                                {convertAmount(amount, false, 6)}
+                                <Text style={[styles.itemTitle, {fontSize: 14, color: TextDisableColor}]}>  FCT</Text>
+                            </Text>
                         </View>
                         }
                         <View style={[styles.boxH, styles.receiptDesc]}>
                             <Text style={styles.itemTitle}>Fee</Text>
-                            <Text style={styles.itemBalance}>{convertNumber(convertAmount((fee / 1000000), false, 6))}<Text style={styles.itemTitle}>  FCT</Text></Text>
+                            <Text style={[styles.itemBalance, {color: TextCatTitleColor}]}>
+                                {convertNumber(convertAmount((fee / 1000000), false, 6))}
+                                <Text style={[styles.itemTitle, {fontSize: 14, color: TextDisableColor}]}>  FCT</Text>
+                            </Text>
                         </View>
                     </View>
-                    <View style={styles.modalPWBox}>
+                    <View style={styles.modalButtonBox}>
                         <Button
                             title={signMoalText.confirmTitle}
                             active={true}
@@ -94,33 +120,34 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
     },
-    modalPWBox: {
-        paddingTop: 20,
+    modalButtonBox: {
+        paddingTop: 30,
     },
     receiptBox: {
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         borderRadius: 4,
-        backgroundColor: BoxColor,
+        backgroundColor: DisableColor,
     },
     receiptTitle: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: "bold",
-        color: TextGrayColor,
-        paddingVertical: 10,
+        color: TextDarkGrayColor,
+        paddingBottom: 20,
     },
     receiptDesc: {
-        paddingVertical: 10,
+        paddingVertical: 15,
     },
     itemTitle: {
         fontFamily: Lato,
-        color: TextGrayColor,
+        color: TextCatTitleColor,
         fontWeight: "normal",
-        fontSize: 14,
+        fontSize: 16,
     },
     itemBalance: {
         fontFamily: Lato,
-        color: TextColor,
+        color: WhiteColor,
         fontWeight: "normal",
         fontSize: 16,
     }

@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { StakeInfo } from "@/hooks/staking/hooks";
 import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
 import CustomModal from "@/components/modal/customModal";
+import { BgColor } from "@/constants/theme";
 
 interface Props {
     list: Array<StakeInfo>;
@@ -31,7 +32,7 @@ const ValidatorSelectModal = ({list, open, myAddress, setOpenModal, setValue, re
     }, [resetValues])
     
     return (
-        <CustomModal visible={open} handleOpen={handleOpenModal}>
+        <CustomModal visible={open} bgColor={BgColor} handleOpen={handleOpenModal}>
             <ModalItemsForValidator title={"Source Validator"} initVal={selected} myAddress={myAddress} data={list} onPressEvent={handleSelectWallet}/>
         </CustomModal>
     )

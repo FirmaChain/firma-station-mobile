@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
-import { Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
@@ -74,11 +74,15 @@ const RadioOnModal = ({walletName, open, book, setOpenModal, bioAuthhandler}: Pr
                     <View style={{flexDirection: "row"}}>
                         <Text style={[styles.title, {fontWeight: "bold"}]}>{book.title}</Text>
                     </View>
-                    <InputSetVertical
-                        title={book.desc}
-                        placeholder={PLACEHOLDER_FOR_PASSWORD}
-                        secure={true}
-                        onChangeEvent={handleInputChange}/>
+                    <View style={{paddingBottom: 15}}>
+                        <Text style={styles.desc}>{book.desc}</Text>
+                        <InputSetVertical
+                            title={""}
+                            bgColor={BgColor}
+                            placeholder={PLACEHOLDER_FOR_PASSWORD}
+                            secure={true}
+                            onChangeEvent={handleInputChange}/>
+                    </View>
                     <Button
                         title={book.confirmTitle}
                         active={active}
@@ -101,8 +105,9 @@ const styles = StyleSheet.create({
     },
     desc: {
         fontFamily: Lato,
-        fontSize: 14,
-        color: TextColor,
+        fontSize: 16,
+        color: TextCatTitleColor,
+        marginBottom: -5,
     },
     modalPWBox: {
         paddingVertical: 20,

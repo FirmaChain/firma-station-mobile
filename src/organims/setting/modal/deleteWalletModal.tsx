@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD, SETTING_DELETE_WALLET_TEXT } from "@/constants/common";
-import { FailedColor, GrayColor, Lato, TextCatTitleColor } from "@/constants/theme";
+import { BgColor, FailedColor, GrayColor, Lato, TextCatTitleColor, TextWarnColor } from "@/constants/theme";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import CustomModal from "@/components/modal/customModal";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import { QuestionFilledCircle } from "@/components/icon/icon";
+import WarnContainer from "@/components/parts/containers/warnContainer";
 
 interface Props {
     walletName: string;
@@ -70,11 +71,17 @@ const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: Props
                         <Text style={styles.title}>{SETTING_DELETE_WALLET_TEXT.title}</Text>
                     </View>
                     <Text style={styles.desc}>{SETTING_DELETE_WALLET_TEXT.desc}</Text>
-                    <InputSetVertical
-                        title={"Password"}
-                        placeholder={PLACEHOLDER_FOR_PASSWORD}
-                        secure={true}
-                        onChangeEvent={handleInputChange}/>
+                    {/* <View style={{paddingVertical: 20}}>
+                        <WarnContainer text={SETTING_DELETE_WALLET_TEXT.desc} bgColor={BgColor}/>
+                    </View> */}
+                    <View style={{paddingBottom: 15}}>
+                        <InputSetVertical
+                            title={"Password"}
+                            bgColor={BgColor}
+                            placeholder={PLACEHOLDER_FOR_PASSWORD}
+                            secure={true}
+                            onChangeEvent={handleInputChange}/>
+                    </View>
                     <TouchableOpacity disabled={!active} style={[styles.delButton, {opacity: active? 1 : 0.3}]} onPress={() => handleDeleteWallet()}>
                         <Text style={{color: '#fff', fontSize: 16, fontWeight: '600'}}>{SETTING_DELETE_WALLET_TEXT.confirmTitle}</Text>
                     </TouchableOpacity>
@@ -96,13 +103,13 @@ const styles = StyleSheet.create({
     },
     desc: {
         fontFamily: Lato,
-        fontSize: 14,
-        color: TextCatTitleColor,
+        fontSize: 15,
+        color: TextWarnColor,
         paddingVertical: 10,
     },
     delButton: {
         height: 50,
-        borderRadius: 8,
+        borderRadius: 4,
         backgroundColor: FailedColor,
         alignItems: "center",
         justifyContent: "center"

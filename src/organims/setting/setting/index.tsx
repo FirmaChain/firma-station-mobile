@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Linking, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Linking, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -27,7 +27,8 @@ const Setting = () => {
     const navigation:ScreenNavgationProps = useNavigation();
     const {wallet, storage: common, common: removeable} = useAppSelector(state => state);
 
-    const networkList = ["MainNet", "TestNet"];
+    // const networkList = ["MainNet", "TestNet"];
+    const networkList = ["MainNet", "TestNet", "DevNet"];
     const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
     const [openNetworkSelectModal, setOpenNetworkSelectModal] = useState(false);
     const [tabCount, setTabCount] = useState(removeable.networkChangeActivate? 50:0);
@@ -134,7 +135,7 @@ const Setting = () => {
                             <Delete wallet={wallet} handleDisconnect={disconnectWallet} />
                         </View>
 
-                        <CustomModal visible={openNetworkSelectModal} handleOpen={handleNetworkSelectModal}>
+                        <CustomModal visible={openNetworkSelectModal} bgColor={BgColor} handleOpen={handleNetworkSelectModal}>
                             <ModalItems initVal={selectedNetworkIndex} data={networkList} onPressEvent={handleSelectNetwork}/>
                         </CustomModal>
                     </ScrollView>

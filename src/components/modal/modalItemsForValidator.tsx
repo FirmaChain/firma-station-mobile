@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Pressable, StyleSheet, ScrollView, Text, Image, View } from "react-native";
 import { StakeInfo } from "@/hooks/staking/hooks";
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from "@/constants/theme";
-import { ExclamationCircle, Person, Radio } from "../icon/icon";
+import { ExclamationCircle, Radio } from "../icon/icon";
+import { VALIDATOR_PROFILE } from "@/constants/images";
 
 interface Props {
     title: string;
@@ -14,6 +15,7 @@ interface Props {
 
 const ModalItemsForValidator = ({title, initVal, data, myAddress, onPressEvent}:Props) => {
     const [selected, setSelected] = useState(initVal);
+    const [avatarError, setAvatarError] = useState(false);
 
     const handleSelect = (address:string) => {
         if(myAddress === address) return;
@@ -34,15 +36,10 @@ const ModalItemsForValidator = ({title, initVal, data, myAddress, onPressEvent}:
                             <View key={index} style={styles.modalContentBox}>
                                 <Pressable onPress={() => handleSelect(item.validatorAddress)}>
                                     <View style={[styles.modalPressBox, mine && {opacity: .15}]}>
-                                        {item.avatarURL?
-                                            <Image
-                                                style={styles.avatar}
-                                                source={{uri: item.avatarURL}}/>
-                                            :
-                                            <View style={styles.icon}>
-                                                <Person size={32} color={WhiteColor}/>
-                                            </View>
-                                        }
+                                        <Image
+                                            style={styles.avatar}
+                                            onError={() => {setAvatarError(true)}}
+                                            source={(avatarError || item.avatarURL === null || item.avatarURL === "")?VALIDATOR_PROFILE:{uri: item.avatarURL}}/>
                                         <Text style={styles.moniker}>{item.moniker}</Text>
                                         <Radio size={20} color={WhiteColor} active={item.validatorAddress === selected} />
                                     </View>

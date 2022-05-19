@@ -8,6 +8,7 @@ interface Props {
     numberOnly?: boolean;
     validation?: boolean;
     placeholder: string;
+    bgColor?: string;
     secure?: boolean;
     accent?: boolean;
     forcedValue?: string;
@@ -15,7 +16,7 @@ interface Props {
     onChangeEvent: (value:string) => void;
 }
 
-const InputSetVertical = ({title, message, numberOnly = false, validation, placeholder, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}:Props) => {
+const InputSetVertical = ({title, message, numberOnly = false, validation, placeholder, bgColor = InputBgColor, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}:Props) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 
@@ -38,9 +39,9 @@ const InputSetVertical = ({title, message, numberOnly = false, validation, place
                 <Text style={styles.text}>{title}</Text>
             </View>
             <TextInput
-                style={[styles.input, accent? {borderColor: PointLightColor} : {borderColor: focus? WhiteColor : 'transparent'}]}
+                style={[styles.input, {backgroundColor: bgColor}, accent? {borderColor: PointLightColor} : {borderColor: focus? WhiteColor : 'transparent'}]}
                 placeholder={placeholder}
-                placeholderTextColor={InputPlaceholderColor}
+                placeholderTextColor={bgColor !== InputBgColor?"#52525c":InputPlaceholderColor}
                 secureTextEntry={secure}
                 keyboardType={numberOnly? "numeric" : "default"}
                 autoCapitalize = 'none'
@@ -91,7 +92,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         height: 45,
         borderWidth: 1,
-        backgroundColor: InputBgColor,
         marginBottom: 5,
     }
 })

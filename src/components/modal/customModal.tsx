@@ -1,18 +1,19 @@
 import React, { useEffect } from "react";
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
-import { BgColor } from "@/constants/theme";
+import { BgColor, BoxColor } from "@/constants/theme";
 import CustomToast from "../toast/customToast";
 
 interface Props {
     visible: boolean;
     keyboardAvoiing?: boolean;
     lockBackButton?: boolean;
+    bgColor?: string;
     handleOpen: (open:boolean) => void;
     children: JSX.Element;
 }
 
-const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, handleOpen, children}:Props) => {
+const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, bgColor = BoxColor, handleOpen, children}:Props) => {
 
     const {common} = useAppSelector(state => state);
 
@@ -37,7 +38,7 @@ const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, h
                         behavior={Platform.select({android: undefined, ios: 'padding'})} 
                         style={{flex: 1}}>
                             <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
-                            <Pressable style={styles.modalBox} onPress={()=>Keyboard.dismiss()}>
+                            <Pressable style={[styles.modalBox, {backgroundColor: bgColor}]} onPress={()=>Keyboard.dismiss()}>
                                 {children} 
                             </Pressable>
                             <CustomToast />
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: '#000',
-        opacity: 0.5,
+        opacity: 0.7,
     },
     modalBox: {
         width: '100%',
@@ -70,8 +71,8 @@ const styles = StyleSheet.create({
         shadowRadius: 3,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: BgColor,
         borderRadius: 4,
+        paddingBottom: Platform.OS === "ios"? 30: 10,
         zIndex: 9999,
     }
 })
