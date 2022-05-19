@@ -21,7 +21,7 @@ const MonikerSection = ({validator}:Props) => {
                 <Image
                     style={styles.avatar}
                     onError={() => {setAvatarError(true)}}
-                    source={(avatarError || validator.avatarURL === null)?VALIDATOR_PROFILE:{uri: validator.avatarURL}}/>
+                    source={(avatarError || validator.avatarURL === null || validator.avatarURL === "")?VALIDATOR_PROFILE:{uri: validator.avatarURL}}/>
                 <Text numberOfLines={1} ellipsizeMode='middle' style={styles.moniker}>{validator.moniker}</Text>
             </View>
             <ForwardArrow size={24} color={DarkGrayColor}/>

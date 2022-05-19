@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor, WhiteColor } from '@/constants/theme';
-import { ForwardArrow, ForwardArrowWithTail, Person } from '@/components/icon/icon';
+import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor } from '@/constants/theme';
+import { ForwardArrow, ForwardArrowWithTail } from '@/components/icon/icon';
 import { RedelegationInfo } from '@/hooks/staking/hooks';
+import { VALIDATOR_PROFILE } from '@/constants/images';
 
 interface Props {
     validators: RedelegationInfo;
@@ -10,38 +11,30 @@ interface Props {
 }
 
 const MonikerSectionForRedelegate = ({validators, navigateValidator}:Props) => {
-  return (
-    <View style={[styles.vdWrapperH, {alignItems: "center"}]}>
-        <TouchableOpacity style={styles.moniikerWrapperH} onPress={()=>navigateValidator(validators.srcAddress)}>
-            {validators.srcAvatarURL?
-            <Image
-                style={styles.avatar}
-                source={{uri: validators.srcAvatarURL}}/>
-            :
-            <View style={styles.icon}>
-                <Person size={32} color={WhiteColor}/>
+    const [srcAvatarError, setSrcAvatarError] = useState(false);
+    const [dstAvatarError, setDstAvatarError] = useState(false);
+    return (
+        <View style={[styles.vdWrapperH, {alignItems: "center"}]}>
+            <TouchableOpacity style={styles.moniikerWrapperH} onPress={()=>navigateValidator(validators.srcAddress)}>
+                <Image
+                    style={styles.avatar}
+                    onError={() => {setSrcAvatarError(true)}}
+                    source={(srcAvatarError || validators.srcAvatarURL === null || validators.srcAvatarURL === "")?VALIDATOR_PROFILE:{uri: validators.srcAvatarURL}}/>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.moniker}>{validators.srcMoniker}</Text>
+            </TouchableOpacity>
+            <View style={{paddingRight: 5}}>
+                <ForwardArrowWithTail size={20} color={TextDarkGrayColor} />
             </View>
-            }
-            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.moniker}>{validators.srcMoniker}</Text>
-        </TouchableOpacity>
-        <View style={{paddingRight: 5}}>
-            <ForwardArrowWithTail size={20} color={TextDarkGrayColor} />
+            <TouchableOpacity style={styles.moniikerWrapperH} onPress={()=>navigateValidator(validators.dstAddress)}>
+                <Image
+                    style={styles.avatar}
+                    onError={() => {setDstAvatarError(true)}}
+                    source={(dstAvatarError || validators.dstAvatarURL === null || validators.dstAvatarURL === "")?VALIDATOR_PROFILE:{uri: validators.dstAvatarURL}}/>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.moniker}>{validators.dstMoniker}</Text>
+            </TouchableOpacity>
+            <ForwardArrow size={24} color={DarkGrayColor}/>
         </View>
-        <TouchableOpacity style={styles.moniikerWrapperH} onPress={()=>navigateValidator(validators.dstAddress)}>
-            {validators.dstAvatarURL?
-            <Image
-                style={styles.avatar}
-                source={{uri: validators.dstAvatarURL}}/>
-            :
-            <View style={styles.icon}>
-                <Person size={32} color={WhiteColor}/>
-            </View>
-            }
-            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.moniker}>{validators.dstMoniker}</Text>
-        </TouchableOpacity>
-        <ForwardArrow size={24} color={DarkGrayColor}/>
-    </View>
-  )
+    )
 }
 
 const styles = StyleSheet.create({

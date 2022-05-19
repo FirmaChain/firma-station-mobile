@@ -24,7 +24,7 @@ const DescriptionBox = ({validator}:Props) => {
             <Image 
                 style={styles.avatar} 
                 onError={() => {setAvatarError(true)}}
-                source={(avatarError || validator.avatar === null)?VALIDATOR_PROFILE:{uri: validator.avatar}}/>
+                source={(avatarError || validator.avatar === null || validator.avatar === "")?VALIDATOR_PROFILE:{uri: validator.avatar}}/>
             </View>
             <View style={[styles.boxV, {flex: 1}]}>
                 <Text style={[styles.moniker , {paddingBottom: (validator.description || validator.website)?8:0}]}>{validator.moniker}</Text>

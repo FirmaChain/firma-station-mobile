@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     qrcodeWapper: {
-        padding: 30, 
+        padding: 30,
         borderRadius: 4,
         backgroundColor: WhiteColor,
     },
