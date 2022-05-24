@@ -174,6 +174,12 @@ export const ListEditDone = ({size, color}:Props) => {
     )
 }
 
+export const CheckIcon = ({size, color}:Props) => {
+    return (
+        <Ionicons name="checkmark-sharp" size={size} color={color} />
+    )
+}
+
 export const MenuIcon = ({size, color}:Props) => {
     return (
         <MaterialCommunityIcons name="menu" size={size} color={color} />

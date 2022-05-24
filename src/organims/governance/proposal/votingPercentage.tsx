@@ -50,8 +50,9 @@ const VotingPercentage = ({data}:Props) => {
     const calculateRatio = (value:number, max:number|string, graph:boolean = false) => {
         if(value === 0 || max === 0 || max === undefined) return 0;
         const ratio = Number(value) / Number(max);
+
         if(graph){
-            const result = convertNumber(makeDecimalPoint(ratio, 2));
+            const result = convertNumber(makeDecimalPoint(ratio, 4));
             return result;
         } else {
             return ratio;
@@ -71,7 +72,7 @@ const VotingPercentage = ({data}:Props) => {
                                 {
                                     backgroundColor: votingColor(item.title), 
                                     display: ratio > 0? "flex":"none",
-                                    flex: ratio, 
+                                    flex: ratio,
                                     marginLeft: -10, 
                                     paddingLeft: 10,
                                     zIndex: 5 - index,

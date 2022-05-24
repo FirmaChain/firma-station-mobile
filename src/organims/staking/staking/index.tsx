@@ -54,7 +54,7 @@ const Staking = () => {
 
     const handleWithdrawAll = (password:string, gas:number) => {
         const transactionState = {
-            type: TRANSACTION_TYPE["WITHDRAW ALL"],
+            type: TRANSACTION_TYPE["WITHDRAW_ALL"],
             password: password,
             address : wallet.address,
             gas: gas,

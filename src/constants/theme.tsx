@@ -39,10 +39,10 @@ export const DiableButtonPointcolor = '#2b419e';
 export const AddressBoxColor = '#2741aa';
 export const AddressTextColor = '#efefef';
 
-export const YesColor = '#3dd598';
-export const NoColor = '#ffc542';
-export const NoWithVetoColor = '#de3d3d';
-export const AbstainColor = '#92929d';
+export const YesColor = '#2BA891';
+export const NoColor = '#F17047';
+export const NoWithVetoColor = '#E79720';
+export const AbstainColor = '#9438DC';
 
 export const toastSuccess = PointColor;
 export const toastInfo = PointLightColor;
