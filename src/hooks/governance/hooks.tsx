@@ -178,10 +178,9 @@ export const useProposalData = (id:number) => {
     }, [loading, data])
     
 
-    const handleProposalPolling = () => {
-        return refetch();
+    const handleProposalPolling = async() => {
+        return await refetch();
     }
-
 
     return {
         proposalState,

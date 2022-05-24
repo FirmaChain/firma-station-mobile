@@ -7,9 +7,10 @@ import VotingPercentage from "./votingPercentage";
 
 interface Props {
     data: ProposalVoteState;
+    isVotingPeriod: boolean;
 }
 
-const VotingSection = ({data}:Props) => {
+const VotingSection = ({data, isVotingPeriod}:Props) => {
     const VoteData = useMemo(() => {
         if(data) 
             return {
@@ -38,7 +39,7 @@ const VotingSection = ({data}:Props) => {
     }, [data]);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, isVotingPeriod && {marginBottom: 30}]}>
             <View style={[styles.box, styles.boxV]}>
                 <View style={[styles.boxH, {paddingBottom: 12}]}>
                     <Text style={styles.desc}>Voting</Text>
@@ -60,7 +61,7 @@ const VotingSection = ({data}:Props) => {
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-        marginVertical: 30,
+        marginTop: 30,
     },
     box: {
         backgroundColor: BoxColor,

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PROPOSAL_NOT_REGISTERED, PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from "@/constants/common";
+import { PROPOSAL_NOT_REGISTERED, PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_COLOR } from "@/constants/common";
 import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
 import { convertNumber, convertTime } from "@/util/common";
 import { ProposalItemState } from "@/hooks/governance/hooks";
@@ -54,7 +54,7 @@ const ProposalList = ({proposals, handleDetail}:Props) => {
                         onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}>
                             <View style={[styles.wrapperH, {paddingBottom: 10}]}>
                                 <Text style={styles.id}># {proposal.proposalId}</Text>
-                                <Text style={[styles.status, {backgroundColor: STATUS_BACKGROUND_COLOR[proposal.status], color: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
+                                <Text style={[styles.status, {backgroundColor: STATUS_COLOR[proposal.status] + "30", color: STATUS_COLOR[proposal.status]}]}>{PROPOSAL_STATUS[proposal.status]}</Text>
                             </View>
                             <View style={[styles.wrapperH, {paddingBottom: 10}]}>
                                 <Text style={styles.title}>{proposal.title}</Text>

@@ -1,57 +1,97 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PROPOSAL_STATUS_DEPOSIT_PERIOD, PROPOSAL_STATUS_VOTING_PERIOD } from "@/constants/common";
-import { BorderColor, Lato, TextColor } from "@/constants/theme";
+import { useAppSelector } from "@/redux/hooks";
+import { CommonActions } from "@/redux/actions";
+import { getEstimateGasVoting, getFeesFromGas } from "@/util/firma";
+import { BgColor, BoxColor, Lato, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
+import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import Button from "@/components/button/button";
 import CustomModal from "@/components/modal/customModal";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
-
-const cols = 2;
-const marginHorizontal = 4;
-const marginVertical = 4;
-const width = ((Dimensions.get('window').width - 40) / cols) - (marginHorizontal * (cols + 1));
+import AlertModal from "@/components/modal/alertModal";
 
 interface Props {
-    status: string;
-    transactionHandler: (password:string)=>void;
-    depositHandler: Function;
+    isVotingPeriod: boolean;
+    proposalId: number;
+    transactionHandler: (password:string, gas:number, votingOpt:number) => void;
 }
 
-const Voting = ({status, transactionHandler, depositHandler}:Props) => {
-    const displayStatus = useMemo(() => {
-        if(status === undefined || status === "") return "none";
-        if(status === PROPOSAL_STATUS_DEPOSIT_PERIOD || status === PROPOSAL_STATUS_VOTING_PERIOD) return "flex";
-    }, [status]);
+const cols = 2;
+const marginHorizontal = 5;
+const marginVertical = 5;
+const width = ((Dimensions.get('window').width - 20) / cols) - (marginHorizontal * (cols + 1));
 
-    const votingType = ["YES", "NO", "No With Veto", "Abstain"];
+const Voting = ({isVotingPeriod, proposalId, transactionHandler}:Props) => {
+    const {wallet} = useAppSelector(state => state);
+    
+    const votingType = ["YES", "NO", "NoWithVeto", "Abstain"];
+    
+    const [active, setActive] = useState(isVotingPeriod);
+    const [votingGas, setVotingGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alertDescription, setAlertDescription] = useState('');
 
     const [selectedVote, setSelectedVote] = useState("");
     const [openVoteModal, setOpenVoteModal] = useState(false);
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
 
-    const handleDeposit = () => {
-        depositHandler && depositHandler();
-    }
-
     const handleVoteModal = (open:boolean) => {
+        if(open) setSelectedVote("");
         setOpenVoteModal(open);
     }
 
     const handleTransactionModal = (open:boolean) => {
-        if(open) handleVoteModal(false);
         setOpenTransactionModal(open);
     }
 
-    const handleVoting = (vote:string) => {
-        setSelectedVote(vote);
+    const handleTransaction = (password:string) => {
+        if(alertDescription !== '') return handleModalOpen(true);
+        transactionHandler(password, votingGas, getVotingOption(selectedVote));
+    }
+
+    const handleModalOpen = (open:boolean) => {
+        setIsAlertModalOpen(open);
+    }
+
+    const getVotingOption = (vote: string) => {
+        switch (vote) {
+            case "YES":
+                return 1;
+            case "NO":
+                return 3;
+            case "NoWithVeto":
+                return 4;
+            case "Abstain":
+                return 2;
+            default:
+                return 0;
+        }
+    }
+
+    const handleVoting = async() => {
+        handleVoteModal(false);
+        setActive(false);
+        CommonActions.handleLoadingProgress(true);
+        await getEstimateGasVoting(wallet.name, proposalId, getVotingOption(selectedVote)).then(value => {
+            setVotingGas(value);
+            CommonActions.handleLoadingProgress(false);
+        })
+        .catch(error => {
+            console.log(error);
+            setAlertDescription(String(error));
+            CommonActions.handleLoadingProgress(false);
+            return;
+        });
+        setActive(true);
         handleTransactionModal(true);
     }
 
     return(
         <>
-        <View style={{paddingHorizontal: 20, display: displayStatus}}>
-            {status === PROPOSAL_STATUS_DEPOSIT_PERIOD && <Button title="Deposit" active={true} onPressEvent={()=>handleDeposit()} />}
-            {status === PROPOSAL_STATUS_VOTING_PERIOD && <Button title="Vote" active={true} onPressEvent={()=>handleVoteModal(true)} />}
+        <View style={{paddingHorizontal: 20, display: "flex"}}>
+            {isVotingPeriod &&
+                <Button title="Vote" active={active} onPressEvent={()=>handleVoteModal(true)} />
+            }
         </View>
         <CustomModal
             visible={openVoteModal} 
@@ -61,21 +101,46 @@ const Voting = ({status, transactionHandler, depositHandler}:Props) => {
                     <View style={styles.box}>
                         {votingType.map((item, index) => {
                             return (
-                            <TouchableOpacity key={index} style={styles.borderBox} onPress={() => handleVoting(item)}>
-                                <Text style={styles.voteItem}>{item}</Text>
+                            <TouchableOpacity 
+                                key={index} 
+                                style={[
+                                    styles.borderBox, 
+                                    {
+                                        borderColor: selectedVote === item? WhiteColor:BoxColor,
+                                        marginBottom: index < 2?marginVertical*4:0,
+                                        marginLeft: index%2 === 0?0:marginHorizontal*2,
+                                    }
+                                ]} 
+                                onPress={() => setSelectedVote(item)}>
+                                <Text style={[
+                                    styles.vote, 
+                                    {
+                                        color: selectedVote === item? WhiteColor:TextDarkGrayColor,
+                                        fontWeight: selectedVote === item? "600":"normal",
+                                    }
+                                ]}>{item}</Text>
                             </TouchableOpacity>
                             )
                         })}
                     </View>
+                    <Button title="Next" active={selectedVote !== ""} onPressEvent={()=> handleVoting()}/>
                 </View>
         </CustomModal>
         <TransactionConfirmModal 
-            transactionHandler={transactionHandler} 
-            title={"Vote - " + selectedVote} 
-            amount={0} 
-            fee={0} 
+            transactionHandler={handleTransaction} 
+            title={"Voting"} 
+            amount={0}
+            vote={selectedVote}
+            fee={getFeesFromGas(votingGas)} 
             open={openTransactionModal} 
             setOpenModal={handleTransactionModal} />
+        <AlertModal
+            visible={isAlertModalOpen}
+            handleOpen={handleModalOpen}
+            title={"Failed"}
+            desc={alertDescription}
+            confirmTitle={"OK"}
+            type={"ERROR"}/>
         </>
     )
 }
@@ -87,40 +152,38 @@ const styles = StyleSheet.create({
     },
     title: {
         fontFamily: Lato,
-        color: TextColor,
         fontSize: 20,
-        fontWeight: "600",
-    },
-    desc: {
-        fontSize: 14,
-    },
-    modalPWBox: {
-        paddingVertical: 20,
+        fontWeight: "bold",
+        color: TextDarkGrayColor,
     },
     box: {
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "center",
         alignItems: "center",
-        paddingVertical: 20,
+        paddingTop: 10,
+        paddingBottom: 30,
     },
     borderBox: {
         width: width,
-        marginTop: marginVertical,
-        marginBottom: marginVertical,
-        marginLeft: marginHorizontal,
-        marginRight: marginHorizontal,
-        borderColor: BorderColor, 
-        borderWidth: 1,
+        height: 68,
+        borderWidth: 2,
         borderRadius: 4,
-        padding: 10,
+        flexDirection: "row",
+        justifyContent: "center",
         alignItems: "center",
+        backgroundColor: BgColor,
     },
     voteItem: {
         fontFamily: Lato,
         fontSize: 16,
         color: TextColor,
-    }
+    },
+    vote: {
+        width: "auto",
+        fontFamily: Lato,
+        fontSize: 16,
+    },
 })
 
 export default Voting;

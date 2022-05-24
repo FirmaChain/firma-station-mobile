@@ -4,7 +4,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { getMnemonic } from "@/util/wallet";
-import { delegate, redelegate, sendFCT, undelegate, withdrawAllRewards, withdrawRewards } from "@/util/firma";
+import { delegate, redelegate, sendFCT, undelegate, voting, withdrawAllRewards, withdrawRewards } from "@/util/firma";
 import { BgColor } from "@/constants/theme";
 import { TRANSACTION_TYPE } from "@/constants/common";
 import ViewContainer from "@/components/parts/containers/viewContainer";
@@ -111,8 +111,21 @@ const Transaction = ({state}:Props) => {
                             result: error.toString()})
                     })
                     break;
-                case TRANSACTION_TYPE["WITHDRAW ALL"]:
+                case TRANSACTION_TYPE["WITHDRAW_ALL"]:
                     await withdrawAllRewards(mnemonic, state.gas)
+                    .then(res => {
+                        setTransactionResult({
+                            code: res.code,
+                            result: res.transactionHash})})
+                    .catch(error => {
+                        console.log("ERROR : ", error.toString());
+                        setTransactionResult({
+                            code: -1,
+                            result: error.toString()})
+                    })
+                    break;
+                case TRANSACTION_TYPE["VOTING"]:
+                    await voting(mnemonic, state.proposalId, state.votingOpt, state.gas)
                     .then(res => {
                         setTransactionResult({
                             code: res.code,

@@ -144,6 +144,12 @@ export const getEstimateGasSend = async(walletName:string, address:string, amoun
     return gasEstimation;
 }
 
+export const getEstimateGasVoting = async(walletName:string, proposalId:number, votingOpt:number) => {
+    let wallet = await getDecryptWalletInfo(walletName);
+    const gasEstimation = await getFirmaSDK().Gov.getGasEstimationVote(wallet, proposalId, votingOpt);
+    return gasEstimation;
+}
+
 export const getFeesFromGas = (estimatedGas: number) => {
     const fee = Math.ceil(estimatedGas * 0.1);
     return Math.max(fee, FIRMACHAIN_DEFAULT_CONFIG.defaultFee);
@@ -268,6 +274,17 @@ export const withdrawAllRewards = async (mnemonic:string, estimatedGas:number) =
 
     return result;
 };
+
+export const voting = async (mnemonic:string, proposalId:number, votingOpt:number, estimatedGas:number) => {
+    let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+    const result = await getFirmaSDK().Gov.vote(wallet, proposalId, votingOpt ,{
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas),
+    });
+
+    return result;
+};
+
 
 export const getDelegations = async(address:string) => {
     const totalReward = await getTotalReward(address);

@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native';
 import { ProposalTitleState } from '@/hooks/governance/hooks';
-import { PROPOSAL_STATUS, STATUS_BACKGROUND_COLOR, STATUS_COLOR } from '@/constants/common';
+import { PROPOSAL_STATUS, STATUS_COLOR } from '@/constants/common';
 import { Lato, TextColor } from '@/constants/theme';
 
 interface Props {
@@ -14,7 +14,7 @@ const TitleSection = ({data}:Props) => {
             <View style={styles.box}>
                 <Text style={
                     [styles.status, 
-                    data.status !== '' && {backgroundColor: STATUS_BACKGROUND_COLOR[data.status], color: STATUS_COLOR[data.status]}
+                    data.status !== '' && {backgroundColor: STATUS_COLOR[data.status] + "30", color: STATUS_COLOR[data.status]}
                     ]}>{PROPOSAL_STATUS[data.status]}</Text>
                 <Text style={styles.title}>{data.title}</Text>
             </View>
