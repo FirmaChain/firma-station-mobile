@@ -127,7 +127,7 @@ export const useProposalData = (id:number) => {
                 
                 if(votes === undefined) return 0;
 
-                const totalVote = votes.yes + votes.no + votes.noWithVeto;
+                const totalVote = convertNumber(votes.yes) + convertNumber(votes.no) + convertNumber(votes.noWithVeto);
         
                 return totalVote / totalVotingPower;
             }
@@ -181,6 +181,7 @@ export const useProposalData = (id:number) => {
     const handleProposalPolling = async() => {
         return await refetch();
     }
+
 
     return {
         proposalState,

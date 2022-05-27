@@ -108,7 +108,10 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
                         </TouchableOpacity>
                     )
                 })}
-                <CustomModal visible={openModal} handleOpen={handleOpenModal}>
+                <CustomModal 
+                    bgColor={BgColor}
+                    visible={openModal} 
+                    handleOpen={handleOpenModal}>
                     <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort}/>
                 </CustomModal>
             </View>

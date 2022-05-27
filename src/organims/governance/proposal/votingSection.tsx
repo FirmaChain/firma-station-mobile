@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ProposalVoteState } from "@/hooks/governance/hooks";
 import { BoxColor, Lato, TextColor, TextDarkGrayColor } from "@/constants/theme";
-import { convertPercentage } from "@/util/common";
+import { convertNumber, convertPercentage } from "@/util/common";
 import VotingPercentage from "./votingPercentage";
 
 interface Props {
@@ -15,8 +15,8 @@ const VotingSection = ({data, isVotingPeriod}:Props) => {
         if(data) 
             return {
                 info: [
-                    {title: "Quorum", data: convertPercentage(data.quorum)},
-                    {title: "Current Turn out", data: convertPercentage(data.currentTurnout)}
+                    {title: "Quorum", data: convertNumber((data.quorum) * 100).toFixed(2)},
+                    {title: "Current Turn out", data: convertNumber((data.currentTurnout * 100)).toFixed(2)}
                 ],
                 voteInfo : {
                     quorum: convertPercentage(data.quorum),

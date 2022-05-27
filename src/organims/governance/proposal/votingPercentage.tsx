@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AbstainColor, BgColor, BorderColor, Lato, NoColor, NoWithVetoColor, TextCatTitleColor, TextColor, WhiteColor, YesColor } from "@/constants/theme";
-import { convertAmount, convertNumber, convertPercentage, makeDecimalPoint } from "@/util/common";
+import { convertAmount, convertNumber, makeDecimalPoint } from "@/util/common";
 import { CaretUp } from "@/components/icon/icon";
 import { ScreenWidth } from "@/util/getScreenSize";
 
@@ -29,7 +29,7 @@ const VotingPercentage = ({data}:Props) => {
 
     const totalVote = () => {
         let total:number = 0;
-        tally.filter(type => type.title !== "Abstain").map(item => total += item.vote);
+        tally.filter(type => type.title !== "Abstain").map(item => total += convertNumber(item.vote));
 
         return total;
     }
@@ -49,7 +49,8 @@ const VotingPercentage = ({data}:Props) => {
     
     const calculateRatio = (value:number, max:number|string, graph:boolean = false) => {
         if(value === 0 || max === 0 || max === undefined) return 0;
-        const ratio = Number(value) / Number(max);
+
+        const ratio = convertNumber(value) / convertNumber(max);
 
         if(graph){
             const result = convertNumber(makeDecimalPoint(ratio, 4));
@@ -98,7 +99,7 @@ const VotingPercentage = ({data}:Props) => {
                             <Text style={[styles.vote, {color: votingColor(item.title)}]}>{item.title}</Text>
                         </View>
                         <View style={styles.dataBox}>
-                            {item.title !== "Abstain" && <Text style={styles.percent}>{convertPercentage(calculateRatio(item.vote, totalVote())) + ' %'}</Text>}
+                            {item.title !== "Abstain" && <Text style={styles.percent}>{((calculateRatio(item.vote, totalVote()) * 100).toFixed(2)) + ' %'}</Text>}
                             <Text style={[styles.amount, {textAlign: "right"}]}>{convertAmount(item.vote)}</Text>
                         </View>
                     </View>
