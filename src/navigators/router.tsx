@@ -8,25 +8,26 @@ import { setExplorerUrl } from "@/constants/common";
 import { ApolloProvider, getClient, setClient } from "@/apollo";
 import Progress from "@/components/parts/progress";
 import CustomToast from "@/components/toast/customToast";
-import NetInfo from "@react-native-community/netinfo";
+import { useNetInfo } from "@react-native-community/netinfo";
 import SplashScreen from "react-native-splash-screen";
 import StackNavigator from "./stackNavigators";
 
 const Router = () => {
     const {storage, common} = useAppSelector(state => state);
 
-    const unsubscribe = NetInfo.addEventListener(state => {
-        if(state.isConnected !== null){
-            if(common.connect !== state.isConnected){
-                if(state.isConnected === false){
-                    SplashScreen.hide();
-                }
-                CommonActions.handleIsConnection(state.isConnected);
-                CommonActions.handleIsNetworkChange(false);
-                CommonActions.handleLoadingProgress(!state.isConnected);
+    const netInfo = useNetInfo();
+
+    useEffect(() => {
+        const connect = netInfo.isConnected === null? false:netInfo.isConnected;
+        if(common.connect !== connect){
+            if(connect === false){
+                SplashScreen.hide();
             }
+            CommonActions.handleIsConnection(connect);
+            CommonActions.handleIsNetworkChange(false);
+            CommonActions.handleLoadingProgress(!connect);
         }
-    });
+    }, [netInfo])
 
     useEffect(() => {
         if(common.lockStation === false && (common.connect === false || common.isNetworkChanged)) {
@@ -49,7 +50,6 @@ const Router = () => {
         setClient(storage.network);
         setFirmaSDK(storage.network);
         setExplorerUrl(storage.network);
-        unsubscribe();
     }, []);
 
     return (
