@@ -120,6 +120,12 @@ export const SuccessCircle = ({size, color}:Props) => {
     )
 }
 
+export const VerifiedCircle = ({size, color}:Props) => {
+    return (
+        <MaterialIcons name="verified" size={size} color={color} />
+    )
+}
+
 export const SuccessFilledCircle = ({size, color}:Props) => {
     return (
         <AntDesignIcons name="checkcircle" size={size} color={color} />

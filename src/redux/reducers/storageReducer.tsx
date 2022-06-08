@@ -2,7 +2,7 @@ import { Action,
         HANDLE_CURRENCY, 
         HANDLE_NETWORK } from "../types";
 
-export interface CommonReduceState {
+export interface State {
     currency: string;
     network: string;
 }

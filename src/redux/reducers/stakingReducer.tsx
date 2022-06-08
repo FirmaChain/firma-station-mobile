@@ -6,7 +6,7 @@ export interface DelegateUpdateState {
     reward: number;
 }
 
-export interface StakingReduceState {
+export interface State {
     delegate: DelegateUpdateState;
     validator: ValidatorState;
     stakingReward: number;

@@ -36,7 +36,6 @@ const Home = ({title}:Props) => {
         CommonActions.handleAppPausedTime("");
         CommonActions.handleLoggedIn(true);
     }, [])
-    
 
     return (
         <TabContainer

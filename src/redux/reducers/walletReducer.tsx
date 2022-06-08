@@ -1,6 +1,6 @@
 import { Action, HANDLE_WALLET_ADDRESS, HANDLE_WALLET_NAME } from "../types";
 
-export interface WalletReduceState {
+export interface State {
     name: string;
     address: string;
 }

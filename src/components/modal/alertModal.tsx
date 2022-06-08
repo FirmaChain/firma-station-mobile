@@ -10,9 +10,10 @@ interface Props {
     desc: string;
     confirmTitle: string;
     type: string;
+    forcedActive?: boolean;
 }
 
-const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type}:Props) => {
+const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type, forcedActive = false}:Props) => {
     const {common} = useAppSelector(state => state);
 
     const closeModal = () => {
@@ -20,7 +21,9 @@ const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type}:Props
     }
 
     useEffect(() => {
-        if(common.appState !== "active" && common.isBioAuthInProgress === false) closeModal();
+        if(forcedActive === false){
+            if(common.appState !== "active" && common.isBioAuthInProgress === false) closeModal();
+        }
     }, [common.appState])
 
     return (
