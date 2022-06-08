@@ -38,7 +38,9 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
         allList
             .filter(key => CURRENCY_LIST.includes(key.toUpperCase()))
             .map(value => {list[CURRENCY_LIST.indexOf(value.toUpperCase())] = value.toUpperCase();});
-        return list.filter(value => value !== undefined).map(value => {return value});
+        return list.filter(value => value !== undefined).map(value => {
+            return value;
+        });
     }, [chainInfo]);
 
     const symbolList = useMemo(() => {
@@ -97,7 +99,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
             if(fct > 1000) decimal = 3;
             if(fct > 10000) decimal = 2;
         }
-        return convertCurrent(makeDecimalPoint(fct, decimal));
+        return convertCurrent(makeDecimalPoint(fct.toFixed(6), decimal));
     }, [currentPrice, available])
 
     const balanceTextSize = useMemo(() => {
