@@ -30,28 +30,6 @@ const Staking = () => {
         return stakingState.stakingReward;
     }, [stakingState.stakingReward])
 
-    const currentHistoryRefetch = async() => {
-        if(refetchCurrentHistory)
-            await refetchCurrentHistory();
-    }
-
-    const handleCurrentHistoryPolling = (polling:boolean) => {
-        currentHistoryRefetch();
-        if(currentHistoryPolling) {
-            currentHistoryPolling(polling);
-        }
-    }
-
-    const refreshStates = async() => {
-        CommonActions.handleLoadingProgress(true);
-        await getStakingState();
-        setIsRefresh(true);
-        if(common.isNetworkChanged === false){
-            CommonActions.handleLoadingProgress(false);
-        }
-        setIsRefresh(false);
-    }
-
     const handleWithdrawAll = (password:string, gas:number) => {
         const transactionState = {
             type: TRANSACTION_TYPE["WITHDRAW_ALL"],
@@ -67,12 +45,37 @@ const Staking = () => {
             validatorAddress: address,
         });
     }
-
-    useEffect(() => {
-        if(staking.stakingReward > 0 && isFocused) {
-            updateStakingState(staking.stakingReward);
+    
+    const currentHistoryRefetch = async() => {
+        try{
+            if(refetchCurrentHistory){
+                await refetchCurrentHistory();
+            }
+        }catch(e){
+            console.log(e);
         }
-    }, [isFocused])
+    }
+
+    const handleCurrentHistoryPolling = async(polling:boolean) => {
+        await currentHistoryRefetch();
+        if(currentHistoryPolling) {
+            currentHistoryPolling(polling);
+        }
+    }
+
+    const refreshStates = async() => {
+        CommonActions.handleLoadingProgress(true);
+        try {
+            await getStakingState();
+            setIsRefresh(true);
+        } catch (error) {
+            console.log(error);
+        }
+        if(common.isNetworkChanged === false){
+            CommonActions.handleLoadingProgress(false);
+        }
+        setIsRefresh(false);
+    }
 
     useEffect(() => {
         if(recentHistory !== undefined && common.isNetworkChanged === false){
@@ -83,6 +86,9 @@ const Staking = () => {
     useEffect(() => {
         if(isFocused){
             handleCurrentHistoryPolling(true);
+            if(staking.stakingReward > 0 && isFocused) {
+                updateStakingState(staking.stakingReward);
+            }
         } else {
             handleCurrentHistoryPolling(false);
         }

@@ -47,16 +47,16 @@ const RewardBox = ({walletName, available, reward, transactionHandler}:Props) =>
     const getGasFromAllDelegations = async() => {
         CommonActions.handleLoadingProgress(true);
         if(reward > 0 && available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
-            await getEstimateGasFromAllDelegations(walletName).then(value => {
-                setWithdrawAllGas(value);
+            try {
+                const result = await getEstimateGasFromAllDelegations(walletName);
+                setWithdrawAllGas(result);
                 setAlertDescription('');
-            })
-            .catch(error => {
+            } catch (error) {
                 console.log(error);
                 CommonActions.handleLoadingProgress(false);
                 setAlertDescription(String(error));
                 return;
-            });
+            }
         }
         CommonActions.handleLoadingProgress(false);
     }

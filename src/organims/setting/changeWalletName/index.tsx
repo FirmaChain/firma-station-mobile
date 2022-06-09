@@ -59,8 +59,9 @@ const ChangeWalletName = () => {
 
     const createNewWallet = async() => {
         let newList:string = "";
-        await getWalletList().then(res => {
-            let arr = res !== undefined? updateArray(res, wallet.name, newWalletName) : [];
+        try {
+            const result = await getWalletList();
+            let arr = result? updateArray(result, wallet.name, newWalletName) : [];
             if(arr.length > 1){
                 arr.map((item) => {
                     newList += item + "/";
@@ -68,19 +69,19 @@ const ChangeWalletName = () => {
                 newList = newList.slice(0, -1);
             }
             setWalletList(newList);
-        }).catch(error => {
-            console.log(error)
-        });
 
-        await setNewWallet(newWalletName, password, mnemonic, false)
-            .then(() => {
+            const setWalletResult = await setNewWallet(newWalletName, password, mnemonic, false);
+            if(setWalletResult){
                 setIsModalOpen(true);
-            })
-            .catch(error => console.log(error));
-        
-        await handleUseBioAuthForNewWallet();
-        WalletActions.handleWalletName(newWalletName);
-        handleModalOpen(true);
+            }
+
+            await handleUseBioAuthForNewWallet();
+            WalletActions.handleWalletName(newWalletName);
+            handleModalOpen(true);
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 
     const handleUseBioAuthForNewWallet = async() => {

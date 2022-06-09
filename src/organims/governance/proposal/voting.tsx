@@ -72,16 +72,17 @@ const Voting = ({isVotingPeriod, proposalId, transactionHandler}:Props) => {
         handleVoteModal(false);
         setActive(false);
         CommonActions.handleLoadingProgress(true);
-        await getEstimateGasVoting(wallet.name, proposalId, getVotingOption(selectedVote)).then(value => {
-            setVotingGas(value);
+        try {
+            const result = await getEstimateGasVoting(wallet.name, proposalId, getVotingOption(selectedVote));
+            setVotingGas(result);
             CommonActions.handleLoadingProgress(false);
-        })
-        .catch(error => {
+        } catch (error) {
             console.log(error);
             setAlertDescription(String(error));
             CommonActions.handleLoadingProgress(false);
             return;
-        });
+        }
+
         setActive(true);
         handleTransactionModal(true);
     }

@@ -11,14 +11,22 @@ export const Detect = () => {
 export const removeAllData = async() => {
     let list: Array<any> = [];
     removeWalletWithAutoLogin();
-    await removePasswordViaBioAuth();
-    
-    await getWalletList().then(res => {if(res){list = res;}});
-    if(list){
-        list.map(async(value) => {
-            await removeWallet(value);
-            await removeUseBioAuth(value);
-        })
+    try {
+        await removePasswordViaBioAuth();
+        
+        const result = await getWalletList();
+        if(result){
+            list = result;
+        }
+
+        if(list){
+            list.map(async(value) => {
+                await removeWallet(value);
+                await removeUseBioAuth(value);
+            })
+        }
+        await removeChain(WALLET_LIST);
+    } catch (error) {
+        console.log(error);
     }
-    await removeChain(WALLET_LIST);
 }

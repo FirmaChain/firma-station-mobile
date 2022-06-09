@@ -34,11 +34,12 @@ const InputBox = ({walletName, useBio, fadeIn, loginHandler}:Props) => {
     const [selectedWallet, setSelectedWallet] = useState('');
 
     const WalletList = async() => {
-        await getWalletList().then(res => {            
-            setItems(res);
-        }).catch(error => {
-            console.log('error : ' + error);
-        })
+        try {
+            const result = await getWalletList();
+            setItems(result);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleOpenSelectModal = (open:boolean) => {

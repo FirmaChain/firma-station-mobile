@@ -59,13 +59,16 @@ const ChangePassword = () => {
     }
 
     const createNewPassword = async() => {
-        await setNewWallet(wallet.name, newPassword, mnemonic, false)
-            .then(() => {
+        try {
+            const result = await setNewWallet(wallet.name, newPassword, mnemonic, false);
+            if(result){
                 setStatus(1);
                 setIsModalOpen(true);
-            })
-            .catch(error => console.log(error))
-        setBioAuth(wallet.name, newPassword);
+                setBioAuth(wallet.name, newPassword);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleMoveToWeb = () => {

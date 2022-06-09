@@ -17,12 +17,13 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
     }
 
     const handleDeleteWallet = async() => {
-        await removeWallet(wallet.name);
-        await removeUseBioAuth(wallet.name);
-        
-        let newList:string = '';
-        await getWalletList().then(res => {
-            let arr = res !== undefined? res : [];
+        try {
+            await removeWallet(wallet.name);
+            await removeUseBioAuth(wallet.name);
+            
+            let newList:string = '';
+            const result = await getWalletList();
+            let arr = result? result : [];
             
             if(arr.length > 1){
                 arr.filter(item => item !== wallet.name).map((item) => {
@@ -33,9 +34,9 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
             setWalletList(newList);
             handleDelModal(false);
             handleDisconnect();
-        }).catch(error => {
-            console.log(error)
-        });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (

@@ -42,12 +42,12 @@ const Welcome = () => {
 
     
     const isWalletExist = async() => {
-        await getChain(WALLET_LIST).then(res => {
-            if(res === false) return setWalletExist(false);
-            return setWalletExist(true);
-        }).catch(error => {
-            console.log('error : ' + error);
-        })
+        try {
+            const result = await getChain(WALLET_LIST);
+            return setWalletExist(Boolean(result));
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     useEffect(() => {

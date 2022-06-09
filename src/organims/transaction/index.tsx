@@ -19,7 +19,7 @@ interface Props {
 
 export interface ResultState {
     code: number;
-    result: string;
+    result: any;
 }
 
 const Transaction = ({state}:Props) => {
@@ -45,100 +45,56 @@ const Transaction = ({state}:Props) => {
     useEffect(() => {
         if(mnemonic === '') return;
         const transaction = async() => {
-            switch (state.type) {
-                case TRANSACTION_TYPE["SEND"]:
-                    await sendFCT(mnemonic, state.targetAddress, state.amount, state.gas, state.memo)
-                    .then(res => {
+            try {
+                switch (state.type) {
+                    case TRANSACTION_TYPE["SEND"]:
+                        const sendResult = await sendFCT(mnemonic, state.targetAddress, state.amount, state.gas, state.memo);
                         setTransactionResult({
-                            code: res.code,
-                            result: res.transactionHash})})
-                    .catch(error => {
-                        console.log("ERROR : ", error.toString());
+                            code: sendResult.code,
+                            result: sendResult.transactionHash});
+                        break;
+                    case TRANSACTION_TYPE["DELEGATE"]:
+                        const delegateResult = await delegate(mnemonic, state.operatorAddressDst, state.amount, state.gas);
                         setTransactionResult({
-                            code: -1,
-                            result: error.toString()})
-                    })
-                    break;
-                case TRANSACTION_TYPE["DELEGATE"]:
-                    await delegate(mnemonic, state.operatorAddressDst, state.amount, state.gas)
-                    .then(res => {
+                            code: delegateResult.code,
+                            result: delegateResult.transactionHash});
+                        break;
+                    case TRANSACTION_TYPE["REDELEGATE"]:
+                        const redelegateResult = await redelegate(mnemonic, state.operatorAddressSrc, state.operatorAddressDst, state.amount, state.gas);
                         setTransactionResult({
-                            code: res.code,
-                            result: res.transactionHash})})
-                    .catch(error => {
-                        console.log("ERROR : ", error.toString());
+                            code: redelegateResult.code,
+                            result: redelegateResult.transactionHash});
+                        break;
+                    case TRANSACTION_TYPE["UNDELEGATE"]:
+                        const undelegateResult = await undelegate(mnemonic, state.operatorAddressDst, state.amount, state.gas);
                         setTransactionResult({
-                            code: -1,
-                            result: error.toString()})
-                    })
-                    break;
-                case TRANSACTION_TYPE["REDELEGATE"]:
-                    await redelegate(mnemonic, state.operatorAddressSrc, state.operatorAddressDst, state.amount, state.gas)
-                    .then(res => {
+                            code: undelegateResult.code,
+                            result: undelegateResult.transactionHash});
+                        break;
+                    case TRANSACTION_TYPE["WITHDRAW"]:
+                        const withdrawResult = await withdrawRewards(mnemonic, state.operatorAddress, state.gas);
                         setTransactionResult({
-                            code: res.code,
-                            result: res.transactionHash})})
-                    .catch(error => {
-                        console.log("ERROR : ", error.toString());
+                            code: withdrawResult.code,
+                            result: withdrawResult.transactionHash});
+                        break;
+                    case TRANSACTION_TYPE["WITHDRAW_ALL"]:
+                        const withdrawAllResult = await withdrawAllRewards(mnemonic, state.gas);
                         setTransactionResult({
-                            code: -1,
-                            result: error.toString()})
-                    })
-                    break;
-                case TRANSACTION_TYPE["UNDELEGATE"]:
-                    await undelegate(mnemonic, state.operatorAddressDst, state.amount, state.gas)
-                    .then(res => {
+                            code: withdrawAllResult.code,
+                            result: withdrawAllResult.transactionHash});
+                        break;
+                    case TRANSACTION_TYPE["VOTING"]:
+                        const votingResult = await voting(mnemonic, state.proposalId, state.votingOpt, state.gas);
                         setTransactionResult({
-                            code: res.code,
-                            result: res.transactionHash})})
-                    .catch(error => {
-                        console.log("ERROR : ", error.toString());
-                        setTransactionResult({
-                            code: -1,
-                            result: error.toString()})
-                    })
-                    break;
-                case TRANSACTION_TYPE["WITHDRAW"]:
-                    await withdrawRewards(mnemonic, state.operatorAddress, state.gas)
-                    .then(res => {
-                        setTransactionResult({
-                            code: res.code,
-                            result: res.transactionHash})})
-                    .catch(error => {
-                        console.log("ERROR : ", error.toString());
-                        setTransactionResult({
-                            code: -1,
-                            result: error.toString()})
-                    })
-                    break;
-                case TRANSACTION_TYPE["WITHDRAW_ALL"]:
-                    await withdrawAllRewards(mnemonic, state.gas)
-                    .then(res => {
-                        setTransactionResult({
-                            code: res.code,
-                            result: res.transactionHash})})
-                    .catch(error => {
-                        console.log("ERROR : ", error.toString());
-                        setTransactionResult({
-                            code: -1,
-                            result: error.toString()})
-                    })
-                    break;
-                case TRANSACTION_TYPE["VOTING"]:
-                    await voting(mnemonic, state.proposalId, state.votingOpt, state.gas)
-                    .then(res => {
-                        setTransactionResult({
-                            code: res.code,
-                            result: res.transactionHash})})
-                    .catch(error => {
-                        console.log("ERROR : ", error.toString());
-                        setTransactionResult({
-                            code: -1,
-                            result: error.toString()})
-                    })
-                    break;
-                default:
-                    break;
+                            code: votingResult.code,
+                            result: votingResult.transactionHash});
+                        break;
+                    default:
+                        break;
+                }
+            } catch (error) {
+                console.log("ERROR : ", error); 
+                setTransactionResult({code: -1, result: error})
             }
         }
         transaction();

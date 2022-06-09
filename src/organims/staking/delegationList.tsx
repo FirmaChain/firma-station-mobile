@@ -55,13 +55,17 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
     },[delegationList]);
 
     const refreshStakings = async() => {
-        await refetchValidatorDescList();
-        await handleDelegationState();
-        if(redelegationList.length > 0){
-            await handleRedelegationState();
-        }
-        if(undelegationList.length > 0){
-            await handleUndelegationState();
+        try {
+            await refetchValidatorDescList();
+            await handleDelegationState();
+            if(redelegationList.length > 0){
+                await handleRedelegationState();
+            }
+            if(undelegationList.length > 0){
+                await handleUndelegationState();
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -76,26 +80,30 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
     }
 
     const pollingDelegations = async(index:number) => {
-        switch (index) {
-            case 0:
-                if(delegationList.length === 0){
-                    await handleDelegationState();
-                }
-                return;
-            case 1:
-                if(redelegationList.length === 0){
-                    CommonActions.handleLoadingProgress(true);
-                    await handleRedelegationState();
-                    CommonActions.handleLoadingProgress(false);
-                }
-                return;
-            case 2:
-                if(undelegationList.length === 0){
-                    CommonActions.handleLoadingProgress(true);
-                    await handleUndelegationState();
-                    CommonActions.handleLoadingProgress(false);
-                }
-                return;
+        try {
+            switch (index) {
+                case 0:
+                    if(delegationList.length === 0){
+                        await handleDelegationState();
+                    }
+                    return;
+                case 1:
+                    if(redelegationList.length === 0){
+                        CommonActions.handleLoadingProgress(true);
+                        await handleRedelegationState();
+                        CommonActions.handleLoadingProgress(false);
+                    }
+                    return;
+                case 2:
+                    if(undelegationList.length === 0){
+                        CommonActions.handleLoadingProgress(true);
+                        await handleUndelegationState();
+                        CommonActions.handleLoadingProgress(false);
+                    }
+                    return;
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
 

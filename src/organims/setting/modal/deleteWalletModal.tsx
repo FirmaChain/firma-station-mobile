@@ -27,19 +27,20 @@ const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: Props
             let nameCheck = await WalletNameValidationCheck(walletName);
             if(nameCheck){
                 const key:string = keyEncrypt(walletName, val);
-                await getChain(walletName).then(res => {
-                    if(res){
-                        let w = decrypt(res.password, key);
+                try {
+                    const result = await getChain(walletName);
+                    if(result){
+                        let w = decrypt(result.password, key);
                         if(w !== null) {
                             setActive(true);
                         } else {
                             setActive(false);
                         }
                     }
-                }).catch(error => {
+                } catch (error) {
                     console.log(error);
                     setActive(false);
-                });
+                }
             } 
         } else {
             setActive(false);

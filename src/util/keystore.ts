@@ -64,10 +64,10 @@ export const decrypt = (encryptMessage: string, pass: string): any => {
             mode: CryptoJS.mode.CBC,
         }).toString(CryptoJS.enc.Utf8);
 
-        if(decrypted === '') return null;
+        if(decrypted === "") return "";
         return decrypted;
     } catch (error) {
         console.log(error);
-        return null;
+        return "";
     }
 };

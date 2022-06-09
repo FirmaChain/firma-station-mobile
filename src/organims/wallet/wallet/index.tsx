@@ -25,7 +25,7 @@ const Wallet = () => {
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
 
     const [chainInfo, setChainInfo]:Array<any> = useState([]);
-    
+
     const moveToSendScreen = () => {
         navigation.navigate(Screens.Send);
     }
@@ -37,21 +37,20 @@ const Wallet = () => {
     }
 
     const currentHistoryRefetch = async() => {
-        if(refetchCurrentHistory)
-            await refetchCurrentHistory();
-    }
-
-    const handleCurrentHistoryPolling = async(polling:boolean) => {
-        if(currentHistoryPolling) {
-            currentHistoryPolling(polling);
+        try{
+            if(refetchCurrentHistory){
+                await refetchCurrentHistory();
+            }
+        }catch(e){
+            console.log(e);
         }
     }
 
-    const refreshStates = async() => {
-        CommonActions.handleLoadingProgress(true);
-        await getStakingState();
+    const handleCurrentHistoryPolling = async(polling:boolean) => {
         await currentHistoryRefetch();
-        CommonActions.handleLoadingProgress(false);
+        if(currentHistoryPolling) {
+            currentHistoryPolling(polling);
+        }
     }
 
     const handleMoveToWeb = (uri:string) => {
@@ -59,11 +58,31 @@ const Wallet = () => {
     }
 
     const getChainInfo = async() => {
-        await fetch(COINGECKO)
-        .then((res) => res.json())
-        .then((resJson) => {
-            setChainInfo(resJson);
-        })
+        try {
+            const result = await fetch(COINGECKO);
+            const json = await result.json();
+            setChainInfo(json);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const refreshStates = async() => {
+        console.log("refreshStates");
+        CommonActions.handleLoadingProgress(true);
+        try {
+            await getChainInfo();
+            await getStakingState();
+            await currentHistoryRefetch();
+            if(staking.stakingReward > 0 && isFocused){
+                await updateStakingState(staking.stakingReward);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        if(common.isNetworkChanged === false){
+            CommonActions.handleLoadingProgress(false);
+        }
     }
 
     useEffect(() => {
@@ -74,18 +93,12 @@ const Wallet = () => {
 
     useEffect(() => {
         if(isFocused){
-            getChainInfo();
-            currentHistoryRefetch();
             handleCurrentHistoryPolling(true);
-            if(staking.stakingReward > 0 && isFocused){
-                updateStakingState(staking.stakingReward);
-            }
-            CommonActions.handleLoadingProgress(false);
         } else {
             handleCurrentHistoryPolling(false);
         }
     }, [isFocused])
-    
+
     return (
         <View style={styles.container}>
             {(common.connect && common.isNetworkChanged === false) && 

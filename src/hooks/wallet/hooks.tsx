@@ -35,7 +35,13 @@ export const useBalanceData = () => {
     
     async function getBalance() {
         if(wallet.address === '' || wallet.address === undefined) return;
-        await getBalanceFromAdr(wallet.address).then(res => setBalance(convertNumber(res)));
+        try {
+            const result = await getBalanceFromAdr(wallet.address);
+            setBalance(convertNumber(result));
+        } catch (error) {
+            console.log(error);
+            
+        }
     }
 
     useEffect(() => {
@@ -87,20 +93,22 @@ export const useHistoryData = () => {
 
     useEffect(() => {
         if(historyLoading === false){
-            const list = historyData.messagesByAddress.map((value:any) => {
-                const result = {
-                    hash: value.transaction.hash,
-                    success: convertResult(value.transaction.success),
-                    type: convertMsgType(value.transaction.messages[0]["@type"]),
-                    timestamp: value.transaction.block.timestamp,
-                    block: value.transaction.block.height,    
-                }
-                return result;
-            })
-            setHistoryList((prevState) => ({
-                ...prevState,
-                list,
-            }));
+            if(historyData){
+                const list = historyData.messagesByAddress.map((value:any) => {
+                    const result = {
+                        hash: value.transaction.hash,
+                        success: convertResult(value.transaction.success),
+                        type: convertMsgType(value.transaction.messages[0]["@type"]),
+                        timestamp: value.transaction.block.timestamp,
+                        block: value.transaction.block.height,    
+                    }
+                    return result;
+                })
+                setHistoryList((prevState) => ({
+                    ...prevState,
+                    list,
+                }));
+            }
         }
     }, [historyLoading, historyData])
 
@@ -117,18 +125,20 @@ export const useHistoryData = () => {
 
     useEffect(() => {
         if(currentHistoryLoading === false){
-            const history = currentHistoryData.messagesByAddress.map((value:any) => {
-                const result = {
-                    hash: value.transaction.hash,
-                    success: convertResult(value.transaction.success),
-                    type: convertMsgType(value.transaction.messages[0]["@type"]),
-                    timestamp: value.transaction.block.timestamp,
-                    block: value.transaction.block.height,    
+            if(currentHistoryData){
+                const history = currentHistoryData.messagesByAddress.map((value:any) => {
+                    const result = {
+                        hash: value.transaction.hash,
+                        success: convertResult(value.transaction.success),
+                        type: convertMsgType(value.transaction.messages[0]["@type"]),
+                        timestamp: value.transaction.block.timestamp,
+                        block: value.transaction.block.height,    
+                    }
+                    return result;
+                })
+                if(history.length > 0 && history[0].block !== recentHistory?.block){
+                    setRecentHistory(history[0]);
                 }
-                return result;
-            })
-            if(history.length > 0 && history[0].block !== recentHistory?.block){
-                setRecentHistory(history[0]);
             }
         }
     }, [currentHistoryLoading, currentHistoryData]);

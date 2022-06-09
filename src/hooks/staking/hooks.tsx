@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
-import { StakingActions } from "@/redux/actions";
-import { useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
+import { CommonActions, StakingActions } from "@/redux/actions";
+import { useDelegationsQuery, useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
 import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
 import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
 import { BLOCKS_PER_YEAR } from "@/../config";
@@ -28,10 +28,22 @@ export interface ValidatorAddress {
     accountAddress: string;
 }
 
+export interface StakingData {
+    data: string;
+    amount?: number;
+}
+
 export interface ValidatorData {
+    address: ValidatorAddress,
     APR: string;
     APY: string;
-    state: Array<any>;
+
+    // chain upgrade response
+    votingPower: StakingData;
+    commission: StakingData;
+    uptime: StakingData;
+    
+    // state: Array<any>;
 }
 
 export interface StakeInfo {
@@ -80,7 +92,9 @@ export const useDelegationData = () => {
 
     useEffect(() => {
         if(loading === false) {
-            setValidatorsDescList(data.validator);
+            if(data){
+                setValidatorsDescList(data.validator);
+            }
         }
     }, [loading, data])
 
@@ -169,21 +183,28 @@ export const useStakingData = () => {
     });
 
     const getStakingState = async() => {
-        await getStaking(wallet.address).then((res:StakingState) => {
-            if(res) {
-                setStakingState(res);
-                StakingActions.updateStakingRewardState(res.stakingReward);
+        try{
+            const result = await getStaking(wallet.address);
+            if(result) {
+                setStakingState(result);
+                StakingActions.updateStakingRewardState(result.stakingReward);
             }
-        })
+        } catch(error) {
+            console.log("getStakingState", error);
+        }
     }
 
     const updateStakingState = async(stakingReward: number) => {
-        const balance = await getBalanceFromAdr(wallet.address);
-        setStakingState((prevState) => ({
-            ...prevState,
-            available: convertNumber(balance),
-            stakingReward,
-        }))
+        try{
+            const balance = await getBalanceFromAdr(wallet.address);
+            setStakingState((prevState) => ({
+                ...prevState,
+                available: convertNumber(balance),
+                stakingReward,
+            }))
+        } catch(error) {
+            console.log("updateStakingState", error);
+        }
     }
 
     useEffect(() => {
@@ -251,24 +272,26 @@ export const useValidatorData = () => {
     useEffect(() => {
         if(polling){
             if(loading === false) {
-                const stakingData = organizeStakingData(data);
-                const validatorsList = data.validator
-                .filter((validator: any) => {
-                    return (validator.validatorStatuses[0].jailed === false &&
-                        validator.validatorStatuses[0].status === 3 &&
-                        (validator.validatorSigningInfos.length > 0 && validator.validatorSigningInfos[0].tombstoned === false)
-                        );
-                })
-                .map((validator: any) => {
-                    return organizeValidatorData(validator, stakingData)
-                });
-    
-                const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
-                const totalVotingPower = stakingData.totalVotingPower;
-    
-                setTotalVotingPower(totalVotingPower);
-                setValidators(validators);
-                setPolling(false);
+                if(data){
+                    const stakingData = organizeStakingData(data);
+                    const validatorsList = data.validator
+                    .filter((validator: any) => {
+                        return (validator.validatorStatuses[0].jailed === false &&
+                            validator.validatorStatuses[0].status === 3 &&
+                            (validator.validatorSigningInfos.length > 0 && validator.validatorSigningInfos[0].tombstoned === false)
+                            );
+                    })
+                    .map((validator: any) => {
+                        return organizeValidatorData(validator, stakingData)
+                    });
+        
+                    const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
+                    const totalVotingPower = stakingData.totalVotingPower;
+        
+                    setTotalVotingPower(totalVotingPower);
+                    setValidators(validators);
+                    setPolling(false);
+                }
             }
         }
     }, [loading, data]);
@@ -308,61 +331,75 @@ export const useValidatorDataFromAddress = (address:string) => {
 
     useEffect(() => {
         if(loading === false){
-            const stakingData = organizeStakingData(data);
-            const validator = data.validator
-            .map((data: any) => {
-                return organizeValidatorData(data, stakingData)
-            });
-
-            const status = validator[0].status;
-            const jailed = validator[0].jailed;
-            const tombstoned = validator[0].tombstoned;
-
-            const description:ValidatorDescription = {
-                avatar: validator[0].validatorAvatar,
-                moniker: validator[0].validatorMoniker,
-                description: validator[0].validatorDetail,
-                website: validator[0].validatorWebsite,
-            }
-
-            const address:ValidatorAddress = {
-                operatorAddress: validator[0].validatorAddress,
-                accountAddress: validator[0].selfDelegateAddress,
-            }
-
-            const percentageData:ValidatorData = {
-                APR: convertPercentage(validator[0].APR),
-                APY: convertPercentage(validator[0].APY),
-                state: [
-                    {row: [{
-                        title: "Voting Power",
+            if(data){
+                const stakingData = organizeStakingData(data);
+                const validator = data.validator
+                .map((data: any) => {
+                    return organizeValidatorData(data, stakingData)
+                });
+    
+                const status = validator[0].status;
+                const jailed = validator[0].jailed;
+                const tombstoned = validator[0].tombstoned;
+    
+                const description:ValidatorDescription = {
+                    avatar: validator[0].validatorAvatar,
+                    moniker: validator[0].validatorMoniker,
+                    description: validator[0].validatorDetail,
+                    website: validator[0].validatorWebsite,
+                }
+    
+                const address:ValidatorAddress = {
+                    operatorAddress: validator[0].validatorAddress,
+                    accountAddress: validator[0].selfDelegateAddress,
+                }
+    
+                const percentageData:ValidatorData = {
+                    address: address,
+                    APR: convertPercentage(validator[0].APR),
+                    APY: convertPercentage(validator[0].APY),
+                    
+                    // chain upgrade response
+                    votingPower: {
                         data: validator[0].votingPowerPercent,
                         amount: validator[0].votingPower,
-                    },{
-                        title: "Self-Delegation",
-                        data: validator[0].selfPercent,
-                        amount: convertToFctNumber(validator[0].self),
-                    }]},
-                    {row: [{
-                        title: "Commission",
-                        data: validator[0].commission,
-                    },{
-                        title: "Uptime",
+                    },
+                    commission: {
+                        data:validator[0].commission,
+                    },
+                    uptime: {
                         data: validator[0].condition,
-                    }]}
-                ]
+                    }
+                
+                    // state: [
+                    //     {row: [{
+                    //         title: "Voting Power",
+                    //         data: validator[0].votingPowerPercent,
+                    //         amount: validator[0].votingPower,
+                    //     },{
+                    //         title: "Self-Delegation",
+                    //         data: validator[0].selfPercent,
+                    //         amount: convertToFctNumber(validator[0].self),
+                    //     }]},
+                    //     {row: [{
+                    //         title: "Commission",
+                    //         data: validator[0].commission,
+                    //     },{
+                    //         title: "Uptime",
+                    //         data: validator[0].condition,
+                    //     }]}
+                    // ]
+                }
+    
+                setValidatorState({
+                    status,
+                    jailed,
+                    tombstoned,
+                    description,
+                    address,
+                    percentageData
+                });
             }
-
-            setValidatorState({
-                status,
-                jailed,
-                tombstoned,
-                description,
-                address,
-                percentageData
-            });
-
-
         }
     }, [loading, data])
     
@@ -374,6 +411,46 @@ export const useValidatorDataFromAddress = (address:string) => {
         validatorState,
         handleValidatorPolling,
     };
+}
+
+export const useSelfDelegationData = (operatorAddress: string, accountAddress: string) => {
+    const [selfDelegation, setSelfDelegation] = useState<StakingData>({
+        data: "0",
+        amount: 0,
+    });
+
+    const {loading, data} = useDelegationsQuery({
+        address: operatorAddress.toString(),
+    });
+
+    useEffect(() => {
+        if(loading === false){
+            if(data){
+                const delegations = data.delegations.delegations;
+                
+                const totalDelegations = delegations.reduce((prev: number, current: any) => {
+                    return prev + convertNumber(current.coins[0].amount);
+                }, 0);
+                
+                const [selfDelegation] = delegations.filter((y: any) => {
+                    return y.delegator_address === accountAddress;
+                });
+    
+                let self = 0;
+                if (selfDelegation) self = convertNumber(selfDelegation.coins[0].amount);
+            
+                const selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
+                setSelfDelegation({
+                    data: selfPercent,
+                    amount: convertToFctNumber(self),
+                });
+            }
+        }
+    }, [loading, data])
+
+    return {
+        selfDelegation
+    }
 }
 
 const organizeValidatorDescription = (validator: any) => {
@@ -443,20 +520,23 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     const votingPower = votingPowerExist? validator.validatorVotingPowers[0].votingPower : 0;
     const votingPowerPercent = makeDecimalPoint(convertNumber((votingPower / stakingData.totalVotingPower) * 100), 2);
 
-    const totalDelegations = validator.delegations.reduce((prev: number, current: any) => {
-        return prev + convertNumber(current.amount.amount);
-    }, 0);
-    const [selfDelegation] = validator.delegations.filter((y: any) => {
-        return y.delegatorAddress === validator.validatorInfo.selfDelegateAddress;
-    });
+    // chain upgrade response
 
-    let self = 0;
-    if (selfDelegation) self = convertNumber(selfDelegation.amount.amount);
+    // const totalDelegations = validator.delegations.reduce((prev: number, current: any) => {
+    //     return prev + convertNumber(current.amount.amount);
+    // }, 0);
+    // const [selfDelegation] = validator.delegations.filter((y: any) => {
+    //     return y.delegatorAddress === validator.validatorInfo.selfDelegateAddress;
+    // });
 
-    const selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
-    const delegations = validator.delegations.map((value: any) => {
-        return { address: value.delegatorAddress, amount: convertNumber(value.amount.amount) };
-    });
+    // let self = 0;
+    // if (selfDelegation) self = convertNumber(selfDelegation.amount.amount);
+
+    // const selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
+    // const delegations = validator.delegations.map((value: any) => {
+    //     return { address: value.delegatorAddress, amount: convertNumber(value.amount.amount) };
+    // });
+
     const missedBlockCounterExist = validator.validatorSigningInfos.length > 0;
     const missedBlockCounter = missedBlockCounterExist? validator.validatorSigningInfos[0].missedBlocksCounter : 0;
     const tombstoned = missedBlockCounterExist? validator.validatorSigningInfos[0].tombstoned : false;
@@ -483,9 +563,12 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
         votingPower,
         votingPowerPercent,
         commission,
-        self,
-        selfPercent,
-        delegations,
+
+        // chain upgrade response
+
+        // self,
+        // selfPercent,
+        // delegations,
         condition,
         status,
         jailed,

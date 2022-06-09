@@ -62,25 +62,27 @@ const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Pro
         recreateList();
     }, [listData])
 
-    const renderItem = ({ item, index = 0, drag }: RenderItemParams<Item>) => (
-        <TouchableOpacity 
-            key={index} 
-            style={styles.modalContentBox} 
-            onPress={() => {isEdit === false && handleSelect(index)}}>
-            <Text style={styles.itemTitle}>{item.label}</Text>
-            {isEdit?
-            <TouchableOpacity
-                style={{paddingVertical: 15, paddingRight: 20, paddingLeft: 50}}
-                onPressIn={drag}>
-                <MenuIcon size={20} color={WhiteColor} />
+    const renderItem = ({ item, index = 0, drag }: RenderItemParams<Item>) => {
+        return (
+            <TouchableOpacity 
+                key={index} 
+                style={styles.modalContentBox} 
+                onPress={() => {isEdit === false && handleSelect(index)}}>
+                <Text style={styles.itemTitle}>{item.label}</Text>
+                {isEdit?
+                <TouchableOpacity
+                    style={{paddingVertical: 15, paddingRight: 20, paddingLeft: 50}}
+                    onPressIn={drag}>
+                    <MenuIcon size={20} color={WhiteColor} />
+                </TouchableOpacity>
+                :
+                <View style={{paddingHorizontal: 20}}>
+                    <Radio size={20} color={WhiteColor} active={index === selected} />
+                </View>
+                }
             </TouchableOpacity>
-            :
-            <View style={{paddingHorizontal: 20}}>
-                <Radio size={20} color={WhiteColor} active={index === selected} />
-            </View>
-            }
-        </TouchableOpacity>
-    );
+        )
+    }
 
     return (
         <View style={styles.modalContainer}>

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { ValidatorData } from "@/hooks/staking/hooks";
+import { useSelfDelegationData, ValidatorData } from "@/hooks/staking/hooks";
 import { convertAmount } from "@/util/common";
 import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextGrayColor } from "@/constants/theme";
 
@@ -14,6 +14,28 @@ const marginVertical = 4;
 const width = (Dimensions.get('window').width / cols) - (marginHorizontal * (cols + 1));
 
 const PercentageBox = ({data}:Props) => {
+
+    // chain upgrade response
+    const {selfDelegation} = useSelfDelegationData(data.address.operatorAddress, data.address.accountAddress);
+
+    const percentData = [
+        {row: [{
+            title: "Voting Power",
+            data: data.votingPower.data,
+            amount: data.votingPower.amount,
+        },{
+            title: "Self-Delegation",
+            data: selfDelegation.data,
+            amount: selfDelegation.amount,
+        }]},
+        {row: [{
+            title: "Commission",
+            data: data.commission.data,
+        },{
+            title: "Uptime",
+            data: data.uptime.data,
+        }]}
+    ]
 
     return (
         <View style={[styles.container]}>
@@ -31,9 +53,15 @@ const PercentageBox = ({data}:Props) => {
 
             <View style={[styles.box, {paddingVertical: 24}]}>
                 <View style={styles.wrapBox}>
+                    {/* 
+                    // chain upgrade response
                     {data.state.map((grid, index) => {
+                    */}
+                    {percentData.map((grid, index) => {
                         return (
-                        <View key={index} style={[styles.wrapperH, index < data.state.length - 1 && {paddingBottom: 34}]}>
+                        // chain upgrade response
+                        // <View key={index} style={[styles.wrapperH, index < data.state.length - 1 && {paddingBottom: 34}]}>
+                        <View key={index} style={[styles.wrapperH, index < percentData.length - 1 && {paddingBottom: 34}]}>
                             {grid.row.map((item:any, index:number) => {
                                 return (
                                 <View key={index} style={[styles.wrapperH, {flex: 1, alignItems: "center"}]}>
@@ -74,6 +102,7 @@ const styles = StyleSheet.create({
     },
     wrapperH: {
         flexDirection: "row",
+        alignItems: "center",
     },
     wrapperV: {
         alignItems: "flex-start",

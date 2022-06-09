@@ -65,11 +65,12 @@ const SelectWallet = () => {
     }, [selected])
 
     const WalletList = async() => {
-        await getWalletList().then(res => {            
-            setItems(res);
-        }).catch(error => {
-            console.log('error : ' + error);
-        })
+        try {
+            const result = await getWalletList();
+            setItems(result);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const onChangePassword = async(value: string) => {
@@ -85,23 +86,26 @@ const SelectWallet = () => {
     }
 
     const onSelectWalletAndMoveToHome = async() => {
-        let adr = '';
-        await getAdrFromMnemonic(mnemonic).then(res => {
-            if(res !== undefined) adr = res;
-        }).catch(error => console.log('error : ' + error));
+        try {
+            let adr = '';
+            const result = await getAdrFromMnemonic(mnemonic);
+            if(result !== undefined) adr = result;
+    
+            await setWalletWithAutoLogin(JSON.stringify({
+                name: selectedWallet,
+                address: adr,
+            }));
+            
+            await setEncryptPassword(password);
+    
+            WalletActions.handleWalletName(selectedWallet);
+            WalletActions.handleWalletAddress(adr);
 
-        await setWalletWithAutoLogin(JSON.stringify({
-            name: selectedWallet,
-            address: adr,
-        }));
-        
-        await setEncryptPassword(password);
-
-        WalletActions.handleWalletName(selectedWallet);
-        WalletActions.handleWalletAddress(adr);
-
-        setBioAuth(selectedWallet, password);
-        navigation.reset({routes: [{name: Screens.Home}]});
+            await setBioAuth(selectedWallet, password);
+            navigation.reset({routes: [{name: Screens.Home}]});
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     useEffect(() => {

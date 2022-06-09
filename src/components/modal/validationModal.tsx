@@ -81,19 +81,20 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
         
             if(nameCheck){
                 const key:string = keyEncrypt(wallet.name, val);
-                await getChain(wallet.name).then(res => {
-                    if(res){
-                        let w = decrypt(res.password, key);
+                try {
+                    const result = await getChain(wallet.name);
+                    if(result){
+                        let w = decrypt(result.password, key);
                         if(w !== null) {
                             setActive(true);
                         } else {
                             setActive(false);
                         }
                     }
-                }).catch(error => {
+                } catch (error) {
                     console.log(error);
                     setActive(false);
-                });
+                }
             } 
         } else {
             setActive(false);
@@ -109,9 +110,11 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
         if(viaBioAuth){
             const auth = await confirmViaBioAuth();
             if(auth){
-                await getPasswordViaBioAuth().then(res => {
-                    passwordFromBio = res;
-                }).catch(error => console.log(error));
+                try {
+                    passwordFromBio = await getPasswordViaBioAuth();
+                } catch (error) {
+                    console.log(error);
+                }
             } else {
                 LayoutAnim();
                 easeInAndOutAnim();

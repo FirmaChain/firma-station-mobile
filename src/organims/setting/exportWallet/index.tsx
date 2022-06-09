@@ -70,10 +70,16 @@ const ExportWallet = ({type}:Props) => {
             if(exportPK){
                 const getPrivatekey = async() => {
                     if(mnemonic !== ''){
-                        await getPrivateKeyFromMnemonic(mnemonic)
-                        .then(res => {if(res) setPrivatekey(res)});
-                        setStatus(1);
-                        setIsModalOpen(true);
+                        try {
+                            const result = await getPrivateKeyFromMnemonic(mnemonic);
+                            if(result){
+                                setPrivatekey(result);
+                            }
+                            setStatus(1);
+                            setIsModalOpen(true);
+                        } catch (error) {
+                            console.log(error);
+                        }
                     }
                 }
                 getPrivatekey();
