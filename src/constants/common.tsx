@@ -16,9 +16,18 @@ export const EXPLORER_URL = () => {
     return EXPLORER;
 }
 
+export const UPDATE_NOTIFICATION = "Update is required to the latest version.";
+
+export const APPLE_APP_STORE = "itms-apps://apps.apple.com/tr/app/firma-station/id1611660902?l=tr";
+export const APPLE_APP_STORE_WEB = "https://apps.apple.com/us/app/firma-station/idid1611660902";
+export const GOOGLE_PLAY_STORE = "market://details?id=com.firma_station_mobile";
+export const GOOGLE_PLAY_STORE_WEB = "https://play.google.com/store/apps/details?id=com.firma_station_mobile";
+
 export const WELCOME_DESCRIPTION = "Use seed phrases to create\nnew wallets or restore existing wallets.";
 export const LOGIN_DESCRIPTION = "Select a wallet and connect it.";
 export const JAILBREAK_ALERT = "Firma Station is not supported on jailbroken devices.\nPlease restore your device to a non-jailbroken state.";
+
+export const DATA_LOAD_DELAYED_NOTICE = "Data loading is being delayed.";
 
 export const MNEMONIC_WARN_MESSAGE = "If you lose your seed phrase it's gone forever. Station doesn't store any data.";
 export const RECOVER_INFO_MESSAGE = "Generate QR code from setting menu of\nFirma Station desktop or extionsion";
@@ -51,6 +60,8 @@ export const CAMERA_PERMISSION_ALERT = {
     title: "Camera not authorized",
     desc: "Move to settings to enable camera permissions?"
 }
+
+export const LOADING_DATA_NOTICE = "Loading data. Please wait...";
 
 export const CONNECTION_NOTICE = "Connection error.\nPlease check your network.";
 export const COPIED_CLIPBOARD = "Copied your ";

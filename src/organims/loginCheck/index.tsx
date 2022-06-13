@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -24,14 +24,21 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import Description from "../welcome/description";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import InputBox from "./inputBox";
-import SmallButton from "@/components/button/smallButton";
 import Button from "@/components/button/button";
 import { wait } from "@/util/common";
+import { useChainVersion, useServerMessage } from "@/hooks/common/hooks";
+import { VERSION } from "@/../config";
+import { VersionCheck } from "@/util/validationCheck";
+import UpdateModal from "./updateModal";
+import MaintenanceModal from "./maintenanceModal";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
 const LoginCheck = () => {
     const navigation:ScreenNavgationProps = useNavigation();
+
+    const {chainVer, sdkVer} = useChainVersion();
+    const {minAppVer, currentAppVer, maintenanceState} = useServerMessage();
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const fadeAnimEnterButton = useRef(new Animated.Value(0)).current;
@@ -41,29 +48,41 @@ const LoginCheck = () => {
     const Title: string = 'LOGIN';
     const Desc: string = LOGIN_DESCRIPTION;
 
+    // status
+    // 0: idle & version check
+    // 1: maintenance check
+    // 2: start
+    const [appStartStatus, setAppStartStatus] = useState(0);
+    const [update, setUpdate] = useState(false);
+    const [maintenance, setMaintenance] = useState(false);
+    const [maintenanceData, setMaintenanceData] = useState({});
+
     const [isKeyboardShown, setIsKeyboardShown] = useState(false);
     const [dimActive, setDimActive] = useState(true);
     const [useBio, setUseBio] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const handleLogin = async(mnemonic:string, name:string, password:string) => {
-        let adr = '';
-        await getAdrFromMnemonic(mnemonic).then(res => {
-            if(res !== undefined) adr = res;
-        }).catch(error => console.log('error : ' + error));
-
-        await setWalletWithAutoLogin(JSON.stringify({
-            name: name,
-            address: adr,
-        }));
+        try {
+            let adr = await getAdrFromMnemonic(mnemonic);
+            if(adr){
+                await setWalletWithAutoLogin(JSON.stringify({
+                    name: name,
+                    address: adr,
+                }));
+                
+                await setEncryptPassword(password);
         
-        await setEncryptPassword(password);
+                WalletActions.handleWalletName(name);
+                WalletActions.handleWalletAddress(adr);
 
-        WalletActions.handleWalletName(name);
-        WalletActions.handleWalletAddress(adr);
-
-        setBioAuth(name, password);
-        navigation.reset({routes: [{name: Screens.Home}]});
+                setBioAuth(name, password);
+                CommonActions.handleLoadingProgress(true);
+                navigation.reset({routes: [{name: Screens.Home}]});
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     let isProcessing = false;
@@ -72,20 +91,24 @@ const LoginCheck = () => {
         isProcessing = true;
 
         let passwordFromBio = '';
-        const auth = await confirmViaBioAuth();
-        if(auth){
-            await getPasswordViaBioAuth().then(res => {
-                passwordFromBio = res;
-            }).catch(error => console.log(error));
-        } else {
-            openSelectWallet();
-            isProcessing = false;
-            return;
+        try {
+            const auth = await confirmViaBioAuth();
+            if(auth){
+                const result = await getPasswordViaBioAuth();
+                passwordFromBio = result;
+            } else {
+                openSelectWallet();
+                isProcessing = false;
+                return;
+            }
+        } catch (error) {
+            console.log(error);
         }
 
         const result = passwordFromBio;
         if(common.appState === "active" && result !== ""){
             isProcessing = false;
+            CommonActions.handleLoadingProgress(true);
             navigation.reset({routes: [{name: Screens.Home}]});
         }
     }
@@ -118,58 +141,97 @@ const LoginCheck = () => {
     }
 
     useEffect(() => {
-        if(common.connect && loading === false){
-            if(wallet.name !== ""){
-                SplashScreen.hide();
-                getUseBioAuthState()
-                .then(res => {
-                    setDimActive(res);
-                    setUseBio(res);
-                    wait(3000).then(()=>fadeIn(Animated, fadeAnimEnterButton, 500));
-                    if(res){
-                        handleLoginViaBioAuth();
-                    }
-                })
+        if(appStartStatus === 2){
+            if(common.connect && loading === false){
+                if(wallet.name !== ""){
+                    getUseBioAuthState()
+                    .then(res => {
+                        setDimActive(res);
+                        setUseBio(res);
+                        wait(3000).then(()=>fadeIn(Animated, fadeAnimEnterButton, 500));
+                        if(res){
+                            handleLoginViaBioAuth();
+                        }
+                    })
+                }
             }
         }
-    }, [loading, common.connect]);
+    }, [loading, common.connect, appStartStatus]);
+
+    useEffect(() => {
+        if(chainVer !== ""){
+            CommonActions.handleChainVer(chainVer);
+        }
+        if(sdkVer !== ""){
+            CommonActions.handleSDKVer(sdkVer);
+        }
+    }, [chainVer, sdkVer])
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);
         const hideSubscription = Keyboard.addListener('keyboardWillHide', onKeyboardDidHide);
         
-        const getWalletForAutoLogin = async() => {
-            await getWalletWithAutoLogin()
-            .then((res) => { 
-                if(res !== ""){
-                    const result = JSON.parse(res);
-                    WalletActions.handleWalletName(result.name);
-                    WalletActions.handleWalletAddress(result.address);
-                } else {
-                    handleDisconnect();
+        if(appStartStatus === 2){
+            const getWalletForAutoLogin = async() => {
+                try {
+                    const result = await getWalletWithAutoLogin();
+                    if(result !== ""){
+                        const wallet = JSON.parse(result);
+                        WalletActions.handleWalletName(wallet.name);
+                        WalletActions.handleWalletAddress(wallet.address);
+                    } else {
+                        handleDisconnect();
+                    }
+                    setLoading(false);
+                } catch (error) {
+                    console.log(error)
+                    setLoading(false);
                 }
-                setLoading(false);
-            })
-            .catch(error => {
-                console.log(error)
-                setLoading(false);
+            }
+    
+            AsyncStorage.getItem("alreadyLaunched").then(value => {
+                if(value == null){
+                    removeAllData().then(()=>getWalletForAutoLogin());
+                    AsyncStorage.setItem('alreadyLaunched', "Launched");
+                } else {
+                    getWalletForAutoLogin();
+                }
             })
         }
-
-        AsyncStorage.getItem("alreadyLaunched").then(value => {
-            if(value == null){
-                removeAllData().then(()=>getWalletForAutoLogin());
-                AsyncStorage.setItem('alreadyLaunched', "Launched");
-            } else {
-                getWalletForAutoLogin();
-            }
-        })
         
         return () => {
             showSubscription.remove();
             hideSubscription.remove();
         }
-    }, []);
+    }, [appStartStatus]);
+
+    useEffect(() => {
+        SplashScreen.hide();
+        if(minAppVer !== "" && currentAppVer){
+            CommonActions.handleCurrentAppVer(currentAppVer);
+            const result = VersionCheck(minAppVer, VERSION);
+
+            if(result){
+                setAppStartStatus(appStartStatus + 1);
+            } else {
+                setUpdate(true);
+            }
+        } else {
+            setAppStartStatus(1);
+        }
+    }, [minAppVer])
+
+    useEffect(() => {
+        if(appStartStatus === 1){
+            const isMaintenance = maintenanceState?.isShow;
+            if(isMaintenance){
+                setMaintenance(isMaintenance);
+                setMaintenanceData(maintenanceState);
+            } else {
+                setAppStartStatus(appStartStatus + 1);
+            }
+        }
+    }, [appStartStatus])
 
     return (
         <ViewContainer bgColor={BgColor}>
@@ -193,6 +255,8 @@ const LoginCheck = () => {
                     </Animated.View>
                 </Pressable>
                 }
+                {update && <UpdateModal/>}
+                {maintenance && <MaintenanceModal data={maintenanceData}/>}
             </KeyboardAvoidingView>
         </ViewContainer>
     )

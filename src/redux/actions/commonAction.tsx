@@ -7,9 +7,35 @@ import { APP_STATE,
     IS_BIOAUTH_IN_PROGRESS,
     IS_NETWORK_CHANGED,
     IS_CONNECTION,
-    LOGGEDIN } from "../types";
+    LOGGEDIN, 
+    CHAIN_VERSION,
+    SDK_VERSION,
+    CURRENT_APP_VERSION,
+    DATA_LOAD_STATUS,} from "../types";
 
- export const handleAppState = (state:string) => (
+
+export const handleCurrentAppVer = (version:string) => (
+    {
+        type: CURRENT_APP_VERSION,
+        payload: version,
+    }
+)
+
+export const handleChainVer = (version:string) => (
+    {
+        type: CHAIN_VERSION,
+        payload: version,
+    }
+)
+
+export const handleSDKVer = (version:string) => (
+    {
+        type: SDK_VERSION,
+        payload: version,
+    }
+)
+
+export const handleAppState = (state:string) => (
     {
         type: APP_STATE,
         payload: state,
@@ -76,5 +102,12 @@ export const handleLoggedIn = (login:boolean) => (
     {
         type: LOGGEDIN,
         payload: login,
+    }
+)
+
+export const handleDataLoadStatus = (status: number) => (
+    {
+        type: DATA_LOAD_STATUS,
+        payload: status,
     }
 )

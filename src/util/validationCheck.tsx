@@ -23,3 +23,15 @@ export const PasswordCheck = async(walletName: string, password: string) => {
         return mnemonic;
     }
 }
+
+export const VersionCheck = (server:string, app:string) => {
+    const serverVer = server.split(".");
+    const appVer = app.split(".");
+
+    for(let i=0; i<serverVer.length; i++){
+        if(serverVer[i] > appVer[i]){
+            return false;
+        }
+    }
+    return true;
+}

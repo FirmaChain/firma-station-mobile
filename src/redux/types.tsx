@@ -2,6 +2,9 @@ export type Action = {
     type: string,
     payload?: any,
 }
+export const CURRENT_APP_VERSION = "CURRENT_APP_VERSION";
+export const CHAIN_VERSION = "CHAIN_VERSION";
+export const SDK_VERSION = "SDK_VERSION";
 
 export const LOCK_STATION = "LOCK_STATION";
 export const APP_STATE = "APP_STATE";
@@ -13,6 +16,8 @@ export const IS_CONNECTION = "IS_CONNECTION";
 export const HANDLE_LOADING_PROGRESS = "HANDLE_LOADING_PROGRESS";
 export const HANDLE_NETWORK = "HANDLE_NETWORK";
 export const IS_NETWORK_CHANGED = "IS_NETWORK_CHANGED";
+
+export const DATA_LOAD_STATUS = "DATA_LOAD_STATUS";
 
 export const HANDLE_WALLET_NAME = "HANDLE_WALLET_NAME";
 export const HANDLE_WALLET_ADDRESS = "HANDLE_WALLET_ADDRESS";

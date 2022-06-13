@@ -29,6 +29,7 @@ import SettingScreen from "../screens/setting/setting";
 import ChangePasswordScreen from "../screens/setting/changePassword";
 import ChangeWalletNameScreen from "@/screens/setting/changeWalletName";
 import ExportWalletScreen from "../screens/setting/exportWallet";
+import VersionScreen from "@/screens/setting/version";
 
 import TransactionScreen from "../screens/transaction/transaction";
 
@@ -131,6 +132,10 @@ const StackNavigator = () => {
                     options={{headerShown: false}}
                     name={Screens.ExportWallet}
                     component={ExportWalletScreen} />
+                <Stack.Screen
+                    options={{headerShown: false}}
+                    name={Screens.Version}
+                    component={VersionScreen} />
             </Stack.Group>
 
             <Stack.Group>

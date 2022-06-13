@@ -25,13 +25,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>
 
 const Setting = () => {
     const navigation:ScreenNavgationProps = useNavigation();
-    const {wallet, storage: common, common: removeable} = useAppSelector(state => state);
-
-    // const networkList = ["MainNet", "TestNet"];
-    const networkList = ["MainNet", "TestNet", "DevNet"];
-    const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
-    const [openNetworkSelectModal, setOpenNetworkSelectModal] = useState(false);
-    const [tabCount, setTabCount] = useState(removeable.networkChangeActivate? 50:0);
+    const {wallet, storage, common} = useAppSelector(state => state);
 
     const settingList = [
         {title: 'Change Password', path: 'ChangePW'},
@@ -51,6 +45,9 @@ const Setting = () => {
             case "ExportMN":
                 navigation.navigate(Screens.ExportWallet, {type: path});
                 break;
+            case "Version":
+                navigation.navigate(Screens.Version);
+                break;
             default:
                 break;
         }
@@ -65,39 +62,10 @@ const Setting = () => {
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
     }
-
-
-    const handleNetworkSelectModal = (open: boolean) => {
-        if(tabCount >= 50){
-            CommonActions.handleNetworkChangeActivate(true);
-            setOpenNetworkSelectModal(open);
-        } else {
-            setTabCount(tabCount + 1);
-        }
-    }
-
-    const handleSelectNetwork = (index:number) => {
-        if(index === selectedNetworkIndex) return setOpenNetworkSelectModal(false);
-        CommonActions.handleIsNetworkChange(true);
-        CommonActions.handleLoadingProgress(true);
-        setFirmaSDK(networkList[index]);
-        setClient(networkList[index]);
-        setExplorerUrl(networkList[index]);
-        StorageActions.handleNetwork(networkList[index]);
-        setSelectedNetworkIndex(index);
-        setOpenNetworkSelectModal(false);
-    }
-
     
     const handleBack = () => {
         navigation.goBack();
     }
-
-    useEffect(() => {
-        for(var i=0; i<networkList.length; i++){
-            if(common.network === networkList[i])setSelectedNetworkIndex(i);
-        }
-    }, [])
 
     return (
         <Container
@@ -127,17 +95,13 @@ const Setting = () => {
                                 <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />
                             )
                         })}
-                        <Pressable style={styles.bottomButtonsBox} onPress={() => handleNetworkSelectModal(true)}>
-                            <TextMenuItem title="Version" content={"v" + VERSION} />
-                        </Pressable>
+                        <View style={styles.bottomButtonsBox} >
+                            <MenuItem title={"Version"} path={"Version"} handleMenus={handleMenus} />
+                        </View>
                         <View style={styles.bottomButtonsBox}>
                             <Disconnect handleDisconnect={disconnectWallet} />
                             <Delete wallet={wallet} handleDisconnect={disconnectWallet} />
                         </View>
-
-                        <CustomModal visible={openNetworkSelectModal} bgColor={BgColor} handleOpen={handleNetworkSelectModal}>
-                            <ModalItems initVal={selectedNetworkIndex} data={networkList} onPressEvent={handleSelectNetwork}/>
-                        </CustomModal>
                     </ScrollView>
                 </View>
             </ViewContainer>

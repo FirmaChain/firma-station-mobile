@@ -8,9 +8,16 @@ import { Action,
     IS_BIOAUTH_IN_PROGRESS,
     IS_NETWORK_CHANGED,
     IS_CONNECTION,
-    LOGGEDIN, } from "../types";
+    LOGGEDIN,
+    CHAIN_VERSION,
+    SDK_VERSION,
+    CURRENT_APP_VERSION,
+    DATA_LOAD_STATUS, } from "../types";
 
-export interface WalletReduceState {
+export interface State {
+    currentAppVer: string;
+    chainVer: string,
+    sdkVer: string,
     appState: string;
     appPausedTime: string;
     lockStation: boolean;
@@ -21,9 +28,13 @@ export interface WalletReduceState {
     isNetworkChanged: boolean;
     connect: boolean;
     loggedIn: boolean;
+    dataLoadStatus: number;
 }
 
 const initialState = {
+    currentAppVer: "",
+    chainVer: "",
+    sdkVer: "",
     appState: "active",
     appPausedTime: "",
     lockStation: false,
@@ -34,10 +45,26 @@ const initialState = {
     isNetworkChanged: false,
     connect: true,
     loggedIn: false,
+    dataLoadStatus: 0,
 };
 
 const reducer = (state = initialState, action:Action) => {
     switch (action.type) {
+        case CURRENT_APP_VERSION:
+            return {
+                ...state,
+                currentAppVer: action.payload,
+            }
+        case CHAIN_VERSION:
+            return {
+                ...state,
+                chainVer: action.payload,
+            }
+        case SDK_VERSION:
+            return {
+                ...state,
+                sdkVer: action.payload,
+            }
         case APP_STATE:
             return {
                 ...state,
@@ -87,6 +114,11 @@ const reducer = (state = initialState, action:Action) => {
             return {
                 ...state,
                 loggedIn: action.payload,
+            }
+        case DATA_LOAD_STATUS:
+            return {
+                ...state,
+                dataLoadStatus: action.payload,
             }
         default :
         return state
