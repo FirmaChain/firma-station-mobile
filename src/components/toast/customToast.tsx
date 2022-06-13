@@ -15,6 +15,7 @@ const CustomToast = () => {
                 style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastSuccess, display: display }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
+                text1NumberOfLines={5}
                 text2Style={styles.text2Style}
             />
         ),
@@ -24,6 +25,7 @@ const CustomToast = () => {
                 style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastInfo, color: 'white', display: display }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
+                text1NumberOfLines={5}
                 text2Style={styles.text2Style}
             />
         ),
@@ -32,6 +34,7 @@ const CustomToast = () => {
                 {...props}
                 style={{ zIndex:9999, borderLeftWidth: 0, backgroundColor: toastError, color: 'white', display: display }}
                 text1Style={styles.text1Style}
+                text1NumberOfLines={5}
                 text2Style={styles.text2Style}
             />
         ),

@@ -26,7 +26,7 @@ interface Props {
 const Validator = ({validatorAddress}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
 
-    const {wallet} = useAppSelector(state => state);
+    const {wallet, common} = useAppSelector(state => state);
     const {validatorState, handleValidatorPolling} = useValidatorDataFromAddress(validatorAddress);
     const {delegationState, handleTotalDelegationPolling} = useDelegationData();
 
@@ -40,6 +40,7 @@ const Validator = ({validatorAddress}:Props) => {
     const AlertText = useMemo(() => {
         if(validatorState){
             if(validatorState.tombstoned === true) return "TOMBSTONED";
+            if(validatorState.status === 0) return "UNKNOWN";
             if(validatorState.status === 1) return "UNBONDED";
             if(validatorState.status === 2 && validatorState.jailed === false) return "UNBONDING";
             if(validatorState.status === 2 && validatorState.jailed === true) return "JAILED";
@@ -49,6 +50,7 @@ const Validator = ({validatorAddress}:Props) => {
 
     const AlertColor = useMemo(() => {
         switch (AlertText) {
+            case "UNKNOWN":
             case "UNBONDED":
                 return TYPE_COLORS["zero"];
             case "UNBONDING":
@@ -91,12 +93,34 @@ const Validator = ({validatorAddress}:Props) => {
     }
 
     const refreshStates = async() => {
-        CommonActions.handleLoadingProgress(true);
-        await handleDelegateState();
-        await handleValidatorPolling();
-        await handleTotalDelegationPolling();
-        CommonActions.handleLoadingProgress(false);
+        try {
+            CommonActions.handleLoadingProgress(true);
+            await handleDelegateState();
+            await handleValidatorPolling();
+            await handleTotalDelegationPolling();
+            CommonActions.handleLoadingProgress(false);
+        } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            console.log(error);
+        }
     }
+
+    useEffect(() => {
+        let count = 0;
+        let intervalId = setInterval(() => {
+            if(common.dataLoadStatus > 0 && common.dataLoadStatus < 2){
+                count = count + 1;
+            } else {
+                clearInterval(intervalId);
+            }
+            if(count >= 6){
+                count = 0;
+                refreshStates();
+            }
+        }, 1000)
+
+        return () => clearInterval(intervalId);
+    }, [common.dataLoadStatus])
 
     const handleMoveToWeb = (uri:string) => {
         navigation.navigate(Screens.WebScreen, {uri: uri});

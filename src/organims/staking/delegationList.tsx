@@ -14,10 +14,11 @@ import MonikerSectionForRedelegate from "./parts/list/monikerSectionForRedelegat
 interface Props {
     visible: boolean;
     isRefresh: boolean;
+    handleIsRefresh: (refresh:boolean) => void;
     navigateValidator: (address:string) => void;
 }
 
-const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
+const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:Props) => {
     const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
@@ -56,6 +57,9 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
 
     const refreshStakings = async() => {
         try {
+            if(delegationList.length === 0){
+                CommonActions.handleLoadingProgress(true);
+            }
             await refetchValidatorDescList();
             await handleDelegationState();
             if(redelegationList.length > 0){
@@ -64,6 +68,7 @@ const DelegationList = ({visible, isRefresh, navigateValidator}:Props) => {
             if(undelegationList.length > 0){
                 await handleUndelegationState();
             }
+            handleIsRefresh(false);
         } catch (error) {
             console.log(error);
         }

@@ -36,7 +36,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
     
     const {wallet} = useAppSelector(state => state);
-    const { delegationState, handleDelegationState } = useDelegationData();
+    const { delegationState } = useDelegationData();
 
     const [resetInputValues, setInputResetValues] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
@@ -127,7 +127,6 @@ const Delegate = ({type, operatorAddress}:Props) => {
 
     useFocusEffect(
         useCallback(() => {
-            handleDelegationState();
             setResetRedelegateValues(false);
             setInputResetValues(false);
         }, [])

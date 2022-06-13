@@ -25,10 +25,32 @@ const Governance = () => {
     }
 
     const refreshStates = async() => {
-        CommonActions.handleLoadingProgress(true);
-        await handleGovernanceListPolling();
-        CommonActions.handleLoadingProgress(false);
+        try {
+            CommonActions.handleLoadingProgress(true);
+            await handleGovernanceListPolling();
+            CommonActions.handleLoadingProgress(false);
+        } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            console.log(error);
+        }
     }
+
+    useEffect(() => {
+        let count = 0;
+        let intervalId = setInterval(() => {
+            if(common.dataLoadStatus > 0 && common.dataLoadStatus < 2){
+                count = count + 1;
+            } else {
+                clearInterval(intervalId);
+            }
+            if(count >= 6){
+                count = 0;
+                refreshStates();
+            }
+        }, 1000)
+
+        return () => clearInterval(intervalId);
+    }, [common.dataLoadStatus])
 
     useEffect(() => {
         if(isFocused && common.isNetworkChanged === false){

@@ -71,13 +71,13 @@ export const getAdrFromMnemonic = async(mnemonic:string) => {
     }
 }
 
-export const getBalanceFromAdr = async(address:string) => {    
+export const getBalanceFromAdr = async(address:string) => {
     try {
         let balance = await getFirmaSDK().Bank.getBalance(address);
         return balance;
     } catch (error) {
-        console.log('getBalanceFromAdr error : ' + error); 
-        return 0;
+        console.log('getBalanceFromAdr error : ' + error)
+        throw error;
     }
 }
 

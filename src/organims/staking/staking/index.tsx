@@ -22,13 +22,17 @@ const Staking = () => {
     const { wallet, staking, common } = useAppSelector(state => state);
 
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
-    const { recentHistory, currentHistoryPolling, refetchCurrentHistory } = useHistoryData();
+    const { recentHistory, currentHistoryPolling } = useHistoryData();
 
     const [isRefresh, setIsRefresh] = useState(false);
 
     const stakingReward = useMemo(() => {
         return stakingState.stakingReward;
     }, [stakingState.stakingReward])
+
+    const handleIsRefresh = (refresh:boolean) => {
+        setIsRefresh(refresh);
+    }
 
     const handleWithdrawAll = (password:string, gas:number) => {
         const transactionState = {
@@ -46,20 +50,9 @@ const Staking = () => {
         });
     }
     
-    const currentHistoryRefetch = async() => {
-        try{
-            if(refetchCurrentHistory){
-                await refetchCurrentHistory();
-            }
-        }catch(e){
-            console.log(e);
-        }
-    }
-
     const handleCurrentHistoryPolling = async(polling:boolean) => {
-        await currentHistoryRefetch();
         if(currentHistoryPolling) {
-            currentHistoryPolling(polling);
+            await currentHistoryPolling(polling);
         }
     }
 
@@ -69,13 +62,36 @@ const Staking = () => {
             await getStakingState();
             setIsRefresh(true);
         } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
         }
-        if(common.isNetworkChanged === false){
-            CommonActions.handleLoadingProgress(false);
-        }
-        setIsRefresh(false);
     }
+
+    useEffect(() => {
+        if(isRefresh === false){
+            if(common.isNetworkChanged === false){
+                CommonActions.handleLoadingProgress(false);
+            }
+            CommonActions.handleDataLoadStatus(0);
+        }
+    }, [isRefresh])
+
+    useEffect(() => {
+        let count = 0;
+        let intervalId = setInterval(() => {
+            if(common.dataLoadStatus > 0 && common.dataLoadStatus < 2){
+                count = count + 1;
+            } else {
+                clearInterval(intervalId);
+            }
+            if(count >= 6){
+                count = 0;
+                refreshStates();
+            }
+        }, 1000)
+
+        return () => clearInterval(intervalId);
+    }, [common.dataLoadStatus])
 
     useEffect(() => {
         if(recentHistory !== undefined && common.isNetworkChanged === false){
@@ -85,14 +101,18 @@ const Staking = () => {
 
     useEffect(() => {
         if(isFocused){
-            handleCurrentHistoryPolling(true);
-            if(staking.stakingReward > 0 && isFocused) {
+            if(staking.stakingReward > 0) {
                 updateStakingState(staking.stakingReward);
             }
+            handleCurrentHistoryPolling(true);
         } else {
             handleCurrentHistoryPolling(false);
         }
     }, [isFocused])
+
+    useEffect(() => {
+        CommonActions.handleLoadingProgress(true);
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -109,7 +129,7 @@ const Staking = () => {
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
                     </View>
-                    <StakingLists isRefresh={isRefresh} navigateValidator={moveToValidator} />
+                    <StakingLists isRefresh={isRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={moveToValidator} />
                 </View>
                 }
             </RefreshScrollView>

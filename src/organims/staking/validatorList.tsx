@@ -9,14 +9,17 @@ import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     visible: boolean;
     isRefresh: boolean;
+    handleIsRefresh: (refresh:boolean) => void;
     navigateValidator: Function;
 }
 
-const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
+const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:Props) => {
+    const {common} = useAppSelector(state => state);
     const { validators, handleValidatorsPolling } = useValidatorData();
 
     const sortItems = ['Voting Power', 'Commission', 'Uptime'];
@@ -52,10 +55,18 @@ const ValidatorList = ({visible, isRefresh, navigateValidator}:Props) => {
         if(validatorList.length === 0) {
             CommonActions.handleLoadingProgress(true);
         }
-        if(visible){
-            await handleValidatorsPolling();
+        try {
+            if(visible){
+                await handleValidatorsPolling();
+            }
+            handleIsRefresh(false);
+            CommonActions.handleLoadingProgress(false);
+        } catch (error) {
+            if(visible){
+                CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            }
+            console.log(error);
         }
-        CommonActions.handleLoadingProgress(false);
     }
 
     const renderSortIcon = () => {

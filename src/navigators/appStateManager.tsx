@@ -53,6 +53,7 @@ const AppStateManager = () => {
             }
             if(common.appPausedTime !== "" && common.appState === "active"){
                 if(convertNumber(getTimeStamp()) - convertNumber(common.appPausedTime) >= 60){
+                    CommonActions.handleDataLoadStatus(0);
                     CommonActions.handleLockStation(true);
                 } else {
                     CommonActions.handleAppPausedTime("");

@@ -6,10 +6,11 @@ import ValidatorList from "../validatorList";
 
 interface Props {
     isRefresh: boolean;
+    handleIsRefresh: (refresh:boolean) => void;
     navigateValidator: (address:string) => void; 
 }
 
-const StakingLists = ({isRefresh, navigateValidator}:Props) => {
+const StakingLists = ({isRefresh, handleIsRefresh, navigateValidator}:Props) => {
     const [tab, setTab] = useState(0);
     return (
         <View style={styles.listContainer}>
@@ -29,10 +30,12 @@ const StakingLists = ({isRefresh, navigateValidator}:Props) => {
             <DelegationList 
                 visible={tab === 0}
                 isRefresh={isRefresh}
+                handleIsRefresh={handleIsRefresh}
                 navigateValidator={navigateValidator}/>
             <ValidatorList 
                 visible={tab === 1}
                 isRefresh={isRefresh}
+                handleIsRefresh={handleIsRefresh}
                 navigateValidator={navigateValidator}/>
         </View>
     )

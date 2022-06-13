@@ -1,32 +1,47 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { setFirmaSDK } from "@/util/firma";
 import { wait } from "@/util/common";
-import { setExplorerUrl } from "@/constants/common";
+import { DATA_LOAD_DELAYED_NOTICE, setExplorerUrl } from "@/constants/common";
 import { ApolloProvider, getClient, setClient } from "@/apollo";
 import Progress from "@/components/parts/progress";
 import CustomToast from "@/components/toast/customToast";
 import { useNetInfo } from "@react-native-community/netinfo";
 import SplashScreen from "react-native-splash-screen";
 import StackNavigator from "./stackNavigators";
+import AlertModal from "@/components/modal/alertModal";
 
 const Router = () => {
     const {storage, common} = useAppSelector(state => state);
-
     const netInfo = useNetInfo();
+
+    const [openAlertModal, setOpenAlertModal] = useState(false);
+    const handleAlertModalOpen = (open:boolean) => {
+        setOpenAlertModal(open);
+        if(open === false){
+            CommonActions.handleDataLoadStatus(1);
+        }
+    }
+
+    useEffect(() => {
+        if(common.dataLoadStatus >= 2){
+            setOpenAlertModal(true);
+        }
+        if(common.dataLoadStatus === 0){
+            setOpenAlertModal(false);
+        }
+    }, [common.dataLoadStatus, common.lockStation])
 
     useEffect(() => {
         const connect = netInfo.isConnected === null? false:netInfo.isConnected;
-        if(common.connect !== connect){
-            if(connect === false){
-                SplashScreen.hide();
-            }
-            CommonActions.handleIsConnection(connect);
-            CommonActions.handleIsNetworkChange(false);
-            CommonActions.handleLoadingProgress(!connect);
+        if(connect === false){
+            SplashScreen.hide();
         }
+        CommonActions.handleIsNetworkChange(false);
+        CommonActions.handleLoadingProgress(!connect);
+        CommonActions.handleIsConnection(connect);
     }, [netInfo])
 
     useEffect(() => {
@@ -57,6 +72,14 @@ const Router = () => {
             <NavigationContainer theme={DarkTheme}>
                 <StackNavigator/>
                 {common.loading && <Progress />}
+                <AlertModal
+                    visible={openAlertModal}
+                    handleOpen={handleAlertModalOpen}
+                    title={"Data load delayed"}
+                    desc={DATA_LOAD_DELAYED_NOTICE}
+                    confirmTitle={"Reload"}
+                    forcedActive={true}
+                    type={"CONFIRM"}/>
                 <CustomToast />
             </NavigationContainer>
         </ApolloProvider>

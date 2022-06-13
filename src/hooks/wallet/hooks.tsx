@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useCurrentHistoryByAddressQuery, useHistoryByAddressQuery } from "@/apollo/gqls";
+import { useHistoryByAddressQuery } from "@/apollo/gqls";
 import { useAppSelector } from "@/redux/hooks";
 import { getBalanceFromAdr } from "@/util/firma";
 import { convertNumber, wait } from "@/util/common";
@@ -40,7 +40,7 @@ export const useBalanceData = () => {
             setBalance(convertNumber(result));
         } catch (error) {
             console.log(error);
-            
+            throw error;
         }
     }
 
@@ -87,9 +87,11 @@ export const useHistoryData = () => {
         return "Failed"
     }
 
-    const {refetch: startHistoryPoling, 
+    const {startPolling: startHistoryPolling,
+        stopPolling: stopHistoryPolling,
+        refetch: historyRefetch, 
         loading: historyLoading, 
-        data: historyData } = useHistoryByAddressQuery({address: `{${wallet.address}}`, offset: historyOffset, limit: 30});
+        data: historyData} = useHistoryByAddressQuery({address: `{${wallet.address}}`, offset: historyOffset, limit: 30});
 
     useEffect(() => {
         if(historyLoading === false){
@@ -104,6 +106,9 @@ export const useHistoryData = () => {
                     }
                     return result;
                 })
+                if(list.length > 0 && list[0].block !== recentHistory?.block){
+                    setRecentHistory(list[0]);
+                }
                 setHistoryList((prevState) => ({
                     ...prevState,
                     list,
@@ -114,40 +119,15 @@ export const useHistoryData = () => {
 
     const handleHisotyPolling = () => {
         handleHistoryOffset(true);
-        wait(100).then(async() => await startHistoryPoling());
+        wait(100).then(async() => await historyRefetch());
     }
 
-    const {startPolling: startCurrentHistoryPolling, 
-        stopPolling: stopCurrentHistoryPolling, 
-        refetch: refetchCurrentHistory, 
-        loading: currentHistoryLoading, 
-        data: currentHistoryData} = useCurrentHistoryByAddressQuery({address: `{${wallet.address}}`});
-
-    useEffect(() => {
-        if(currentHistoryLoading === false){
-            if(currentHistoryData){
-                const history = currentHistoryData.messagesByAddress.map((value:any) => {
-                    const result = {
-                        hash: value.transaction.hash,
-                        success: convertResult(value.transaction.success),
-                        type: convertMsgType(value.transaction.messages[0]["@type"]),
-                        timestamp: value.transaction.block.timestamp,
-                        block: value.transaction.block.height,    
-                    }
-                    return result;
-                })
-                if(history.length > 0 && history[0].block !== recentHistory?.block){
-                    setRecentHistory(history[0]);
-                }
-            }
-        }
-    }, [currentHistoryLoading, currentHistoryData]);
-
-    const currentHistoryPolling = (polling: boolean) => {
+    const currentHistoryPolling = async(polling: boolean) => {
         if(polling) {
-            startCurrentHistoryPolling(30000)
+            await historyRefetch();
+            startHistoryPolling(3000)
         } else {
-            stopCurrentHistoryPolling();
+            stopHistoryPolling();
         }
     }
 
@@ -165,7 +145,6 @@ export const useHistoryData = () => {
                 block: 0,
             });
             const changeChainNetwork = async() => {
-                await refetchCurrentHistory();
                 handleHisotyPolling();
             }
             changeChainNetwork();
@@ -175,7 +154,6 @@ export const useHistoryData = () => {
     return {
         historyList, 
         recentHistory,
-        refetchCurrentHistory,
         handleHisotyPolling,
         currentHistoryPolling,
         handleHistoryOffset,

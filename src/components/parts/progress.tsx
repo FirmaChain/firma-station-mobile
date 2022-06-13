@@ -1,26 +1,29 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
 import { Animated, BackHandler, Platform, StyleSheet, Text, View } from "react-native";
 import { fadeIn, fadeOut } from "@/util/animation";
-import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { BgColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from "@/constants/theme";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
-import { CHANGE_NETWORK_NOTICE, CONNECTION_NOTICE } from "@/constants/common";
+import { CHANGE_NETWORK_NOTICE, CONNECTION_NOTICE, LOADING_DATA_NOTICE } from "@/constants/common";
 
 const Progress = () => {
     const {common, storage} = useAppSelector(state => state);
 
-    const opacity = (common.connect === false || common.isNetworkChanged)? 1:.5;
+    const opacity = (common.connect === false || common.isNetworkChanged)? 1:.8;
 
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
     const fadeAnim_2 = useRef(new Animated.Value(0)).current;
     const fadeAnim_3 = useRef(new Animated.Value(0)).current;
+    const fadeAnim_text = useRef(new Animated.Value(0)).current;
 
     const animated = [ fadeAnim_1, fadeAnim_2, fadeAnim_3 ];
+    const [loadingDelayed, setLoadingDelayed] = useState(false);
     
     useEffect(() => {
         let index = -1;
         let inverse = true;
+        let count = 0;
 
         const handleProgress = () => {
             if(inverse && index < 3) index = index + 1;
@@ -30,18 +33,30 @@ const Progress = () => {
             if(!inverse && (index >= 0 && index < 3)) fadeOut(Animated, animated[index], 300);
 
             if(index <= -1 || index >= 3) inverse = !inverse;
+            count = count + 2.5;
+            if(count === 10){
+                count = 0;
+            }
         }
         
         handleProgress();
         let timerId = setTimeout(function progress(){
             handleProgress();
-            timerId = setTimeout(progress, 300);
-        }, 300);
+            timerId = setTimeout(progress, 250);
+        }, 250);
 
         return () => {
             clearTimeout(timerId);
+            setLoadingDelayed(false);
         };
     }, [])
+
+    useEffect(() => {
+        if(common.dataLoadStatus >= 1){
+            setLoadingDelayed(true);
+            fadeIn(Animated, fadeAnim_text, 600);
+        }
+    }, [common.dataLoadStatus])
 
     useFocusEffect(
         useCallback(() => {
@@ -60,9 +75,11 @@ const Progress = () => {
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_1}]} source={LOADING_LOGO_1} />
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_2}]} source={LOADING_LOGO_2} />
                 <Animated.Image style={[styles.logo, {opacity: fadeAnim_3}]} source={LOADING_LOGO_3} />
+                {common.isNetworkChanged && <Text style={styles.network}>{CHANGE_NETWORK_NOTICE + storage.network}</Text>}
+                {common.connect === false && <Text style={styles.network}>{CONNECTION_NOTICE}</Text>}
+                {(loadingDelayed && common.connect && common.isNetworkChanged === false) && 
+                    <Animated.Text style={[styles.network, {opacity: fadeAnim_text}]}>{LOADING_DATA_NOTICE}</Animated.Text>}
             </View>
-            {common.isNetworkChanged && <Text style={styles.network}>{CHANGE_NETWORK_NOTICE + storage.network}</Text>}
-            {common.connect === false && <Text style={styles.network}>{CONNECTION_NOTICE}</Text>}
         </View>
     )
 }
@@ -118,7 +135,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: "center",
         color: TextColor,
-        paddingTop: 20,
+        position: "absolute",
+        top: 60,
     }
 })
 

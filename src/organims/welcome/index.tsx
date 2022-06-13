@@ -13,7 +13,7 @@ import Button from "@/components/button/button";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import SplashScreen from "react-native-splash-screen";
 import Description from "./description";
-import { WalletActions } from "@/redux/actions";
+import { StakingActions, WalletActions } from "@/redux/actions";
 import NetworkBadge from "@/components/parts/networkBadge";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
@@ -53,6 +53,8 @@ const Welcome = () => {
     useEffect(() => {
         WalletActions.handleWalletName("");
         WalletActions.handleWalletAddress("");
+        StakingActions.updateStakingRewardState(0);
+        
         SplashScreen.hide();
         isWalletExist();
         return () => {

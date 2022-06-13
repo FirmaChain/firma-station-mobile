@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Linking } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -26,7 +26,7 @@ interface Props {
 const Proposal = ({proposalId}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
     
-    const {wallet} = useAppSelector(state => state);
+    const {wallet, common} = useAppSelector(state => state);
     const { proposalState, handleProposalPolling } = useProposalData(proposalId);
 
     const isVotingPeriod = useMemo(() => {
@@ -58,10 +58,33 @@ const Proposal = ({proposalId}:Props) => {
     }
 
     const refreshStates = async() => {
-        CommonActions.handleLoadingProgress(true);
-        await handleProposalPolling();
-        CommonActions.handleLoadingProgress(false);
+        try {
+            CommonActions.handleLoadingProgress(true);
+            await handleProposalPolling();
+            CommonActions.handleLoadingProgress(false);
+            CommonActions.handleDataLoadStatus(0);
+        } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            console.log(error);
+        }
     }
+
+    useEffect(() => {
+        let count = 0;
+        let intervalId = setInterval(() => {
+            if(common.dataLoadStatus > 0 && common.dataLoadStatus < 2){
+                count = count + 1;
+            } else {
+                clearInterval(intervalId);
+            }
+            if(count >= 6){
+                count = 0;
+                refreshStates();
+            }
+        }, 1000)
+
+        return () => clearInterval(intervalId);
+    }, [common.dataLoadStatus])
 
     useFocusEffect(
         useCallback(() => {

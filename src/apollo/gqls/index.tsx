@@ -81,10 +81,6 @@ export const useValidatorsDescriptionQuery = () => {
             operatorAddress: operator_address
             selfDelegateAddress: self_delegate_address
           }
-          delegations {
-            amount
-            delegatorAddress: delegator_address
-          }
           validator_descriptions {
             avatar_url
             moniker
@@ -97,6 +93,25 @@ export const useValidatorsDescriptionQuery = () => {
     { pollInterval: 0, notifyOnNetworkStatusChange: true }
   );
 };
+
+export const useDelegationsQuery = ({ address }: IQueryParam) => {
+  return useQuery(
+    gql`
+      query ValidatorDelegations($address: String!) {
+        delegations: action_validator_delegations(address: $address) {
+          delegations
+        }
+      }
+    `,
+    {
+      pollInterval: 0,
+      notifyOnNetworkStatusChange: true,
+      variables: {
+        address,
+      },
+    }
+  );
+}
 
 export const useValidatorsQuery = () => {
   return useQuery(
@@ -132,10 +147,6 @@ export const useValidatorsQuery = () => {
           }
           validatorCommissions: validator_commissions(order_by: { height: desc }, limit: 1) {
             commission
-          }
-          delegations {
-            amount
-            delegatorAddress: delegator_address
           }
           validatorSigningInfos: validator_signing_infos(order_by: { height: desc }, limit: 1) {
             missedBlocksCounter: missed_blocks_counter
@@ -197,10 +208,6 @@ export const useValidatorFromAddressQuery = ({ address }: IQueryParam) => {
           }
           validatorCommissions: validator_commissions(order_by: {height: desc}, limit: 1) {
             commission
-          }
-          delegations {
-            amount
-            delegatorAddress: delegator_address
           }
           validatorSigningInfos: validator_signing_infos(order_by: {height: desc}, limit: 1) {
             missedBlocksCounter: missed_blocks_counter
@@ -295,45 +302,12 @@ export const useProposalQuery = ({ proposalId }: IQueryParam) => {
   );
 };
 
-
-export const useCurrentHistoryByAddressQuery = ({ address }: IQueryParam) => {
-  return useQuery(
-    gql`
-      query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
-        messagesByAddress: messages_by_address(
-          limit: 1,
-          args: { addresses: $address, types: $types, limit: $limit, offset: $offset }
-        ) {
-          transaction {
-            height
-            hash
-            success
-            messages
-            block {
-              height
-              timestamp
-            }
-          }
-        }
-      }
-    `,
-    {
-      pollInterval: 0,
-      notifyOnNetworkStatusChange: true,
-      variables: {
-        address,
-        limit: 99999,
-      },
-    }
-  );
-};
-
 export const useHistoryByAddressQuery = ({ address, offset, limit }: IQueryParam) => {
   return useQuery(
     gql`
       query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
         messagesByAddress: messages_by_address(
-          args: { addresses: $address, types: $types, limit: $limit, offset: $offset }
+          args: { addresses: $address, types: $types, limit: $limit, offset: $offset }, order_by: {transaction: {block: {height: desc}}}
         ) {
           transaction {
             height
@@ -360,51 +334,13 @@ export const useHistoryByAddressQuery = ({ address, offset, limit }: IQueryParam
   );
 };
 
-
-export const useTransferHistoryByAddressQuery = ({ address }: IQueryParam) => {
-  return useQuery(
-    gql`
-      query GetMessagesByAddress($address: _text, $limit: bigint = 50, $offset: bigint = 0, $types: _text = "{}") {
-        messagesByAddress: messages_by_address(
-          args: { addresses: $address, types: $types, limit: $limit, offset: $offset }
-        ) {
-          transaction {
-            height
-            hash
-            success
-            messages
-            memo
-            block {
-              height
-              timestamp
-            }
-          }
-        }
-      }
-    `,
-    {
-      pollInterval: 0,
-      notifyOnNetworkStatusChange: true,
-      variables: {
-        address,
-        types: "{cosmos.bank.v1beta1.MsgSend}",
-        limit: 99999,
-      },
-    }
-  );
-};
-
-export const useAvataURLFromAddress = ({ address }: IQueryParam) => {
+export const useVersion = () => {
   return useQuery(
     gql`
       query {
-        validator(
-          where: { validator_info: { account: { address: { _eq: "${address}" } } } }
-        ) {
-          validator_descriptions {
-            avatar_url,
-            moniker
-          }
+        version {
+          chainVer
+          sdkVer
         }
       }
     `,
@@ -415,5 +351,27 @@ export const useAvataURLFromAddress = ({ address }: IQueryParam) => {
         limit: 99999,
       },
     }
-  );
-};
+  )
+}
+
+
+export const useMaintenance = () => {
+  return useQuery(
+    gql`
+      query {
+        maintenance(order_by: {index: desc}, limit: 1) {
+          maintenance
+          currentAppVer
+          minAppVer
+        }
+      }
+    `,
+    {
+      pollInterval: 0,
+      notifyOnNetworkStatusChange: true,
+      variables: {
+        limit: 99999,
+      },
+    }
+  )
+}
