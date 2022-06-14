@@ -1,5 +1,5 @@
 import React from "react";
-import StepRecover from "@/organims/createWallet/stepRecover";
+import StepRecover from "@/organisms/createWallet/stepRecover";
 
 const StepRecoverScreen = () => {
     return (

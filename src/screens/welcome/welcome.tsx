@@ -1,5 +1,5 @@
 import React from "react";
-import Welcome from "@/organims/welcome";
+import Welcome from "@/organisms/welcome";
 
 const WelcomeScreen = () => {
     return (

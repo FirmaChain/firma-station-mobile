@@ -1,5 +1,5 @@
 import React from "react";
-import RecoverWallet from "@/organims/welcome/recoverWallet";
+import RecoverWallet from "@/organisms/welcome/recoverWallet";
 
 const RecoverWalletScreen = () => {
     return (

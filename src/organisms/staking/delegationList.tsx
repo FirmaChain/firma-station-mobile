@@ -57,9 +57,6 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
 
     const refreshStakings = async() => {
         try {
-            if(delegationList.length === 0){
-                CommonActions.handleLoadingProgress(true);
-            }
             await refetchValidatorDescList();
             await handleDelegationState();
             if(redelegationList.length > 0){

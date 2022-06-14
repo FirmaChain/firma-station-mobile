@@ -9,7 +9,6 @@ interface Props {
 }
 
 const DescriptionBox = ({validator}:Props) => {
-    
     const [avatarError, setAvatarError] = useState(false);
 
     const handleUrl = async(url:string) => {
@@ -27,7 +26,7 @@ const DescriptionBox = ({validator}:Props) => {
                 source={(avatarError || validator.avatar === null || validator.avatar === "")?VALIDATOR_PROFILE:{uri: validator.avatar}}/>
             </View>
             <View style={[styles.boxV, {flex: 1}]}>
-                <Text style={[styles.moniker , {paddingBottom: (validator.description || validator.website)?8:0}]}>{validator.moniker}</Text>
+                <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.moniker, {paddingBottom: (validator.description || validator.website)?8:0}]}>{validator.moniker}</Text>
                 {validator.description && <Text style={styles.desc}>{validator.description}</Text>}
                 {validator.website &&
                 <TouchableOpacity onPress={()=>handleUrl(validator.website)}>

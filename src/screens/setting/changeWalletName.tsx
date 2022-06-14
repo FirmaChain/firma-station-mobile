@@ -1,5 +1,5 @@
 import React from "react";
-import ChangeWalletName from "@/organims/setting/changeWalletName";
+import ChangeWalletName from "@/organisms/setting/changeWalletName";
 
 const ChangeWalletNameScreen = () => {
     return (

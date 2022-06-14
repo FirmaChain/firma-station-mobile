@@ -1,5 +1,5 @@
 import React from "react";
-import History from "@/organims/history";
+import History from "@/organisms/history";
 
 const HistoryScreen = () => {
     return (

@@ -1,5 +1,5 @@
 import React from "react";
-import Staking from "@/organims/staking/staking";
+import Staking from "@/organisms/staking/staking";
 
 const StakingScreen = () => {
     return (

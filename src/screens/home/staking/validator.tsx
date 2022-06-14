@@ -1,5 +1,5 @@
 import React from "react";
-import Validator from "@/organims/staking/validator";
+import Validator from "@/organisms/staking/validator";
 
 
 export type ValidatorParams = {

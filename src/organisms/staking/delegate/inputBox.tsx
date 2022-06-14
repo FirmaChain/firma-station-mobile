@@ -8,7 +8,7 @@ import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TE
 import { DownArrow } from "@/components/icon/icon";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
-import WalletInfo from "@/organims/wallet/send/walletInfo";
+import WalletInfo from "@/organisms/wallet/send/walletInfo";
 import ValidatorSelectModal from "./validatorSelectModal";
 
 interface Props {

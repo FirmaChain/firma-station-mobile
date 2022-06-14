@@ -1,5 +1,5 @@
 import React from "react";
-import StepOne from "@/organims/createWallet/stepOne";
+import StepOne from "@/organisms/createWallet/stepOne";
 
 export type CreateStepOneParams = {
     mnemonic?: any;

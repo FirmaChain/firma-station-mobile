@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { CommonActions } from "@/redux/actions";
-import StepTwo from "@/organims/createWallet/stepTwo";
+import StepTwo from "@/organisms/createWallet/stepTwo";
 
 export type CreateStepTwoParams = {
     wallet: any;

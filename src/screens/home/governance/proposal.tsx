@@ -1,5 +1,5 @@
 import React from "react";
-import Proposal from "@/organims/governance/proposal";
+import Proposal from "@/organisms/governance/proposal";
 
 export type ProposalParams = {
     proposalId: number;

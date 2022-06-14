@@ -1,5 +1,5 @@
 import React from "react";
-import Transaction from "@/organims/transaction";
+import Transaction from "@/organisms/transaction";
 
 export type TransactionParams = {
     state: any;

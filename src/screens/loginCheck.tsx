@@ -1,5 +1,5 @@
 import React from "react";
-import LoginCheck from "@/organims/loginCheck";
+import LoginCheck from "@/organisms/loginCheck";
 
 const LoginCheckScreen = () => {
     return (

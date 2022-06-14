@@ -1,4 +1,4 @@
-import Web from "@/organims/web/web";
+import Web from "@/organisms/web/web";
 import React from "react";
 
 export type WebParams = {

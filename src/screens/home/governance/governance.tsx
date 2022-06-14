@@ -1,5 +1,5 @@
 import React from "react";
-import Governance from "@/organims/governance/governance";
+import Governance from "@/organisms/governance/governance";
 
 const GovernanceScreen = () => {
     return (

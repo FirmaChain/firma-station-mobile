@@ -1,4 +1,4 @@
-import Version from "@/organims/setting/version";
+import Version from "@/organisms/setting/version";
 import React from "react";
 
 const VersionScreen = () => {

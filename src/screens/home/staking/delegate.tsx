@@ -1,5 +1,5 @@
 import React from "react";
-import Delegate from "@/organims/staking/delegate";
+import Delegate from "@/organisms/staking/delegate";
 
 export type DelegateParams = {
     state: any;

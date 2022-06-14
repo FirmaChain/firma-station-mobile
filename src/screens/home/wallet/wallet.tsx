@@ -1,5 +1,5 @@
 import React from "react";
-import Wallet from "@/organims/wallet/wallet";
+import Wallet from "@/organisms/wallet/wallet";
 
 const WalletScreen = () => {
     return (

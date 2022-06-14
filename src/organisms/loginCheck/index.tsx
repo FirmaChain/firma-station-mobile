@@ -19,16 +19,16 @@ import { easeInAndOutAnim, fadeIn, LayoutAnim } from "@/util/animation";
 import { getAdrFromMnemonic } from "@/util/firma";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { removeAllData } from "@/util/detect";
+import { wait } from "@/util/common";
+import { VersionCheck } from "@/util/validationCheck";
+import { useServerMessage } from "@/hooks/common/hooks";
+import { VERSION } from "@/../config";
 import SplashScreen from "react-native-splash-screen";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Description from "../welcome/description";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import InputBox from "./inputBox";
 import Button from "@/components/button/button";
-import { wait } from "@/util/common";
-import { useChainVersion, useServerMessage } from "@/hooks/common/hooks";
-import { VERSION } from "@/../config";
-import { VersionCheck } from "@/util/validationCheck";
 import UpdateModal from "./updateModal";
 import MaintenanceModal from "./maintenanceModal";
 
@@ -37,7 +37,6 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>
 const LoginCheck = () => {
     const navigation:ScreenNavgationProps = useNavigation();
 
-    const {chainVer, sdkVer} = useChainVersion();
     const {minAppVer, currentAppVer, maintenanceState} = useServerMessage();
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -157,15 +156,6 @@ const LoginCheck = () => {
             }
         }
     }, [loading, common.connect, appStartStatus]);
-
-    useEffect(() => {
-        if(chainVer !== ""){
-            CommonActions.handleChainVer(chainVer);
-        }
-        if(sdkVer !== ""){
-            CommonActions.handleSDKVer(sdkVer);
-        }
-    }, [chainVer, sdkVer])
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);

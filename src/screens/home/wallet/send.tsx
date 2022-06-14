@@ -1,5 +1,5 @@
 import React from "react";
-import Send from "@/organims/wallet/send";
+import Send from "@/organisms/wallet/send";
 
 const SendScreen = () => {
     return (

@@ -1,5 +1,5 @@
 import React from "react";
-import ExportWallet from "@/organims/setting/exportWallet";
+import ExportWallet from "@/organisms/setting/exportWallet";
 
 
 export type ExportWalletParams = {

@@ -1,5 +1,5 @@
 import React from "react";
-import SelectWallet from "@/organims/welcome/selectWallet";
+import SelectWallet from "@/organisms/welcome/selectWallet";
 
 const SelectWalletScreen = () => {
     return (

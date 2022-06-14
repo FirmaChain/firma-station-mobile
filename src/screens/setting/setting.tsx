@@ -1,5 +1,5 @@
 import React from "react";
-import Setting from "@/organims/setting/setting";
+import Setting from "@/organisms/setting/setting";
 
 const SettingScreen = () => {
     return (

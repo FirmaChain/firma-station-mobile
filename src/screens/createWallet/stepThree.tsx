@@ -1,5 +1,5 @@
 import React from "react";
-import StepThree from "@/organims/createWallet/stepThree";
+import StepThree from "@/organisms/createWallet/stepThree";
 
 export type CreateStepThreeParams = {
     wallet: any;

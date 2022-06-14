@@ -7,6 +7,7 @@ import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import { setExplorerUrl } from "@/constants/common";
 import { BgColor, BoxColor, Lato, TextColor, TextGrayColor, YesColor } from "@/constants/theme";
+import { useChainVersion } from "@/hooks/common/hooks";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions, StorageActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
@@ -23,6 +24,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Version>
 const Version = () => {
     const navigation:ScreenNavgationProps = useNavigation();
 
+    const {chainVer, sdkVer} = useChainVersion();
     const {storage, common} = useAppSelector(state => state);
 
     const networkList = ["MainNet", "TestNet"];
@@ -64,6 +66,15 @@ const Version = () => {
     }, [common.currentAppVer])
 
     useEffect(() => {
+        if(chainVer !== ""){
+            CommonActions.handleChainVer(chainVer);
+        }
+        if(sdkVer !== ""){
+            CommonActions.handleSDKVer(sdkVer);
+        }
+    }, [chainVer, sdkVer])
+
+    useEffect(() => {
         for(var i=0; i<networkList.length; i++){
             if(storage.network === networkList[i])setSelectedNetworkIndex(i);
         }
@@ -77,20 +88,6 @@ const Version = () => {
                     <View style={styles.container}>
                         <Pressable onPress={() => handleNetworkSelectModal(true)}>
                             <TextMenuItem title="App Version" content={"v" + VERSION} contentColor={TextGrayColor}/>
-                            {/* <View style={[styles.listItem, {backgroundColor: BoxColor}]}>
-                                <View style={styles.itemTitleBox}>
-                                    <Text style={[styles.itemTitle, {color: TextColor}]}>{"App Version"}</Text>
-                                    {versionCheck &&
-                                    <View style={{display: "flex", alignItems: "center", flexDirection: "row", paddingLeft: 10}}>
-                                        <VerifiedCircle size={18} color={YesColor}/>
-                                        <Text style={{color: YesColor, paddingHorizontal: 2}}>Latest version</Text>
-                                    </View>
-                                    }
-                                </View>
-                                <View style={styles.contentWrapper}>
-                                    <Text style={[styles.content, {color: TextGrayColor}]}>{"v" + VERSION}</Text>
-                                </View>
-                            </View> */}
                         </Pressable>
                         <TextMenuItem title="Chain Version" content={common.chainVer} contentColor={TextGrayColor}/>
                         <TextMenuItem title="SDK Version" content={common.sdkVer} contentColor={TextGrayColor}/>

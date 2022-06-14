@@ -1,6 +1,6 @@
 import React from "react";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import Home from "@/organims/home";
+import Home from "@/organisms/home";
 
 interface Props {
     route: {}
