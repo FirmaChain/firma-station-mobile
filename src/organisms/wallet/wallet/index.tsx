@@ -100,6 +100,7 @@ const Wallet = () => {
                 updateStakingState(staking.stakingReward);
             }
             handleCurrentHistoryPolling(true);
+            CommonActions.handleLoadingProgress(false);
         } else {
             handleCurrentHistoryPolling(false);
         }

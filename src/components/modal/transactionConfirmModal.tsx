@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { convertAmount, convertNumber } from "@/util/common";
-import { AbstainColor, BorderColor, DisableColor, Lato, NoColor, NoWithVetoColor, TextCatTitleColor, TextDarkGrayColor, TextDisableColor, WhiteColor, YesColor } from "@/constants/theme";
+import { BorderColor, DisableColor, Lato, TextCatTitleColor, TextDarkGrayColor, TextDisableColor, WhiteColor } from "@/constants/theme";
 import Button from "../button/button";
 import CustomModal from "./customModal";
 import ValidationModal from "./validationModal";
@@ -23,19 +23,6 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, vote = "", open, s
     const signMoalText = {
         title: title,
         confirmTitle: 'Confirm'
-    }
-
-    const votingColor = (vote:string) => {
-        switch (vote) {
-            case "YES":
-                return YesColor;
-            case "NO":
-                return NoColor;
-            case "NoWithVeto":
-                return NoWithVetoColor;
-            case "Abstain":
-                return AbstainColor;
-        }
     }
 
     const [openValidationModal, setOpenValidationModal] = useState(false);

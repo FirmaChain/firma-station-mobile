@@ -11,21 +11,20 @@ import AlertModal from "@/components/modal/alertModal";
 
 interface Props {
     walletName: string;
-    available: number;
     reward: any;
     transactionHandler: (password:string, gas:number) => void;
 }
 
-const RewardBox = ({walletName, available, reward, transactionHandler}:Props) => {
+const RewardBox = ({walletName, reward, transactionHandler}:Props) => {
     const [openModal, setOpenModal] = useState(false);
     const [rewardTextSize, setRewardTextSize] = useState(28);
     
     const [withdrawAllGas, setWithdrawAllGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
-    const [alertDescription, setAlertDescription] = useState('');
+    const [alertDescription, setAlertDescription] = useState("");
 
     const handleTransaction = (password:string) => {
-        if(alertDescription !== '') return handleModalOpen(true);
+        if(alertDescription !== "") return handleModalOpen(true);
         transactionHandler(password, withdrawAllGas);
     }
     
@@ -38,25 +37,28 @@ const RewardBox = ({walletName, available, reward, transactionHandler}:Props) =>
     }
 
     const handleWithdraw = async(open:boolean) => {
-        if(open){
-            await getGasFromAllDelegations();
+        try {
+            if(open){
+                await getGasFromAllDelegations();
+            }
+            setOpenModal(open);
+        } catch (error) {
+            console.log(error);
         }
-        setOpenModal(open);
     }
 
     const getGasFromAllDelegations = async() => {
         CommonActions.handleLoadingProgress(true);
-        if(reward > 0 && available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
-            try {
-                const result = await getEstimateGasFromAllDelegations(walletName);
-                setWithdrawAllGas(result);
-                setAlertDescription('');
-            } catch (error) {
-                console.log(error);
-                CommonActions.handleLoadingProgress(false);
-                setAlertDescription(String(error));
-                return;
-            }
+        try {
+            const result = await getEstimateGasFromAllDelegations(walletName);
+            setWithdrawAllGas(result);
+            setAlertDescription("");
+        } catch (error) {
+            console.log(error);
+            CommonActions.handleLoadingProgress(false);
+            setAlertDescription(String(error));
+            handleModalOpen(true);
+            throw error;
         }
         CommonActions.handleLoadingProgress(false);
     }

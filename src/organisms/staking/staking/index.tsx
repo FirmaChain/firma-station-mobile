@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { useStakingData } from "@/hooks/staking/hooks";
@@ -99,20 +99,23 @@ const Staking = () => {
         }
     },[recentHistory])
 
+    
+    useEffect(() => {
+        CommonActions.handleLoadingProgress(true);
+    }, [])
+
     useEffect(() => {
         if(isFocused){
             if(staking.stakingReward > 0) {
                 updateStakingState(staking.stakingReward);
             }
             handleCurrentHistoryPolling(true);
+            CommonActions.handleLoadingProgress(false);
         } else {
             handleCurrentHistoryPolling(false);
         }
     }, [isFocused])
 
-    useEffect(() => {
-        CommonActions.handleLoadingProgress(true);
-    }, [])
 
     return (
         <View style={styles.container}>
@@ -124,7 +127,6 @@ const Staking = () => {
                     <View style={styles.box}>
                         <RewardBox
                             walletName={wallet.name}
-                            available={stakingState.available}
                             reward={stakingReward}
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>

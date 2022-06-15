@@ -45,7 +45,7 @@ const Voting = ({isVotingPeriod, proposalId, transactionHandler}:Props) => {
     }
 
     const handleTransaction = (password:string) => {
-        if(alertDescription !== '') return handleModalOpen(true);
+        if(alertDescription !== "") return handleModalOpen(true);
         transactionHandler(password, votingGas, getVotingOption(selectedVote));
     }
 
@@ -75,14 +75,16 @@ const Voting = ({isVotingPeriod, proposalId, transactionHandler}:Props) => {
         try {
             const result = await getEstimateGasVoting(wallet.name, proposalId, getVotingOption(selectedVote));
             setVotingGas(result);
+            setAlertDescription("");
             CommonActions.handleLoadingProgress(false);
         } catch (error) {
             console.log(error);
-            setAlertDescription(String(error));
             CommonActions.handleLoadingProgress(false);
-            return;
+            setAlertDescription(String(error));
+            handleModalOpen(true);
+            setActive(true);
+            throw error;
         }
-
         setActive(true);
         handleTransactionModal(true);
     }

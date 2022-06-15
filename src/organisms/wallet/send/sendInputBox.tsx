@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DisableColor, Lato, PointColor, TextCatTitleColor, WhiteColor } from "@/constants/theme";
+import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE } from "@/constants/common";
 import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAddress";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import WarnContainer from "@/components/parts/containers/warnContainer";
-import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE } from "@/constants/common";
 
 interface Props {
     handleSendInfo: (type:string, value:string|number) => void;

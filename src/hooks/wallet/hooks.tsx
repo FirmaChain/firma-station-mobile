@@ -134,16 +134,7 @@ export const useHistoryData = () => {
     useEffect(() => {
         if(common.lockStation === false){
             setHistoryList({list:[]});
-            setRecentHistory({
-                hash: '',
-                success: '',
-                type: {
-                    tagTheme: '',
-                    tagDisplay: '',
-                },
-                timestamp: '',
-                block: 0,
-            });
+            setRecentHistory(undefined);
             const changeChainNetwork = async() => {
                 handleHisotyPolling();
             }

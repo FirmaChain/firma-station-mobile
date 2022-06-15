@@ -51,6 +51,7 @@ export interface ProposalVoteState {
     stakingPool: Array<any>;
     totalVotingPower: number;
     proposalTally: Array<any>;
+    voters: Array<any>;
 }
 
 export const useGovernanceList = () => {
@@ -126,7 +127,8 @@ export const useProposalData = (id:number) => {
                     }
                 
                     const calculateCurrentTurnout = () => {
-                        const totalVotingPower = convertNumber(data.proposal[0].staking_pool_snapshot.bonded_tokens);
+
+                        const totalVotingPower = convertNumber(data.proposal[0].staking_pool_snapshot?data.proposal[0].staking_pool_snapshot.bonded_tokens:0);
                         const votes = data.proposalTallyResult[0];
                         
                         if(votes === undefined) return 0;
@@ -137,9 +139,9 @@ export const useProposalData = (id:number) => {
                     }
         
                     const convertDepositPeriod = (period:number, submitTime:string) => {
-                        const periodToDay = period / 86400000000000;
+                        const periodToDay = period / 1000000000;
                         const date = new Date(submitTime);
-                        date.setDate(date.getDate() + periodToDay);
+                        date.setSeconds(date.getSeconds() + periodToDay);
                         
                         return convertTime(date.toString(), true);;
                     }
@@ -169,8 +171,9 @@ export const useProposalData = (id:number) => {
                         quorum: convertNumber(data.govParams[0].tallyParams.quorum),
                         currentTurnout: calculateCurrentTurnout(),
                         stakingPool: data.stakingPool[0],
-                        totalVotingPower: convertNumber(data.proposal[0].staking_pool_snapshot.bonded_tokens),
+                        totalVotingPower: convertNumber(data.proposal[0].staking_pool_snapshot?data.proposal[0].staking_pool_snapshot.bonded_tokens:0),
                         proposalTally: data.proposalTallyResult[0],
+                        voters: data.proposalVote,
                     })
                 
                     setProposalState({
