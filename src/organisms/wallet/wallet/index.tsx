@@ -24,6 +24,7 @@ const Wallet = () => {
     const { recentHistory, currentHistoryPolling } = useHistoryData();
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
 
+    const [isInit, setIsInit] = useState(false);
     const [chainInfo, setChainInfo]:Array<any> = useState([]);
 
     const moveToSendScreen = () => {
@@ -53,14 +54,13 @@ const Wallet = () => {
     }
 
     const refreshStates = async() => {
-        CommonActions.handleLoadingProgress(true);
+        if(isFocused){
+            CommonActions.handleLoadingProgress(true);
+        }
         try {
             await getChainInfo();
             await getStakingState();
-            await handleCurrentHistoryPolling(true);
-            if(staking.stakingReward > 0 && isFocused){
-                await updateStakingState(staking.stakingReward);
-            }
+            refreshAtFocus();
             if(common.isNetworkChanged === false){
                 CommonActions.handleLoadingProgress(false);
             }
@@ -69,6 +69,13 @@ const Wallet = () => {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
         }
+    }
+    
+    const refreshAtFocus = () => {
+        if(staking.stakingReward > 0) {
+            updateStakingState(staking.stakingReward);
+        }
+        handleCurrentHistoryPolling(true);
     }
 
     useEffect(() => {
@@ -89,20 +96,18 @@ const Wallet = () => {
     }, [common.dataLoadStatus])
 
     useEffect(() => {
-        if(recentHistory !== undefined && common.isNetworkChanged === false){
+        if(recentHistory !== undefined 
+            && common.isNetworkChanged === false){
             refreshStates();
         }
     },[recentHistory])
 
     useEffect(() => {
-        if(isFocused){
-            if(staking.stakingReward > 0){
-                updateStakingState(staking.stakingReward);
-            }
-            handleCurrentHistoryPolling(true);
-            CommonActions.handleLoadingProgress(false);
+        if(isInit){
+            refreshAtFocus();
         } else {
-            handleCurrentHistoryPolling(false);
+            refreshStates();
+            setIsInit(true);
         }
     }, [isFocused])
 

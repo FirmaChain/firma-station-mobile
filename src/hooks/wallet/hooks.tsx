@@ -135,10 +135,7 @@ export const useHistoryData = () => {
         if(common.lockStation === false){
             setHistoryList({list:[]});
             setRecentHistory(undefined);
-            const changeChainNetwork = async() => {
-                handleHisotyPolling();
-            }
-            changeChainNetwork();
+            handleHisotyPolling();
         }
     }, [storage.network, common.lockStation]);
 

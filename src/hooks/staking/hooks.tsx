@@ -243,7 +243,6 @@ export const useValidatorDescription = (delegations:Array<any>, validators:Array
             avatarURL: validatorDescription.validatorAvatar,
         }
     })
-    
     return result;
 }
 

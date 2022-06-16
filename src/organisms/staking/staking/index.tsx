@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { useStakingData } from "@/hooks/staking/hooks";
@@ -24,14 +24,15 @@ const Staking = () => {
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
     const { recentHistory, currentHistoryPolling } = useHistoryData();
 
-    const [isRefresh, setIsRefresh] = useState(false);
+    const [isInit, setIsInit] = useState(false);
+    const [isListRefresh, setIsListRefresh] = useState(false);
 
     const stakingReward = useMemo(() => {
-        return stakingState.stakingReward;
-    }, [stakingState.stakingReward])
+        return staking.stakingReward;
+    }, [staking.stakingReward])
 
     const handleIsRefresh = (refresh:boolean) => {
-        setIsRefresh(refresh);
+        setIsListRefresh(refresh);
     }
 
     const handleWithdrawAll = (password:string, gas:number) => {
@@ -57,24 +58,34 @@ const Staking = () => {
     }
 
     const refreshStates = async() => {
-        CommonActions.handleLoadingProgress(true);
+        if(isFocused){
+            CommonActions.handleLoadingProgress(true);
+        }
         try {
             await getStakingState();
-            setIsRefresh(true);
+            refreshAtFocus();
+            if(common.isNetworkChanged === false){
+                CommonActions.handleLoadingProgress(false);
+            }
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
         }
     }
 
+    const refreshAtFocus = () => {
+        if(staking.stakingReward > 0 && isFocused) {
+            updateStakingState(staking.stakingReward);
+        }
+        handleCurrentHistoryPolling(isFocused);
+        setIsListRefresh(isFocused);
+    }
+
     useEffect(() => {
-        if(isRefresh === false){
-            if(common.isNetworkChanged === false){
-                CommonActions.handleLoadingProgress(false);
-            }
+        if(isListRefresh === false){
             CommonActions.handleDataLoadStatus(0);
         }
-    }, [isRefresh])
+    }, [isListRefresh])
 
     useEffect(() => {
         let count = 0;
@@ -94,28 +105,20 @@ const Staking = () => {
     }, [common.dataLoadStatus])
 
     useEffect(() => {
-        if(recentHistory !== undefined && common.isNetworkChanged === false){
+        if(recentHistory !== undefined 
+            && common.isNetworkChanged === false){
             refreshStates();
         }
     },[recentHistory])
-
     
     useEffect(() => {
-        CommonActions.handleLoadingProgress(true);
-    }, [])
-
-    useEffect(() => {
-        if(isFocused){
-            if(staking.stakingReward > 0) {
-                updateStakingState(staking.stakingReward);
-            }
-            handleCurrentHistoryPolling(true);
-            CommonActions.handleLoadingProgress(false);
+        if(isInit){
+            refreshAtFocus();
         } else {
-            handleCurrentHistoryPolling(false);
+            refreshStates();
+            setIsInit(true);
         }
     }, [isFocused])
-
 
     return (
         <View style={styles.container}>
@@ -131,7 +134,7 @@ const Staking = () => {
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
                     </View>
-                    <StakingLists isRefresh={isRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={moveToValidator} />
+                    <StakingLists isRefresh={isListRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={moveToValidator} />
                 </View>
                 }
             </RefreshScrollView>

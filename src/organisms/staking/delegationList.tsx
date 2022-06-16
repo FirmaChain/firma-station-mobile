@@ -43,17 +43,17 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
         return undelegationState;
     }, [undelegationState]);
 
+    const allReward = useMemo(() => {
+        let reward = 0;
+        delegationList.map(value => {
+            reward = reward + value.reward;
+        })
+        return reward; 
+    }, [delegationList])
+
     useEffect(() => {
-        if(isRefresh === false){
-            if(delegationList.length > 0){
-                let reward = 0;
-                delegationList.map(value => {
-                    reward = reward + value.reward;
-                })
-                StakingActions.updateStakingRewardState(convertToFctNumber(reward));
-            }
-        }
-    },[delegationList]);
+        StakingActions.updateStakingRewardState(convertToFctNumber(allReward));
+    },[allReward]);
 
     const refreshStakings = async() => {
         try {

@@ -10,6 +10,7 @@ import WarnContainer from "@/components/parts/containers/warnContainer";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import WalletInfo from "@/organisms/wallet/send/walletInfo";
 import ValidatorSelectModal from "./validatorSelectModal";
+import { convertNumber, convertToFctNumber } from "@/util/common";
 
 interface Props {
     type: string;
@@ -17,10 +18,11 @@ interface Props {
     delegationState: Array<StakeInfo>;
     resetRedelegateValues: boolean;
     resetInputValues: boolean;
+    handleStandardAvailable: (balance: number) => void;
     handleDelegateState: (type: string, value:string|number) => void;
 }
 
-const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues, resetInputValues, handleDelegateState}:Props) => {
+const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues, resetInputValues, handleStandardAvailable, handleDelegateState}:Props) => {
     const {balance, getBalance} = useBalanceData();
 
     const [openSelectModal, setOpenSelectModal] = useState(false);
@@ -30,13 +32,24 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
     const [selectDelegationAmount, setSelectDelegationAmount] = useState(0);
 
     const [maxActive, setMaxActive] = useState(false);
-    const [maxAmount, setMaxAmount] = useState('');
     const [safetyActive, setSafetyActive] = useState(true);
     const [limitAvailable, setLimitAvailable] = useState(0);
 
     const redelegationList = useMemo(() => {
         return delegationState;
     }, [delegationState]);
+
+    const reward = useMemo(() => {
+        if(type === "Delegate"){
+            const state = delegationState.find((value) => value.validatorAddress === operatorAddress);
+            if(state !== undefined){
+                return convertNumber(state.reward);
+            } else {
+                return 0; 
+            }
+        }
+        return 0;
+    }, [delegationState, balance])
 
     const available = useMemo(() => {
         return type === "Delegate"? balance : Number(selectDelegationAmount)
@@ -57,6 +70,10 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
         setOpenSelectModal(open);
     }
 
+    const handleMaxActive = (active:boolean) => {
+        setMaxActive(active);
+    }
+
     const handleSelectValidator = (address:string) => {
         handleDelegateState("operatorAddressSrc", address);
         setSelectOperatorAddressSrc(address);
@@ -66,36 +83,28 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
     }
 
     useEffect(() => {
-        if(maxActive){
-            switch (type) {
-                case "Delegate":
-                    setMaxAmount((limitAvailable).toString());
-                    break;
-                default:
-                    setMaxAmount(selectDelegationAmount.toString());
-                    break;
-            }
-        } else {
-            setMaxAmount('');
-        }
-    }, [maxActive]);
-
-    useEffect(() => {
-        if(type === "Delegate"){
-            if(safetyActive){
-                if(available > 100000){
-                    setLimitAvailable(available - 100000);
-                } 
-            } else {
-                if(available > 20000) {
-                    setLimitAvailable(available - 20000);
+        switch (type) {
+            case "Delegate":
+                if(safetyActive){
+                    if(available > 100000){
+                        handleStandardAvailable(convertNumber(convertToFctNumber(available - 100000)));
+                        setLimitAvailable((available + reward) - 100000);
+                    } 
                 } else {
-                    setLimitAvailable(0);
-                    setSafetyActive(false);
+                    if(available > 20000) {
+                        handleStandardAvailable(convertNumber(convertToFctNumber(available - 20000)));
+                        setLimitAvailable((available + reward) - 20000);
+                    } else {
+                        setLimitAvailable(0);
+                        setSafetyActive(false);
+                    }
                 }
-            }
+                return;
+            default:
+                setLimitAvailable(0);
+                return;
         }
-    }, [type, safetyActive, available])
+    }, [type, safetyActive, available, reward])
     
 
     useEffect(() => {
@@ -137,11 +146,10 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                     title="Amount"
                     placeholder="0 FCT"
                     accent={type === "Delegate"? safetyActive:maxActive}
-                    limitValue={type === "Delegate"? limitAvailable : Number(selectDelegationAmount)}
-                    forcedValue={maxAmount}
+                    limitValue={type === "Delegate"? limitAvailable : convertNumber(selectDelegationAmount)}
                     resetValues={resetInputValues}
                     enableMaxAmount={true}
-                    onChangeMaxAmount={setMaxActive}
+                    handleMaxActive={handleMaxActive}
                     onChangeEvent={(value:number) => handleDelegateState("amount", value)}/>
                 
                 {type === "Delegate" &&
@@ -205,7 +213,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
     return (
         <ScrollView>
             <View style={{paddingHorizontal: 20}}>
-                <WalletInfo available={available}/>
+                <WalletInfo type={type} available={available} reward={reward}/>
             </View>
             {ClassifyByType()}
             <ValidatorSelectModal 
