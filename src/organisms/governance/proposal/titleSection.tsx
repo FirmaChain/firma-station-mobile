@@ -5,7 +5,7 @@ import { PROPOSAL_STATUS, STATUS_COLOR } from '@/constants/common';
 import { Lato, TextColor } from '@/constants/theme';
 
 interface Props {
-    data: ProposalTitleState
+    data: ProposalTitleState;
 }
 
 const TitleSection = ({data}:Props) => {

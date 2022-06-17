@@ -6,7 +6,7 @@ import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useProposalData } from "@/hooks/governance/hooks";
-import { PROPOSAL_STATUS_VOTING_PERIOD, TRANSACTION_TYPE } from "@/constants/common";
+import { EXPLORER_URL, PROPOSAL_STATUS_VOTING_PERIOD, TRANSACTION_TYPE } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import { GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
@@ -40,6 +40,11 @@ const Proposal = ({proposalId}:Props) => {
         }
         return false;
     }, [proposalStates])
+
+
+    const handleMoveToExplorer = () => {
+        navigation.navigate(Screens.WebScreen, {uri: EXPLORER_URL() + "/proposals/" + proposalId});
+    }
 
     const handleMoveToWeb = () => {
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["governance"]});
@@ -105,8 +110,8 @@ const Proposal = ({proposalId}:Props) => {
                 <RefreshScrollView
                     refreshFunc={refreshStates}>
                     <>
-                    {proposalStates && <TitleSection data={proposalStates.titleState} />}
-                    {proposalStates && <DescriptionSection data={proposalStates.descState} />}
+                    {proposalStates && <TitleSection data={proposalStates.titleState}/>}
+                    {proposalStates && <DescriptionSection data={proposalStates.descState} handleMoveToExplorer={handleMoveToExplorer}/>}
                     {proposalStates && <VotingSection data={proposalStates.voteState} isVotingPeriod={isVotingPeriod}/>}
                     </>
                 </RefreshScrollView>

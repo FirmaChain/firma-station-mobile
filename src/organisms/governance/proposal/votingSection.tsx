@@ -22,6 +22,7 @@ const VotingSection = ({data, isVotingPeriod}:Props) => {
                     quorum: convertPercentage(data.quorum),
                     totalVotingPower: data.totalVotingPower,
                     proposalTally: data.proposalTally,
+                    voters: data.voters,
                 }
             }
         return {
@@ -33,6 +34,7 @@ const VotingSection = ({data, isVotingPeriod}:Props) => {
                 quorum: 0,
                 totalVotingPower: 0,
                 proposalTally: null,
+                voters: null,
             }
         }
         
