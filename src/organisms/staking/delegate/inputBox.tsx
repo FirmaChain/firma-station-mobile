@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { useFocusEffect } from "@react-navigation/native";
 import { StakeInfo } from "@/hooks/staking/hooks";
 import { useBalanceData } from "@/hooks/wallet/hooks";
+import { convertNumber, convertToFctNumber } from "@/util/common";
 import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
 import { DownArrow } from "@/components/icon/icon";
@@ -10,7 +11,6 @@ import WarnContainer from "@/components/parts/containers/warnContainer";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import WalletInfo from "@/organisms/wallet/send/walletInfo";
 import ValidatorSelectModal from "./validatorSelectModal";
-import { convertNumber, convertToFctNumber } from "@/util/common";
 
 interface Props {
     type: string;

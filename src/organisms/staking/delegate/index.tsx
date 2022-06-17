@@ -36,7 +36,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
     
     const {wallet} = useAppSelector(state => state);
-    const { delegationState } = useDelegationData();
+    const { delegationState, handleDelegationState } = useDelegationData();
 
     const [resetInputValues, setInputResetValues] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
@@ -45,6 +45,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
     const [alertDescription, setAlertDescription] = useState('');
     
     const [status, setStatus] = useState(0);
+    const [standardAvailable, setStandardAvailable] = useState(0);
     const [delegateState, setDelegateState] = useState<DelegateState>({
         type: TRANSACTION_TYPE[type.toUpperCase()],
         operatorAddressDst : operatorAddress,
@@ -62,6 +63,10 @@ const Delegate = ({type, operatorAddress}:Props) => {
         if(open === false) setStatus(status - 1);
     }
 
+    const handleStandardAvailable = (balance: number) => {
+        setStandardAvailable(balance);
+    }
+
     const handleDelegateState = (type:string, value: string | number) => {
         setDelegateState((prevState) => ({
             ...prevState,
@@ -77,7 +82,8 @@ const Delegate = ({type, operatorAddress}:Props) => {
         try {
             switch (type) {
                 case "Delegate":
-                    gas = await getEstimateGasDelegate(wallet.name, delegateState.operatorAddressDst, delegateState.amount);
+                    let amount = standardAvailable > delegateState.amount? delegateState.amount:standardAvailable;
+                    gas = await getEstimateGasDelegate(wallet.name, delegateState.operatorAddressDst, amount);
                     break;
                 case "Undelegate":
                     gas = await getEstimateGasUndelegate(wallet.name, delegateState.operatorAddressDst, delegateState.amount);
@@ -87,12 +93,13 @@ const Delegate = ({type, operatorAddress}:Props) => {
                     break;
             }
             handleDelegateState("gas", gas);
+            setAlertDescription("");
             setStatus(status + 1);
         } catch (error) {
             console.log(error); 
             CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
-            setIsAlertModalOpen(true);
+            handleModalOpen(true);
             return;
         }
         CommonActions.handleLoadingProgress(false);
@@ -127,6 +134,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
 
     useFocusEffect(
         useCallback(() => {
+            handleDelegationState();
             setResetRedelegateValues(false);
             setInputResetValues(false);
         }, [])
@@ -146,7 +154,8 @@ const Delegate = ({type, operatorAddress}:Props) => {
                                 <InputBox 
                                     type={type} 
                                     operatorAddress={delegateState.operatorAddressDst}
-                                    delegationState={delegationState} 
+                                    delegationState={delegationState}
+                                    handleStandardAvailable={handleStandardAvailable}
                                     handleDelegateState={handleDelegateState} 
                                     resetRedelegateValues={resetRedelegateValues} 
                                     resetInputValues={resetInputValues} />

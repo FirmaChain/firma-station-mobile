@@ -4,30 +4,43 @@ import { BorderColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from "
 import { convertAmount } from "@/util/common";
 
 interface Props {
+    type?: string;
     available: number;
+    reward?: number;
 }
 
-const WalletInfo = ({available = 0}:Props) => {
+const WalletInfo = ({type, available = 0, reward = 0}:Props) => {
     
     return (
+        <View style={styles.box}>
         <View style={styles.boxH}>
             <Text style={styles.title}>Available</Text>
             <Text style={styles.balance}>{convertAmount(available, true, 6)}
                 <Text style={[styles.title, {fontSize: 14}]}>  FCT</Text>
             </Text>
         </View>
+        <View style={[styles.boxH, {display: type === "Delegate"?"flex":"none", justifyContent: "flex-end", paddingVertical: 0, paddingBottom: 10}]}>
+            <Text style={[styles.title, {fontSize: 14, color: TextGrayColor}]}>Reward</Text>
+            <Text style={[styles.balance, {fontSize: 14, color: TextGrayColor}]}>{convertAmount(reward, true, 6)}
+                <Text style={[styles.title, {fontSize: 12, color: TextGrayColor}]}>  FCT</Text>
+            </Text>
+        </View>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
+    box: {
+        borderBottomColor: BorderColor,
+        borderBottomWidth: 1,
+        paddingVertical: 10,
+        marginBottom: 20,
+    },
     boxH: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "flex-end",
-        borderBottomWidth: 1,
-        borderBottomColor: BorderColor,
-        paddingVertical: 20,
-        marginBottom: 20,
+        paddingVertical: 5,
     },
     title: {
         flex: 1,
