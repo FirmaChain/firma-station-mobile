@@ -1,30 +1,48 @@
 import React, { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { BoxColor, DividerColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BoxColor, DividerColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from "@/constants/common";
 import { convertAmount, convertTime } from "@/util/common";
 import { ProposalDescriptionState } from "@/hooks/governance/hooks";
+import { ICON_LINK_ARROW } from "@/constants/images";
 
 interface Props {
     data: ProposalDescriptionState;
+    handleMoveToExplorer: ()=>void;
 }
 
-const DescriptionSection = ({data}:Props) => {
+const DescriptionSection = ({data, handleMoveToExplorer}:Props) => {
+
+    const isDepositPeriod = useMemo(() => {
+        return data.status === PROPOSAL_STATUS_DEPOSIT_PERIOD;
+    }, [data.status])
+
+    const combinedDeposit = (proposalDeposit:Array<any>) => {
+        let deposit:number = 0;
+        proposalDeposit.map(data => deposit += Number(data.amount));
+        return deposit;
+    }
 
     const InfoSection = useMemo(() => {
         if(data) return [
             {title: "Proposal Type", data: PROPOSAL_MESSAGE_TYPE[data.proposalType]},
             {title: "Submit Time", data: convertTime(data.submitTime, true)},
-            {title: "Voting Start Time", data: data.status === PROPOSAL_STATUS_DEPOSIT_PERIOD? null : convertTime(data.votingStartTime, true)},
-            {title: "Voting End Time", data: data.status === PROPOSAL_STATUS_DEPOSIT_PERIOD? null : convertTime(data.votingEndTime, true)},
+            {title: "Voting Start Time", data: isDepositPeriod? null : convertTime(data.votingStartTime, true)},
+            {title: "Voting End Time", data: isDepositPeriod? null : convertTime(data.votingEndTime, true)},
+            {title: "Deposit Period", data: isDepositPeriod?data.depositPeriod:null},
+            {title: "Min Deposit Amount", data: isDepositPeriod?convertAmount(data.minDeposit) + " FCT":null},
+            {title: "Current Deposit", data: isDepositPeriod?convertAmount(combinedDeposit(data.proposalDeposit)) + " FCT":null},
         ]
         return [
             {title: "Proposal Type", data: ''},
             {title: "Submit Time", data: ''},
             {title: "Voting Start Time", data: null},
             {title: "Voting End Time", data: null},
+            {title: "Deposit Period", data: null},
+            {title: "Min Deposit Amount", data: null},
+            {title: "Current Deposit", data: null},
         ]
-    }, [data]);
+    }, [data, isDepositPeriod]);
 
     const Description = useMemo(() => {
         if(data) return {title: "Description", data: data.description}
@@ -36,31 +54,12 @@ const DescriptionSection = ({data}:Props) => {
         return null;
     }, [data]);
 
-    const combinedDeposit = (proposalDeposit:Array<any>) => {
-        let deposit:number = 0;
-        proposalDeposit.map(data => deposit += Number(data.amount));
-        return deposit;
-    }
-
-    const DepositSection = useMemo(() => {
-        if(data) return [
-            {title: "Deposit Period", data: data.depositPeriod},
-            {title: "Min Deposit Amount", data: convertAmount(data.minDeposit) + " FCT"},
-            {title: "Current Deposit", data: convertAmount(combinedDeposit(data.proposalDeposit)) + " FCT"},
-        ]
-        return [
-            {title: "Deposit Period", data: ''},
-            {title: "Min Deposit Amount", data: '0 FCT'},
-            {title: "Current Deposit", data: '0 FCT'},
-        ]
-    }, [data]);
-
     const convertClassified = (classified:any) => {
         if(classified === undefined || classified === null) return;
         if(classified.changes) {
             return (
-                <View style={[styles.boxV, {paddingTop: 30}]}>
-                    <Text style={[styles.title, styles.titleV]}>Change Parameters</Text>
+                <View style={styles.depositBox}>
+                    <Text style={[styles.title, styles.titleV, {color: TextColor}]}>Change Parameters</Text>
                     <Text style={[styles.desc, {fontSize: 16}]}>{JSON.stringify(classified.changes)}</Text>
                 </View>
             )
@@ -104,7 +103,7 @@ const DescriptionSection = ({data}:Props) => {
     return (
         <View style={styles.container}>
             <View style={styles.divider}/>
-            <View style={[styles.boxV, {paddingVertical: 20}]}>
+            <View style={[styles.boxV, {paddingTop: 20, paddingBottom: 10}]}>
                 {InfoSection.map((value, index) => {
                     return (
                         <View key={index} 
@@ -120,25 +119,23 @@ const DescriptionSection = ({data}:Props) => {
                     )
                 })}
             </View>
-            <View style={styles.divider}/>
+            <View style={[styles.boxH, {justifyContent: "flex-end", paddingBottom: 30}]}>
+                <TouchableOpacity style={[styles.boxH, {width: "auto"}]} onPress={handleMoveToExplorer}>
+                    <Text style={[styles.desc, {fontSize: 16, color: TextAddressColor}]}>More View</Text>
+                    <Image
+                        style={styles.arrowIcon}
+                        source={ICON_LINK_ARROW}/>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.dividerDashed}/>
             <View style={[styles.boxV, {paddingVertical: 30}]}>
                 <View style={styles.boxV}>
-                    <Text style={[styles.title, styles.titleV]}>{Description.title}</Text>
+                    <Text style={[styles.title, styles.titleV, {color: TextColor}]}>{Description.title}</Text>
                     <Text style={[styles.desc, {fontSize: 16}]}>{Description.data}</Text>
                 </View>
                 {convertClassified(Classified)}
-                <View style={styles.depositBox}>
-                    {DepositSection.map((value, index) => {
-                        return (
-                            <View key={index} style={[styles.boxH, {justifyContent: "space-between"}, index <= InfoSection.length - 1 && {paddingBottom: 12}]}>
-                                <Text style={[styles.title, {fontSize: 14}]}>{value.title}</Text>
-                                <Text style={[styles.desc, {fontSize: index === 0? 13 : 14, color: TextColor}]}>{value.data}</Text>
-                            </View>
-                        )
-                    })}
-                </View>
             </View>
-            <View style={styles.divider}/>
+            <View style={styles.dividerDashed}/>
         </View>
     )
 }
@@ -151,6 +148,13 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 1,
         backgroundColor: DividerColor,
+    },
+    dividerDashed: {
+        width: "100%",
+        height: 1,
+        borderWidth: 1,
+        borderColor: DividerColor,
+        borderStyle: "dashed",
     },
     boxH: {
         width: "100%",
@@ -180,7 +184,14 @@ const styles = StyleSheet.create({
     titleV: {
         fontSize: 18, 
         paddingBottom: 11,
-    }
+    },
+    arrowIcon: {
+        width: 16,
+        maxWidth: 16,
+        height: 16,
+        overflow: 'hidden',
+        marginLeft: 2,
+    },
 })
 
 export default DescriptionSection;

@@ -37,6 +37,10 @@ const Validator = ({validatorAddress}:Props) => {
         stakingReward: 0,
     });
 
+    const delegationLength = useMemo(() => {
+        return delegationState.length;
+    }, [delegationState])
+    
     const AlertText = useMemo(() => {
         if(validatorState){
             if(validatorState.tombstoned === true) return "TOMBSTONED";
@@ -137,13 +141,15 @@ const Validator = ({validatorAddress}:Props) => {
     }, [validatorState]);
 
     useEffect(() => {
-        if(stakingState.stakingReward > 0){
-            StakingActions.updateDelegateState({
-                address: validatorAddress,
-                reward: stakingState.stakingReward * 1000000,
-            });
+        if(stakingState){
+            if(stakingState.stakingReward > 0){
+                StakingActions.updateDelegateState({
+                    address: validatorAddress,
+                    reward: stakingState.stakingReward * 1000000,
+                });
+            }
         }
-    }, [stakingState.stakingReward]);
+    }, [stakingState]);
 
     useFocusEffect(
         useCallback(() => {
@@ -175,7 +181,7 @@ const Validator = ({validatorAddress}:Props) => {
                                         walletName={wallet.name}
                                         validatorAddress={validatorAddress}
                                         stakingState={stakingState} 
-                                        delegations={delegationState.length}
+                                        delegations={delegationLength}
                                         handleDelegate={moveToDelegate} 
                                         transactionHandler={handleWithdraw}/>
                                     <View style={styles.infoBox}>

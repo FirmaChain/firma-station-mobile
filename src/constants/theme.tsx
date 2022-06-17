@@ -19,6 +19,7 @@ export const TextWarnColor = '#ffc542';
 export const TextCatTitleColor = '#c5c5d1';
 export const TextAddressColor = '#50b5ff';
 export const TextStakingReward = '#b7c2f0';
+export const TextPointDisableColor = '#a9b3e0';
 
 export const InputBgColor = '#2a2932';
 export const InputPlaceholderColor = '#8d8d91';

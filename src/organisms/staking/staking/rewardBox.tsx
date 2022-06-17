@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { CommonActions } from "@/redux/actions";
-import { ButtonPointLightColor, DiableButtonPointcolor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor, TextStakingReward } from "@/constants/theme";
+import { ButtonPointLightColor, DiableButtonPointcolor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor, TextPointDisableColor, TextStakingReward } from "@/constants/theme";
 import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
 import { getEstimateGasFromAllDelegations, getFeesFromGas } from "@/util/firma";
 import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
@@ -81,6 +81,7 @@ const RewardBox = ({walletName, reward, transactionHandler}:Props) => {
                 active={reward > 0}
                 color={ButtonPointLightColor}
                 disableColor={DiableButtonPointcolor}
+                disableTextColor={TextPointDisableColor}
                 onPressEvent={() => handleWithdraw(true)}/>
             <TransactionConfirmModal 
                 transactionHandler={handleTransaction} 

@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useMemo } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { useSelfDelegationData, ValidatorData } from "@/hooks/staking/hooks";
 import { convertAmount } from "@/util/common";
 import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextGrayColor } from "@/constants/theme";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     data: ValidatorData;
@@ -15,27 +16,34 @@ const width = (Dimensions.get('window').width / cols) - (marginHorizontal * (col
 
 const PercentageBox = ({data}:Props) => {
 
+    const {storage} = useAppSelector(state => state);
+
     // chain upgrade response
     const {selfDelegation} = useSelfDelegationData(data.address.operatorAddress, data.address.accountAddress);
 
-    const percentData = [
-        {row: [{
-            title: "Voting Power",
-            data: data.votingPower.data,
-            amount: data.votingPower.amount,
-        },{
-            title: "Self-Delegation",
-            data: selfDelegation.data,
-            amount: selfDelegation.amount,
-        }]},
-        {row: [{
-            title: "Commission",
-            data: data.commission.data,
-        },{
-            title: "Uptime",
-            data: data.uptime.data,
-        }]}
-    ]
+    const percentageData = useMemo(() => {
+        if(storage.network === "TestNet" && selfDelegation){
+            return [
+                {row: [{
+                    title: "Voting Power",
+                    data: data.votingPower?.data,
+                    amount: data.votingPower?.amount,
+                },{
+                    title: "Self-Delegation",
+                    data: selfDelegation?.data,
+                    amount: selfDelegation?.amount,
+                }]},
+                {row: [{
+                    title: "Commission",
+                    data: data.commission?.data,
+                },{
+                    title: "Uptime",
+                    data: data.uptime?.data,
+                }]}
+            ]
+        }
+        return data.state;
+    }, [storage.network, selfDelegation])
 
     return (
         <View style={[styles.container]}>
@@ -53,15 +61,12 @@ const PercentageBox = ({data}:Props) => {
 
             <View style={[styles.box, {paddingVertical: 24}]}>
                 <View style={styles.wrapBox}>
-                    {/* 
-                    // chain upgrade response
-                    {data.state.map((grid, index) => {
-                    */}
-                    {percentData.map((grid, index) => {
+                    
+                    {/* // chain upgrade response */}
+                    {percentageData && percentageData.map((grid, index) => {
                         return (
                         // chain upgrade response
-                        // <View key={index} style={[styles.wrapperH, index < data.state.length - 1 && {paddingBottom: 34}]}>
-                        <View key={index} style={[styles.wrapperH, index < percentData.length - 1 && {paddingBottom: 34}]}>
+                        <View key={index} style={[styles.wrapperH, index < percentageData.length - 1 && {paddingBottom: 34}]}>
                             {grid.row.map((item:any, index:number) => {
                                 return (
                                 <View key={index} style={[styles.wrapperH, {flex: 1, alignItems: "center"}]}>

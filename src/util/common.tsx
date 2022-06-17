@@ -38,7 +38,7 @@ export const convertToFctNumber = (value: string | number) => {
 }
 
 export const makeDecimalPoint = (value: string | number, point: number = 2) => {
-    if(value === undefined) return 0;
+    if(value === undefined) return "0";
     const val = convertNumber(value).toString();
     const pointPos = val.indexOf(".");
 
@@ -102,8 +102,12 @@ export const convertPercentage = (value: string | number) => {
         result = convertCurrent(makeDecimalPoint(percent / 1e6)) + "M";
     } else if (percent >= 1e9 && percent < 1e12) {
         result = convertCurrent(makeDecimalPoint(percent / 1e9)) + "B";
-    } else if (percent >= 1e12) {
+    } else if (percent >= 1e12 && percent < 1e15) {
         result = convertCurrent(makeDecimalPoint(percent / 1e12)) + "T";
+    } else if (percent >= 1e15 && percent < 1e18) {
+        result = convertCurrent(makeDecimalPoint(percent / 1e15)) + "q";
+    } else if (percent >= 1e18) {
+        result = convertCurrent(makeDecimalPoint(percent / 1e18)) + "Q";
     }
     
     return  result;

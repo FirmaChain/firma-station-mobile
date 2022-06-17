@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import { StakingActions } from "@/redux/actions";
-import { useDelegationsQuery, useValidatorFromAddressQuery, useValidatorsDescriptionQuery, useValidatorsQuery } from "@/apollo/gqls";
+import { useDelegationsQuery, useValidatorFromAddressQuery, useValidatorFromAddressQueryForTestNet, useValidatorsDescriptionQuery, useValidatorsDescriptionQueryForTestNet, useValidatorsQuery, useValidatorsQueryForTestNet } from "@/apollo/gqls";
 import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
 import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
 import { BLOCKS_PER_YEAR } from "@/../config";
@@ -39,11 +39,11 @@ export interface ValidatorData {
     APY: string;
 
     // chain upgrade response
-    votingPower: StakingData;
-    commission: StakingData;
-    uptime: StakingData;
+    votingPower?: StakingData;
+    commission?: StakingData;
+    uptime?: StakingData;
     
-    // state: Array<any>;
+    state?: Array<any>;
 }
 
 export interface StakeInfo {
@@ -88,7 +88,7 @@ export const useDelegationData = () => {
     const [undelegationList, setUndelegationList] = useState<Array<UndelegationInfo>>([]);
     const [validatorsDescList, setValidatorsDescList] = useState<Array<any>>([]);
 
-    const {refetch, loading, data} = useValidatorsDescriptionQuery();
+    const {refetch, loading, data} = storage.network === "TestNet"?useValidatorsDescriptionQueryForTestNet():useValidatorsDescriptionQuery();
 
     useEffect(() => {
         if(loading === false) {
@@ -270,7 +270,8 @@ export const useValidatorData = () => {
     const [validators, setValidators]:Array<any> = useState([]);
     const [totalVotingPower, setTotalVotingPower] = useState(0);
     const [polling, setPolling] = useState(false);
-    const { refetch, loading, data } = useValidatorsQuery();
+
+    const { refetch, loading, data } = storage.network === "TestNet"? useValidatorsQueryForTestNet():useValidatorsQuery();
 
     useEffect(() => {
         if(polling){
@@ -287,7 +288,7 @@ export const useValidatorData = () => {
                             tombstoned === false);
                     })
                     .map((validator: any) => {
-                        return organizeValidatorData(validator, stakingData)
+                        return organizeValidatorData(validator, stakingData, storage.network)
                     });
         
                     const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
@@ -328,9 +329,13 @@ export const useValidatorData = () => {
 }
 
 export const useValidatorDataFromAddress = (address:string) => {
+    const {storage} = useAppSelector(state => state);
+
     const [validatorState, setValidatorState] = useState<ValidatorState>();
 
-    const {refetch, loading, data} = useValidatorFromAddressQuery({
+    const {refetch, loading, data} = storage.network === "TestNet"?useValidatorFromAddressQueryForTestNet({
+        address: address.toString(),
+    }):useValidatorFromAddressQuery({
         address: address.toString(),
     });
 
@@ -340,7 +345,7 @@ export const useValidatorDataFromAddress = (address:string) => {
                 const stakingData = organizeStakingData(data);
                 const validator = data.validator
                 .map((data: any) => {
-                    return organizeValidatorData(data, stakingData)
+                    return organizeValidatorData(data, stakingData, storage.network)
                 });
     
                 const status = validator[0].status;
@@ -374,26 +379,26 @@ export const useValidatorDataFromAddress = (address:string) => {
                     },
                     uptime: {
                         data: validator[0].condition,
-                    }
+                    },
                 
-                    // state: [
-                    //     {row: [{
-                    //         title: "Voting Power",
-                    //         data: validator[0].votingPowerPercent,
-                    //         amount: validator[0].votingPower,
-                    //     },{
-                    //         title: "Self-Delegation",
-                    //         data: validator[0].selfPercent,
-                    //         amount: convertToFctNumber(validator[0].self),
-                    //     }]},
-                    //     {row: [{
-                    //         title: "Commission",
-                    //         data: validator[0].commission,
-                    //     },{
-                    //         title: "Uptime",
-                    //         data: validator[0].condition,
-                    //     }]}
-                    // ]
+                    state: [
+                        {row: [{
+                            title: "Voting Power",
+                            data: validator[0].votingPowerPercent,
+                            amount: validator[0].votingPower,
+                        },{
+                            title: "Self-Delegation",
+                            data: validator[0].selfPercent,
+                            amount: convertToFctNumber(validator[0].self),
+                        }]},
+                        {row: [{
+                            title: "Commission",
+                            data: validator[0].commission,
+                        },{
+                            title: "Uptime",
+                            data: validator[0].condition,
+                        }]}
+                    ]
                 }
     
                 setValidatorState({
@@ -517,7 +522,7 @@ const organizeStakingData = (data:any) => {
     }
 }
 
-const organizeValidatorData = (validator:any, stakingData:any) => {
+const organizeValidatorData = (validator:any, stakingData:any, network:string) => {
     const validatorAddress = validator.validatorInfo.operatorAddress;
 
     const validatorDescription = organizeValidatorDescription(validator);
@@ -532,21 +537,26 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
     const votingPowerPercent = makeDecimalPoint(convertNumber((votingPower / stakingData.totalVotingPower) * 100), 2);
 
     // chain upgrade response
+    let self = 0;
+    let selfPercent = "0";
+    let delegations = [];
 
-    // const totalDelegations = validator.delegations.reduce((prev: number, current: any) => {
-    //     return prev + convertNumber(current.amount.amount);
-    // }, 0);
-    // const [selfDelegation] = validator.delegations.filter((y: any) => {
-    //     return y.delegatorAddress === validator.validatorInfo.selfDelegateAddress;
-    // });
-
-    // let self = 0;
-    // if (selfDelegation) self = convertNumber(selfDelegation.amount.amount);
-
-    // const selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
-    // const delegations = validator.delegations.map((value: any) => {
-    //     return { address: value.delegatorAddress, amount: convertNumber(value.amount.amount) };
-    // });
+    if(network === "MainNet"){
+        const totalDelegations = validator.delegations.reduce((prev: number, current: any) => {
+            return prev + convertNumber(current.amount.amount);
+        }, 0);
+        const [selfDelegation] = validator.delegations.filter((y: any) => {
+            return y.delegatorAddress === validator.validatorInfo.selfDelegateAddress;
+        });
+    
+        if (selfDelegation) self = convertNumber(selfDelegation.amount.amount);
+    
+        selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
+        delegations = validator.delegations.map((value: any) => {
+            return { address: value.delegatorAddress, amount: convertNumber(value.amount.amount) };
+        });
+    }
+    //
 
     const missedBlockCounterExist = validator.validatorSigningInfos.length > 0;
     const missedBlockCounter = missedBlockCounterExist? validator.validatorSigningInfos[0].missedBlocksCounter : 0;
@@ -578,9 +588,10 @@ const organizeValidatorData = (validator:any, stakingData:any) => {
         commission,
 
         // chain upgrade response
-        // self,
-        // selfPercent,
-        // delegations,
+        self,
+        selfPercent,
+        delegations,
+
         condition,
         status,
         jailed,

@@ -10,6 +10,7 @@ import ModalItems from "@/components/modal/modalItems";
 import MonikerSection from "./parts/list/monikerSection";
 import DataSection from "./parts/list/dataSection";
 import MonikerSectionForRedelegate from "./parts/list/monikerSectionForRedelegate";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     visible: boolean;
@@ -19,6 +20,8 @@ interface Props {
 }
 
 const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:Props) => {
+    const {common} = useAppSelector(state => state);
+
     const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
@@ -65,8 +68,10 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
             if(undelegationList.length > 0){
                 await handleUndelegationState();
             }
+            CommonActions.handleLoadingProgress(false);
             handleIsRefresh(false);
         } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
         }
     }
@@ -105,6 +110,7 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
                     return;
             }
         } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
         }
     }

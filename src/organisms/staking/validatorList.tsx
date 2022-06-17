@@ -52,10 +52,14 @@ const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:
     }
 
     const refreshValidators = async() => {
+        if(validatorList.length === 0){
+            CommonActions.handleLoadingProgress(true);
+        }
         try {
             if(visible){
                 await handleValidatorsPolling();
             }
+            CommonActions.handleLoadingProgress(false);
             handleIsRefresh(false);
         } catch (error) {
             if(visible){

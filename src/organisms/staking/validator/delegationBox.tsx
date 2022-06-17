@@ -5,7 +5,6 @@ import { FirmaUtil } from "@firmachain/firma-js";
 import { degree, LayoutAnim, easeInAndOutCustomAnim, TurnToOpposite, TurnToOriginal } from "@/util/animation";
 import { getEstimateGasFromDelegation, getFeesFromGas } from "@/util/firma";
 import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
-import { StakingState } from "@/hooks/staking/hooks";
 import { ARROW_ACCORDION } from "@/constants/images";
 import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from "@/constants/theme";
 import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
@@ -16,7 +15,7 @@ import AlertModal from "@/components/modal/alertModal";
 interface Props {
     walletName: string;
     validatorAddress: string;
-    stakingState: StakingState;
+    stakingState: any;
     delegations: number;
     handleDelegate: Function;
     transactionHandler: (password:string, gas:number) => void;
@@ -32,37 +31,45 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
 
     const [withdrawGas, setWithdrawGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
-    const [alertDescription, setAlertDescription] = useState('');
+    const [alertDescription, setAlertDescription] = useState("");
+
+    const [availableButtonActive, setAvailableButtonActive] = useState(false);
+    const [rewardButtonActive, setRewardButtonActive] = useState(false);
+    const [redelegateButtonActive, setRedelegateButtonActive] = useState(false);
+    const [undelegateButtonActive, setUndelegateButtonActive] = useState(false);
 
     const onPressEvent = (type:string) => {
         handleDelegate(type);
     }
 
     const handleWithdraw = async(open:boolean) => {
-        if(open){
-            await getGasFromDelegation();
+        try {
+            if(open){
+                await getGasFromDelegation();
+            }
+            setOpenModal(open);
+        } catch (error) {
+            console.log(error);
         }
-        setOpenModal(open);
     }
 
     const getGasFromDelegation = async() => {
         CommonActions.handleLoadingProgress(true);
-        if(stakingState.stakingReward > 0 && stakingState.available > FIRMACHAIN_DEFAULT_CONFIG.defaultFee){
-            try {
-                let gas = await getEstimateGasFromDelegation(walletName, validatorAddress);
-                setWithdrawGas(gas);
-            } catch (error) {
-                console.log(error);
-                CommonActions.handleLoadingProgress(false);
-                setAlertDescription(String(error));
-                return;
-            }
+        try {
+            let gas = await getEstimateGasFromDelegation(walletName, validatorAddress);
+            setWithdrawGas(gas);
+            setAlertDescription("");
+        } catch (error) {
+            CommonActions.handleLoadingProgress(false);
+            setAlertDescription(String(error));
+            handleModalOpen(true);
+            throw error;
         }
         CommonActions.handleLoadingProgress(false);
     }
 
     const handleTransaction = (password:string) => {
-        if(alertDescription !== '') return handleModalOpen(true);
+        if(alertDescription !== "") return handleModalOpen(true);
         transactionHandler(password, withdrawGas);
     }
 
@@ -87,6 +94,15 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
     }, [openAccordion]);
 
     useEffect(() => {
+        if(stakingState){
+            setAvailableButtonActive(stakingState.available > 0);
+            setRewardButtonActive(stakingState.stakingReward > 0)
+            setRedelegateButtonActive(delegations > 0);
+            setUndelegateButtonActive(convertNumber(FirmaUtil.getFCTStringFromUFCT(stakingState.delegated)) > 0);
+        }
+    }, [stakingState, delegations])
+
+    useEffect(() => {
         setRewardTextSize(resizeFontSize(0, 100000, 20));
     }, [])
 
@@ -103,7 +119,7 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                     <SmallButton
                         title={"Delegate"}
                         size={122}
-                        active={stakingState.available > 0}
+                        active={availableButtonActive}
                         onPressEvent={() => onPressEvent('Delegate')}/>
                 </View>
                 <View style={styles.divider}/>
@@ -117,8 +133,8 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                     <SmallButton
                         title={"Withdraw"}
                         size={122}
-                        active={stakingState.stakingReward > 0}
-                        onPressEvent={() => setOpenModal(true)}/>
+                        active={rewardButtonActive}
+                        onPressEvent={() => handleWithdraw(true)}/>
                 </View>
             </View>
             <View style={[styles.delegationBox, {marginTop: 12, paddingTop: 22, paddingBottom: 12}]}>
@@ -134,14 +150,14 @@ const DelegationBox = ({walletName, validatorAddress, stakingState, delegations,
                             title={"Redelegate"}
                             size={142}
                             height={accordionHeight}
-                            active={delegations > 0}
+                            active={redelegateButtonActive}
                             onPressEvent={() => onPressEvent('Redelegate')}/>
                         <View style={{width: 15}}/>
                         <SmallButton
                             title={"Undelegate"}
                             size={142}
                             height={accordionHeight}
-                            active={convertNumber(FirmaUtil.getFCTStringFromUFCT(stakingState.delegated)) > 0}
+                            active={undelegateButtonActive}
                             onPressEvent={() => onPressEvent('Undelegate')}/>
                     </View>
                 </View>

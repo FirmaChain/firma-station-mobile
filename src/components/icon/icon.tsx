@@ -43,6 +43,13 @@ export const Setting = ({size, color}:Props) => {
     )
 }
 
+
+export const TopRightArrow = ({size, color}:Props) => {
+    return (
+        <MaterialCommunityIcons name="arrow-top-right" size={size} color={color}/>
+    )
+}
+
 export const BackArrow = ({size, color}:Props) => {
     return (
         <MaterialIcons name="arrow-back-ios" size={size} color={color}/>
@@ -123,6 +130,12 @@ export const SuccessCircle = ({size, color}:Props) => {
 export const VerifiedCircle = ({size, color}:Props) => {
     return (
         <MaterialIcons name="verified" size={size} color={color} />
+    )
+}
+
+export const VoteCircle = ({size, color}:Props) => {
+    return (
+        <Octicons name="check-circle-fill" size={size} color={color} />
     )
 }
 

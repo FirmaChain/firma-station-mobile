@@ -64,9 +64,7 @@ const Staking = () => {
         try {
             await getStakingState();
             refreshAtFocus();
-            if(common.isNetworkChanged === false){
-                CommonActions.handleLoadingProgress(false);
-            }
+            handleIsRefresh(isFocused);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
@@ -78,7 +76,9 @@ const Staking = () => {
             updateStakingState(staking.stakingReward);
         }
         handleCurrentHistoryPolling(isFocused);
-        setIsListRefresh(isFocused);
+        if(isInit === false){
+            handleIsRefresh(isFocused);
+        }
     }
 
     useEffect(() => {
@@ -115,7 +115,8 @@ const Staking = () => {
         if(isInit){
             refreshAtFocus();
         } else {
-            refreshStates();
+            CommonActions.handleLoadingProgress(true);
+            refreshAtFocus();
             setIsInit(true);
         }
     }, [isFocused])

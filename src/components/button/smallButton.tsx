@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { BgColor, DisableButtonColor, Lato, PointColor, TextColor, WhiteColor } from "@/constants/theme";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BgColor, DisableButtonColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     title: string;
@@ -11,26 +11,37 @@ interface Props {
     active?: boolean;
     border?: boolean;
     disableColor?: string;
+    disableTextColor?: string;
 }
 
-const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor}:Props) => {
+const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor, disableTextColor = TextDarkGrayColor}:Props) => {
     const [buttonHeight, setButtonHeight] = useState(height);
+
     const handleOnPress = (value?:any) => {
         if(active === false) return;
         onPressEvent && onPressEvent(value);
     }
 
-    const backgroundColor = useMemo(() => {
+    const buttonColor = useMemo(() => {
         if(active){
             if(border){
-                return BgColor;
+                return {
+                    background: BgColor,
+                    textColor: TextColor,
+                }
             } else {
-                return color;
+                return {
+                    background: color,
+                    textColor: TextColor,
+                }
             }
         } else {
-            return disableColor;
+            return {
+                background: disableColor,
+                textColor: disableTextColor,
+            }
         }
-    }, [active, border, color])
+    }, [active, active, border, color])
 
     useEffect(() => {
         if(height === 0) return setButtonHeight(0);
@@ -45,9 +56,9 @@ const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = Poin
                 height: buttonHeight, 
                 borderWidth: (border && active)? 1:0,
                 borderColor: WhiteColor,
-                backgroundColor: backgroundColor}]} 
+                backgroundColor: buttonColor.background}]} 
             onPress={()=>handleOnPress()}>
-            <Text style={[styles.buttonText, {opacity: active? 1: 0.5, color: TextColor}]}>{title}</Text>
+                <Text style={[styles.buttonText, {color: buttonColor.textColor}]}>{title}</Text>
         </TouchableOpacity>
     )
 }
