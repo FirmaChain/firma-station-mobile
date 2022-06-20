@@ -197,22 +197,20 @@ const LoginCheck = () => {
 
     useEffect(() => {
         SplashScreen.hide();
-        if(minAppVer !== "" && currentAppVer){
+        
+        if(minAppVer !== undefined && currentAppVer !== undefined){
             CommonActions.handleCurrentAppVer(currentAppVer);
             const result = VersionCheck(minAppVer, VERSION);
-
             if(result){
                 setAppStartStatus(appStartStatus + 1);
             } else {
                 setUpdate(true);
             }
-        } else {
-            setAppStartStatus(1);
         }
     }, [minAppVer])
 
     useEffect(() => {
-        if(appStartStatus === 1){
+        if(appStartStatus === 1 && maintenanceState !== undefined){
             const isMaintenance = maintenanceState?.isShow;
             if(isMaintenance){
                 setMaintenance(isMaintenance);

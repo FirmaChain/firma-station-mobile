@@ -1,3 +1,4 @@
+import { convertNumber } from "./common";
 import { getChain } from "./secureKeyChain";
 import { getMnemonic } from "./wallet";
 
@@ -29,7 +30,7 @@ export const VersionCheck = (server:string, app:string) => {
     const appVer = app.split(".");
 
     for(let i=0; i<serverVer.length; i++){
-        if(serverVer[i] > appVer[i]){
+        if(convertNumber(serverVer[i]) > convertNumber(appVer[i])){
             return false;
         }
     }
