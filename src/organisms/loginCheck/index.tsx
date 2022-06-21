@@ -24,6 +24,7 @@ import { VersionCheck } from "@/util/validationCheck";
 import { useServerMessage } from "@/hooks/common/hooks";
 import { VERSION } from "@/../config";
 import SplashScreen from "react-native-splash-screen";
+import Toast from "react-native-toast-message";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Description from "../welcome/description";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -81,16 +82,20 @@ const LoginCheck = () => {
             }
         } catch (error) {
             console.log(error);
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 
     let isProcessing = false;
     const handleLoginViaBioAuth = async() => {
         if(isProcessing === true) return;
-        isProcessing = true;
-
-        let passwordFromBio = '';
         try {
+            isProcessing = true;
+            let passwordFromBio = '';
+
             const auth = await confirmViaBioAuth();
             if(auth){
                 const result = await getPasswordViaBioAuth();
@@ -100,15 +105,18 @@ const LoginCheck = () => {
                 isProcessing = false;
                 return;
             }
-        } catch (error) {
-            console.log(error);
-        }
 
-        const result = passwordFromBio;
-        if(common.appState === "active" && result !== ""){
-            isProcessing = false;
-            CommonActions.handleLoadingProgress(true);
-            navigation.reset({routes: [{name: Screens.Home}]});
+            const result = passwordFromBio;
+            if(common.appState === "active" && result !== ""){
+                isProcessing = false;
+                CommonActions.handleLoadingProgress(true);
+                navigation.reset({routes: [{name: Screens.Home}]});
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 
@@ -117,8 +125,8 @@ const LoginCheck = () => {
         return useBio;
     }
 
-    const handleDisconnect = () => {
-        removeWalletWithAutoLogin();
+    const handleDisconnect = async() => {
+        await removeWalletWithAutoLogin();
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime("");
         navigation.reset({routes: [{name: Screens.Welcome}]});

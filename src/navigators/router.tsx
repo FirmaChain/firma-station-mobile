@@ -19,8 +19,10 @@ const Router = () => {
 
     const [openAlertModal, setOpenAlertModal] = useState(false);
     const handleAlertModalOpen = (open:boolean) => {
+        CommonActions.handleLoadingProgress(false);
         setOpenAlertModal(open);
         if(open === false){
+            CommonActions.handleLoadingProgress(true);
             CommonActions.handleDataLoadStatus(1);
         }
     }

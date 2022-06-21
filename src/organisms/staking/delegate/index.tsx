@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Linking, ScrollView, StyleSheet, View } from "react-native";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions } from "@/redux/actions";
@@ -34,8 +34,9 @@ interface DelegateState {
 
 const Delegate = ({type, operatorAddress}:Props) => {
     const navigation:ScreenNavgationProps = useNavigation();
+    const isFocused = useIsFocused();
     
-    const {wallet} = useAppSelector(state => state);
+    const {wallet, common} = useAppSelector(state => state);
     const { delegationState, handleDelegationState } = useDelegationData();
 
     const [resetInputValues, setInputResetValues] = useState(false);
@@ -118,6 +119,22 @@ const Delegate = ({type, operatorAddress}:Props) => {
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
+    const refreshStates = async() => {
+        if(isFocused){
+            CommonActions.handleLoadingProgress(true);
+        }
+        try {
+            await handleDelegationState();
+            setResetRedelegateValues(false);
+            setInputResetValues(false);
+            CommonActions.handleLoadingProgress(false);
+            CommonActions.handleDataLoadStatus(0);
+        } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            console.log(error);
+        }
+    }
+
     const handleMoveToWeb = () => {
         let key = type.toLowerCase()
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
@@ -132,13 +149,30 @@ const Delegate = ({type, operatorAddress}:Props) => {
         setIsSignModalOpen(status > 0);
     }, [status]);
 
-    useFocusEffect(
-        useCallback(() => {
-            handleDelegationState();
-            setResetRedelegateValues(false);
-            setInputResetValues(false);
-        }, [])
-    )
+    useEffect(() => {
+        if(isFocused){
+            let count = 0;
+            let intervalId = setInterval(() => {
+                if(common.dataLoadStatus > 0 && common.dataLoadStatus < 2){
+                    count = count + 1;
+                } else {
+                    clearInterval(intervalId);
+                }
+                if(count >= 6){
+                    count = 0;
+                    refreshStates();
+                }
+            }, 1000)
+    
+            return () => clearInterval(intervalId);
+        }
+    }, [common.dataLoadStatus])
+
+    useEffect(() => {
+        if(isFocused){
+            refreshStates();
+        }
+    }, [isFocused])
     
     return (
         <Container

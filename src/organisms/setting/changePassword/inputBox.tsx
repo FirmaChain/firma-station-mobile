@@ -3,6 +3,7 @@ import { Keyboard, Pressable, StyleSheet } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_PASSWORD_CONFIRM, WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 import { PasswordCheck, PasswordValidationCheck } from "@/util/validationCheck";
 import InputSetVertical from "@/components/input/inputSetVertical";
+import Toast from "react-native-toast-message";
 
 interface Props {
     wallet: any;
@@ -35,12 +36,19 @@ const InputBox = ({wallet, validate, newPassword, mnemonic}:Props) => {
     const [confirmPwValidation, setConfirmPwValidation] = useState(false);
 
     const handleCurrentPassword = async(value: string) => {
-        let result = await PasswordCheck(wallet.name, value);
-        if(result){
-            mnemonic(result);
-            setPwValidation(true);
-        } else {
-            setPwValidation(false);
+        try {
+            let result = await PasswordCheck(wallet.name, value);
+            if(result){
+                mnemonic(result);
+                setPwValidation(true);
+            } else {
+                setPwValidation(false);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 

@@ -4,6 +4,7 @@ import { PasswordCheck } from "@/util/validationCheck";
 import { getWalletList, setWalletList } from "@/util/wallet";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
+import Toast from "react-native-toast-message";
 import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import CustomModal from "@/components/modal/customModal";
@@ -39,6 +40,7 @@ const InputBox = ({walletName, useBio, fadeIn, loginHandler}:Props) => {
             setItems(result);
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
 
@@ -54,9 +56,16 @@ const InputBox = ({walletName, useBio, fadeIn, loginHandler}:Props) => {
     }
 
     const handleEditWalletList = async(list:string, newIndex: number) => {
-        setWalletList(list);
-        await WalletList();
-        setSelected(newIndex);
+        try {
+            await setWalletList(list);
+            await WalletList();
+            setSelected(newIndex);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
+        }
     }
 
     const handleLogin = () => {
@@ -65,13 +74,19 @@ const InputBox = ({walletName, useBio, fadeIn, loginHandler}:Props) => {
 
     const onChangePassword = async(value: string) => {
         setPassword(value);
-
-        let result = await PasswordCheck(selectedWallet, value);
-        if(result){
-            setPwValidation(true);
-            setMnemonic(result);
-        } else {
-            setPwValidation(false);
+        try {
+            let result = await PasswordCheck(selectedWallet, value);
+            if(result){
+                setPwValidation(true);
+                setMnemonic(result);
+            } else {
+                setPwValidation(false);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 
@@ -91,8 +106,18 @@ const InputBox = ({walletName, useBio, fadeIn, loginHandler}:Props) => {
     }, [selected])
 
     useEffect(() => {
-        WalletList();
-        setPwValidation(false);
+        const initStatus = async() => {
+            try {
+                await WalletList();
+                setPwValidation(false);
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: String(error),
+                });
+            }
+        }
+        initStatus();
         return () => {
             setItems([]);
         }

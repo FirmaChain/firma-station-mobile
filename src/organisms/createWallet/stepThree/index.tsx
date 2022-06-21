@@ -3,15 +3,16 @@ import { Linking, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { useAppSelector } from "@/redux/hooks";
 import { BgColor } from "@/constants/theme";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { GUIDE_URI } from "@/../config";
+import Toast from "react-native-toast-message";
 import Button from "@/components/button/button";
 import BioAuthModal from "@/components/modal/bioAuthModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import MnemonicQuiz from "./mnemonicQuiz";
-import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -45,14 +46,21 @@ const StepThree = ({walletInfo}:Props) => {
     }
 
     const MoveToHomeScreen = async(result:boolean) => {
-        if(result){
-            await setPasswordViaBioAuth(walletInfo.password);
-            setUseBioAuth(walletInfo.name);
-            handleOpenBioAuthModal(false);
-            navigation.reset({routes: [{name: Screens.Home}]});
-        } else {
-            handleOpenBioAuthModal(false);
-            navigation.reset({routes: [{name: Screens.Home}]});
+        try {
+            if(result){
+                await setPasswordViaBioAuth(walletInfo.password);
+                await setUseBioAuth(walletInfo.name);
+                handleOpenBioAuthModal(false);
+                navigation.reset({routes: [{name: Screens.Home}]});
+            } else {
+                handleOpenBioAuthModal(false);
+                navigation.reset({routes: [{name: Screens.Home}]});
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 

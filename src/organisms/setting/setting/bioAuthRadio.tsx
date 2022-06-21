@@ -44,21 +44,27 @@ const BioAuthRadio = ({wallet}:Props) => {
         });
     }
 
-    const handleBioAuthState = (password?:string) => {
-        if(password){
-            confirmViaBioAuth().then(res => {
-                if(res){
-                    setPasswordViaBioAuth(password);
-                    setUseBioAuth(wallet.name);
+    const handleBioAuthState = async(password?:string) => {
+        try {
+            if(password){
+                const result = await confirmViaBioAuth();
+                if(result){
+                    await setPasswordViaBioAuth(password);
+                    await setUseBioAuth(wallet.name);
                     handleToast();
                 } else {
                     handleBioAuth(false);
                 }
+                setOpenBioModal(false);
+            } else {            
+                await removePasswordViaBioAuth();
+                await removeUseBioAuth(wallet.name);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
             });
-            setOpenBioModal(false);
-        } else {            
-            removePasswordViaBioAuth();
-            removeUseBioAuth(wallet.name);
         }
     }
 

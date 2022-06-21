@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, Lato, TextColor } from "@/constants/theme";
 import { getWalletList, removeUseBioAuth, removeWallet, setWalletList } from "@/util/wallet";
 import DeleteWalletModal from "../modal/deleteWalletModal";
+import Toast from "react-native-toast-message";
 
 interface Props {
     wallet: any;
@@ -31,11 +32,15 @@ const Delete = ({wallet, handleDisconnect}:Props) => {
                 });
                 newList = newList.slice(0, -1);
             }
-            setWalletList(newList);
+            await setWalletList(newList);
             handleDelModal(false);
             handleDisconnect();
         } catch (error) {
             console.log(error);
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 

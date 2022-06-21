@@ -88,20 +88,22 @@ const Staking = () => {
     }, [isListRefresh])
 
     useEffect(() => {
-        let count = 0;
-        let intervalId = setInterval(() => {
-            if(common.dataLoadStatus > 0 && common.dataLoadStatus < 2){
-                count = count + 1;
-            } else {
-                clearInterval(intervalId);
-            }
-            if(count >= 6){
-                count = 0;
-                refreshStates();
-            }
-        }, 1000)
-
-        return () => clearInterval(intervalId);
+        if(isFocused){
+            let count = 0;
+            let intervalId = setInterval(() => {
+                if(common.dataLoadStatus > 0 && common.dataLoadStatus < 2){
+                    count = count + 1;
+                } else {
+                    clearInterval(intervalId);
+                }
+                if(count >= 6){
+                    count = 0;
+                    refreshStates();
+                }
+            }, 1000)
+    
+            return () => clearInterval(intervalId);
+        }
     }, [common.dataLoadStatus])
 
     useEffect(() => {

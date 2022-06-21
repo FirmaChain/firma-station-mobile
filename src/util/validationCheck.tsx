@@ -14,14 +14,18 @@ export function PasswordValidationCheck(password:string) {
 }
 
 export const PasswordCheck = async(walletName: string, password: string) => {
-    if(password.length >= 10){
-        let nameCheck = await WalletNameValidationCheck(walletName);
-        
-        let mnemonic = null;
-        if(nameCheck){
-            mnemonic = await getMnemonic(walletName, password);
-        } 
-        return mnemonic;
+    try {
+        if(password.length >= 10){
+            let nameCheck = await WalletNameValidationCheck(walletName);
+            
+            let mnemonic = null;
+            if(nameCheck){
+                mnemonic = await getMnemonic(walletName, password);
+            } 
+            return mnemonic;
+        }
+    } catch (error) {
+        throw error;
     }
 }
 

@@ -6,6 +6,7 @@ import { PLACEHOLDER_FOR_PASSWORD,
     PLACEHOLDER_FOR_WALLET_NAME, 
     WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
 import InputSetVertical from "@/components/input/inputSetVertical";
+import Toast from "react-native-toast-message";
 
 interface Props {
     wallet: any;
@@ -42,13 +43,20 @@ const InputBox = ({wallet, validate, newWalletName, password, mnemonic}:Props) =
     }
 
     const handlePassword = async(value: string) => {
-        let result = await PasswordCheck(wallet.name, value);
-        if(result){
-            mnemonic(result);
-            password(value);
-            setPwValidation(true);
-        } else {
-            setPwValidation(false);
+        try {
+            let result = await PasswordCheck(wallet.name, value);
+            if(result){
+                mnemonic(result);
+                password(value);
+                setPwValidation(true);
+            } else {
+                setPwValidation(false);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 

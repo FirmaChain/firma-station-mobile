@@ -77,14 +77,21 @@ const StepOne = ({mnemonic = null}:Props) => {
     }
 
     const MoveToHomeScreen = async(result:boolean) => {
-        if(result){
-            await setPasswordViaBioAuth(password);
-            setUseBioAuth(walletName);
-            handleOpenBioAuthModal(false);
-            navigation.reset({routes: [{name: Screens.Home}]});
-        } else {
-            handleOpenBioAuthModal(false);
-            navigation.reset({routes: [{name: Screens.Home}]});
+        try {
+            if(result){
+                await setPasswordViaBioAuth(password);
+                await setUseBioAuth(walletName);
+                handleOpenBioAuthModal(false);
+                navigation.reset({routes: [{name: Screens.Home}]});
+            } else {
+                handleOpenBioAuthModal(false);
+                navigation.reset({routes: [{name: Screens.Home}]});
+            }            
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 

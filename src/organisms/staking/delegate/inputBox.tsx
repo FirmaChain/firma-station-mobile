@@ -5,7 +5,7 @@ import { StakeInfo } from "@/hooks/staking/hooks";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import { convertNumber, convertToFctNumber } from "@/util/common";
 import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
-import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT } from "@/constants/common";
+import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT, UNSAFETY_NOTICE_TEXT } from "@/constants/common";
 import { DownArrow } from "@/components/icon/icon";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
@@ -52,7 +52,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
     }, [delegationState, balance])
 
     const available = useMemo(() => {
-        return type === "Delegate"? balance : Number(selectDelegationAmount)
+        return type === "Delegate"? convertNumber(balance) : convertNumber(selectDelegationAmount)
     }, [delegationState, selectDelegationAmount, balance])
 
     const noticeText = useMemo(() => {
@@ -78,7 +78,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
         handleDelegateState("operatorAddressSrc", address);
         setSelectOperatorAddressSrc(address);
         const selectedValidator = redelegationList.find((item:any) => item.validatorAddress === address);
-        setSelectValidatorMoniker(selectedValidator === undefined? '' : selectedValidator.moniker);
+        setSelectValidatorMoniker(selectedValidator === undefined? "" : selectedValidator.moniker);
         setSelectDelegationAmount(selectedValidator === undefined? 0 : selectedValidator.amount);
     }
 
@@ -167,9 +167,14 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                             <WarnContainer text={FEE_INSUFFICIENT_NOTICE}/>
                         </View>
                     }
-                    {(safetyActive && available > 100000) &&
+                    {(safetyActive && available >= 100000) &&
                     <View>
                         <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
+                    </View>
+                    }
+                    {(safetyActive === false && available < 100000) &&
+                    <View>
+                        <WarnContainer text={UNSAFETY_NOTICE_TEXT} question={true}/>
                     </View>
                     }
                     </>

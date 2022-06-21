@@ -11,7 +11,7 @@ export const useChainVersion = () => {
     const [chainVer, setChainVer] = useState("");
     const [sdkVer, setSdkVer] = useState("");
 
-    const {loading , data } = useVersion();
+    const {loading , data} = useVersion();
 
     useEffect(() => {
         if(loading === false){
@@ -29,18 +29,34 @@ export const useChainVersion = () => {
 }
 
 export const useServerMessage = () => {
-    const [minAppVer, setMinAppVer] = useState('');
-    const [currentAppVer, setCurrentAppVer] = useState('');
-    const [maintenanceState, setMaintenanceState] = useState<MaintenanceState>();
+    const [minAppVer, setMinAppVer] = useState<string|undefined>();
+    const [currentAppVer, setCurrentAppVer] = useState<string|undefined>();
+    const [maintenanceState, setMaintenanceState] = useState<MaintenanceState|undefined>();
 
     const {loading , data } = useMaintenance();
+
+    const initState = () =>{
+        setMinAppVer("");
+        setCurrentAppVer("");
+        setMaintenanceState({
+            isShow: false,
+            title: "",
+            content: "",
+        });
+    }
 
     useEffect(() => {
         if(loading === false){
             if(data){
-                setMinAppVer(data.maintenance[0].minAppVer);
-                setCurrentAppVer(data.maintenance[0].currentAppVer);
-                setMaintenanceState(data.maintenance[0].maintenance);
+                if(data.maintenance.length === 0){
+                    initState();
+                } else {
+                    setMinAppVer(data.maintenance[0].minAppVer);
+                    setCurrentAppVer(data.maintenance[0].currentAppVer);
+                    setMaintenanceState(data.maintenance[0].maintenance);
+                }
+            } else {
+                initState();
             }
         }
     }, [loading])

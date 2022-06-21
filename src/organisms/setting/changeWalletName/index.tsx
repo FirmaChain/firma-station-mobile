@@ -6,15 +6,16 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions, WalletActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { getUseBioAuth, getWalletList, removePasswordViaBioAuth, removeUseBioAuth, removeWallet, setBioAuth, setNewWallet, setUseBioAuth, setWalletList } from "@/util/wallet";
+import { updateArray } from "@/util/common";
 import { WALLETNAME_CHANGE_SUCCESS } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
+import { GUIDE_URI } from "@/../config";
 import Button from "@/components/button/button";
 import AlertModal from "@/components/modal/alertModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputBox from "./inputBox";
-import { updateArray } from "@/util/common";
-import { GUIDE_URI } from "@/../config";
+import Toast from "react-native-toast-message";
 
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangeWalletName>;
@@ -25,6 +26,7 @@ const ChangeWalletName = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeButton, setActiveButton] = useState(false);
+    const [alertContent, setAlertContent] = useState(WALLETNAME_CHANGE_SUCCESS);
 
     const [newWalletName, setNewWalletName] = useState('');
     const [password, setPassword] = useState('');
@@ -46,15 +48,28 @@ const ChangeWalletName = () => {
     }
 
     const changeNewWalletName = async() => {
-        CommonActions.handleLoadingProgress(true);
-        await removeCurrentWallet();
-        await createNewWallet();
-        CommonActions.handleLoadingProgress(false);
+        try {
+            CommonActions.handleLoadingProgress(true);
+            await removeCurrentWallet();
+            await createNewWallet();
+            CommonActions.handleLoadingProgress(false);
+        } catch (error) {
+            CommonActions.handleLoadingProgress(false);
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
+        }
     }
 
     const removeCurrentWallet = async() => {
-        await removeWallet(wallet.name);
-        await removePasswordViaBioAuth();
+        try {
+            await removeWallet(wallet.name);
+            await removePasswordViaBioAuth();
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 
     const createNewWallet = async() => {
@@ -68,29 +83,32 @@ const ChangeWalletName = () => {
                 });
                 newList = newList.slice(0, -1);
             }
-            setWalletList(newList);
+            await setWalletList(newList);
 
             const setWalletResult = await setNewWallet(newWalletName, password, mnemonic, false);
-            if(setWalletResult){
-                setIsModalOpen(true);
-            }
-
+            
             await handleUseBioAuthForNewWallet();
             WalletActions.handleWalletName(newWalletName);
-            handleModalOpen(true);
+            if(setWalletResult){
+                handleModalOpen(true);
+            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            throw error;
         }
-
     }
 
     const handleUseBioAuthForNewWallet = async() => {
-        const result = await getUseBioAuth(wallet.name);
-        if(result){
-            setUseBioAuth(newWalletName);
+        try {
+            const result = await getUseBioAuth(wallet.name);
+            if(result){
+                await setUseBioAuth(newWalletName);
+            }
+            setBioAuth(newWalletName, password);
+            await removeUseBioAuth(wallet.name);
+        } catch (error) {
+            throw error;
         }
-        setBioAuth(newWalletName, password);
-        await removeUseBioAuth(wallet.name);
     }
 
     const handleMoveToWeb = () => {

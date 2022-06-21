@@ -13,9 +13,11 @@ import { LayoutAnim, easeInAndOutAnim } from "@/util/animation";
 import { ScreenHeight } from "@/util/getScreenSize";
 import { wait } from "@/util/common";
 import { ForwardArrow, LockIcon, SendIcon, SquareIcon } from "../icon/icon";
+import Toast from "react-native-toast-message";
 import InputSetVertical from "../input/inputSetVertical";
 import ArrowButton from "../button/arrowButton";
 import CustomModal from "./customModal";
+import CustomToast from "../toast/customToast";
 
 interface Props {
     type: string;
@@ -77,25 +79,29 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
         setPassword(val);
 
         if(val.length >= 10){
-            let nameCheck = await WalletNameValidationCheck(wallet.name);
-        
-            if(nameCheck){
-                const key:string = keyEncrypt(wallet.name, val);
-                try {
-                    const result = await getChain(wallet.name);
-                    if(result){
-                        let w = decrypt(result.password, key);
-                        if(w !== null) {
-                            setActive(true);
-                        } else {
-                            setActive(false);
+            try {
+                let nameCheck = await WalletNameValidationCheck(wallet.name);
+                if(nameCheck){
+                    const key:string = keyEncrypt(wallet.name, val);
+                    try {
+                        const result = await getChain(wallet.name);
+                        if(result){
+                            let w = decrypt(result.password, key);
+                            if(w !== null) {
+                                setActive(true);
+                            } else {
+                                setActive(false);
+                            }
                         }
+                    } catch (error) {
+                        console.log(error);
+                        setActive(false);
                     }
-                } catch (error) {
-                    console.log(error);
-                    setActive(false);
                 }
-            } 
+            } catch (error) {
+                console.log(error);
+                setActive(false);
+            }
         } else {
             setActive(false);
         }
@@ -103,30 +109,35 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
 
     let isProcessing = false;
     const handleValidation = async(viaBioAuth:boolean) => {
-        if(isProcessing === true) return;
-        isProcessing = true;
-
-        let passwordFromBio = '';
-        if(viaBioAuth){
-            const auth = await confirmViaBioAuth();
-            if(auth){
-                try {
+        try {
+            if(isProcessing === true) return;
+            isProcessing = true;
+    
+            let passwordFromBio = '';
+            if(viaBioAuth){
+                const auth = await confirmViaBioAuth();
+                if(auth){
                     passwordFromBio = await getPasswordViaBioAuth();
-                } catch (error) {
-                    console.log(error);
+                    throw "ERROR";
+                } else {
+                    LayoutAnim();
+                    easeInAndOutAnim();
+                    isProcessing = false;
+                    setDimActive(false);
+                    return;
                 }
-            } else {
-                LayoutAnim();
-                easeInAndOutAnim();
-                isProcessing = false;
-                setDimActive(false);
-                return;
             }
+            const result = viaBioAuth? passwordFromBio : password;
+            isProcessing = false;
+            validationHandler(result);
+            handleModal(false);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
+            handleModal(false);
         }
-        const result = viaBioAuth? passwordFromBio : password;
-        isProcessing = false;
-        validationHandler(result);
-        handleModal(false);
     }
 
     const onKeyboardDidShow = (event:KeyboardEvent) => {

@@ -14,7 +14,6 @@ interface Props {
 }
 
 const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, bgColor = BoxColor, handleOpen, children}:Props) => {
-
     const {common} = useAppSelector(state => state);
 
     const closeModal = () => {

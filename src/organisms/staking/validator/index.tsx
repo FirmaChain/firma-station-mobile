@@ -86,14 +86,18 @@ const Validator = ({validatorAddress}:Props) => {
     }
 
     const handleDelegateState = async() => {
-        const state = await getStakingFromvalidator(wallet.address, validatorAddress);
-
-        setStakingState({
-            available: state.available,
-            delegated: state.delegated,
-            undelegate: state.undelegate,
-            stakingReward: state.stakingReward,
-        });
+        try {
+            const state = await getStakingFromvalidator(wallet.address, validatorAddress);
+    
+            setStakingState({
+                available: state.available,
+                delegated: state.delegated,
+                undelegate: state.undelegate,
+                stakingReward: state.stakingReward,
+            });
+        } catch (error) {
+            throw error;
+        }
     }
 
     const refreshStates = async() => {

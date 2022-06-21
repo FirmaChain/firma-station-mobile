@@ -102,7 +102,7 @@ export const useHistoryData = () => {
                         success: convertResult(value.transaction.success),
                         type: convertMsgType(value.transaction.messages[0]["@type"]),
                         timestamp: value.transaction.block.timestamp,
-                        block: value.transaction.block.height,    
+                        block: value.transaction.block.height,
                     }
                     return result;
                 })

@@ -10,8 +10,8 @@ export const Detect = () => {
 
 export const removeAllData = async() => {
     let list: Array<any> = [];
-    removeWalletWithAutoLogin();
     try {
+        await removeWalletWithAutoLogin();
         await removePasswordViaBioAuth();
         
         const result = await getWalletList();
@@ -28,5 +28,6 @@ export const removeAllData = async() => {
         await removeChain(WALLET_LIST);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }

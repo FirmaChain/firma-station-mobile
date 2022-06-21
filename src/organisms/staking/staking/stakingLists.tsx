@@ -41,7 +41,6 @@ const StakingLists = ({isRefresh, handleIsRefresh, navigateValidator}:Props) => 
     )
 }
 
-
 const styles = StyleSheet.create({
     listContainer: {
         paddingVertical: 15,

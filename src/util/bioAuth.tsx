@@ -6,15 +6,12 @@ import { wait } from "./common";
 
 export const confirmViaBioAuth = async() => {
     CommonActions.handleBioAuthInProgress(true);
-    
     let authResult:boolean = false;
-    
     const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
 
     try {
-        const result = await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType }).finally(() => {
-            wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
-        });
+        const result = await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType });
+        wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
         authResult = result.success;
     } catch (error) {
         console.log(error);

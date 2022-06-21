@@ -9,6 +9,7 @@ import { getPrivateKeyFromMnemonic } from "@/util/firma";
 import { getMnemonic } from "@/util/wallet";
 import { BgColor } from "@/constants/theme";
 import { GUIDE_URI } from "@/../config";
+import Toast from "react-native-toast-message";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
@@ -52,16 +53,30 @@ const ExportWallet = ({type}:Props) => {
     }
 
     const exportWallet = async(password:string) => {
-        await getMnemonicFromChain(password);
+        try {
+            await getMnemonicFromChain(password);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
+        }
     }
 
     const getMnemonicFromChain = async(password:string) => {
-        let result = await getMnemonic(wallet.name, password);
-        if(result){
-            setMnemonic(result);
-            setIsModalOpen(false);
-        } else {
-            setIsModalOpen(true);
+        try {
+            let result = await getMnemonic(wallet.name, password);
+            if(result){
+                setMnemonic(result);
+                setIsModalOpen(false);
+            } else {
+                setIsModalOpen(true);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 
@@ -79,6 +94,11 @@ const ExportWallet = ({type}:Props) => {
                             setIsModalOpen(true);
                         } catch (error) {
                             console.log(error);
+                            setMnemonic("");
+                            Toast.show({
+                                type: 'error',
+                                text1: String(error),
+                            });
                         }
                     }
                 }

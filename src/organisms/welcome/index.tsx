@@ -4,6 +4,7 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
+import { StakingActions, WalletActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { getChain } from "@/util/secureKeyChain";
 import { BgColor, DisableColor, FailedColor, Lato, TextGrayColor } from "@/constants/theme";
@@ -13,7 +14,6 @@ import Button from "@/components/button/button";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import SplashScreen from "react-native-splash-screen";
 import Description from "./description";
-import { StakingActions, WalletActions } from "@/redux/actions";
 import NetworkBadge from "@/components/parts/networkBadge";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
@@ -21,7 +21,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>
 const Welcome = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     
-    const {storage: common} = useAppSelector(state => state);
+    const {storage} = useAppSelector(state => state);
 
     const [walletExist, setWalletExist] = useState(false);
 
@@ -66,8 +66,8 @@ const Welcome = () => {
         <ViewContainer bgColor={BgColor}>
             <View style={styles.viewContainer}>
                 <View style={styles.network}>
-                    {common.network !== "MainNet" &&
-                    <NetworkBadge top={-5} title={common.network} />
+                    {storage.network !== "MainNet" &&
+                    <NetworkBadge top={-5} title={storage.network} />
                     }
                 </View>
                 <Description title={Title} desc={Desc} />

@@ -9,6 +9,8 @@ import { BgColor } from "@/constants/theme";
 import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from "@/util/wallet";
 import { PasswordCheck } from "@/util/validationCheck";
 import { getAdrFromMnemonic } from "@/util/firma";
+import { GUIDE_URI } from "@/../config";
+import Toast from "react-native-toast-message";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputSetVertical from "@/components/input/inputSetVertical";
@@ -16,7 +18,6 @@ import Button from "@/components/button/button";
 import CustomModal from "@/components/modal/customModal";
 import WalletSelector from "./walletSelector";
 import ModalWalletList from "@/components/modal/modalWalletList";
-import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
@@ -51,9 +52,16 @@ const SelectWallet = () => {
     }
 
     const handleEditWalletList = async(list:string, newIndex: number) => {
-        setWalletList(list);
-        await WalletList();
-        setSelected(newIndex);
+        try {
+            await setWalletList(list);
+            await WalletList();
+            setSelected(newIndex);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
+        }
     }
     
     useEffect(() => {
@@ -70,18 +78,25 @@ const SelectWallet = () => {
             setItems(result);
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
 
     const onChangePassword = async(value: string) => {
         setPassword(value);
-        
-        let result = await PasswordCheck(selectedWallet, value);
-        if(result){
-            setPwValidation(true);
-            setMnemonic(result);
-        } else {
-            setPwValidation(false);
+        try {
+            let result = await PasswordCheck(selectedWallet, value);
+            if(result){
+                setPwValidation(true);
+                setMnemonic(result);
+            } else {
+                setPwValidation(false);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 
@@ -105,12 +120,26 @@ const SelectWallet = () => {
             navigation.reset({routes: [{name: Screens.Home}]});
         } catch (error) {
             console.log(error);
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 
     useEffect(() => {
-        WalletList();
-        setPwValidation(false);
+        const initStatus = async() => {
+            try {
+                await WalletList();
+                setPwValidation(false);
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: String(error),
+                });
+            }
+        }
+        initStatus();
         return () => {
             setItems([]);
         }

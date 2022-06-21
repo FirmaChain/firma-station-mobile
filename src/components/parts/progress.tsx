@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from "@/constants/images";
 import { Animated, BackHandler, Platform, StyleSheet, Text, View } from "react-native";
 import { fadeIn, fadeOut } from "@/util/animation";
-import { BgColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from "@/constants/theme";
+import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CHANGE_NETWORK_NOTICE, CONNECTION_NOTICE, LOADING_DATA_NOTICE } from "@/constants/common";

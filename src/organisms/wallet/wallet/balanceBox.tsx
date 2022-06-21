@@ -26,7 +26,7 @@ interface Props {
 }
 
 const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props) => {
-    const {storage: common} = useAppSelector(state => state);
+    const {storage, staking} = useAppSelector(state => state);
     
     const [currencyIndex, setCurrencyIndex] = useState(0);
     const [openCurrencySelectModal, setOpenCurrencySelectModal] = useState(false);
@@ -60,13 +60,13 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
     }, [currencyList]);
 
     useEffect(() => {
-        setCurrencyIndex(currencyList.indexOf(common.currency));
+        setCurrencyIndex(currencyList.indexOf(storage.currency));
     }, [currencyList])
 
     const currentPrice = useMemo(() => {
         if(chainInfo?.market_data === undefined) return 0;
-        return Number(chainInfo.market_data.current_price[common.currency.toLowerCase()]);
-    }, [chainInfo, common.currency]);
+        return Number(chainInfo.market_data.current_price[storage.currency.toLowerCase()]);
+    }, [chainInfo, storage.currency]);
 
     const currentExchange = useMemo(() => {
         if(chainInfo?.market_data === undefined) return 0;
@@ -86,13 +86,13 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
     }, [stakingValues]);
 
     const reward = useMemo(() => {
-        return convertCurrent(makeDecimalPoint((stakingValues.stakingReward)));
-    }, [stakingValues]);
+        return convertCurrent(makeDecimalPoint((staking.stakingReward)));
+    }, [staking.stakingReward]);
     
     const currencyData = useMemo(() => {
         let decimal = 2;
         const fct = convertToFctNumber(available) * currentPrice;
-        if(["BTC","ETH"].includes(common.currency)){
+        if(["BTC","ETH"].includes(storage.currency)){
             decimal = 6;
             if(fct > 10) decimal = 5;
             if(fct > 100) decimal = 4;
@@ -111,17 +111,17 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
     }
 
     const CurrencyText = () => {
-        if(CURRENCY_SYMBOL[common.currency] === undefined){
+        if(CURRENCY_SYMBOL[storage.currency] === undefined){
             return (
                 <View style={styles.currencyWrapper}>
                     <Text style={[styles.balance, {fontSize: 16}]}>{currencyData}</Text>
-                    <Text style={[styles.balance, {fontSize: 10, paddingBottom: 1, paddingLeft: 4}]}>{common.currency}</Text>
+                    <Text style={[styles.balance, {fontSize: 10, paddingBottom: 1, paddingLeft: 4}]}>{storage.currency}</Text>
                 </View>
             )
         } else {
             return (
                 <View style={styles.currencyWrapper}>
-                    <Text style={[styles.balance, {fontSize: 16}]}>{CURRENCY_SYMBOL[common.currency]}</Text>
+                    <Text style={[styles.balance, {fontSize: 16}]}>{CURRENCY_SYMBOL[storage.currency]}</Text>
                     <Text style={[styles.balance, {fontSize: 16, paddingLeft: 4}]}>{currencyData}</Text>
                 </View>
             )
@@ -154,7 +154,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
                 <View style={styles.divider} />
                 <View style={[styles.wrapperH, {justifyContent: "space-between", paddingTop: 12}]}>
                     <TouchableOpacity style={styles.currency} onPress={()=>handleCurrencySelectModal(true)}>
-                        <Text style={[styles.chainName, {fontSize: 16, paddingRight: 4}]}>{common.currency}</Text>
+                        <Text style={[styles.chainName, {fontSize: 16, paddingRight: 4}]}>{storage.currency}</Text>
                         <DownArrow size={12} color={GrayColor} />
                     </TouchableOpacity>
                     {CurrencyText()}

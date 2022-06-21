@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Linking, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import React from "react";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -14,12 +14,6 @@ import MenuItem from "./menuItem";
 import Disconnect from "./disconnect";
 import Delete from "./delete";
 import TextMenuItem from "./textMenuItem";
-import { CommonActions, StorageActions } from "@/redux/actions";
-import { setFirmaSDK } from "@/util/firma";
-import { setClient } from "@/apollo";
-import { setExplorerUrl } from "@/constants/common";
-import CustomModal from "@/components/modal/customModal";
-import ModalItems from "@/components/modal/modalItems";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
@@ -53,8 +47,8 @@ const Setting = () => {
         }
     }
 
-    const disconnectWallet = () => {
-        removeWalletWithAutoLogin();
+    const disconnectWallet = async() => {
+        await removeWalletWithAutoLogin();
         navigation.reset({routes: [{name: Screens.Welcome}]});
     }
 

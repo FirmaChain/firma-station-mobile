@@ -18,68 +18,72 @@ const setWalletListArray = (list:string) => {
 }
 
 export const getWalletList = async() => {
-    let walletList;
     try {
+        let walletList;
         const result = await getChain(WALLET_LIST);
         if(result === false) return null;
         walletList = setWalletListArray(result.password);
 
+        return walletList;
     } catch (error) {
         console.log(error);
+        throw error;
     }
-    return walletList;
 }
 
 export const setNewWallet = async(name:string, password:string, mnemonic:string, makeList:boolean) => {
-    const walletKey:string = keyEncrypt(name, password);
-        
-    const encWallet = encrypt(mnemonic, walletKey.toString());
-    setChain(name, encWallet);
-    if(makeList){
-        let list = name;
-        try {
+    try {
+        const walletKey:string = keyEncrypt(name, password);
+        const encWallet = encrypt(mnemonic, walletKey.toString());
+        await setChain(name, encWallet);
+
+        if(makeList){
+            let list = name;
             const result = await getChain(WALLET_LIST);
             if(result) list += '/' + result.password;
-        } catch (error) {
-            console.log(error)
-        }
-        setWalletList(list)
-    }
 
-    let adr = null;
-    try {
+            await setWalletList(list)
+        }
+
+        let adr = null;
         const result = await getAdrFromMnemonic(mnemonic);
         if(result !== undefined) adr = result;
+
+        await setWalletWithAutoLogin(JSON.stringify({
+            name: name,
+            address: adr,
+        }));
+        await setEncryptPassword(password);
+
+        const useBioAuth = await getUseBioAuth(name);
+        if(useBioAuth){
+            await setPasswordViaBioAuth(password);
+        }
+        return adr;
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        throw error;
     }
-
-    await setWalletWithAutoLogin(JSON.stringify({
-        name: name,
-        address: adr,
-    }));
-
-    await setEncryptPassword(password);
-
-    const useBioAuth = await getUseBioAuth(name);
-    if(useBioAuth){
-        await setPasswordViaBioAuth(password);
-    }
-
-    return adr;
 }
 
-export const setWalletList = (list:string) => {
-    if(list === ''){
-        removeChain(WALLET_LIST);
-    } else {
-        setChain(WALLET_LIST, list);
+export const setWalletList = async(list:string) => {
+    try {
+        if(list === ''){
+            await removeChain(WALLET_LIST);
+        } else {
+            await setChain(WALLET_LIST, list);
+        }
+    } catch (error) {
+        throw error;
     }
 }
 
 export const removeWallet = async(name:string) => {
-    await removeChain(name)
-    .catch(error => console.log(error));
+    try {
+        await removeChain(name);
+    } catch (error) {
+        throw error;
+    }
 }
 
 export const getMnemonic = async(walletName: string, password: string) => {
@@ -93,11 +97,11 @@ export const getMnemonic = async(walletName: string, password: string) => {
                 mnemonic = w;
             }
         }
+        return mnemonic;
     } catch (error) {
         console.log(error);
+        throw error;
     }
-
-    return mnemonic;
 }
 
 export const getWalletWithAutoLogin = async() => {
@@ -106,32 +110,41 @@ export const getWalletWithAutoLogin = async() => {
         const result = await getChain(UNIQUE_ID);
         if(result === false) return "";
         uniqueId = decrypt(result.password, UNIQUE_ID);
+        return uniqueId;
     } catch (error) {
         console.log(error);
+        throw error;
     }
-
-    return uniqueId;
 }
 
 export const setWalletWithAutoLogin = async(walletInfo:string) => {
-    let epochTimeSeconds = Math.round((new Date()).getTime() / 1000).toString();
-    let key = {
-        ...JSON.parse(walletInfo),
-        timestamp: epochTimeSeconds
+    try {
+        let epochTimeSeconds = Math.round((new Date()).getTime() / 1000).toString();
+        let key = {
+            ...JSON.parse(walletInfo),
+            timestamp: epochTimeSeconds
+        }
+        
+        let payload = JSON.stringify(key);
+        const encWallet = encrypt(payload, UNIQUE_ID);
+        
+        await setChain(UNIQUE_ID, encWallet);
+    } catch (error) {
+        console.log(error);
+        throw error;
     }
-    
-    let payload = JSON.stringify(key);
-    const encWallet = encrypt(payload, UNIQUE_ID);
-    
-    setChain(UNIQUE_ID, encWallet);
 }
 
-export const removeWalletWithAutoLogin = () => {
-    removeChain(UNIQUE_ID);
+export const removeWalletWithAutoLogin = async() => {
+    try {
+        await removeChain(UNIQUE_ID);
+    } catch (error) {
+        throw error;
+    }
 }
 
-export const setUseBioAuth = (name:string) => {
-    setChain(USE_BIO_AUTH + name, "true");
+export const setUseBioAuth = async(name:string) => {
+    await setChain(USE_BIO_AUTH + name, "true");
 }
 
 export const getUseBioAuth = async(name:string) => {
@@ -151,14 +164,23 @@ export const getUseBioAuth = async(name:string) => {
 }
 
 export const removeUseBioAuth = async(name:string) => {
-    await removeChain(USE_BIO_AUTH + name)
-            .catch(error => console.log(error));
+    try {
+        await removeChain(USE_BIO_AUTH + name)
+                .catch(error => console.log(error));
+    } catch (error) {
+        throw error;
+    }
 }
 
 export const setBioAuth = async(name:string, password:string) => {
-    const result = await getUseBioAuth(name);
-    if(result){
-        await setPasswordViaBioAuth(password);
+    try {
+        const result = await getUseBioAuth(name);
+        if(result){
+            await setPasswordViaBioAuth(password);
+        }
+    } catch (error) {
+        console.log(error);
+        throw error;
     }
 }
 
@@ -166,20 +188,24 @@ export const getPasswordViaBioAuth = async() => {
     let timestamp = 0;
     let password = "";
     try {
-        const result = await getWalletWithAutoLogin();
-        if(result === "") return "";
-        const json = JSON.parse(result);
-        timestamp = json.timestamp;
-
-        const passwordResult = await getChain(UNIQUE_ID + timestamp.toString());
-        if(passwordResult === false) return "";
-        password = decrypt(passwordResult.password, UNIQUE_ID + timestamp.toString());
+        try {
+            const result = await getWalletWithAutoLogin();
+            if(result === "") return "";
+            const json = JSON.parse(result);
+            timestamp = json.timestamp;
+    
+            const passwordResult = await getChain(UNIQUE_ID + timestamp.toString());
+            if(passwordResult === false) return "";
+            password = decrypt(passwordResult.password, UNIQUE_ID + timestamp.toString());
+        } catch (error) {
+            console.log(error);
+            return "";
+        }
+    
+        return password;
     } catch (error) {
-        console.log(error);
-        return "";
+        throw error;
     }
-
-    return password;
 }
 
 export const setPasswordViaBioAuth = async(password:string) => {
@@ -194,7 +220,7 @@ export const setPasswordViaBioAuth = async(password:string) => {
         setChain(UNIQUE_ID + timestamp.toString(), encWallet);
     } catch (error) {
         console.log(error);
-        return "";
+        throw error;
     }
 }
 
@@ -209,7 +235,7 @@ export const removePasswordViaBioAuth = async() => {
         await removeChain(UNIQUE_ID + timestamp.toString());
     } catch (error) {
         console.log(error);
-        return "";
+        throw error;
     }
 }
 
@@ -217,20 +243,24 @@ export const getDecryptPassword = async() => {
     let timestamp = 0;
     let password = "";
     try {
-        const result = await getWalletWithAutoLogin();
-        if(result === "") return "";
-        const json = JSON.parse(result);
-        timestamp = json.timestamp;
-
-        const passwordResult = await getChain(timestamp.toString() + UNIQUE_ID);
-        if(passwordResult === false) return "";
-        password = decrypt(passwordResult.password, timestamp.toString() + UNIQUE_ID);
+        try {
+            const result = await getWalletWithAutoLogin();
+            if(result === "") return "";
+            const json = JSON.parse(result);
+            timestamp = json.timestamp;
+    
+            const passwordResult = await getChain(timestamp.toString() + UNIQUE_ID);
+            if(passwordResult === false) return "";
+            password = decrypt(passwordResult.password, timestamp.toString() + UNIQUE_ID);
+        } catch (error) {
+            console.log(error);
+            return "";
+        }
+    
+        return password;
     } catch (error) {
-        console.log(error);
-        return "";
+        throw error;
     }
-
-    return password;
 }
 
 export const setEncryptPassword = async(password:string) => {
@@ -245,24 +275,30 @@ export const setEncryptPassword = async(password:string) => {
         setChain(timestamp.toString() + UNIQUE_ID, encWallet);
     } catch (error) {
         console.log(error);
-        return "";
+        throw error;
     }
 }
 
 export const setWalletWithBioAuth = async(name:string, password:string, mnemonic:string) => {
-    CommonActions.handleLoadingProgress(true);
-    const address = await setNewWallet(name, password, mnemonic, true);
-    await setWalletWithAutoLogin(JSON.stringify({
-        name: name,
-        address: address,
-    }));
-
-    await setEncryptPassword(password);
-    setBioAuth(name, password);
-
-    WalletActions.handleWalletName(name);
-    WalletActions.handleWalletAddress(address === null? "" : address);
-
-    const result = await checkBioMetrics();
-    return result;
+    try {
+        CommonActions.handleLoadingProgress(true);
+        const address = await setNewWallet(name, password, mnemonic, true);
+        if(address === null) throw address;
+        await setWalletWithAutoLogin(JSON.stringify({
+            name: name,
+            address: address,
+        }));
+    
+        await setEncryptPassword(password);
+        setBioAuth(name, password);
+    
+        WalletActions.handleWalletName(name);
+        WalletActions.handleWalletAddress(address === null? "" : address);
+    
+        const result = await checkBioMetrics();
+        
+        return result;
+    } catch (error) {
+        throw error;
+    }
 }

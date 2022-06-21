@@ -6,7 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions } from "@/redux/actions";
 import { BgColor, InputBgColor, Lato, TextColor } from "@/constants/theme";
 import { recoverFromMnemonic } from "@/util/firma";
-import { CHECK_MNEMONIC } from "@/constants/common";
+import { CHECK_MNEMONIC, RECOVER_WALLET_FAILED } from "@/constants/common";
 import Button from "@/components/button/button";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
@@ -27,16 +27,24 @@ const StepRecover = () => {
     }
 
     const handleRecoverViaSeed = async() => {
-        CommonActions.handleLoadingProgress(true);
-        const wallet = await recoverFromMnemonic(mnemonic);
-        CommonActions.handleLoadingProgress(false);
-        if(wallet === undefined){
-            return Toast.show({
+        try {
+            CommonActions.handleLoadingProgress(true);
+            const wallet = await recoverFromMnemonic(mnemonic);
+            CommonActions.handleLoadingProgress(false);
+            if(wallet === undefined){
+                return Toast.show({
+                    type: 'error',
+                    text1: CHECK_MNEMONIC,
+                });
+            }
+            navigation.navigate(Screens.CreateStepOne, {mnemonic});
+        } catch (error) {
+            CommonActions.handleLoadingProgress(false);
+            Toast.show({
                 type: 'error',
-                text1: CHECK_MNEMONIC,
+                text1: RECOVER_WALLET_FAILED,
             });
         }
-        navigation.navigate(Screens.CreateStepOne, {mnemonic});
     }
 
     const handleMoveToWeb = () => {

@@ -8,12 +8,13 @@ import { useAppSelector } from "@/redux/hooks";
 import { removePasswordViaBioAuth, removeWallet, setBioAuth, setNewWallet } from "@/util/wallet";
 import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
+import { GUIDE_URI } from "@/../config";
+import Toast from "react-native-toast-message";
 import Button from "@/components/button/button";
 import AlertModal from "@/components/modal/alertModal";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import InputBox from "./inputBox";
-import { GUIDE_URI } from "@/../config";
 
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;
@@ -47,15 +48,28 @@ const ChangePassword = () => {
     }
 
     const changeNewPassword = async() => {
-        CommonActions.handleLoadingProgress(true);
-        await removeCurrentPassword();
-        await createNewPassword();
-        CommonActions.handleLoadingProgress(false);
+        try {
+            CommonActions.handleLoadingProgress(true);
+            await removeCurrentPassword();
+            await createNewPassword();
+            CommonActions.handleLoadingProgress(false);
+        } catch (error) {
+            CommonActions.handleLoadingProgress(false);
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
+        }
     }
 
     const removeCurrentPassword = async() => {
-        await removeWallet(wallet.name);
-        await removePasswordViaBioAuth();
+        try {
+            await removeWallet(wallet.name);
+            await removePasswordViaBioAuth();
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 
     const createNewPassword = async() => {
@@ -68,6 +82,7 @@ const ChangePassword = () => {
             }
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
 
