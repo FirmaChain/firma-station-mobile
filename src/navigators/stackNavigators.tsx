@@ -89,7 +89,7 @@ const StackNavigator = () => {
                     component={HistoryScreen} />
 
                 <Stack.Screen
-                    options={{headerShown: false}}
+                    options={{headerShown: false, animationEnabled: false}}
                     name={Screens.Transaction}
                     component={TransactionScreen} />
             </Stack.Group>

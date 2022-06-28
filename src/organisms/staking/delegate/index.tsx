@@ -95,7 +95,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
             }
             handleDelegateState("gas", gas);
             setAlertDescription("");
-            setStatus(status + 1);
+            setStatus(1);
         } catch (error) {
             console.log(error); 
             CommonActions.handleLoadingProgress(false);

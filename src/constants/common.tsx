@@ -87,6 +87,7 @@ export const CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT = {
 }
 
 export const CREATE_WALLET_FAILED = "Wallet creation failed. Please try again.";
+export const RECOVER_WALLET_FAILED = "Wallet recover failed. Please try again.";
 export const WRONG_ADDRESS = "Wrong address";
 export const CHECK_MNEMONIC = "Check your mnemonic again.";
 
@@ -111,6 +112,7 @@ export const REDELEGATE_NOT_EXIST = "Redelegate does not exist.";
 export const UNDELEGATE_NOT_EXIST = "Undelegate does not exist.";
 
 export const AUTO_ENTERED_AMOUNT_TEXT = "The entire amount is automatically entered except 0.1FCT, which will be used as a transaction fee.";
+export const WARNING_FOR_MAX_AMOUNT_TEST = "If the maximum value is transmitted, the subsequent transaction cannot be guaranteed.";
 export const UNDELEGATE_NOTICE_TEXT = [
     "A 21 day period is required when undelegating your tokens. During the 21 day period, you will not receive any rewards. And you can't send and delegate that amount during 21 days.",
     "A maximum of 7 undelegations are allowed per validator during the 21 day link period."

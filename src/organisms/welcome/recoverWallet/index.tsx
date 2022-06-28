@@ -26,16 +26,18 @@ const RecoverWallet = () => {
     const [active, setActive] = useState(false);
 
     const recoverWalletViaQR = async(mnemonic: string) => {
-        CommonActions.handleLoadingProgress(true);
-        const wallet = await recoverFromMnemonic(mnemonic);
-        CommonActions.handleLoadingProgress(false);
-        if(wallet === undefined){
-            return Toast.show({
+        try {
+            CommonActions.handleLoadingProgress(true);
+            await recoverFromMnemonic(mnemonic);
+            CommonActions.handleLoadingProgress(false);
+            navigation.navigate(Screens.CreateStepOne, {mnemonic: mnemonic});
+        } catch (error) {
+            CommonActions.handleLoadingProgress(false);
+            Toast.show({
                 type: 'error',
                 text1: CHECK_MNEMONIC,
             });
         }
-        navigation.navigate(Screens.CreateStepOne, {mnemonic: mnemonic});
     }
 
     const handleRecoverViaSeed = () => {

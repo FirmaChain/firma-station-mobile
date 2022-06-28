@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { checkCameraPermission } from "@/util/permission";
-import { QRCodeIcon } from "../icon/icon";
+import { QRCodeScannerIcon } from "../icon/icon";
 import Clipboard from "@react-native-clipboard/clipboard";
 import TextButton from "../button/textButton";
 import QRCodeScannerModal from "../modal/qrCodeScanner";
@@ -60,7 +60,7 @@ const InputSetVerticalForAddress = ({title, numberOnly = false, placeholder, sec
             <View style={styles.textContainer}>
                 <Text style={styles.text}>{title}</Text>
                 <TouchableOpacity style={{marginRight: 15}} onPress={() => handleModal(true)}>
-                    <QRCodeIcon size={25} color={WhiteColor} />
+                    <QRCodeScannerIcon size={25} color={WhiteColor} />
                 </TouchableOpacity>
                 <TextButton title={"Paste"} onPressEvent={handlePaste} />
             </View>

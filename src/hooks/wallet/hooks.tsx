@@ -125,7 +125,7 @@ export const useHistoryData = () => {
     const currentHistoryPolling = async(polling: boolean) => {
         if(polling) {
             await historyRefetch();
-            startHistoryPolling(3000)
+            startHistoryPolling(30000)
         } else {
             stopHistoryPolling();
         }

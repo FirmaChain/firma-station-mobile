@@ -21,7 +21,13 @@ export const Close = ({size, color}:Props) => {
 
 export const QRCodeIcon = ({size, color}:Props) => {
     return (
-        <Ionicons name="ios-qr-code-outline" size={size} color={color}/>
+        <MaterialIcons name="qr-code" size={size} color={color}/>
+    )
+}
+
+export const QRCodeScannerIcon = ({size, color}:Props) => {
+    return (
+        <MaterialIcons name="qr-code-scanner" size={size} color={color}/>
     )
 }
 
@@ -220,6 +226,12 @@ export const SendIcon = ({size, color}:Props) => {
 export const LockIcon = ({size, color}:Props) => {
     return (
         <SimpleLineIcons name="lock" size={size} color={color} />
+    )
+}
+
+export const URLLockIcon = ({size, color}:Props) => {
+    return (
+        <FontAwesome name="lock" size={size} color={color} />
     )
 }
 

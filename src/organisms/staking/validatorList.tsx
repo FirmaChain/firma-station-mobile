@@ -32,6 +32,7 @@ const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:
     }, [validators]);
 
     useMemo(() => {
+        if(validatorList.length === 0) return;
         switch (selected) {
         case 0:
             return validatorList.sort((a:any, b:any) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
@@ -80,7 +81,7 @@ const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:
     }
 
     useEffect(() => {
-        if(isRefresh || visible)
+        if((visible && isRefresh) || visible)
             refreshValidators();
     }, [isRefresh, visible])
     
@@ -90,7 +91,7 @@ const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:
             <View style={styles.container}>
                 <View style={styles.header}>
                     <Text style={styles.title}>List 
-                        <Text style={{color: PointLightColor}}> {validators.length}</Text>
+                        <Text style={{color: PointLightColor}}> {validatorList.length}</Text>
                     </Text>
                     <View style={{flexDirection: "row", alignItems: "center"}}>
                         <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>

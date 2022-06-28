@@ -37,11 +37,18 @@ const StepThree = ({walletInfo}:Props) => {
     
     const onCompleteCreateWallet = async() => {
         setConfirm(false);
-        const useBioAuth = await setWalletWithBioAuth(walletInfo.name, walletInfo.password, walletInfo.mnemonic);
-        if(useBioAuth){
-            handleOpenBioAuthModal(true);
-        } else {
-            navigation.reset({routes: [{name: Screens.Home}]});
+        try {
+            const useBioAuth = await setWalletWithBioAuth(walletInfo.name, walletInfo.password, walletInfo.mnemonic);
+            if(useBioAuth){
+                handleOpenBioAuthModal(true);
+            } else {
+                navigation.reset({routes: [{name: Screens.Home}]});
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: String(error),
+            });
         }
     }
 

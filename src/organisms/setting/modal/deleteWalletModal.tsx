@@ -31,7 +31,7 @@ const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: Props
                     const result = await getChain(walletName);
                     if(result){
                         let w = decrypt(result.password, key);
-                        if(w !== null) {
+                        if(w.split(" ").length === 24) {
                             setActive(true);
                         } else {
                             setActive(false);

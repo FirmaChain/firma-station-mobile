@@ -68,11 +68,18 @@ const StepOne = ({mnemonic = null}:Props) => {
     }
 
     const onCompleteRecoverWallet = async() => {
-        const useBioAuth = await setWalletWithBioAuth(walletName, password, mnemonic);
-        if(useBioAuth){
-            handleOpenBioAuthModal(true);
-        } else {
-            navigation.reset({routes: [{name: Screens.Home}]});
+        try {
+            const useBioAuth = await setWalletWithBioAuth(walletName, password, mnemonic);
+            if(useBioAuth){
+                handleOpenBioAuthModal(true);
+            } else {
+                navigation.reset({routes: [{name: Screens.Home}]});
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: CREATE_WALLET_FAILED,
+            });
         }
     }
 

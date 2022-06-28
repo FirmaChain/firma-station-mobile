@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { WARNING_PASSWORD_NOT_MATCH } from "@/constants/common";
 import AlertModal from "@/components/modal/alertModal";
 import CustomModal from "@/components/modal/customModal";
 import ExportModal from "../modal/exportModal";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     title: string;
@@ -15,6 +16,12 @@ interface Props {
 }
 
 const ExportWalletModal = ({title, value, alertOpen, exportOpen, handleOpen, handleBack}:Props) => {
+    const {common} = useAppSelector(state => state);
+
+    useEffect(() => {
+        if(common.appState !== "active" && common.isBioAuthInProgress === false) handleOpen(false);
+    }, [common.appState])
+
     return (
         <View>
             <AlertModal

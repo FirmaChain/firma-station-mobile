@@ -49,11 +49,15 @@ const ExportWallet = ({type}:Props) => {
 
     const handleModalOpen = (open:boolean) => {
         setIsModalOpen(open);
-        setMnemonic('');
+        if(open === false){
+            setStatus(0);
+        }
     }
 
     const exportWallet = async(password:string) => {
         try {
+            setMnemonic("");
+            setPrivatekey("");
             await getMnemonicFromChain(password);
         } catch (error) {
             Toast.show({
@@ -68,9 +72,9 @@ const ExportWallet = ({type}:Props) => {
             let result = await getMnemonic(wallet.name, password);
             if(result){
                 setMnemonic(result);
-                setIsModalOpen(false);
+                handleModalOpen(false);
             } else {
-                setIsModalOpen(true);
+                handleModalOpen(true);
             }
         } catch (error) {
             Toast.show({
@@ -91,7 +95,7 @@ const ExportWallet = ({type}:Props) => {
                                 setPrivatekey(result);
                             }
                             setStatus(1);
-                            setIsModalOpen(true);
+                            handleModalOpen(true);
                         } catch (error) {
                             console.log(error);
                             setMnemonic("");
@@ -105,7 +109,7 @@ const ExportWallet = ({type}:Props) => {
                 getPrivatekey();
             } else {
                 setStatus(1);
-                setIsModalOpen(true);
+                handleModalOpen(true);
             }
         }
     }, [mnemonic])
@@ -115,8 +119,9 @@ const ExportWallet = ({type}:Props) => {
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
     }
+
     const handleBack = () => {
-        setIsModalOpen(false);
+        handleModalOpen(false);
         navigation.goBack();
     }
 

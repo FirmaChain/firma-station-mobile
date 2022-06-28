@@ -17,7 +17,6 @@ import Toast from "react-native-toast-message";
 import InputSetVertical from "../input/inputSetVertical";
 import ArrowButton from "../button/arrowButton";
 import CustomModal from "./customModal";
-import CustomToast from "../toast/customToast";
 
 interface Props {
     type: string;
@@ -72,7 +71,7 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
     }
 
     const handleModal = (open:boolean) => {
-        setOpenModal && setOpenModal(open);
+        setOpenModal(open);
     }
 
     const handleInputChange = async(val:string) => {
@@ -87,7 +86,7 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
                         const result = await getChain(wallet.name);
                         if(result){
                             let w = decrypt(result.password, key);
-                            if(w !== null) {
+                            if(w.split(" ").length === 24) {
                                 setActive(true);
                             } else {
                                 setActive(false);
@@ -118,7 +117,6 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
                 const auth = await confirmViaBioAuth();
                 if(auth){
                     passwordFromBio = await getPasswordViaBioAuth();
-                    throw "ERROR";
                 } else {
                     LayoutAnim();
                     easeInAndOutAnim();
@@ -205,53 +203,52 @@ const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) =>
     }, []);
 
     return (
-        <View style={[styles.container, {display: open?"flex":"none"}]} >
-            <CustomModal
-                visible={open}
-                bgColor={BgColor}
-                lockBackButton={backbuttonLock}
-                keyboardAvoiing={false}
-                handleOpen={handleModal}>
-                <Pressable style={styles.container} onPress={()=>{Keyboard.dismiss()}}>
-                    <View style={[styles.backArrowButton, {display: type === "transaction"?backbuttonLock?"none":"flex":"none"}]}>
-                        <ArrowButton onPressEvent={()=>handleModal(false)}/>
-                    </View>
-                    <Animated.View 
-                        style={[styles.textBox, {paddingBottom: contentPaddingBottom}]}
-                        onLayout={(event) => {
-                            const {y, height} = event.nativeEvent.layout;
-                            if(dimActive === false){
-                                setContentPosition(y + height);
-                            } else {
-                                setContentPosition(0);
-                            }
-                        }}>
-                        <View style={{alignItems: "center"}}>
-                            {renderIcon()}
-                            <Text style={[styles.title, {fontWeight: "bold"}]}>{titleText}</Text>
-                            <View style={[styles.passwordBox, {height: dimActive?0:"auto"}]}>
-                                {dimActive === false && 
-                                <View style={{flex: 1}}>
-                                    <InputSetVertical
-                                        title="Password"
-                                        validation={true}
-                                        secure={true}
-                                        placeholder={PLACEHOLDER_FOR_PASSWORD}
-                                        onChangeEvent={handleInputChange}/>
-                                </View>
-                                }
-                                <TouchableOpacity style={styles.confirmButton} disabled={active === false} onPress={()=>handleValidation(false)}>
-                                    <SquareIcon size={55} color={active? PointColor:DisableColor}/>
-                                    <View style={[styles.buttonArrow]}>
-                                        <ForwardArrow size={25} color={active? WhiteColor:BgColor}/>
-                                    </View>
-                                </TouchableOpacity>
+        <CustomModal
+            visible={open}
+            fade={true}
+            bgColor={BgColor}
+            lockBackButton={backbuttonLock}
+            keyboardAvoiing={false}
+            handleOpen={handleModal}>
+            <Pressable style={styles.container} onPress={()=>{Keyboard.dismiss()}}>
+                <View style={[styles.backArrowButton, {display: type === "transaction"?backbuttonLock?"none":"flex":"none"}]}>
+                    <ArrowButton onPressEvent={()=>handleModal(false)}/>
+                </View>
+                <Animated.View 
+                    style={[styles.textBox, {paddingBottom: contentPaddingBottom}]}
+                    onLayout={(event) => {
+                        const {y, height} = event.nativeEvent.layout;
+                        if(dimActive === false){
+                            setContentPosition(y + height);
+                        } else {
+                            setContentPosition(0);
+                        }
+                    }}>
+                    <View style={{alignItems: "center"}}>
+                        {renderIcon()}
+                        <Text style={[styles.title, {fontWeight: "bold"}]}>{titleText}</Text>
+                        <View style={[styles.passwordBox, {height: dimActive?0:"auto"}]}>
+                            {dimActive === false && 
+                            <View style={{flex: 1}}>
+                                <InputSetVertical
+                                    title="Password"
+                                    validation={true}
+                                    secure={true}
+                                    placeholder={PLACEHOLDER_FOR_PASSWORD}
+                                    onChangeEvent={handleInputChange}/>
                             </View>
+                            }
+                            <TouchableOpacity style={styles.confirmButton} disabled={active === false} onPress={()=>handleValidation(false)}>
+                                <SquareIcon size={55} color={active? PointColor:DisableColor}/>
+                                <View style={[styles.buttonArrow]}>
+                                    <ForwardArrow size={25} color={active? WhiteColor:BgColor}/>
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                    </Animated.View>
-                </Pressable>
-            </CustomModal>
-        </View>
+                    </View>
+                </Animated.View>
+            </Pressable>
+        </CustomModal>
     )
 }
 

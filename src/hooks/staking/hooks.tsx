@@ -114,21 +114,33 @@ export const useDelegationData = () => {
     }
 
     const handleDelegationState = async() => {
-        const result:Array<StakeInfo> = await getDelegations(wallet.address);
-        setDelegationList(
-            result.filter(value => 
-                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 || 
-                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0));
+        try {
+            const result:Array<StakeInfo> = await getDelegations(wallet.address);
+            setDelegationList(
+                result.filter(value => 
+                    convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 || 
+                    convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0));
+        } catch (error) {
+            throw error;
+        }
     }
 
     const handleRedelegationState = async() => {
-        const redelegationResult:Array<RedelegationInfo> = await getRedelegations(wallet.address);
-        setRedelegationList(redelegationResult);
+        try {
+            const redelegationResult:Array<RedelegationInfo> = await getRedelegations(wallet.address);
+            setRedelegationList(redelegationResult);
+        } catch (error) {
+           throw error; 
+        }
     }
 
     const handleUndelegationState = async() => {
-        const undelegateionResult:Array<UndelegationInfo> = await getUndelegations(wallet.address);
-        setUndelegationList(undelegateionResult);
+        try {
+            const undelegateionResult:Array<UndelegationInfo> = await getUndelegations(wallet.address);
+            setUndelegationList(undelegateionResult);
+        } catch (error) {
+           throw error; 
+        }
     }
 
     useEffect(() => {
@@ -139,15 +151,24 @@ export const useDelegationData = () => {
     }, [staking.delegate])
 
     const delegationState:Array<StakeInfo> = useMemo(() => {
-        return useValidatorDescription(delegationList, validatorsDescList);
+        if(validatorsDescList.length > 0){
+            return useValidatorDescription(delegationList, validatorsDescList);
+        }
+        return [];
     }, [delegationList, validatorsDescList]);
 
     const redelegationState:Array<RedelegationInfo> = useMemo(() => {
-        return useValidatorDescriptionForRedelegation(redelegationList, validatorsDescList);
+        if(validatorsDescList.length > 0){
+            return useValidatorDescriptionForRedelegation(redelegationList, validatorsDescList);
+        }
+        return [];
     }, [redelegationList, validatorsDescList]);
 
     const undelegationState:Array<UndelegationInfo> = useMemo(() => {
-        return useValidatorDescription(undelegationList, validatorsDescList);
+        if(validatorsDescList.length > 0){
+            return useValidatorDescription(undelegationList, validatorsDescList);
+        }
+        return [];
     }, [undelegationList, validatorsDescList]);
 
     const refetchValidatorDescList = async() => {
@@ -289,11 +310,11 @@ export const useValidatorData = () => {
                     })
                     .map((validator: any) => {
                         return organizeValidatorData(validator, stakingData, storage.network)
-                    });
-        
-                    const validators = validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower);
+                    })
+
+                    const validators = validatorsList.length > 0?validatorsList.sort((a: any, b: any) => b.votingPower - a.votingPower):validatorsList;
                     const totalVotingPower = stakingData.totalVotingPower;
-        
+                    
                     setTotalVotingPower(totalVotingPower);
                     setValidators(validators);
                     setPolling(false);
@@ -562,15 +583,15 @@ const organizeValidatorData = (validator:any, stakingData:any, network:string) =
     const missedBlockCounter = missedBlockCounterExist? validator.validatorSigningInfos[0].missedBlocksCounter : 0;
     const tombstoned = missedBlockCounterExist? validator.validatorSigningInfos[0].tombstoned : false;
     const commissionExist = validator.validatorCommissions.length > 0;
-    const commission = makeDecimalPoint((commissionExist?validator.validatorCommissions[0].commission:0) * 100);
+    const commissionOrigin = commissionExist?validator.validatorCommissions[0].commission:0;
+    const commission = makeDecimalPoint(commissionOrigin * 100);
     const conditionOrigin = ((1 - missedBlockCounter / stakingData.signed_blocks_window) * 100)
     const condition = makeDecimalPoint(conditionOrigin, 2);
-
 
     const jailed = validator.validatorStatuses.length > 0?validator.validatorStatuses[0].jailed:true;
     const status = validator.validatorStatuses.length > 0?validator.validatorStatuses[0].status:0;
 
-    const rewardPerYear = stakingData.mintCoinPerYear * (votingPower / stakingData.totalVotingPower) * 0.97 * (1 - (commissionExist?validator.validatorCommissions[0].commission:0));
+    const rewardPerYear = stakingData.mintCoinPerYear * (votingPower / stakingData.totalVotingPower) * 0.97 * (1 - (commissionOrigin));
     
     const APR = rewardPerYear > 0?rewardPerYear / votingPower : 0;
     const APRPerDay = APR / 365;

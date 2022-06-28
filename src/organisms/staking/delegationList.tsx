@@ -140,10 +140,10 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
     }
 
     useEffect(() => {
-        if(isRefresh){
+        if(isRefresh && visible){
             refreshStakings();
-        } 
-    }, [isRefresh])
+        }
+    }, [isRefresh, visible])
 
     const convertDelegateAmount = (amount:number) => {
         if(amount >= 10000){ return convertAmount(amount, true, 2)}
@@ -224,7 +224,10 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
                 </View>
             </View>
             {ClassifyByType()}
-            <CustomModal visible={openModal} handleOpen={handleOpenModal}>
+            <CustomModal 
+                bgColor={BgColor}
+                visible={openModal} 
+                handleOpen={handleOpenModal}>
                 <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort}/>
             </CustomModal>
         </View>

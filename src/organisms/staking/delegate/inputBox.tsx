@@ -3,9 +3,9 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { useFocusEffect } from "@react-navigation/native";
 import { StakeInfo } from "@/hooks/staking/hooks";
 import { useBalanceData } from "@/hooks/wallet/hooks";
-import { convertNumber, convertToFctNumber } from "@/util/common";
-import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
-import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT, UNSAFETY_NOTICE_TEXT } from "@/constants/common";
+import { convertNumber, convertToFctNumber, convertToFctNumberForInput } from "@/util/common";
+import { DisableColor, FailedColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT, WARNING_FOR_MAX_AMOUNT_TEST } from "@/constants/common";
 import { DownArrow } from "@/components/icon/icon";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
@@ -33,7 +33,9 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
 
     const [maxActive, setMaxActive] = useState(false);
     const [safetyActive, setSafetyActive] = useState(true);
+    const [amount, setAmount] = useState(0);
     const [limitAvailable, setLimitAvailable] = useState(0);
+    const [isMaxAmount, setIsMaxAmount] = useState(false);
 
     const redelegationList = useMemo(() => {
         return delegationState;
@@ -74,6 +76,11 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
         setMaxActive(active);
     }
 
+    const handleAmount = (amount: number) => {
+        handleDelegateState("amount", amount);
+        setAmount(amount);
+    }
+
     const handleSelectValidator = (address:string) => {
         handleDelegateState("operatorAddressSrc", address);
         setSelectOperatorAddressSrc(address);
@@ -105,13 +112,16 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                 return;
         }
     }, [type, safetyActive, available, reward])
-    
 
     useEffect(() => {
         if(type === "Delegate" && available > 0){
             if(available <= 100000) setSafetyActive(false);
         }
     }, [available]);
+
+    useEffect(() => {
+        setIsMaxAmount(safetyActive === false && amount >= convertNumber(convertToFctNumberForInput(limitAvailable)))
+    }, [amount, limitAvailable, safetyActive])
 
     useEffect(() => {
         if(type === "Undelegate"){
@@ -150,7 +160,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                     resetValues={resetInputValues}
                     enableMaxAmount={true}
                     handleMaxActive={handleMaxActive}
-                    onChangeEvent={(value:number) => handleDelegateState("amount", value)}/>
+                    onChangeEvent={(value:number) => handleAmount(value)}/>
                 
                 {type === "Delegate" &&
                     <>
@@ -163,18 +173,18 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
                         </TouchableOpacity>
                     </View>
                     {(available > 0 && available <= 20000) && 
-                        <View style={{marginBottom: 10}}>
-                            <WarnContainer text={FEE_INSUFFICIENT_NOTICE}/>
-                        </View>
+                    <View style={{marginBottom: 10}}>
+                        <WarnContainer text={FEE_INSUFFICIENT_NOTICE}/>
+                    </View>
                     }
                     {(safetyActive && available >= 100000) &&
-                    <View>
+                    <View style={{marginBottom: 10}}>
                         <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true}/>
                     </View>
                     }
-                    {(safetyActive === false && available < 100000) &&
+                    {isMaxAmount &&
                     <View>
-                        <WarnContainer text={UNSAFETY_NOTICE_TEXT} question={true}/>
+                        <WarnContainer text={WARNING_FOR_MAX_AMOUNT_TEST}/>
                     </View>
                     }
                     </>

@@ -1,12 +1,12 @@
 import React from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
-import Button from "@/components/button/button";
-import CustomModal from "@/components/modal/customModal";
 import { CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
 import { Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { confirmViaBioAuth } from "@/util/bioAuth";
 import { getUseBioAuth } from "@/util/wallet";
 import { FingerPrint } from "@/components/icon/icon";
+import CustomModal from "@/components/modal/customModal";
+import Button from "@/components/button/button";
 
 interface Props {
     walletName: string;

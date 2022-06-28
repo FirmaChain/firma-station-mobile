@@ -8,21 +8,22 @@ interface Props {
     paddingVertival?: number;
     align?: string; 
     text: string;
+    textColor?: string;
     question?: boolean;
 }
 
-const WarnContainer = ({bgColor = BoxColor, paddingVertival = 15, text, question = false}:Props) => {
+const WarnContainer = ({bgColor = BoxColor, paddingVertival = 15, text, textColor = TextWarnColor, question = false}:Props) => {
     return (
         <View style={[styles.wranContainer, {backgroundColor: bgColor, paddingVertical: paddingVertival}]}>
             <View style={styles.box}>
                 <View style={{height: 20, justifyContent: "center"}}>
                     {question? 
-                    <QuestionCircle size={15} color={TextWarnColor} />
+                    <QuestionCircle size={15} color={textColor} />
                     :
-                    <ExclamationCircle size={15} color={TextWarnColor} />
+                    <ExclamationCircle size={15} color={textColor} />
                     }
                 </View>
-                <Text style={[styles.warnText]}>{text}</Text>
+                <Text style={[styles.warnText, {color: textColor}]}>{text}</Text>
             </View>
         </View>
     )
@@ -45,7 +46,6 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 14,
         lineHeight: 20,
-        color: TextWarnColor,
         paddingLeft: 10,
     },
 })

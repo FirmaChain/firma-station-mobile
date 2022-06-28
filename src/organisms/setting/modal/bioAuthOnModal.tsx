@@ -35,7 +35,7 @@ const RadioOnModal = ({walletName, open, book, setOpenModal, bioAuthhandler}: Pr
                     const result = await getChain(walletName);
                     if(result){
                         let w = decrypt(result.password, key);
-                        if(w !== null) {
+                        if(w.split(" ").length === 24) {
                             setActive(true);
                         } else {
                             setActive(false);

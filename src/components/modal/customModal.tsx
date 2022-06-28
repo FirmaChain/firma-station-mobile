@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
-import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
+import { Keyboard, Platform, Pressable, StyleSheet, Modal as FadeModal, KeyboardAvoidingView } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { BgColor, BoxColor } from "@/constants/theme";
 import CustomToast from "../toast/customToast";
+import Modal from "react-native-modal";
 
 interface Props {
     visible: boolean;
+    fade?: boolean;
     keyboardAvoiing?: boolean;
     lockBackButton?: boolean;
     bgColor?: string;
@@ -13,7 +15,7 @@ interface Props {
     children: JSX.Element;
 }
 
-const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, bgColor = BoxColor, handleOpen, children}:Props) => {
+const CustomModal = ({visible, fade = false, keyboardAvoiing = true, lockBackButton = false, bgColor = BoxColor, handleOpen, children}:Props) => {
     const {common} = useAppSelector(state => state);
 
     const closeModal = () => {
@@ -21,29 +23,53 @@ const CustomModal = ({visible, keyboardAvoiing = true, lockBackButton = false, b
         handleOpen(false);
     }
 
+    const modalSwitcher = () => {
+        if(fade) {
+            return (
+                <FadeModal
+                    animationType="fade"
+                    transparent={true}
+                    onRequestClose={closeModal}
+                    visible={visible}>
+                        <KeyboardAvoidingView
+                            enabled={keyboardAvoiing}
+                            behavior={Platform.select({android: undefined, ios: 'padding'})} 
+                            style={{flex: 1}}>
+                                <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
+                                <Pressable style={[styles.modalBox, {backgroundColor: bgColor}]} onPress={()=>Keyboard.dismiss()}>
+                                    {children} 
+                                </Pressable>
+                                <CustomToast />
+                        </KeyboardAvoidingView>
+                </FadeModal>
+            )
+        } else {
+            return (
+                <Modal
+                    isVisible={visible}
+                    backdropColor={"#000000"}
+                    backdropOpacity={.7}
+                    avoidKeyboard={true}
+                    useNativeDriver={true}
+                    onModalHide={closeModal}
+                    onBackButtonPress={closeModal}
+                    style={{marginHorizontal: 0, marginVertical: 0}}>
+                        <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
+                        <Pressable style={[styles.modalBox, {backgroundColor: bgColor}]} onPress={()=>Keyboard.dismiss()}>
+                            {children} 
+                        </Pressable>
+                        <CustomToast />
+                </Modal>
+            )
+        }
+    }
+
     useEffect(() => {
         if(common.appState !== "active" && common.isBioAuthInProgress === false) closeModal();
     }, [common.appState])
 
     return (
-        <View style={[styles.container, {display: visible? "flex":"none", flex: visible? 1:0}]}>
-            <Modal
-                animationType="fade"
-                transparent={true}
-                onRequestClose={closeModal}
-                visible={visible}>
-                    <KeyboardAvoidingView
-                        enabled={keyboardAvoiing}
-                        behavior={Platform.select({android: undefined, ios: 'padding'})} 
-                        style={{flex: 1}}>
-                            <Pressable style={styles.modalContainer} onPress={()=>closeModal()}/> 
-                            <Pressable style={[styles.modalBox, {backgroundColor: bgColor}]} onPress={()=>Keyboard.dismiss()}>
-                                {children} 
-                            </Pressable>
-                            <CustomToast />
-                    </KeyboardAvoidingView>
-            </Modal>
-        </View>
+        modalSwitcher()
     )
 }
 
@@ -58,8 +84,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        backgroundColor: '#000',
-        opacity: 0.7,
     },
     modalBox: {
         width: '100%',

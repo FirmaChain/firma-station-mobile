@@ -82,6 +82,7 @@ const LoginCheck = () => {
             }
         } catch (error) {
             console.log(error);
+            CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
                 text1: String(error),
@@ -113,6 +114,7 @@ const LoginCheck = () => {
                 navigation.reset({routes: [{name: Screens.Home}]});
             }
         } catch (error) {
+            CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
                 text1: String(error),

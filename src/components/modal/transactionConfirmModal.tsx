@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { convertAmount, convertNumber } from "@/util/common";
-import { BorderColor, DisableColor, Lato, TextCatTitleColor, TextDarkGrayColor, TextDisableColor, WhiteColor } from "@/constants/theme";
+import { BgColor, BorderColor, DisableColor, Lato, TextCatTitleColor, TextDarkGrayColor, TextDisableColor, WhiteColor } from "@/constants/theme";
 import Button from "../button/button";
 import CustomModal from "./customModal";
 import ValidationModal from "./validationModal";
@@ -26,12 +26,14 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, vote = "", open, s
     }
 
     const [openValidationModal, setOpenValidationModal] = useState(false);
+    const [transactionStart, setTransactionStart] = useState(false);
     const handleValidation = (open:boolean) => {
         setOpenValidationModal(open);
     }
 
     const handleTransaction = (result: string) => {
         if(common.appState === "active"){
+            setTransactionStart(result !== "");
             transactionHandler(result);
         }
         handleModal(false);
@@ -42,15 +44,22 @@ const TransactionConfirmModal = ({title, amount = 0, fee = 0, vote = "", open, s
     }
 
     useEffect(() => {
+        if(open){
+            setTransactionStart(false);
+        }
+    }, [open])
+
+    useEffect(() => {
         if(common.appState !== "active" && common.isBioAuthInProgress === false) handleModal(false);
     }, [common.appState])
 
     return (
         <CustomModal
             visible={open}
+            bgColor={BgColor}
             handleOpen={handleModal}>
                 <>
-                <View style={[styles.modalTextContents, {display: openValidationModal? "none":"flex"}]}>
+                <View style={[styles.modalTextContents, {display: openValidationModal || transactionStart? "none":"flex"}]}>
                     <View style={[styles.boxH, {justifyContent: "flex-start", alignItems: "center"}]}>
                         <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
                     </View>
