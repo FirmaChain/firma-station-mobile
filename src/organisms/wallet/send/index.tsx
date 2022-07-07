@@ -128,7 +128,7 @@ const Send = () => {
                         <ScrollView
                             keyboardShouldPersistTaps={"handled"}>
                             <WalletInfo available={balance} />
-                            <SendInputBox handleSendInfo={handleSendInfo} available={balance} reset={resetInputValues}/>
+                            <SendInputBox handleSendInfo={handleSendInfo} available={balance} dstAddress={wallet.dstAddress} reset={resetInputValues}/>
                         </ScrollView>
                     </View>
                     <View style={{flex: 1, justifyContent: "flex-end"}}>

@@ -7,8 +7,8 @@ import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, Text
 import { DownArrow, SortASC, SortDESC } from "@/components/icon/icon";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
-import MonikerSection from "./parts/list/monikerSection";
-import DataSection from "./parts/list/dataSection";
+import MonikerSection from "../list/monikerSection";
+import DataSection from "../list/dataSection";
 import { useAppSelector } from "@/redux/hooks";
 
 interface Props {

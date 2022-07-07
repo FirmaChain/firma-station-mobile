@@ -113,6 +113,14 @@ export const convertPercentage = (value: string | number) => {
     return  result;
 }
 
+export const convertDelegateAmount = (amount:number) => {
+    if(amount >= 10000){ return convertAmount(amount, true, 2)}
+    if(amount >= 1000){ return convertAmount(amount, true, 3)}
+    if(amount >= 100){ return convertAmount(amount, true, 4)}
+    if(amount >= 10){ return convertAmount(amount, true, 5)}
+    if(amount >= 0){ return convertAmount(amount, true, 6)}
+}
+
 export const resizeFontSize = (amount:number, reference:number, initSize:number) => {  
     let fontSize = initSize;
     if(amount >= reference) fontSize = initSize - 2;

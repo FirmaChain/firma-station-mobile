@@ -1,16 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { CommonActions, StakingActions } from "@/redux/actions";
+import { useAppSelector } from "@/redux/hooks";
 import { useDelegationData } from "@/hooks/staking/hooks";
-import { convertAmount, convertTime, convertToFctNumber } from "@/util/common";
+import { convertToFctNumber } from "@/util/common";
 import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextGrayColor } from "@/constants/theme";
 import { DownArrow } from "@/components/icon/icon";
+// import { RESTAKE_API } from "@/../config";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
-import MonikerSection from "./parts/list/monikerSection";
-import DataSection from "./parts/list/dataSection";
-import MonikerSectionForRedelegate from "./parts/list/monikerSectionForRedelegate";
-import { useAppSelector } from "@/redux/hooks";
+import DelegateItem from "./delegateItem";
+import RedelegateItem from "./redelegateItem";
+import UndelegateItem from "./undelegateItem";
+import RestakeItem from "./restakeItem";
 
 interface Props {
     visible: boolean;
@@ -19,16 +21,25 @@ interface Props {
     navigateValidator: (address:string) => void;
 }
 
-const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:Props) => {
-    const {common} = useAppSelector(state => state);
+interface RestakeStates {
+    validatorAddress: string,
+    accRestakeAmount: number,
+    isActive: boolean,
+}
 
+const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:Props) => {
+    const {wallet, common} = useAppSelector(state => state);
+
+    // const sortItems = ['Delegate', 'Redelegate', 'Undelegate', 'Restake'];
     const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
+    const [stakingGrantListFromBot, setStakingGrantListFromBot] = useState([]);
 
     const { delegationState, 
         redelegationState, 
         undelegationState, 
+        // stakingGrantState,
         handleDelegationState,
         handleRedelegationState,
         handleUndelegationState,
@@ -46,6 +57,31 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
         return undelegationState;
     }, [undelegationState]);
 
+    // const stakingGrantList:Array<String> = useMemo(() => {
+    //     if(stakingGrantState.length > 0){
+    //         return stakingGrantState[0].authorization.allow_list;
+    //     }
+    //     return [];
+    // }, [stakingGrantState])
+
+    // const restakeList = useMemo(() => {
+
+    // },[delegationList, stakingGrantList, stakingGrantListFromBot])
+
+    // useEffect(() => {
+    //     const getStakingGrantListFromBot = async() => {
+    //         try {
+    //             const result = await fetch(RESTAKE_API + wallet.address);
+    //             const json = await result.json();
+    //             setStakingGrantListFromBot(json);
+    //         } catch (error) {
+    //             console.log(error);
+    //             return [];
+    //         }
+    //     }
+    //     getStakingGrantListFromBot();
+    // }, [stakingGrantList])
+
     const allReward = useMemo(() => {
         let reward = 0;
         delegationList.map(value => {
@@ -55,8 +91,10 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
     }, [delegationList])
 
     useEffect(() => {
-        StakingActions.updateStakingRewardState(convertToFctNumber(allReward));
-    },[allReward]);
+        if(delegationList.length > 0){
+            StakingActions.updateStakingRewardState(convertToFctNumber(allReward));
+        }
+    },[delegationList, allReward]);
 
     const refreshStakings = async() => {
         try {
@@ -123,6 +161,8 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
                 return redelegationList? redelegationList.length : 0;
             case 2:
                 return undelegationList? undelegationList.length : 0;
+            // case 3:
+            //     return delegationList? delegationList.length : 0;
             default:
                 return 0;
         }
@@ -136,77 +176,86 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
                 return redelegate();
             case 2:
                 return undelegate();
+            // case 3:
+            //     return restake();
         }
     }
 
     useEffect(() => {
-        if(isRefresh && visible){
+        const refreshDelegationList = async() => {
+            try {
+                switch (selected) {
+                    case 0:
+                        return await handleDelegationState();
+                    case 1:
+                        return await handleRedelegationState();
+                    case 2:
+                        return await handleUndelegationState();
+                    default:
+                        return 0;
+                }
+            } catch (error) {
+                CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+                console.log(error);
+            }
+        }
+
+        refreshDelegationList();
+    }, [selected])
+
+    useEffect(() => {
+        if(isRefresh && visible || visible){
             refreshStakings();
         }
     }, [isRefresh, visible])
 
-    const convertDelegateAmount = (amount:number) => {
-        if(amount >= 10000){ return convertAmount(amount, true, 2)}
-        if(amount >= 1000){ return convertAmount(amount, true, 3)}
-        if(amount >= 100){ return convertAmount(amount, true, 4)}
-        if(amount >= 10){ return convertAmount(amount, true, 5)}
-        if(amount >= 0){ return convertAmount(amount, true, 6)}
-    }
-
     const delegate = () => {
         return (
-            <>
+            <View>
             {delegationList.map((value, index) => {
                 return (
-                    <TouchableOpacity key={index} onPress={() => navigateValidator(value.validatorAddress)}>
-                        <View style={[styles.item]}>
-                            <MonikerSection validator={value} />
-                            <DataSection title="Delegated" data={convertDelegateAmount(value.amount) + " FCT"} />
-                            <DataSection title="Reward" data={convertAmount(value.reward, true, 6) + " FCT"} />
-                            <View style={{paddingBottom: 22}} />
-                        </View>
-                    </TouchableOpacity>
+                    <DelegateItem key={index} data={value} navigate={navigateValidator} />
                 )
             })}
-            </>
+            </View>
         )
     }
 
     const redelegate = () => {
         return (
-            <>
+            <View>
             {redelegationList.map((value, index) => {
                 return (
-                    <View key={index} style={[styles.item]}>
-                        <MonikerSectionForRedelegate validators={value} navigateValidator={navigateValidator}/>
-                        <DataSection title="Amount" data={convertAmount(value.balance) + " FCT"} />
-                        <DataSection title="Linked Until" data={convertTime(value.completionTime, true)} />
-                        <View style={{paddingBottom: 22}} />
-                    </View>
+                    <RedelegateItem key={index} data={value} navigate={navigateValidator} />
                 )
             })}
-            </>
+            </View>
         )
     }
 
     const undelegate = () => {
         return (
-            <>
+            <View>
             {undelegationList.map((value, index) => {
                 return (
-                    <TouchableOpacity key={index} onPress={() => navigateValidator(value.validatorAddress)}>
-                        <View style={[styles.item]}>
-                                <MonikerSection validator={value} />
-                            <DataSection title="Amount" data={convertAmount(value.balance) + " FCT"} />
-                            <DataSection title="Linked Until" data={convertTime(value.completionTime, true)} />
-                            <View style={{paddingBottom: 22}} />
-                        </View>
-                    </TouchableOpacity>
+                    <UndelegateItem key={index} data={value} navigate={navigateValidator} />
                 )
             })}
-            </>
+            </View>
         )
     }
+
+    // const restake = () => {
+    //     return (
+    //         <View>
+    //         {delegationList.map((value, index) => {
+    //             return (
+    //                 <RestakeItem key={index} data={value} grantList={stakingGrantList} grantListFromBot={stakingGrantListFromBot} navigate={navigateValidator} />
+    //             )
+    //         })}
+    //         </View>
+    //     )
+    // }
 
     return (
         <>

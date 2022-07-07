@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BgColor, DisableButtonColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
+import { BgColor, DisableButtonColor, FailedColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
 
 interface Props {
     title: string;
@@ -49,17 +49,19 @@ const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = Poin
     }, [height]);
 
     return (
-        <TouchableOpacity 
-            disabled={!active}
-            style={[styles.button, 
-                {width: size, 
-                height: buttonHeight, 
-                borderWidth: (border && active)? 1:0,
-                borderColor: WhiteColor,
-                backgroundColor: buttonColor.background}]} 
-            onPress={()=>handleOnPress()}>
-                <Text style={[styles.buttonText, {color: buttonColor.textColor}]}>{title}</Text>
-        </TouchableOpacity>
+        <View>
+            <TouchableOpacity 
+                disabled={!active}
+                style={[styles.button, 
+                    {width: size, 
+                    height: buttonHeight, 
+                    borderWidth: (border && active)? 1:0,
+                    borderColor: WhiteColor,
+                    backgroundColor: buttonColor.background}]} 
+                onPress={()=>handleOnPress()}>
+                    <Text style={[styles.buttonText, {color: buttonColor.textColor}]}>{title}</Text>
+            </TouchableOpacity>
+        </View>
     )
 }
 
@@ -78,5 +80,5 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16,
         fontWeight: "normal",
-    }
+    },
 })

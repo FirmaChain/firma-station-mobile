@@ -1,14 +1,14 @@
 import React from "react";
 import { Image, Platform } from "react-native";
+import { CommonActions } from "@/redux/actions";
 import { BoxDarkColor, GrayColor, Lato, WhiteColor } from "@/constants/theme";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { ICON_DOCUMENT } from "@/constants/images";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 import StakingIcon from "react-native-vector-icons/AntDesign";
-import { ICON_DOCUMENT } from "@/constants/images";
 import WalletScreen from "@/screens/home/wallet/wallet";
 import StakingScreen from "@/screens/home/staking/staking";
 import GovernanceScreen from "@/screens/home/governance/governance";
-import { CommonActions } from "@/redux/actions";
 
 const Tab = createBottomTabNavigator();
 

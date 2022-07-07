@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -7,12 +7,13 @@ import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 import { useStakingData } from "@/hooks/staking/hooks";
 import { useHistoryData } from "@/hooks/wallet/hooks";
-import { BgColor, BoxColor } from "@/constants/theme";
+import { BgColor, BoxColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import { TRANSACTION_TYPE } from "@/constants/common";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import RewardBox from "./rewardBox";
 import BalanceBox from "./balanceBox";
 import StakingLists from "./stakingLists";
+// import SmallButton from "@/components/button/smallButton";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
@@ -45,6 +46,10 @@ const Staking = () => {
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
+    // const moveToRestake = () => {
+    //     navigation.navigate(Screens.Restake);
+    // }
+
     const moveToValidator = (address:string) => {
         navigation.navigate(Screens.Validator, {
             validatorAddress: address,
@@ -76,9 +81,7 @@ const Staking = () => {
             updateStakingState(staking.stakingReward);
         }
         handleCurrentHistoryPolling(isFocused);
-        if(isInit === false){
-            handleIsRefresh(isFocused);
-        }
+        handleIsRefresh(isFocused);
     }
 
     useEffect(() => {
@@ -114,13 +117,11 @@ const Staking = () => {
     },[recentHistory])
     
     useEffect(() => {
-        if(isInit){
-            refreshAtFocus();
-        } else {
+        if(isInit === false){
             CommonActions.handleLoadingProgress(true);
-            refreshAtFocus();
             setIsInit(true);
         }
+        refreshAtFocus();
     }, [isFocused])
 
     return (
@@ -136,6 +137,19 @@ const Staking = () => {
                             reward={stakingReward}
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
+                        {/* <View style={{ padding: 20, marginTop: 12, backgroundColor: BoxColor, borderRadius: 8, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <View style={{flex: 1, marginRight: 25}}>
+                                <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5,}}>
+                                    <Text style={styles.title}>title</Text>
+                                    <Text style={styles.title}>value</Text>
+                                </View>
+                            </View>
+                            <SmallButton 
+                                title="Restake"
+                                size={125}
+                                active={stakingState.delegated > 0}
+                                onPressEvent={() => moveToRestake()}/>
+                        </View> */}
                     </View>
                     <StakingLists isRefresh={isListRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={moveToValidator} />
                 </View>
@@ -156,6 +170,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 20,
         backgroundColor: BgColor,
+    },
+    title: {
+        fontFamily: Lato,
+        fontSize: 14,
+        color: TextCatTitleColor,
+        textAlign: "center",
     },
 })
 

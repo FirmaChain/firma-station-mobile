@@ -5,11 +5,12 @@ import { checkCameraPermission } from "@/util/permission";
 import { QRCodeScannerIcon } from "../icon/icon";
 import Clipboard from "@react-native-clipboard/clipboard";
 import TextButton from "../button/textButton";
-import QRCodeScannerModal from "../modal/qrCodeScanner";
+import QRCodeScannerModal from "../modal/qrcode/qrCodeScanner";
 import { useAppSelector } from "@/redux/hooks";
 
 interface Props {
     title: string;
+    value: string;
     numberOnly?: boolean;
     placeholder: string;
     secure?: boolean;
@@ -17,7 +18,7 @@ interface Props {
     onChangeEvent: Function;
 }
 
-const InputSetVerticalForAddress = ({title, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}:Props) => {
+const InputSetVerticalForAddress = ({title, value, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}:Props) => {
     const {common} = useAppSelector(state => state);
     
     const [val, setVal] = useState('');
@@ -44,6 +45,12 @@ const InputSetVerticalForAddress = ({title, numberOnly = false, placeholder, sec
         const copied = await Clipboard.getString();
         handleInputChange(copied);
     }
+
+    useEffect(() => {
+        if(value !== ""){
+            handleInputChange(value);
+        }
+    }, [value])
 
     useEffect(() => {
         if(common.appState !== "active"){

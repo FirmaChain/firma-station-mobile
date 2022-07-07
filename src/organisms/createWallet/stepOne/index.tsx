@@ -5,6 +5,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
+import { wait } from "@/util/common";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { createNewWallet, Wallet } from "@/util/firma";
 import { CREATE_WALLET_FAILED } from "@/constants/common";
@@ -70,6 +71,7 @@ const StepOne = ({mnemonic = null}:Props) => {
     const onCompleteRecoverWallet = async() => {
         try {
             const useBioAuth = await setWalletWithBioAuth(walletName, password, mnemonic);
+            
             if(useBioAuth){
                 handleOpenBioAuthModal(true);
             } else {
@@ -89,10 +91,14 @@ const StepOne = ({mnemonic = null}:Props) => {
                 await setPasswordViaBioAuth(password);
                 await setUseBioAuth(walletName);
                 handleOpenBioAuthModal(false);
-                navigation.reset({routes: [{name: Screens.Home}]});
+                wait(100).then(() => {
+                    navigation.reset({routes: [{name: Screens.Home}]});
+                })
             } else {
                 handleOpenBioAuthModal(false);
-                navigation.reset({routes: [{name: Screens.Home}]});
+                wait(100).then(() => {
+                    navigation.reset({routes: [{name: Screens.Home}]});
+                })
             }            
         } catch (error) {
             Toast.show({

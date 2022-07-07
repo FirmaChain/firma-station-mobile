@@ -103,7 +103,7 @@ const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props)
     }, [currentPrice, available])
 
     const balanceTextSize = useMemo(() => {
-        return resizeFontSize(convertNumber(FirmaUtil.getFCTStringFromUFCT(available)), 1000000, 28);
+        return resizeFontSize(convertNumber(FirmaUtil.getFCTStringFromUFCT(available)), 100000, 28);
     }, [available])
 
     const handleCurrencySelectModal = (open: boolean) => {

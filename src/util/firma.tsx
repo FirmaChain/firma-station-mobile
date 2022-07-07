@@ -1,7 +1,7 @@
 import { FirmaMobileSDK, FirmaUtil } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
 import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
-import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
+import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG, RESTAKE_ADDRESS } from "@/../config";
 import { convertNumber, convertToFctNumber } from "./common";
 import { getDecryptPassword, getMnemonic } from "./wallet";
 
@@ -15,7 +15,7 @@ export const setFirmaSDK = (network:string) => {
     }
 }
 
-const getFirmaSDK = () => {
+export const getFirmaSDK = () => {
     return firmaSDK;
 }
 
@@ -119,7 +119,7 @@ export const getDecryptWalletInfo = async(walletName:string) => {
 export const getEstimateGasFromAllDelegations = async(walletName:string) => {
     try {
         let wallet = await getDecryptWalletInfo(walletName);
-        const delegationList = await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())
+        const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList
         const estimatedGas = await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewardsFromAllValidator(wallet, delegationList);
         return estimatedGas;
     } catch (error) {
@@ -161,6 +161,29 @@ export const getEstimateGasRedelegate = async(walletName:string, validatorSrcAdd
     try {
         let wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
+        return gasEstimation;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getEstimateGasGrantStakeAuthorization = async(walletName:string, validatorAddress:string[]) => {
+    try {
+        let wallet = await getDecryptWalletInfo(walletName);
+        let date = new Date();
+        date.setFullYear(date.getFullYear() + 1);
+        
+        const gasEstimation = await getFirmaSDK().Authz.getGasEstimationGrantStakeAuthorization(wallet, RESTAKE_ADDRESS, validatorAddress, 1, date, 0);
+        return gasEstimation;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getEstimateGasRevokeStakeAuthorization = async(walletName:string) => {
+    try {
+        let wallet = await getDecryptWalletInfo(walletName);
+        const gasEstimation = await getFirmaSDK().Authz.getGasEstimationRevokeStakeAuthorization(wallet, RESTAKE_ADDRESS, 1);
         return gasEstimation;
     } catch (error) {
         throw error;
@@ -213,7 +236,7 @@ export const addressCheck = (address:string) => {
 // Staking
 export const getDelegateList = async(address:string) => {
     try {
-        return await getFirmaSDK().Staking.getTotalDelegationInfo(address);
+        return (await getFirmaSDK().Staking.getTotalDelegationInfo(address)).dataList;
     } catch (error) {
         console.log("getDelegateList : ", error);
         return [];
@@ -314,6 +337,37 @@ export const undelegate = async(mnemonic:string, address:string, amount:number, 
     }
 }
 
+export const grant = async(mnemonic:string, validatorAddress:string[], maxTokens:number, estimatedGas:number) => {
+    try {
+        let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+        let date = new Date();
+        date.setFullYear(date.getFullYear() + 1);
+
+        let result = await getFirmaSDK().Authz.grantStakeAuthorization(wallet, RESTAKE_ADDRESS, validatorAddress, 1, date, maxTokens, {
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas),
+        });
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const revoke = async(mnemonic:string, estimatedGas:number) => {
+    try {
+        let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+        let result = await getFirmaSDK().Authz.revokeStakeAuthorization(wallet, RESTAKE_ADDRESS, 1, {
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas),
+        });
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const withdrawRewards = async (mnemonic:string, address:string, estimatedGas:number) => {
     try {
         let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
@@ -331,7 +385,7 @@ export const withdrawRewards = async (mnemonic:string, address:string, estimated
 export const withdrawAllRewards = async (mnemonic:string, estimatedGas:number) => {
     try {
         let wallet = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
-        const delegationList = await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())
+        const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList
         const result = await getFirmaSDK().Distribution.withdrawAllRewardsFromAllValidator(wallet, delegationList,{
             gas: estimatedGas,
             fee: getFeesFromGas(estimatedGas),
@@ -356,7 +410,6 @@ export const voting = async (mnemonic:string, proposalId:number, votingOpt:numbe
         throw error;
     }
 };
-
 
 export const getDelegations = async(address:string) => { 
     try {
@@ -436,6 +489,17 @@ export const getUndelegations = async(address:string) => {
     } catch (error) {
         console.log(error);
         throw error;
+    }
+}
+
+export const getStakingGrant = async(address:string) => {
+    try {
+        const data = (await getFirmaSDK().Authz.getStakingGrantData(address, RESTAKE_ADDRESS, 1));
+        const grantData = data.dataList;
+        
+        return grantData;
+    } catch (error) {
+        return [];
     }
 }
 

@@ -2,12 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { CommonActions } from "@/redux/actions";
 import { ButtonPointLightColor, DiableButtonPointcolor, DisableColor, Lato, PointColor, TextColor, TextLightGrayColor, TextPointDisableColor, TextStakingReward } from "@/constants/theme";
-import { convertCurrent, makeDecimalPoint, resizeFontSize } from "@/util/common";
+import { convertAmount, convertNumber, makeDecimalPoint, resizeFontSize } from "@/util/common";
 import { getEstimateGasFromAllDelegations, getFeesFromGas } from "@/util/firma";
 import { FIRMACHAIN_DEFAULT_CONFIG } from "@/../config";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import SmallButton from "@/components/button/smallButton";
 import AlertModal from "@/components/modal/alertModal";
+import AnimatedNumber from "react-native-animated-number";
 
 interface Props {
     walletName: string;
@@ -29,8 +30,19 @@ const RewardBox = ({walletName, reward, transactionHandler}:Props) => {
     }
     
     const stakingReward = useMemo(() => {
-        return convertCurrent(makeDecimalPoint(reward));
+        return makeDecimalPoint(reward);
     }, [reward]);
+
+    const rewardInteger = useMemo(() => {
+        return convertNumber(stakingReward.split(".")[0]);
+    }, [stakingReward])
+
+    const rewardDecimal = useMemo(() => {
+        if(stakingReward.split(".").length > 1){
+            return convertNumber(stakingReward.split(".")[1]);
+        }
+        return 0;
+    }, [stakingReward])
     
     const handleModalOpen = (open:boolean) => {
         setIsAlertModalOpen(open);
@@ -71,9 +83,18 @@ const RewardBox = ({walletName, reward, transactionHandler}:Props) => {
         <View style={styles.rewardBox}>
             <View style={styles.boxV}>
                 <Text style={[styles.title, {color: TextStakingReward, marginBottom: 6}]}>Staking Reward</Text>
-                <Text style={[styles.desc, {fontSize: rewardTextSize}]}>{stakingReward}
+                <View style={{flexDirection: "row", justifyContent: "flex-start", alignItems: "center"}}>
+                    <AnimatedNumber style={[styles.desc, {fontSize: rewardTextSize}]} steps={rewardDecimal>0?45:0} value={rewardInteger} formatter={(value) => {
+                        return convertAmount(value, false, 0);
+                    }}/>
+                    <Text style={[styles.desc, {fontSize: rewardTextSize}]}>.</Text>
+                    <AnimatedNumber style={[styles.desc, {fontSize: rewardTextSize}]} steps={rewardDecimal>0?45:0} value={rewardDecimal}>
+                        <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
+                    </AnimatedNumber>
+                </View>
+                {/* <Text style={[styles.desc, {fontSize: rewardTextSize}]}>{stakingReward}
                     <Text style={[styles.title, {fontSize: 14, fontWeight: "normal"}]}>  FCT</Text>
-                </Text>
+                </Text> */}
             </View>
             <SmallButton
                 title={"Withdraw All"}

@@ -6,19 +6,22 @@ import InputSetVerticalForAddress from "@/components/input/inputSetVerticalForAd
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import WarnContainer from "@/components/parts/containers/warnContainer";
+import { WalletActions } from "@/redux/actions";
 
 interface Props {
     handleSendInfo: (type:string, value:string|number) => void;
     available: number;
     reset: boolean;
+    dstAddress: string;
 }
 
-const SendInputBox = ({handleSendInfo, available, reset}:Props) => {
+const SendInputBox = ({handleSendInfo, available, reset, dstAddress}:Props) => {
     const [safetyActive, setSafetyActive] = useState(true);
     const [limitAvailable, setLimitAvailable] = useState(0);
 
     const handleSendInfoState = (type:string, value:string|number) => {
         handleSendInfo(type, value);
+        WalletActions.handleDstAddress("");
     }
 
     useEffect(() => {
@@ -49,6 +52,7 @@ const SendInputBox = ({handleSendInfo, available, reset}:Props) => {
             <InputSetVerticalForAddress
                 title="To address"
                 placeholder="Address"
+                value={dstAddress}
                 resetValues={reset}
                 onChangeEvent={(value:any) => handleSendInfoState("address", value)}/>
             <InputSetVerticalForAmount

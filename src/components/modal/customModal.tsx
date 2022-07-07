@@ -51,6 +51,7 @@ const CustomModal = ({visible, fade = false, keyboardAvoiing = true, lockBackBut
                     backdropOpacity={.7}
                     avoidKeyboard={true}
                     useNativeDriver={true}
+                    hideModalContentWhileAnimating={true}
                     onModalHide={closeModal}
                     onBackButtonPress={closeModal}
                     style={{marginHorizontal: 0, marginVertical: 0}}>

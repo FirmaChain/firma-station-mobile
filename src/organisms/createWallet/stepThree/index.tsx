@@ -5,6 +5,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { useAppSelector } from "@/redux/hooks";
 import { BgColor } from "@/constants/theme";
+import { wait } from "@/util/common";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
 import { GUIDE_URI } from "@/../config";
 import Toast from "react-native-toast-message";
@@ -58,10 +59,14 @@ const StepThree = ({walletInfo}:Props) => {
                 await setPasswordViaBioAuth(walletInfo.password);
                 await setUseBioAuth(walletInfo.name);
                 handleOpenBioAuthModal(false);
-                navigation.reset({routes: [{name: Screens.Home}]});
+                wait(100).then(() => {
+                    navigation.reset({routes: [{name: Screens.Home}]});
+                })
             } else {
                 handleOpenBioAuthModal(false);
-                navigation.reset({routes: [{name: Screens.Home}]});
+                wait(100).then(() => {
+                    navigation.reset({routes: [{name: Screens.Home}]});
+                })
             }
         } catch (error) {
             Toast.show({

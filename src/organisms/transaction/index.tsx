@@ -4,7 +4,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { getMnemonic } from "@/util/wallet";
-import { delegate, redelegate, sendFCT, undelegate, voting, withdrawAllRewards, withdrawRewards } from "@/util/firma";
+import { delegate, grant, redelegate, revoke, sendFCT, undelegate, voting, withdrawAllRewards, withdrawRewards } from "@/util/firma";
 import { BgColor } from "@/constants/theme";
 import { TRANSACTION_TYPE } from "@/constants/common";
 import ViewContainer from "@/components/parts/containers/viewContainer";
@@ -34,9 +34,13 @@ const Transaction = ({state}:Props) => {
 
     useEffect(() => {
         const getMnemonicFromChain = async() => {
-            let result = await getMnemonic(wallet.name, state.password);
-            if(result){
-                setMnemonic(result);
+            try {
+                let result = await getMnemonic(wallet.name, state.password);
+                if(result){
+                    setMnemonic(result);
+                }
+            } catch (error) {
+                setTransactionResult({code: -1, result: String(error)})
             }
         }
         getMnemonicFromChain();
@@ -71,6 +75,18 @@ const Transaction = ({state}:Props) => {
                             code: undelegateResult.code,
                             result: undelegateResult.transactionHash});
                         break;
+                    case TRANSACTION_TYPE["GRANT"]:
+                        const grantResult = await grant(mnemonic, state.validatorAddressList, state.maxTokens, state.gas);
+                        setTransactionResult({
+                            code: grantResult.code,
+                            result: grantResult.transactionHash});
+                        break;
+                    case TRANSACTION_TYPE["REVOKE"]:
+                        const revokeResult = await revoke(mnemonic, state.gas);
+                        setTransactionResult({
+                            code: revokeResult.code,
+                            result: revokeResult.transactionHash});
+                        break;
                     case TRANSACTION_TYPE["WITHDRAW"]:
                         const withdrawResult = await withdrawRewards(mnemonic, state.operatorAddress, state.gas);
                         setTransactionResult({
@@ -94,7 +110,7 @@ const Transaction = ({state}:Props) => {
                 }
             } catch (error) {
                 console.log("ERROR : ", error); 
-                setTransactionResult({code: -1, result: error})
+                setTransactionResult({code: -1, result: String(error)})
             }
         }
         transaction();
@@ -105,7 +121,21 @@ const Transaction = ({state}:Props) => {
     }
 
     const handleBack = () => {
-        navigation.goBack();
+        switch (state.type) {
+            case TRANSACTION_TYPE["SEND"]:
+                navigation.reset({routes: [{name: Screens.Home}]});
+                break;
+            case TRANSACTION_TYPE["DELEGATE"]:
+            case TRANSACTION_TYPE["REDELEGATE"]:
+            case TRANSACTION_TYPE["UNDELEGATE"]:
+                navigation.navigate(Screens.Validator, {
+                    validatorAddress: state.operatorAddressDst,
+                });
+                break;
+            default:
+                navigation.goBack();
+                break;
+        }
     }
 
     return (

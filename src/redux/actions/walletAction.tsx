@@ -1,4 +1,4 @@
-import { HANDLE_WALLET_ADDRESS, HANDLE_WALLET_NAME } from "../types"
+import { HANDLE_DST_ADDRESS, HANDLE_WALLET_ADDRESS, HANDLE_WALLET_NAME } from "../types"
 
 export const handleWalletName = (name:string) => (
     {
@@ -14,3 +14,9 @@ export const handleWalletAddress = (address:string) => (
     }
 )
 
+export const handleDstAddress = (address:string) => (
+    {
+        type: HANDLE_DST_ADDRESS,
+        payload: address,
+    }
+)

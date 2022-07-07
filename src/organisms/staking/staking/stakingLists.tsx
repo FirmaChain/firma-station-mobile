@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
-import DelegationList from "../delegationList";
-import ValidatorList from "../validatorList";
+import DelegationList from "../parts/delegation/delegationList";
+import ValidatorList from "../parts/validator/validatorList";
 
 interface Props {
     isRefresh: boolean;

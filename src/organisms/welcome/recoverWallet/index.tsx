@@ -13,7 +13,7 @@ import { GUIDE_URI } from "@/../config";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
 import WarnContainer from "@/components/parts/containers/warnContainer";
-import QRCodeScannerModal from "@/components/modal/qrCodeScanner";
+import QRCodeScannerModal from "@/components/modal/qrcode/qrCodeScanner";
 import RecoverMenus from "./recoverMenus";
 import Toast from "react-native-toast-message";
 

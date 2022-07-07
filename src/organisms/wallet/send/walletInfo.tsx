@@ -14,13 +14,13 @@ const WalletInfo = ({type, available = 0, reward = 0}:Props) => {
     return (
         <View style={styles.box}>
         <View style={styles.boxH}>
-            <Text style={styles.title}>Available</Text>
+            <Text style={styles.title}>{type === "Restake"? "Total Delegate":"Available"}</Text>
             <Text style={styles.balance}>{convertAmount(available, true, 6)}
                 <Text style={[styles.title, {fontSize: 14}]}>  FCT</Text>
             </Text>
         </View>
-        <View style={[styles.boxH, {display: type === "Delegate"?"flex":"none", justifyContent: "flex-end", paddingVertical: 0, paddingBottom: 10}]}>
-            <Text style={[styles.title, {fontSize: 14, color: TextGrayColor}]}>Reward</Text>
+        <View style={[styles.boxH, {display: (type === "Delegate" || type === "Restake")?"flex":"none", justifyContent: "flex-end", paddingVertical: 0, paddingBottom: 10}]}>
+            <Text style={[styles.title, {fontSize: 14, color: TextGrayColor}]}>{type === "Restake"? "Total Reward":"Reward"}</Text>
             <Text style={[styles.balance, {fontSize: 14, color: TextGrayColor}]}>{convertAmount(reward, true, 6)}
                 <Text style={[styles.title, {fontSize: 12, color: TextGrayColor}]}>  FCT</Text>
             </Text>

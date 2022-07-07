@@ -1,5 +1,5 @@
 import { Alert, Linking, Platform } from "react-native";
-import ReactNativeBiometrics from "react-native-biometrics";
+import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
 import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
 import { CommonActions } from "@/redux/actions";
 import { wait } from "./common";
@@ -7,10 +7,11 @@ import { wait } from "./common";
 export const confirmViaBioAuth = async() => {
     CommonActions.handleBioAuthInProgress(true);
     let authResult:boolean = false;
-    const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
+    const rnBiometrics = new ReactNativeBiometrics();
+    const { biometryType, available } = await rnBiometrics.isSensorAvailable();
 
     try {
-        const result = await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType });
+        const result = await rnBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType });
         wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
         authResult = result.success;
     } catch (error) {
@@ -32,14 +33,15 @@ export const confirmViaBioAuth = async() => {
 }
 
 export const checkBioMetrics = async() => {
-    let result = ReactNativeBiometrics.isSensorAvailable()
+    const rnBiometrics = new ReactNativeBiometrics();
+    let result = rnBiometrics.isSensorAvailable()
     .then((resultObject) => {
         const { available, biometryType } = resultObject
-        if (available && biometryType === ReactNativeBiometrics.TouchID) {
+        if (available && biometryType === BiometryTypes.TouchID) {
             return true;
-        } else if (available && biometryType === ReactNativeBiometrics.FaceID) {
+        } else if (available && biometryType === BiometryTypes.FaceID) {
             return true;
-        } else if (available && biometryType === ReactNativeBiometrics.Biometrics) {
+        } else if (available && biometryType === BiometryTypes.Biometrics) {
             return true;
         } else {
             return false;
