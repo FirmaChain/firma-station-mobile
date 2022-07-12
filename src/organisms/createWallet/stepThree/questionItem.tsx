@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     quiz: {
-        width: 170,
+        width: 160,
         paddingHorizontal: 20,
         paddingVertical: 15,
         borderRadius: 4,

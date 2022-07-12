@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
-import { BgColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
+import { BgColor, Lato, TextCatTitleColor } from "@/constants/theme";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
@@ -57,7 +57,7 @@ const RadioOnModal = ({walletName, open, book, setOpenModal, bioAuthhandler}: Pr
     }
 
     const handleModal = (open:boolean) => {
-        setOpenModal && setOpenModal(open);
+        setOpenModal(open);
     }
 
     useEffect(() => {

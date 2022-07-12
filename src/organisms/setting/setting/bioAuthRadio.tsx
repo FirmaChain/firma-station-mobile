@@ -4,10 +4,10 @@ import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColo
 import { BIOAUTH_ACTIVATE, SETTING_BIO_AUTH_MODAL_TEXT } from "@/constants/common";
 import { getUseBioAuth, removePasswordViaBioAuth, removeUseBioAuth, setPasswordViaBioAuth, setUseBioAuth } from "@/util/wallet";
 import { confirmViaBioAuth } from "@/util/bioAuth";
-import RadioOnModal from "../modal/bioAuthOnModal";
-import Toast from "react-native-toast-message";
 import { useAppSelector } from "@/redux/hooks";
 import { easeInAndOutCustomAnim, LayoutAnim } from "@/util/animation";
+import Toast from "react-native-toast-message";
+import RadioOnModal from "../modal/bioAuthOnModal";
 
 interface Props {
     wallet: any;
@@ -19,12 +19,8 @@ const BioAuthRadio = ({wallet}:Props) => {
     const [openBioModal, setOpenBioModal] = useState(false);
     const [useBio, setUseBio] = useState(false);
 
-    const closeBioModal = (open:boolean) => {
+    const closeBioModal = async(open:boolean) => {
         setOpenBioModal(open);
-        if(common.appState === "active"){
-            setUseBio(open);
-            handleBioAuthState();
-        }
     }
 
     const handleBioAuth = async(value:boolean) => {
@@ -53,7 +49,7 @@ const BioAuthRadio = ({wallet}:Props) => {
                     await setUseBioAuth(wallet.name);
                     handleToast();
                 } else {
-                    handleBioAuth(false);
+                    closeBioModal(false);
                 }
                 setOpenBioModal(false);
             } else {            
@@ -73,9 +69,11 @@ const BioAuthRadio = ({wallet}:Props) => {
             const result = await getUseBioAuth(wallet.name);
             setUseBio(result);
         }
-
-        getUseBioAuthState();
-    }, []);
+        
+        if(common.isBioAuthInProgress === false){
+            getUseBioAuthState();
+        }
+    }, [common.isBioAuthInProgress]);
 
     return (
         <View style={styles.listItem}>
