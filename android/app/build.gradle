@@ -31,8 +31,8 @@ android {
         missingDimensionStrategy 'react-native-camera', 'mlkit'
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 9
-        versionName "1.0.8"
+        versionCode 10
+        versionName "1.0.9"
     }
     splits {
         abi {
@@ -100,6 +100,12 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-splash-screen')
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation "androidx.appcompat:appcompat:+"
+    implementation ("androidx.appcompat:appcompat:1.3.1") {
+        version {
+            strictly '1.3.1'
+        }
+    }
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
