@@ -5,12 +5,12 @@ import { getWalletList, removeUseBioAuth, removeWallet, setWalletList } from "@/
 import DeleteWalletModal from "../modal/deleteWalletModal";
 import Toast from "react-native-toast-message";
 
-interface Props {
+interface IProps {
     wallet: any;
     handleDisconnect: () => void;
 }
 
-const Delete = ({wallet, handleDisconnect}:Props) => {
+const Delete = ({wallet, handleDisconnect}:IProps) => {
 
     const [openDelModal, setOpenDelModal] = useState(false);
     const handleDelModal = (open:boolean) => {

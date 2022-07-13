@@ -1,18 +1,18 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { convertAmount, convertDelegateAmount } from "@/util/common";
-import { StakeInfo } from "@/hooks/staking/hooks";
+import { IStakeInfo } from "@/hooks/staking/hooks";
 import { BgColor } from "@/constants/theme";
 import DataSection from "../list/dataSection";
 import MonikerSection from "../list/monikerSection";
 
-interface Props {
-    data: StakeInfo;
+interface IProps {
+    data: IStakeInfo;
     navigate: (address:string) => void;
 }
 
 
-const DelegateItem = ({data, navigate}:Props) => {
+const DelegateItem = ({data, navigate}:IProps) => {
     return (
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
             <View style={[styles.item]}>
@@ -29,8 +29,6 @@ const styles = StyleSheet.create({
     item : {
         paddingTop: 22,
         backgroundColor: BgColor,
-        marginVertical: 5,
-        borderRadius: 8,
     },
 })
 

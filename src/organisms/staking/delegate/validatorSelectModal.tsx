@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { StakeInfo } from "@/hooks/staking/hooks";
-import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
-import CustomModal from "@/components/modal/customModal";
+import { IStakeInfo } from "@/hooks/staking/hooks";
 import { BgColor } from "@/constants/theme";
+import CustomModal from "@/components/modal/customModal";
+import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
 
-interface Props {
-    list: Array<StakeInfo>;
+interface IProps {
+    list: Array<IStakeInfo>;
     open: boolean;
     myAddress: string;
     setOpenModal: Function;
@@ -14,7 +14,7 @@ interface Props {
     resetValues: boolean;
 }
 
-const ValidatorSelectModal = ({list, open, myAddress, setOpenModal, setValue, resetValues}:Props) => {
+const ValidatorSelectModal = ({list, open, myAddress, setOpenModal, setValue, resetValues}:IProps) => {
     const [selected, setSelected] = useState('');
 
     const handleOpenModal = (open:boolean) => {

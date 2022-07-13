@@ -5,10 +5,10 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions, StakingActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
-import { StakingState, useDelegationData, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
+import { IStakingState, useDelegationData, useValidatorDataFromAddress } from "@/hooks/staking/hooks";
 import { getStakingFromvalidator } from "@/util/firma";
 import { BgColor, BoxColor, FailedColor, Lato } from "@/constants/theme";
-import { KeyValue, TRANSACTION_TYPE, TYPE_COLORS } from "@/constants/common";
+import { IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from "@/constants/common";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import Container from "@/components/parts/containers/conatainer";
 import ViewContainer from "@/components/parts/containers/viewContainer";
@@ -19,18 +19,18 @@ import AddressBox from "./addressBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
-interface Props {
+interface IProps {
     validatorAddress: string;
 }
 
-const Validator = ({validatorAddress}:Props) => {
+const Validator = ({validatorAddress}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation();
 
     const {wallet, common} = useAppSelector(state => state);
     const {validatorState, handleValidatorPolling} = useValidatorDataFromAddress(validatorAddress);
     const {delegationState, handleTotalDelegationPolling} = useDelegationData();
 
-    const [stakingState, setStakingState] = useState<StakingState>({
+    const [stakingState, setStakingState] = useState<IStakingState>({
         available: 0,
         delegated: 0,
         undelegate: 0,
@@ -77,7 +77,7 @@ const Validator = ({validatorAddress}:Props) => {
     }
 
     const moveToDelegate = (type:string) => {
-        let delegateState:KeyValue = {
+        let delegateState:IKeyValue = {
             type: type,
             operatorAddress: validatorAddress,
         }

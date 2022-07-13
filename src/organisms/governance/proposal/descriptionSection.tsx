@@ -3,15 +3,15 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BoxColor, DividerColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from "@/constants/common";
 import { convertAmount, convertTime } from "@/util/common";
-import { ProposalDescriptionState } from "@/hooks/governance/hooks";
+import { IProposalDescriptionState } from "@/hooks/governance/hooks";
 import { ICON_LINK_ARROW } from "@/constants/images";
 
-interface Props {
-    data: ProposalDescriptionState;
+interface IProps {
+    data: IProposalDescriptionState;
     handleMoveToExplorer: ()=>void;
 }
 
-const DescriptionSection = ({data, handleMoveToExplorer}:Props) => {
+const DescriptionSection = ({data, handleMoveToExplorer}:IProps) => {
 
     const isDepositPeriod = useMemo(() => {
         return data.status === PROPOSAL_STATUS_DEPOSIT_PERIOD;

@@ -1,17 +1,17 @@
 import React, { useMemo } from "react"
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BoxColor, InputPlaceholderColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BoxColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { ForwardArrow } from "@/components/icon/icon";
 import { convertTime, getGMT } from "@/util/common";
 import { EXPLORER_URL, HISTORY_NOT_EXIST } from "@/constants/common";
 
-interface Props {
+interface IProps {
     recentHistory: any;
     handleHistory: Function;
     handleExplorer: (uri:string)=>void;
 }
 
-const HistoryBox = ({recentHistory, handleHistory, handleExplorer}:Props) => {
+const HistoryBox = ({recentHistory, handleHistory, handleExplorer}:IProps) => {
     const historyData = useMemo(() => {
         if(recentHistory !== undefined) return recentHistory;
         return {

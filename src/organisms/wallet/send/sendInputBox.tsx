@@ -8,14 +8,14 @@ import InputSetVertical from "@/components/input/inputSetVertical";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import { WalletActions } from "@/redux/actions";
 
-interface Props {
+interface IProps {
     handleSendInfo: (type:string, value:string|number) => void;
     available: number;
     reset: boolean;
     dstAddress: string;
 }
 
-const SendInputBox = ({handleSendInfo, available, reset, dstAddress}:Props) => {
+const SendInputBox = ({handleSendInfo, available, reset, dstAddress}:IProps) => {
     const [safetyActive, setSafetyActive] = useState(true);
     const [limitAvailable, setLimitAvailable] = useState(0);
 

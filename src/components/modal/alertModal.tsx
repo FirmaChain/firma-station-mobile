@@ -3,7 +3,7 @@ import { Modal, TouchableOpacity, StyleSheet, Text, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { BoxColor, FailedColor, Lato, PointColor, TextCatTitleColor, TextColor } from "@/constants/theme";
 
-interface Props {
+interface IProps {
     visible: boolean;
     handleOpen: Function;
     title: string;
@@ -13,7 +13,7 @@ interface Props {
     forcedActive?: boolean;
 }
 
-const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type, forcedActive = false}:Props) => {
+const AlertModal = ({visible, handleOpen, title, desc, confirmTitle, type, forcedActive = false}:IProps) => {
     const {common} = useAppSelector(state => state);
 
     const closeModal = () => {

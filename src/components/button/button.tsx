@@ -2,14 +2,14 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { BorderColor, DisableColor, Lato, PointColor, TextColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
 
-interface Props {
+interface IProps {
     title: string;
     active: boolean;
     border?: boolean;
     onPressEvent: () => void;
 }
 
-const Button = ({title, active, border = false, onPressEvent}:Props) => {
+const Button = ({title, active, border = false, onPressEvent}:IProps) => {
 
     return (
         <TouchableOpacity 

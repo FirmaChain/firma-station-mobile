@@ -4,7 +4,7 @@ import { convertNumber, convertToFctNumberForInput, handleDecimalPointLimit } fr
 import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import TextButton from "../button/textButton";
 
-interface Props {
+interface IProps {
     title: string;
     placeholder: string;
     accent?: boolean;
@@ -22,7 +22,7 @@ const InputSetVerticalForAmount = ({title,
     resetValues = false, 
     enableMaxAmount = false, 
     handleMaxActive,
-    onChangeEvent}:Props) => {
+    onChangeEvent}:IProps) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 

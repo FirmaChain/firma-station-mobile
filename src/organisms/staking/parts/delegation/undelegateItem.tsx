@@ -1,18 +1,18 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { convertAmount, convertTime } from "@/util/common";
-import { UndelegationInfo } from "@/hooks/staking/hooks";
+import { IUndelegationInfo } from "@/hooks/staking/hooks";
 import { BgColor } from "@/constants/theme";
 import DataSection from "../list/dataSection";
 import MonikerSection from "../list/monikerSection";
 
-interface Props {
-    data: UndelegationInfo;
+interface IProps {
+    data: IUndelegationInfo;
     navigate: (address:string) => void;
 }
 
 
-const UndelegateItem = ({data, navigate}:Props) => {
+const UndelegateItem = ({data, navigate}:IProps) => {
     return (
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
             <View style={[styles.item]}>
@@ -29,8 +29,6 @@ const styles = StyleSheet.create({
     item : {
         paddingTop: 22,
         backgroundColor: BgColor,
-        marginVertical: 5,
-        borderRadius: 8,
     },
 })
 

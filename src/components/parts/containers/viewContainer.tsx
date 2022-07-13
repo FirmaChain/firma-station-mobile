@@ -1,13 +1,13 @@
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 
-interface Props {
+interface IProps {
     bgColor?: string;
     full?: boolean;
     children: JSX.Element;
 }
 
-const ViewContainer = ({bgColor, full = false, children}:Props) => {
+const ViewContainer = ({bgColor, full = false, children}:IProps) => {
     return (
         <View 
             style={[styles.viewContainer, 

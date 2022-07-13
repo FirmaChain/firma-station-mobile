@@ -1,14 +1,14 @@
-import { ValidatorState } from "@/hooks/staking/hooks";
+import { IValidatorState } from "@/hooks/staking/hooks";
 import { Action, UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from "../types";
 
-export interface DelegateUpdateState {
+export interface IDelegateUpdateState {
     address: string;
     reward: number;
 }
 
-export interface State {
-    delegate: DelegateUpdateState;
-    validator: ValidatorState;
+export interface IState {
+    delegate: IDelegateUpdateState;
+    validator: IValidatorState;
     stakingReward: number;
 }
 

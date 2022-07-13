@@ -1,14 +1,14 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native';
-import { ProposalTitleState } from '@/hooks/governance/hooks';
+import { IProposalTitleState } from '@/hooks/governance/hooks';
 import { PROPOSAL_STATUS, STATUS_COLOR } from '@/constants/common';
 import { Lato, TextColor } from '@/constants/theme';
 
-interface Props {
-    data: ProposalTitleState;
+interface IProps {
+    data: IProposalTitleState;
 }
 
-const TitleSection = ({data}:Props) => {
+const TitleSection = ({data}:IProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.box}>

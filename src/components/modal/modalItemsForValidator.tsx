@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, ScrollView, Text, Image, View } from "react-native";
-import { StakeInfo } from "@/hooks/staking/hooks";
+import { IStakeInfo } from "@/hooks/staking/hooks";
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from "@/constants/theme";
 import { ExclamationCircle, Radio } from "../icon/icon";
 import { VALIDATOR_PROFILE } from "@/constants/images";
 
-interface Props {
+interface IProps {
     title: string;
     initVal: string;
-    data: Array<StakeInfo>;
+    data: Array<IStakeInfo>;
     myAddress: string;
     onPressEvent: Function;
 }
 
-const ModalItemsForValidator = ({title, initVal, data, myAddress, onPressEvent}:Props) => {
+const ModalItemsForValidator = ({title, initVal, data, myAddress, onPressEvent}:IProps) => {
     const [selected, setSelected] = useState(initVal);
     const [avatarError, setAvatarError] = useState(false);
 

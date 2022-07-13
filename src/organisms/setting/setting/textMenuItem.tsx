@@ -9,7 +9,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
-interface Props {
+interface IProps {
     title: string;
     content: string;
     bgColor?: string;
@@ -34,7 +34,7 @@ const TextMenuItem =
     iconType = "", 
     iconName = "",
     iconSize = 15,
-    onPressEvent}:Props) => {
+    onPressEvent}:IProps) => {
 
     const Icon = () => {
         switch (iconType) {

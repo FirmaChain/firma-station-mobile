@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { StakeInfo } from "@/hooks/staking/hooks";
+import { IStakeInfo } from "@/hooks/staking/hooks";
 import { useBalanceData } from "@/hooks/wallet/hooks";
 import { convertNumber, convertToFctNumber, convertToFctNumberForInput } from "@/util/common";
-import { DisableColor, FailedColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import { DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TEXT, UNDELEGATE_NOTICE_TEXT, WARNING_FOR_MAX_AMOUNT_TEST } from "@/constants/common";
 import { DownArrow } from "@/components/icon/icon";
 import WarnContainer from "@/components/parts/containers/warnContainer";
@@ -12,17 +12,17 @@ import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmo
 import WalletInfo from "@/organisms/wallet/send/walletInfo";
 import ValidatorSelectModal from "./validatorSelectModal";
 
-interface Props {
+interface IProps {
     type: string;
     operatorAddress: string;
-    delegationState: Array<StakeInfo>;
+    delegationState: Array<IStakeInfo>;
     resetRedelegateValues: boolean;
     resetInputValues: boolean;
     handleStandardAvailable: (balance: number) => void;
     handleDelegateState: (type: string, value:string|number) => void;
 }
 
-const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues, resetInputValues, handleStandardAvailable, handleDelegateState}:Props) => {
+const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues, resetInputValues, handleStandardAvailable, handleDelegateState}:IProps) => {
     const {balance, getBalance} = useBalanceData();
 
     const [openSelectModal, setOpenSelectModal] = useState(false);

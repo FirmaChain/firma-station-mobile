@@ -17,11 +17,11 @@ import MnemonicQuiz from "./mnemonicQuiz";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
-interface Props {
+interface IProps {
     walletInfo: any;
 }
 
-const StepThree = ({walletInfo}:Props) => {
+const StepThree = ({walletInfo}:IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const {wallet, common} = useAppSelector(state => state);

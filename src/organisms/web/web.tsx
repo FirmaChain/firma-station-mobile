@@ -7,11 +7,11 @@ import WebView from "react-native-webview";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.WebScreen>;
 
-interface Props {
+interface IProps {
     uri: string;
 }
 
-const Web = ({uri}:Props) => {
+const Web = ({uri}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation();
 
     const handleBack = () => {

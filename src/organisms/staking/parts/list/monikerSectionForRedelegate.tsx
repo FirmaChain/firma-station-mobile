@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor } from '@/constants/theme';
 import { ForwardArrow, ForwardArrowWithTail } from '@/components/icon/icon';
-import { RedelegationInfo } from '@/hooks/staking/hooks';
+import { IRedelegationInfo } from '@/hooks/staking/hooks';
 import { VALIDATOR_PROFILE } from '@/constants/images';
 
-interface Props {
-    validators: RedelegationInfo;
+interface IProps {
+    validators: IRedelegationInfo;
     navigateValidator: Function;
 }
 
-const MonikerSectionForRedelegate = ({validators, navigateValidator}:Props) => {
+const MonikerSectionForRedelegate = ({validators, navigateValidator}:IProps) => {
     const [srcAvatarError, setSrcAvatarError] = useState(false);
     const [dstAvatarError, setDstAvatarError] = useState(false);
     return (

@@ -19,11 +19,11 @@ import Voting from "./voting";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Proposal>;
 
-interface Props {
+interface IProps {
     proposalId: number;
 }
 
-const Proposal = ({proposalId}:Props) => {
+const Proposal = ({proposalId}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 

@@ -1,24 +1,22 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { CommonActions } from "@/redux/actions";
-import { convertPercentage } from "@/util/common";
+import { useAppSelector } from "@/redux/hooks";
 import { useValidatorData } from "@/hooks/staking/hooks";
-import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
+import { BgColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
 import { DownArrow, SortASC, SortDESC } from "@/components/icon/icon";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
-import MonikerSection from "../list/monikerSection";
-import DataSection from "../list/dataSection";
-import { useAppSelector } from "@/redux/hooks";
+import ValidatorItem from "./validatorItem";
 
-interface Props {
+interface IProps {
     visible: boolean;
     isRefresh: boolean;
     handleIsRefresh: (refresh:boolean) => void;
-    navigateValidator: Function;
+    navigateValidator: (address:string) => void;
 }
 
-const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:Props) => {
+const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:IProps) => {
     const {common} = useAppSelector(state => state);
     const { validators, handleValidatorsPolling } = useValidatorData();
 
@@ -81,10 +79,17 @@ const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:
     }
 
     useEffect(() => {
-        if((visible && isRefresh) || visible)
+        if(isRefresh && visible){
             refreshValidators();
+        }
     }, [isRefresh, visible])
-    
+
+    useEffect(() => {
+        if(visible){
+            refreshValidators();
+        }
+    }, [visible])
+
     return (
         <>
         {visible &&
@@ -105,19 +110,9 @@ const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:
                     </View>
                 </View>
                 {validatorList.map((vd:any, index:number) => {
+                    const isLastItem = index === validatorList.length - 1;
                     return (
-                        <TouchableOpacity key={index} onPress={() => navigateValidator(vd.validatorAddress)}>
-                            <View style={styles.item}>
-                                <MonikerSection validator={{avatarURL: vd.validatorAvatar, moniker: vd.validatorMoniker}} />
-                                <DataSection title="Voting Power" data={vd.votingPowerPercent.toString() + '%'} />
-                                <DataSection title="Commission" data={vd.commission.toString() + '%'} />
-                                <DataSection 
-                                    title="APR/APY" 
-                                    data={convertPercentage(vd.APR) + '% / ' + convertPercentage(vd.APY) + '%'} />
-                                <DataSection title="Uptime" data={vd.condition.toString() + '%'} />
-                                <View style={{paddingBottom: 22}} />
-                            </View>
-                        </TouchableOpacity>
+                        <ValidatorItem key={index} data={vd} isLastItem={isLastItem} navigate={navigateValidator} />
                     )
                 })}
                 <CustomModal 
@@ -139,24 +134,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 20,
         paddingHorizontal: 20,
-        backgroundColor: BoxColor,
     },
     header: {
         height: 48,
         paddingHorizontal: 20,
-        borderBottomLeftRadius: 8,
-        borderBottomRightRadius: 8,
-        marginBottom: 5,
         backgroundColor: BgColor,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-    },
-    item : {
-        paddingTop: 22,
-        backgroundColor: BgColor,
-        marginVertical: 5,
-        borderRadius: 8,
     },
     title: {
         fontFamily: Lato,

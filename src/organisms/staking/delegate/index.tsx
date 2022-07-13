@@ -19,12 +19,12 @@ import InputBox from "./inputBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
-interface Props {
+interface IProps {
     type: string;
     operatorAddress: string;
 }
 
-interface DelegateState {
+interface IDelegateState {
     type: string;
     operatorAddressDst : string;
     operatorAddressSrc: string;
@@ -32,7 +32,7 @@ interface DelegateState {
     gas: number;
 }
 
-const Delegate = ({type, operatorAddress}:Props) => {
+const Delegate = ({type, operatorAddress}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
     
@@ -47,7 +47,7 @@ const Delegate = ({type, operatorAddress}:Props) => {
     
     const [status, setStatus] = useState(0);
     const [standardAvailable, setStandardAvailable] = useState(0);
-    const [delegateState, setDelegateState] = useState<DelegateState>({
+    const [delegateState, setDelegateState] = useState<IDelegateState>({
         type: TRANSACTION_TYPE[type.toUpperCase()],
         operatorAddressDst : operatorAddress,
         operatorAddressSrc : "",

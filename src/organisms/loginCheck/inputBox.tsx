@@ -11,14 +11,14 @@ import CustomModal from "@/components/modal/customModal";
 import ModalWalletList from "@/components/modal/modalWalletList";
 import WalletSelector from "../welcome/selectWallet/walletSelector";
 
-interface Props {
+interface IProps {
     walletName: string;
     useBio: boolean;
     fadeIn: any;
     loginHandler: (mnemonic:string, name:string, password: string) => void;
 }
 
-const InputBox = ({walletName, useBio, fadeIn, loginHandler}:Props) => {
+const InputBox = ({walletName, useBio, fadeIn, loginHandler}:IProps) => {
     
     const passwordText = {
         title : 'Password',

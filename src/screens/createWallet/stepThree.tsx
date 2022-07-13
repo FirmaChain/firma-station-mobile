@@ -1,15 +1,15 @@
 import React from "react";
 import StepThree from "@/organisms/createWallet/stepThree";
 
+interface IProps {
+    route: {params: CreateStepThreeParams};
+}
+
 export type CreateStepThreeParams = {
     wallet: any;
 }
 
-interface Props {
-    route: {params: CreateStepThreeParams};
-}
-
-const CreateStepThreeScreen = (props:Props) => {
+const CreateStepThreeScreen = (props:IProps) => {
     const {wallet} = props.route.params;
 
     return (

@@ -9,11 +9,11 @@ import { PLACEHOLDER_FOR_PASSWORD,
     WARNING_WALLET_NAME_IS_TOO_SHORT } from "@/constants/common";
 import { PasswordValidationCheck, WalletNameValidationCheck } from "@/util/validationCheck";
 
-interface Props {
+interface IProps {
     walletInfo: (name: string, password: string, validation: boolean) => void;
 }
 
-const InputBox = ({walletInfo}:Props) => {
+const InputBox = ({walletInfo}:IProps) => {
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
 

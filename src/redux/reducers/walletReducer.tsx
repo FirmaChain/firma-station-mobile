@@ -1,6 +1,6 @@
 import { Action, HANDLE_DST_ADDRESS, HANDLE_WALLET_ADDRESS, HANDLE_WALLET_NAME } from "../types";
 
-export interface State {
+export interface IState {
     name: string;
     address: string;
     dstAddress: string;

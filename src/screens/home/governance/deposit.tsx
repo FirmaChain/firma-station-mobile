@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { BgColor } from "@/constants/theme";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
@@ -8,15 +8,15 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Deposit>;
 
+interface IProps {
+    navigation: ScreenNavgationProps;
+}
+
 export type DepositParams = {
     proposalId: number;
 }
 
-interface Props {
-    navigation: ScreenNavgationProps;
-}
-
-const DepositScreen = (props:Props) => {
+const DepositScreen = (props:IProps) => {
     const {navigation} = props;
 
     const handleBack = () => {
@@ -35,8 +35,5 @@ const DepositScreen = (props:Props) => {
         </Container>
     )
 }
-
-const styles = StyleSheet.create({
-})
 
 export default DepositScreen;

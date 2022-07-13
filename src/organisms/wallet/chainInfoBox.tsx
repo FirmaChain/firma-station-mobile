@@ -4,11 +4,11 @@ import { TextColor } from "@/constants/theme";
 import { makeDecimalPoint } from "@/util/common";
 import Icon from 'react-native-vector-icons/Ionicons';
 
-interface Props {
+interface IProps {
     chainInfo: any;
 }
 
-const ChainInfoBox = ({chainInfo}:Props) => {
+const ChainInfoBox = ({chainInfo}:IProps) => {
     const data = chainInfo;
 
     const currentPrice = useMemo(() => {

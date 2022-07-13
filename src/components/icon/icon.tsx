@@ -7,241 +7,241 @@ import Octicons from "react-native-vector-icons/Octicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
-interface Props {
+interface IProps {
     size: number;
     color?: string;
     active?: boolean;
 }
 
-export const Close = ({size, color}:Props) => {
+export const Close = ({size, color}:IProps) => {
     return (
         <Ionicons name="close-outline" size={size} color={color}/>
     )
 }
 
-export const QRCodeIcon = ({size, color}:Props) => {
+export const QRCodeIcon = ({size, color}:IProps) => {
     return (
         <MaterialIcons name="qr-code" size={size} color={color}/>
     )
 }
 
-export const QRCodeScannerIcon = ({size, color}:Props) => {
+export const QRCodeScannerIcon = ({size, color}:IProps) => {
     return (
         <MaterialIcons name="qr-code-scanner" size={size} color={color}/>
     )
 }
 
-export const Copy = ({size, color}:Props) => {
+export const Copy = ({size, color}:IProps) => {
     return (
         <MaterialCommunityIcons name="content-copy" size={size} color={color}/>
     )
 }
 
-export const Paste = ({size, color}:Props) => {
+export const Paste = ({size, color}:IProps) => {
     return (
         <MaterialCommunityIcons name="content-paste" size={size} color={color}/>
     )
 }
 
-export const Setting = ({size, color}:Props) => {
+export const Setting = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="setting" size={size} color={color}/>
     )
 }
 
 
-export const TopRightArrow = ({size, color}:Props) => {
+export const TopRightArrow = ({size, color}:IProps) => {
     return (
         <MaterialCommunityIcons name="arrow-top-right" size={size} color={color}/>
     )
 }
 
-export const BackArrow = ({size, color}:Props) => {
+export const BackArrow = ({size, color}:IProps) => {
     return (
         <MaterialIcons name="arrow-back-ios" size={size} color={color}/>
     )
 }
 
-export const ForwardArrowWithTail = ({size, color}:Props) => {
+export const ForwardArrowWithTail = ({size, color}:IProps) => {
     return (
         <Ionicons name="arrow-forward" size={size} color={color}/>
     )
 }
 
-export const ForwardArrow = ({size, color}:Props) => {
+export const ForwardArrow = ({size, color}:IProps) => {
     return (
         <MaterialIcons name="arrow-forward-ios" size={size} color={color}/>
     )
 }
 
-export const DownArrow = ({size, color}:Props) => {
+export const DownArrow = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="caretdown" size={size} color={color} />
     )
 }
-export const UpArrow = ({size, color}:Props) => {
+export const UpArrow = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="caretup" size={size} color={color} />
     )
 }
 
-export const UpEmptyArrow = ({size, color}:Props) => {
+export const UpEmptyArrow = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="up" size={size} color={color} />
     )
 }
 
-export const CaretUp = ({size, color}:Props) => {
+export const CaretUp = ({size, color}:IProps) => {
     return (
         <Ionicons name="caret-up" size={size} color={color} />
     )
 }
 
-export const Radio = ({size, color, active}:Props) => {
+export const Radio = ({size, color, active}:IProps) => {
     return (
         <MaterialCommunityIcons name={active?"radiobox-marked":"radiobox-blank"} size={size} color={color} />
     )
 }
 
-export const Person = ({size, color}:Props) => {
+export const Person = ({size, color}:IProps) => {
     return (
         <Ionicons name="ios-person-circle-outline" size={size} color={color} />
     )
 }
 
-export const ExclamationCircle = ({size, color}:Props) => {
+export const ExclamationCircle = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="exclamationcircleo" size={size} color={color} />
     )
 }
 
-export const QuestionCircle = ({size, color}:Props) => {
+export const QuestionCircle = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="questioncircleo" size={size} color={color} />
     )
 }
 
-export const QuestionFilledCircle = ({size, color}:Props) => {
+export const QuestionFilledCircle = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="questioncircle" size={size} color={color} />
     )
 }
 
-export const SuccessCircle = ({size, color}:Props) => {
+export const SuccessCircle = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="checkcircleo" size={size} color={color} />
     )
 }
 
-export const VerifiedCircle = ({size, color}:Props) => {
+export const VerifiedCircle = ({size, color}:IProps) => {
     return (
         <MaterialIcons name="verified" size={size} color={color} />
     )
 }
 
-export const VoteCircle = ({size, color}:Props) => {
+export const VoteCircle = ({size, color}:IProps) => {
     return (
         <Octicons name="check-circle-fill" size={size} color={color} />
     )
 }
 
-export const SuccessFilledCircle = ({size, color}:Props) => {
+export const SuccessFilledCircle = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="checkcircle" size={size} color={color} />
     )
 }
 
-export const FailCircle = ({size, color}:Props) => {
+export const FailCircle = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="closecircleo" size={size} color={color} />
     )
 }
 
-export const FailFilledCircle = ({size, color}:Props) => {
+export const FailFilledCircle = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="closecircle" size={size} color={color} />
     )
 }
 
-export const SortASC = ({size, color}:Props) => {
+export const SortASC = ({size, color}:IProps) => {
     return (
         <Octicons name="sort-asc" size={size} color={color} />
     )
 }
 
-export const SortDESC = ({size, color}:Props) => {
+export const SortDESC = ({size, color}:IProps) => {
     return (
         <Octicons name="sort-desc" size={size} color={color} />
     )
 }
 
-export const FingerPrint = ({size, color}:Props) => {
+export const FingerPrint = ({size, color}:IProps) => {
     return (
         <Ionicons name="ios-finger-print" size={size} color={color} />
     )
 }
 
-export const ExternalLink = ({size, color}:Props) => {
+export const ExternalLink = ({size, color}:IProps) => {
     return (
         <Octicons name="link-external" size={size} color={color} />
     )
 }
 
-export const ListEdit = ({size, color}:Props) => {
+export const ListEdit = ({size, color}:IProps) => {
     return (
         <MaterialCommunityIcons name="playlist-edit" size={size} color={color} />
     )
 }
 
-export const ListEditDone = ({size, color}:Props) => {
+export const ListEditDone = ({size, color}:IProps) => {
     return (
         <MaterialCommunityIcons name="playlist-check" size={size} color={color} />
     )
 }
 
-export const CheckIcon = ({size, color}:Props) => {
+export const CheckIcon = ({size, color}:IProps) => {
     return (
         <Ionicons name="checkmark-sharp" size={size} color={color} />
     )
 }
 
-export const MenuIcon = ({size, color}:Props) => {
+export const MenuIcon = ({size, color}:IProps) => {
     return (
         <MaterialCommunityIcons name="menu" size={size} color={color} />
     )
 }
 
-export const ScrollToTop = ({size, color}:Props) => {
+export const ScrollToTop = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="upcircle" size={size} color={color} />
     )
 }
 
-export const SendIcon = ({size, color}:Props) => {
+export const SendIcon = ({size, color}:IProps) => {
     return (
         <FontAwesome name="send" size={size} color={color} />
     )
 }
 
-export const LockIcon = ({size, color}:Props) => {
+export const LockIcon = ({size, color}:IProps) => {
     return (
         <SimpleLineIcons name="lock" size={size} color={color} />
     )
 }
 
-export const URLLockIcon = ({size, color}:Props) => {
+export const URLLockIcon = ({size, color}:IProps) => {
     return (
         <FontAwesome name="lock" size={size} color={color} />
     )
 }
 
-export const ValidateIcon = ({size, color}:Props) => {
+export const ValidateIcon = ({size, color}:IProps) => {
     return (
         <AntDesignIcons name="rightsquare" size={size} color={color} />
     )
 }
 
-export const SquareIcon = ({size, color}:Props) => {
+export const SquareIcon = ({size, color}:IProps) => {
     return (
         <Ionicons name="ios-square" size={size} color={color} />
     )

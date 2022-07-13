@@ -5,14 +5,14 @@ import { PasswordCheck, PasswordValidationCheck } from "@/util/validationCheck";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import Toast from "react-native-toast-message";
 
-interface Props {
+interface IProps {
     wallet: any;
     validate: (valid:boolean) => void;
     newPassword: (value:string) => void;
     mnemonic: (value:string) => void;
 }
 
-const InputBox = ({wallet, validate, newPassword, mnemonic}:Props) => {
+const InputBox = ({wallet, validate, newPassword, mnemonic}:IProps) => {
     const currentPasswordTextObj = {
         title: "Current password",
         placeholder: PLACEHOLDER_FOR_PASSWORD,

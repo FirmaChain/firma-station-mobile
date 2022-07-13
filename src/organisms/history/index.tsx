@@ -5,7 +5,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
-import { HistoryState, useHistoryData } from "@/hooks/wallet/hooks";
+import { IHistoryState, useHistoryData } from "@/hooks/wallet/hooks";
 import { BgColor } from "@/constants/theme";
 import { wait } from "@/util/common";
 import { GUIDE_URI } from "@/../config";
@@ -21,7 +21,7 @@ const History = () => {
     
     const { historyList, handleHistoryOffset, handleHisotyPolling } = useHistoryData();
     const [historyRefresh, setHistoryRefresh] = useState(false);
-    const [loadedHistoryList, setLoadedHistoryList] = useState<Array<HistoryState>>([]);
+    const [loadedHistoryList, setLoadedHistoryList] = useState<Array<IHistoryState>>([]);
 
     const onScrollEnd = (event:NativeSyntheticEvent<NativeScrollEvent>) => {
         if(common.loading === false && historyRefresh === false){

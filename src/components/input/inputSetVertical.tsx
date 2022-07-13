@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, PointLightColor, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from "@/constants/theme";
 
-interface Props {
+interface IProps {
     title: string;
     message?: string;
     numberOnly?: boolean;
@@ -16,7 +16,7 @@ interface Props {
     onChangeEvent: (value:string) => void;
 }
 
-const InputSetVertical = ({title, message, numberOnly = false, validation, placeholder, bgColor = InputBgColor, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}:Props) => {
+const InputSetVertical = ({title, message, numberOnly = false, validation, placeholder, bgColor = InputBgColor, secure = false, accent = false, forcedValue = '', resetValues = false, onChangeEvent}:IProps) => {
     const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
 

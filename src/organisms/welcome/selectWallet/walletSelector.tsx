@@ -3,12 +3,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { DownArrow } from "@/components/icon/icon";
 
-interface Props {
+interface IProps {
     handleOpenModal: Function;
     selectedWallet: string;
 }
 
-const WalletSelector = ({handleOpenModal, selectedWallet}:Props) => {
+const WalletSelector = ({handleOpenModal, selectedWallet}:IProps) => {
 
     const selectIdle = useMemo(() => {
         if(selectedWallet === "") return true;

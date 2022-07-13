@@ -1,16 +1,16 @@
 import React from "react";
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BoxColor, Lato, TextAddressColor, TextColor } from "@/constants/theme";
 import { EXPLORER_URL } from "@/constants/common";
 
-interface Props {
+interface IProps {
     title: string;
     path: string;
     address: string;
     handleExplorer: (uri:string)=>void;
 }
 
-const AddressBox = ({title, path, address, handleExplorer}:Props) => {
+const AddressBox = ({title, path, address, handleExplorer}:IProps) => {
     return (
         <View style={styles.container}>
             <View style={[styles.box]}>

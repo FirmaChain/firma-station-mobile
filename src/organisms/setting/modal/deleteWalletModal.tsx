@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD, SETTING_DELETE_WALLET_TEXT } from "@/constants/common";
-import { BgColor, FailedColor, GrayColor, Lato, TextCatTitleColor, TextWarnColor } from "@/constants/theme";
+import { BgColor, FailedColor, Lato, TextCatTitleColor, TextWarnColor } from "@/constants/theme";
 import { WalletNameValidationCheck } from "@/util/validationCheck";
 import { decrypt, keyEncrypt } from "@/util/keystore";
 import { getChain } from "@/util/secureKeyChain";
 import CustomModal from "@/components/modal/customModal";
 import InputSetVertical from "@/components/input/inputSetVertical";
-import { QuestionFilledCircle } from "@/components/icon/icon";
-import WarnContainer from "@/components/parts/containers/warnContainer";
 
-interface Props {
+interface IProps {
     walletName: string;
     open: boolean;
     setOpenModal: Function;
     deleteWallet: Function;
 }
 
-const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: Props) => {
+const DeleteWalletModal = ({walletName, open, setOpenModal, deleteWallet}: IProps) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 

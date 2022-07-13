@@ -3,12 +3,12 @@ import { Keyboard, Pressable, StyleSheet } from "react-native";
 import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
 import InputSetVertical from "@/components/input/inputSetVertical";
 
-interface Props {
+interface IProps {
     resetValues: boolean;
     handlePassword: (value:string) => void;
 }
 
-const InputBox = ({resetValues, handlePassword}:Props) => {
+const InputBox = ({resetValues, handlePassword}:IProps) => {
     const currentPasswordTextObj = {
         title: "Current password",
         placeholder: PLACEHOLDER_FOR_PASSWORD,

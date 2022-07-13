@@ -1,16 +1,15 @@
 import React from "react";
 import Validator from "@/organisms/staking/validator";
 
+interface IProps {
+    route: {params: ValidatorParams};
+}
 
 export type ValidatorParams = {
     validatorAddress: string;
 }
 
-interface Props {
-    route: {params: ValidatorParams};
-}
-
-const ValidatorScreen = (props:Props) => {
+const ValidatorScreen = (props:IProps) => {
     const {validatorAddress} = props.route.params;
 
     return (

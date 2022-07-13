@@ -4,12 +4,12 @@ import { InputBgColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import Clipboard from "@react-native-clipboard/clipboard";
 import TextButton from "@/components/button/textButton";
 
-interface Props {
+interface IProps {
     handleMnemonic: (mnemonic:string) => void;
     activateRecover: (active:boolean) => void;
 }
 
-const InputBox = ({handleMnemonic, activateRecover}:Props) => {
+const InputBox = ({handleMnemonic, activateRecover}:IProps) => {
     const [focus, setFocus] = useState(false);
     const [mnemonic, setMnemonic] = useState('');
 

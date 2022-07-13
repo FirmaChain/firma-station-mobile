@@ -9,11 +9,11 @@ import QRCode from "react-native-qrcode-svg";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
 
-interface Props {
+interface IProps {
     address: string;
 }
 
-const AddressBox = ({address}: Props) => {
+const AddressBox = ({address}: IProps) => {
     const [openQRModal, setOpenQRModal] = useState(false);
 
     const handleAddressToClipboard = () => {

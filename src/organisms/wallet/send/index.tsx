@@ -21,7 +21,7 @@ import WalletInfo from "./walletInfo";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
-interface SendInfo {
+interface ISendInfo {
     address: string;
     amount: number;
     memo: string;
@@ -34,7 +34,7 @@ const Send = () => {
     const {balance, getBalance} = useBalanceData();
 
     const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
-    const [sendInfoState, setSendInfoState] = useState<SendInfo>({
+    const [sendInfoState, setSendInfoState] = useState<ISendInfo>({
         address: '',
         amount: 0,
         memo: '',

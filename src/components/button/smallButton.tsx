@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, DisableButtonColor, FailedColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
 
-interface Props {
+interface IProps {
     title: string;
     onPressEvent: Function;
     size?: number;
@@ -14,7 +14,7 @@ interface Props {
     disableTextColor?: string;
 }
 
-const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor, disableTextColor = TextDarkGrayColor}:Props) => {
+const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor, disableTextColor = TextDarkGrayColor}:IProps) => {
     const [buttonHeight, setButtonHeight] = useState(height);
 
     const handleOnPress = (value?:any) => {

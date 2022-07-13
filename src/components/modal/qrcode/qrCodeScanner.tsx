@@ -10,14 +10,14 @@ import QRCodeScanner from "react-native-qrcode-scanner";
 import Toast from "react-native-toast-message";
 import CustomToast from "../../toast/customToast";
 
-interface Props {
+interface IProps {
     isAddress?: boolean;
     visible: boolean;
     handleOpen: (open:boolean)=>void;
     ReaderHandler: Function;
 }
 
-const QRCodeScannerModal = ({isAddress = false, visible, handleOpen, ReaderHandler}:Props) => {
+const QRCodeScannerModal = ({isAddress = false, visible, handleOpen, ReaderHandler}:IProps) => {
     
     const handleReader = (event:BarCodeReadEvent) => {
         if(isAddress){

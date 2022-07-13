@@ -1,16 +1,16 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ProposalVoteState } from "@/hooks/governance/hooks";
+import { IProposalVoteState } from "@/hooks/governance/hooks";
 import { BoxColor, Lato, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { convertNumber, convertPercentage } from "@/util/common";
 import VotingPercentage from "./votingPercentage";
 
-interface Props {
-    data: ProposalVoteState;
+interface IProps {
+    data: IProposalVoteState;
     isVotingPeriod: boolean;
 }
 
-const VotingSection = ({data, isVotingPeriod}:Props) => {
+const VotingSection = ({data, isVotingPeriod}:IProps) => {
     const VoteData = useMemo(() => {
         if(data) 
             return {

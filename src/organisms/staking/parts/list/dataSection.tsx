@@ -1,17 +1,19 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Lato, TextDarkGrayColor, TextDisableColor } from "@/constants/theme";
+import { Lato, TextDisableColor } from "@/constants/theme";
 
-interface Props {
+interface IProps {
     title: string;
     data: string;
+    color?: string;
+    label?: boolean;
 }
 
-const DataSection = ({title, data}:Props) => {
+const DataSection = ({title, data, color = TextDisableColor, label = false}:IProps) => {
     return (
         <View style={styles.vdWrapperH}>
             <Text style={styles.descTitle}>{title}</Text>
-            <Text style={styles.descItem}>{data}</Text>
+            <Text style={[label?styles.descLabel:styles.descItem, {color: color,}, label && { backgroundColor: color + "30"}]}>{data}</Text>
         </View>
     )
 }
@@ -33,7 +35,15 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: "600",
-        color: TextDarkGrayColor,
+    },
+    descLabel: {
+        fontFamily: Lato,
+        fontSize: 14,
+        borderRadius: 10,
+        textAlign: "center",
+        overflow: "hidden",
+        paddingHorizontal: 10,
+        paddingVertical: 3,
     },
 })
 

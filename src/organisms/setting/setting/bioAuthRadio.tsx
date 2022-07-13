@@ -9,11 +9,11 @@ import { easeInAndOutCustomAnim, LayoutAnim } from "@/util/animation";
 import Toast from "react-native-toast-message";
 import RadioOnModal from "../modal/bioAuthOnModal";
 
-interface Props {
+interface IProps {
     wallet: any;
 }
 
-const BioAuthRadio = ({wallet}:Props) => {
+const BioAuthRadio = ({wallet}:IProps) => {
     const {common} = useAppSelector(state => state);
 
     const [openBioModal, setOpenBioModal] = useState(false);

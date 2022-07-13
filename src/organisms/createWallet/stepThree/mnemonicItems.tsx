@@ -3,12 +3,12 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { BoxColor, Lato, TextColor } from "@/constants/theme";
 import { ScreenWidth } from "@/util/getScreenSize";
 
-interface Props {
+interface IProps {
     mnemonicItems: string[];
     onPressEvent: Function;
 }
 
-const MnemonicItems = ({mnemonicItems, onPressEvent}:Props) => {
+const MnemonicItems = ({mnemonicItems, onPressEvent}:IProps) => {
     const onPress = (index: number) => {
         onPressEvent(index);
     }

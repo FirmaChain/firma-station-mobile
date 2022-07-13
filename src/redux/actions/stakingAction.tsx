@@ -1,15 +1,15 @@
-import { ValidatorState } from "@/hooks/staking/hooks"
-import { DelegateUpdateState } from "../reducers/stakingReducer"
+import { IValidatorState } from "@/hooks/staking/hooks"
+import { IDelegateUpdateState } from "../reducers/stakingReducer"
 import { UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from "../types"
 
-export const updateDelegateState = (delegate:DelegateUpdateState) => (
+export const updateDelegateState = (delegate:IDelegateUpdateState) => (
     {
         type: UPDATE_DELEGATE_STATE,
         payload: delegate,
     }
 )
 
-export const updateValidatorState = (validator:ValidatorState) => (
+export const updateValidatorState = (validator:IValidatorState) => (
     {
         type: UPDATE_VALIDATOR_STATE,
         payload: validator,

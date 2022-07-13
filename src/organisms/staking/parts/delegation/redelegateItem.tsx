@@ -1,18 +1,18 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { convertAmount, convertTime } from "@/util/common";
-import { RedelegationInfo } from "@/hooks/staking/hooks";
+import { IRedelegationInfo } from "@/hooks/staking/hooks";
 import { BgColor } from "@/constants/theme";
 import DataSection from "../list/dataSection";
 import MonikerSectionForRedelegate from "../list/monikerSectionForRedelegate";
 
-interface Props {
-    data: RedelegationInfo;
+interface IProps {
+    data: IRedelegationInfo;
     navigate: (address:string) => void;
 }
 
 
-const RedelegateItem = ({data, navigate}:Props) => {
+const RedelegateItem = ({data, navigate}:IProps) => {
     return (
         <View style={[styles.item]}>
             <MonikerSectionForRedelegate validators={data} navigateValidator={navigate}/>
@@ -27,8 +27,6 @@ const styles = StyleSheet.create({
     item : {
         paddingTop: 22,
         backgroundColor: BgColor,
-        marginVertical: 5,
-        borderRadius: 8,
     },
 })
 

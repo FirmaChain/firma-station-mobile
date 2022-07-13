@@ -4,12 +4,12 @@ import { GrayColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from "@/
 import { ScreenWidth } from "@/util/getScreenSize";
 import { QuestionFilledCircle } from "../icon/icon";
 
-interface Props {
+interface IProps {
     title: string;
     handleGuide?: ()=>void;
 }
 
-const TitleBar = ({title, handleGuide}:Props) => {
+const TitleBar = ({title, handleGuide}:IProps) => {
     return (
         <Pressable style={styles.container} onPress={()=>Keyboard.dismiss()}>
             <Text style={styles.title}>{title}</Text>

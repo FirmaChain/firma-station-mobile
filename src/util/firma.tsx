@@ -1,9 +1,22 @@
 import { FirmaMobileSDK, FirmaUtil } from "@firmachain/firma-js"
 import { FirmaWalletService } from "@firmachain/firma-js/dist/sdk/FirmaWalletService";
-import { RedelegationInfo, StakingState, UndelegationInfo } from "@/hooks/staking/hooks";
+import { IRedelegationInfo, IStakingState, IUndelegationInfo } from "@/hooks/staking/hooks";
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG, RESTAKE_ADDRESS } from "@/../config";
 import { convertNumber, convertToFctNumber } from "./common";
 import { getDecryptPassword, getMnemonic } from "./wallet";
+
+export interface IWallet {
+    name?: string;
+    password?: string;
+    mnemonic?: string;
+}
+
+export interface ITransactionState {
+    walletName: string;
+    password: string;
+    targetAddress: string;
+    amount: number;
+}
 
 let firmaSDK: FirmaMobileSDK;
 
@@ -17,19 +30,6 @@ export const setFirmaSDK = (network:string) => {
 
 export const getFirmaSDK = () => {
     return firmaSDK;
-}
-
-export interface Wallet {
-    name?: string;
-    password?: string;
-    mnemonic?: string;
-}
-
-export interface TransactionState {
-    walletName: string;
-    password: string;
-    targetAddress: string;
-    amount: number;
 }
 
 // Wallet
@@ -284,7 +284,7 @@ export const getStakingFromvalidator = async(address:string, validatorAddress:st
         const undelegate = 0;
         const stakingReward = convertToFctNumber(reward ? reward.amount : 0);
     
-        const values: StakingState = {
+        const values: IStakingState = {
             available,
             delegated,
             undelegate,
@@ -347,7 +347,7 @@ export const grant = async(mnemonic:string, validatorAddress:string[], maxTokens
             gas: estimatedGas,
             fee: getFeesFromGas(estimatedGas),
         });
-
+        
         return result;
     } catch (error) {
         throw error;
@@ -437,7 +437,7 @@ export const getRedelegations = async(address:string) => {
     try {
         const redelegationListOrigin = await getRedelegationList(address);
         
-        let redelegationList:RedelegationInfo[] = []; 
+        let redelegationList:IRedelegationInfo[] = []; 
         redelegationListOrigin.map((redelegation) => {
             redelegation.entries.map((entry) => {
                 redelegationList.push({
@@ -468,7 +468,7 @@ export const getUndelegations = async(address:string) => {
     try {
         const undelegationListOrigin = await getUndelegateList(address);
         
-        let undelegationList:UndelegationInfo[] = []; 
+        let undelegationList:IUndelegationInfo[] = []; 
         undelegationListOrigin.map((undelegation) => {
             undelegation.entries.map((entry) => {
                 undelegationList.push({

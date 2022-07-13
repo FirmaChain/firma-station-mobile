@@ -3,15 +3,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import { CommonActions } from "@/redux/actions";
 import StepTwo from "@/organisms/createWallet/stepTwo";
 
+interface IProps {
+    route: {params: CreateStepTwoParams};
+}
+
 export type CreateStepTwoParams = {
     wallet: any;
 }
 
-interface Props {
-    route: {params: CreateStepTwoParams};
-}
-
-const CreateStepTwoScreen = (props:Props) => {
+const CreateStepTwoScreen = (props:IProps) => {
     const {wallet} = props.route.params;
 
     useFocusEffect(

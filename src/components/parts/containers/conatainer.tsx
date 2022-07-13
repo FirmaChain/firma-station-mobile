@@ -6,7 +6,7 @@ import { BoxDarkColor } from "@/constants/theme";
 import Header from "@/components/header/header";
 import TitleBar from "../titleBar";
 
-interface Props {
+interface IProps {
     title?: string;
     titleOn?: boolean;
     step?: number;
@@ -16,7 +16,7 @@ interface Props {
     children: JSX.Element;
 }
 
-const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0, backEvent, handleGuide, children}:Props) => {
+const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0, backEvent, handleGuide, children}:IProps) => {
     const handleMoveBack = () => {
         backEvent && backEvent();
     }

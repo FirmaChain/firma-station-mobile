@@ -1,7 +1,7 @@
 import { useMaintenance, useVersion } from "@/apollo/gqls";
 import { useEffect, useState } from "react";
 
-interface MaintenanceState {
+interface IMaintenanceState {
     isShow: boolean;
     title: string;
     content: string;
@@ -31,7 +31,7 @@ export const useChainVersion = () => {
 export const useServerMessage = () => {
     const [minAppVer, setMinAppVer] = useState<string|undefined>();
     const [currentAppVer, setCurrentAppVer] = useState<string|undefined>();
-    const [maintenanceState, setMaintenanceState] = useState<MaintenanceState|undefined>();
+    const [maintenanceState, setMaintenanceState] = useState<IMaintenanceState|undefined>();
 
     const {loading , data } = useMaintenance();
 

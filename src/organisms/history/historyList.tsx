@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import {  HistoryState } from "@/hooks/wallet/hooks";
+import {  IHistoryState } from "@/hooks/wallet/hooks";
 import { ForwardArrow } from "@/components/icon/icon";
 import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
 import { convertTime, wait } from "@/util/common";
 import { EXPLORER_URL, HISTORY_NOT_EXIST } from "@/constants/common";
 import { useAppSelector } from "@/redux/hooks";
 
-interface Props {
-    historyList: Array<HistoryState>;
+interface IProps {
+    historyList: Array<IHistoryState>;
     isEmpty: boolean;
     handleExplorer: (uri:string)=>void;
 }
 
-const HistoryList = ({historyList, isEmpty, handleExplorer}:Props) => {
+const HistoryList = ({historyList, isEmpty, handleExplorer}:IProps) => {
     const {common} = useAppSelector(state => state);
     const [loaded, setLoaded] = useState(false);
 

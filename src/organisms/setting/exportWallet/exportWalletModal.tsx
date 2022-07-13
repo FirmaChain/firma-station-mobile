@@ -6,7 +6,7 @@ import CustomModal from "@/components/modal/customModal";
 import ExportModal from "../modal/exportModal";
 import { useAppSelector } from "@/redux/hooks";
 
-interface Props {
+interface IProps {
     title: string;
     value: string;
     alertOpen: boolean;
@@ -15,7 +15,7 @@ interface Props {
     handleBack: () => void;
 }
 
-const ExportWalletModal = ({title, value, alertOpen, exportOpen, handleOpen, handleBack}:Props) => {
+const ExportWalletModal = ({title, value, alertOpen, exportOpen, handleOpen, handleBack}:IProps) => {
     const {common} = useAppSelector(state => state);
 
     useEffect(() => {

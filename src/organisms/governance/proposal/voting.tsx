@@ -10,7 +10,7 @@ import CustomModal from "@/components/modal/customModal";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import AlertModal from "@/components/modal/alertModal";
 
-interface Props {
+interface IProps {
     isVotingPeriod: boolean;
     proposalId: number;
     transactionHandler: (password:string, gas:number, votingOpt:number) => void;
@@ -21,7 +21,7 @@ const marginHorizontal = 5;
 const marginVertical = 5;
 const width = ((Dimensions.get('window').width - 20) / cols) - (marginHorizontal * (cols + 1));
 
-const Voting = ({isVotingPeriod, proposalId, transactionHandler}:Props) => {
+const Voting = ({isVotingPeriod, proposalId, transactionHandler}:IProps) => {
     const {wallet} = useAppSelector(state => state);
     
     const votingType = ["YES", "NO", "NoWithVeto", "Abstain"];

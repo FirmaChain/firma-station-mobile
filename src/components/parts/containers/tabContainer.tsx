@@ -1,13 +1,13 @@
 import React from "react";
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import { useAppSelector } from "@/redux/hooks";
+import { QuestionFilledCircle, Setting } from "@/components/icon/icon";
 import { BgColor, GrayColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { ICON_HISTORY } from "@/constants/images";
-import { QuestionFilledCircle, Setting } from "@/components/icon/icon";
-import { useAppSelector } from "@/redux/hooks";
 import NetworkBadge from "../networkBadge";
 
-interface Props {
+interface IProps {
     title: string;
     settingNavEvent: Function;
     historyNavEvent: Function;
@@ -15,10 +15,19 @@ interface Props {
     children: JSX.Element;
 }
 
-const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, children}:Props) => {
 
-    const {storage: common} = useAppSelector(state => state);
-    
+const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, children}:IProps) => {
+    const {storage} = useAppSelector(state => state);
+
+    // const handleQRScanner = async(active:boolean) => {
+    //     try {
+    //         ModalActions.handleHomeQRScannerModal(active);
+    //     }
+    //     catch (e) {
+    //         console.log(e);
+    //     }
+    // }
+
     const handleMoveToSetting = () => {
         settingNavEvent && settingNavEvent();
     }
@@ -39,17 +48,21 @@ const TabContainer = ({title, settingNavEvent, historyNavEvent, handleGuide, chi
                     }
                 </View>
 
-                <View style={[styles.boxH, {justifyContent: "flex-end", paddingRight: 10}]}>
-                    <TouchableOpacity style={{paddingLeft: 10, paddingRight: 10, marginRight: 10}} onPress={() => handleMoveToHistory()}>
+                <View style={[styles.boxH, {justifyContent: "flex-end", paddingRight: 20}]}>
+                    {/* <TouchableOpacity hitSlop={{top: 5, bottom: 5, left: 10, right: 10}} onPress={() => handleQRScanner(true)}>
+                        <QRCodeScannerIcon size={30} color={WhiteColor} />
+                    </TouchableOpacity> */}
+
+                    <TouchableOpacity hitSlop={{top: 5, bottom: 5, left: 10, right: 10}} style={{marginHorizontal: 25}} onPress={() => handleMoveToHistory()}>
                         <Image style={{width: 30, height: 30, resizeMode: "contain"}} source={ICON_HISTORY} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{paddingLeft: 5, paddingRight: 10}} onPress={() => handleMoveToSetting()}>
+                    <TouchableOpacity hitSlop={{top: 5, bottom: 5, left: 10, right: 10}} onPress={() => handleMoveToSetting()}>
                         <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
                 </View>
-                {common.network !== "MainNet" &&
-                    <NetworkBadge top={-20} title={common.network} />
+                {storage.network !== "MainNet" &&
+                    <NetworkBadge top={-20} title={storage.network} />
                 }
             </View>
             {children}

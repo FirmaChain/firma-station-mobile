@@ -6,15 +6,18 @@ import { setFirmaSDK } from "@/util/firma";
 import { wait } from "@/util/common";
 import { DATA_LOAD_DELAYED_NOTICE, setExplorerUrl } from "@/constants/common";
 import { ApolloProvider, getClient, setClient } from "@/apollo";
+import { useNetInfo } from "@react-native-community/netinfo";
 import Progress from "@/components/parts/progress";
 import CustomToast from "@/components/toast/customToast";
-import { useNetInfo } from "@react-native-community/netinfo";
 import SplashScreen from "react-native-splash-screen";
 import StackNavigator from "./stackNavigators";
 import AlertModal from "@/components/modal/alertModal";
+import HomeQrScanner from "@/components/modal/qrcode/homeQrScanner";
+import WalletConnectModal from "@/components/modal/walletConnectModal";
+import WalletResultModal from "@/components/modal/walletResultModal";
 
 const Router = () => {
-    const {storage, common} = useAppSelector(state => state);
+    const {storage, common, modal} = useAppSelector(state => state);
     const netInfo = useNetInfo();
 
     const [openAlertModal, setOpenAlertModal] = useState(false);
@@ -74,6 +77,9 @@ const Router = () => {
             <NavigationContainer theme={DarkTheme}>
                 <StackNavigator/>
                 {common.loading && <Progress />}
+                <HomeQrScanner />
+                <WalletConnectModal />
+                <WalletResultModal />
                 <AlertModal
                     visible={openAlertModal}
                     handleOpen={handleAlertModalOpen}

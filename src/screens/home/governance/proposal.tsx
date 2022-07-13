@@ -1,15 +1,15 @@
 import React from "react";
 import Proposal from "@/organisms/governance/proposal";
 
+interface IProps {
+    route: {params: ProposalParams};
+}
+
 export type ProposalParams = {
     proposalId: number;
 }
 
-interface Props {
-    route: {params: ProposalParams};
-}
-
-const ProposalScreen = (props:Props) => {
+const ProposalScreen = (props:IProps) => {
     const {proposalId} = props.route.params;
 
     return (

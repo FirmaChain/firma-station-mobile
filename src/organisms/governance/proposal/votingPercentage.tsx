@@ -7,11 +7,11 @@ import { ScreenWidth } from "@/util/getScreenSize";
 import { useAppSelector } from "@/redux/hooks";
 import { ICON_VOTE_CHECK } from "@/constants/images";
 
-interface Props {
+interface IProps {
     data: any;
 }
 
-const VotingPercentage = ({data}:Props) => {
+const VotingPercentage = ({data}:IProps) => {
     const {wallet} = useAppSelector(state => state);
 
     const tally = useMemo(() => {

@@ -12,7 +12,7 @@ import TransactionConfirmModal from "@/components/modal/transactionConfirmModal"
 import SmallButton from "@/components/button/smallButton";
 import AlertModal from "@/components/modal/alertModal";
 
-interface Props {
+interface IProps {
     walletName: string;
     validatorAddress: string;
     stakingState: any;
@@ -21,7 +21,7 @@ interface Props {
     transactionHandler: (password:string, gas:number) => void;
 }
 
-const DelegationBox = ({walletName, validatorAddress, stakingState, delegations, handleDelegate, transactionHandler}:Props) => {
+const DelegationBox = ({walletName, validatorAddress, stakingState, delegations, handleDelegate, transactionHandler}:IProps) => {
     const arrowDeg = useRef(new Animated.Value(0)).current;
 
     const [openModal, setOpenModal] = useState(false);

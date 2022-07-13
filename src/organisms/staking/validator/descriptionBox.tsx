@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from "@/constants/theme";
-import { ValidatorDescription } from "@/hooks/staking/hooks";
+import { IValidatorDescription } from "@/hooks/staking/hooks";
 import { VALIDATOR_PROFILE } from "@/constants/images";
 
-interface Props {
-    validator: ValidatorDescription;
+interface IProps {
+    validator: IValidatorDescription;
 }
 
-const DescriptionBox = ({validator}:Props) => {
+const DescriptionBox = ({validator}:IProps) => {
     const [avatarError, setAvatarError] = useState(false);
 
     const handleUrl = async(url:string) => {

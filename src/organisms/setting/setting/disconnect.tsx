@@ -2,11 +2,11 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BgColor, BoxColor, Lato, TextColor } from "@/constants/theme";
 
-interface Props {
+interface IProps {
     handleDisconnect: () => void;
 }
 
-const Disconnect = ({handleDisconnect}:Props) => {
+const Disconnect = ({handleDisconnect}:IProps) => {
     return (
         <TouchableOpacity onPress={() => handleDisconnect()}>
             <View style={[styles.listItem, {justifyContent: "center"}]}>

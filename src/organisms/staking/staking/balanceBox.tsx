@@ -1,15 +1,15 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { convertAmount, convertNumber, resizeFontSize } from "@/util/common";
-import { StakingState } from "@/hooks/staking/hooks";
+import { IStakingState } from "@/hooks/staking/hooks";
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from "@/constants/theme";
 import { FirmaUtil } from "@firmachain/firma-js";
 
-interface Props {
-    stakingValues: StakingState;
+interface IProps {
+    stakingValues: IStakingState;
 }
 
-const BalanceBox = ({stakingValues}:Props) => {
+const BalanceBox = ({stakingValues}:IProps) => {
     const available = useMemo(() => {
         return stakingValues.available;
     }, [stakingValues])

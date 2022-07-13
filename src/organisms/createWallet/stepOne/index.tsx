@@ -7,7 +7,7 @@ import { CommonActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { wait } from "@/util/common";
 import { setPasswordViaBioAuth, setUseBioAuth, setWalletWithBioAuth } from "@/util/wallet";
-import { createNewWallet, Wallet } from "@/util/firma";
+import { createNewWallet, IWallet } from "@/util/firma";
 import { CREATE_WALLET_FAILED } from "@/constants/common";
 import { BgColor } from "@/constants/theme";
 import { GUIDE_URI } from "@/../config";
@@ -20,11 +20,11 @@ import Toast from "react-native-toast-message";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
-interface Props {
+interface IProps {
     mnemonic?: any;
 }
 
-const StepOne = ({mnemonic = null}:Props) => {
+const StepOne = ({mnemonic = null}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation(); 
     const {wallet, common} = useAppSelector(state => state);
 
@@ -53,7 +53,7 @@ const StepOne = ({mnemonic = null}:Props) => {
                     text1: CREATE_WALLET_FAILED,
                 });
             }
-            const wallet: Wallet = {
+            const wallet: IWallet = {
                 name: walletName,
                 password: password,
                 mnemonic: result.mnemonic,

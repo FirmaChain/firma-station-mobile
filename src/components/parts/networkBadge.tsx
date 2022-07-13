@@ -2,12 +2,12 @@ import React from "react";
 import { FailedColor, Lato, TextColor } from "@/constants/theme";
 import { StyleSheet, Text, View } from "react-native";
 
-interface Props {
+interface IProps {
     top: number;
     title: string;
 }
 
-const NetworkBadge = ({top, title}:Props) => {
+const NetworkBadge = ({top, title}:IProps) => {
     return (
         <View style={[styles.container, {top: top}]}>
             <Text style={styles.badge}>{title}</Text>

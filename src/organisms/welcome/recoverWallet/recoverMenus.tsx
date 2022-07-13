@@ -1,13 +1,13 @@
-import Button from "@/components/button/button";
 import React from "react";
 import { View } from "react-native";
+import Button from "@/components/button/button";
 
-interface Props {
+interface IProps {
     recoverViaSeed: () => void;
     recoverViaQR: (active:boolean) => void;
 }
 
-const RecoverMenus = ({recoverViaSeed, recoverViaQR}:Props) => {
+const RecoverMenus = ({recoverViaSeed, recoverViaQR}:IProps) => {
     return (
         <View>
             <View style={{paddingBottom: 20}}>

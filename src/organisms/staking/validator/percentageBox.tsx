@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { useSelfDelegationData, ValidatorData } from "@/hooks/staking/hooks";
+import { useSelfDelegationData, IValidatorData } from "@/hooks/staking/hooks";
+import { useAppSelector } from "@/redux/hooks";
 import { convertAmount } from "@/util/common";
 import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextGrayColor } from "@/constants/theme";
-import { useAppSelector } from "@/redux/hooks";
 
-interface Props {
-    data: ValidatorData;
+interface IProps {
+    data: IValidatorData;
 }
 
 const cols = 2;
@@ -14,7 +14,7 @@ const marginHorizontal = 0;
 const marginVertical = 4;
 const width = (Dimensions.get('window').width / cols) - (marginHorizontal * (cols + 1));
 
-const PercentageBox = ({data}:Props) => {
+const PercentageBox = ({data}:IProps) => {
 
     const {storage} = useAppSelector(state => state);
 

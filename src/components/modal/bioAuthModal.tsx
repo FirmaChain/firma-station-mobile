@@ -8,14 +8,14 @@ import { FingerPrint } from "@/components/icon/icon";
 import CustomModal from "@/components/modal/customModal";
 import Button from "@/components/button/button";
 
-interface Props {
+interface IProps {
     walletName: string;
     visible: boolean;
     handleOpen: (open:boolean)=>void;
     handleResult: (result:boolean) => void;
 }
 
-const BioAuthModal = (props:Props) => {
+const BioAuthModal = (props:IProps) => {
     const {walletName, visible, handleOpen, handleResult} = props;
 
     const confirmBioAuth = async() => {

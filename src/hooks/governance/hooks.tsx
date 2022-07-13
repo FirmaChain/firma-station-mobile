@@ -3,11 +3,11 @@ import { useAppSelector } from "@/redux/hooks";
 import { useGovernmentQuery, useProposalQuery } from "@/apollo/gqls";
 import { convertNumber, convertTime } from "@/util/common";
 
-export interface GovernanceState {
-    list: Array<ProposalItemState>;
+export interface IGovernanceState {
+    list: Array<IProposalItemState>;
 }
 
-export interface ProposalItemState {
+export interface IProposalItemState {
     title: string;
     proposalId: string;
     status: string;
@@ -18,19 +18,19 @@ export interface ProposalItemState {
     votingEndTime: string;
 }
 
-export interface ProposalState {
-    titleState: ProposalTitleState;
-    descState: ProposalDescriptionState;
-    voteState: ProposalVoteState;
+export interface IProposalState {
+    titleState: IProposalTitleState;
+    descState: IProposalDescriptionState;
+    voteState: IProposalVoteState;
 }
 
-export interface ProposalTitleState {
+export interface IProposalTitleState {
     proposalId: number;
     title: string;
     status: string;
 }
 
-export interface ProposalDescriptionState {
+export interface IProposalDescriptionState {
     status: string;
     proposalType: string;
     submitTime: string;
@@ -43,7 +43,7 @@ export interface ProposalDescriptionState {
     proposalDeposit: Array<any>;
 }
 
-export interface ProposalVoteState {
+export interface IProposalVoteState {
     votingStartTime: string;
     votingEndTime: string;
     quorum: number;
@@ -56,7 +56,7 @@ export interface ProposalVoteState {
 
 export const useGovernanceList = () => {
     const {common, storage} = useAppSelector(state => state);
-    const [governanceState, setGovernanceList] = useState<GovernanceState>({
+    const [governanceState, setGovernanceList] = useState<IGovernanceState>({
         list: [],
     });
 
@@ -95,7 +95,7 @@ export const useGovernanceList = () => {
 }
 
 export const useProposalData = (id:number) => {
-    const [proposalState, setProposalState] = useState<ProposalState | null>(null);
+    const [proposalState, setProposalState] = useState<IProposalState | null>(null);
 
     const {refetch, loading, data } = useProposalQuery({proposalId: id.toString()})
 
@@ -146,13 +146,13 @@ export const useProposalData = (id:number) => {
                         return convertTime(date.toString(), true);;
                     }
         
-                    const titleState:ProposalTitleState = ({
+                    const titleState:IProposalTitleState = ({
                         proposalId: data.proposal[0].proposalId,
                         title: data.proposal[0].title,
                         status: data.proposal[0].status,
                     })
         
-                    const descState:ProposalDescriptionState = ({
+                    const descState:IProposalDescriptionState = ({
                         status: data.proposal[0].status,
                         proposalType: data.proposal[0].content["@type"],
                         submitTime: data.proposal[0].submitTime,
@@ -165,7 +165,7 @@ export const useProposalData = (id:number) => {
                         proposalDeposit: data.proposal[0].proposalDeposits[0].amount,
                     })
         
-                    const voteState:ProposalVoteState = ({
+                    const voteState:IProposalVoteState = ({
                         votingStartTime: data.proposal[0].votingStartTime,
                         votingEndTime: data.proposal[0].votingEndTime,
                         quorum: convertNumber(data.govParams[0].tallyParams.quorum),

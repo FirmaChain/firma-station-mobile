@@ -3,19 +3,22 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { CommonActions } from "@/redux/actions";
-import TabContainer from "@/components/parts/containers/tabContainer";
-import TabNavigators from "@/navigators/tabNavigators";
 import { GUIDE_URI } from "@/../config";
 import { Linking } from "react-native";
+import TabContainer from "@/components/parts/containers/tabContainer";
+import TabNavigators from "@/navigators/tabNavigators";
+import { useAppSelector } from "@/redux/hooks";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
-interface Props {
+interface IProps {
     title: string;
 }
 
-const Home = ({title}:Props) => {
+const Home = ({title}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation();
+
+    const {wallet} = useAppSelector(state => state);
 
     const moveToSetting = () => {
         navigation.navigate(Screens.Setting);
@@ -30,6 +33,12 @@ const Home = ({title}:Props) => {
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
     }
+
+    useEffect(() => {
+        if(wallet.dstAddress !== ""){
+            navigation.navigate(Screens.Send);
+        }
+    }, [wallet.dstAddress])
 
     useEffect(() => {
         CommonActions.handleLockStation(false);

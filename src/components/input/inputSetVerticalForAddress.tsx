@@ -8,7 +8,7 @@ import TextButton from "../button/textButton";
 import QRCodeScannerModal from "../modal/qrcode/qrCodeScanner";
 import { useAppSelector } from "@/redux/hooks";
 
-interface Props {
+interface IProps {
     title: string;
     value: string;
     numberOnly?: boolean;
@@ -18,7 +18,7 @@ interface Props {
     onChangeEvent: Function;
 }
 
-const InputSetVerticalForAddress = ({title, value, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}:Props) => {
+const InputSetVerticalForAddress = ({title, value, numberOnly = false, placeholder, secure = false, resetValues = false, onChangeEvent}:IProps) => {
     const {common} = useAppSelector(state => state);
     
     const [val, setVal] = useState('');

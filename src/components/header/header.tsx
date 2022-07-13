@@ -6,13 +6,13 @@ import ArrowButton from "../button/arrowButton";
 import { useAppSelector } from "@/redux/hooks";
 import NetworkBadge from "../parts/networkBadge";
 
-interface Props {
+interface IProps {
     step: number,
     bgColor?: string;
     onPressEvent: Function;
 }
 
-const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:Props) => {
+const Header = ({step, bgColor = BoxDarkColor, onPressEvent}:IProps) => {
 
     const {storage} = useAppSelector(state => state);
 

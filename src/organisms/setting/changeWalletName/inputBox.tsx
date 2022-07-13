@@ -8,7 +8,7 @@ import { PLACEHOLDER_FOR_PASSWORD,
 import InputSetVertical from "@/components/input/inputSetVertical";
 import Toast from "react-native-toast-message";
 
-interface Props {
+interface IProps {
     wallet: any;
     validate: (valid:boolean) => void;
     newWalletName: (name:string) => void
@@ -16,7 +16,7 @@ interface Props {
     mnemonic: (value:string) => void;
 }
 
-const InputBox = ({wallet, validate, newWalletName, password, mnemonic}:Props) => {
+const InputBox = ({wallet, validate, newWalletName, password, mnemonic}:IProps) => {
     const walletNameText = {
         title : "New wallet name",
         placeholder: PLACEHOLDER_FOR_WALLET_NAME,

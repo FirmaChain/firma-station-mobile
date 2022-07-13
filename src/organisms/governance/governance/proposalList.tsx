@@ -3,14 +3,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PROPOSAL_NOT_REGISTERED, PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_COLOR } from "@/constants/common";
 import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
 import { convertNumber, convertTime } from "@/util/common";
-import { ProposalItemState } from "@/hooks/governance/hooks";
+import { IProposalItemState } from "@/hooks/governance/hooks";
 
-interface Props {
-    proposals: Array<ProposalItemState>;
+interface IProps {
+    proposals: Array<IProposalItemState>;
     handleDetail: Function;
 }
 
-const ProposalList = ({proposals, handleDetail}:Props) => {
+const ProposalList = ({proposals, handleDetail}:IProps) => {
 
     const handleProposalDetail = (proposalId:number) => {
         handleDetail && handleDetail(proposalId);

@@ -1,15 +1,15 @@
 import React from "react";
 import Delegate from "@/organisms/staking/delegate";
 
+interface IProps {
+    route: {params: DelegateParams};
+}
+
 export type DelegateParams = {
     state: any;
 }
 
-interface Props {
-    route: {params: DelegateParams};
-}
-
-const DelegateScreen = (props:Props) => {
+const DelegateScreen = (props:IProps) => {
     const {state} = props.route.params;
     return (
         <Delegate type={state.type} operatorAddress={state.operatorAddress} />

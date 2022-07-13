@@ -4,13 +4,13 @@ import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor
 import DelegationList from "../parts/delegation/delegationList";
 import ValidatorList from "../parts/validator/validatorList";
 
-interface Props {
+interface IProps {
     isRefresh: boolean;
     handleIsRefresh: (refresh:boolean) => void;
     navigateValidator: (address:string) => void; 
 }
 
-const StakingLists = ({isRefresh, handleIsRefresh, navigateValidator}:Props) => {
+const StakingLists = ({isRefresh, handleIsRefresh, navigateValidator}:IProps) => {
     const [tab, setTab] = useState(0);
     return (
         <View style={styles.listContainer}>

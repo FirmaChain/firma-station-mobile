@@ -6,7 +6,7 @@ import { convertNumber, wait } from "@/util/common";
 import { TRANSACTION_TYPE_MODEL } from "@/constants/common";
 import { PointColor } from "@/constants/theme";
 
-export interface BalanceState {
+export interface IBalanceState {
     available: number;
     delegateAvailable: number;
     delegated: number;
@@ -14,7 +14,7 @@ export interface BalanceState {
     reward: number;
 }
 
-export interface HistoryState {
+export interface IHistoryState {
     hash: any;
     success: string;
     type: {
@@ -25,8 +25,8 @@ export interface HistoryState {
     block: any;
 }
 
-export interface HistoryListState {
-    list: Array<HistoryState>;
+export interface IHistoryListState {
+    list: Array<IHistoryState>;
 }
 
 export const useBalanceData = () => {
@@ -58,10 +58,10 @@ export const useBalanceData = () => {
 
 export const useHistoryData = () => {
     const {wallet, storage, common} = useAppSelector(state => state);
-    const [historyList, setHistoryList] = useState<HistoryListState>({
+    const [historyList, setHistoryList] = useState<IHistoryListState>({
         list: [],
     });
-    const [recentHistory, setRecentHistory] = useState<HistoryState>();
+    const [recentHistory, setRecentHistory] = useState<IHistoryState>();
     const [historyOffset, setHistoryOffset] = useState(0);
 
     if(wallet.address === '' || wallet.address === undefined) return {historyList};

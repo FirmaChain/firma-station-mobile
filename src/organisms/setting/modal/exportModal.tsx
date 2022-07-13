@@ -8,13 +8,13 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
 import Button from "@/components/button/button";
 
-interface Props {
+interface IProps {
     type: string;
     value: string;
     onPressEvent: ()=>void;
 }
 
-const ExportModal = ({type, value, onPressEvent}:Props) => {
+const ExportModal = ({type, value, onPressEvent}:IProps) => {
 
     const modalText = {
         title: type,

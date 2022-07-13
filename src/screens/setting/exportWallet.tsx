@@ -1,16 +1,15 @@
 import React from "react";
 import ExportWallet from "@/organisms/setting/exportWallet";
 
+interface IProps {
+    route: {params: ExportWalletParams};
+}
 
 export type ExportWalletParams = {
     type: string;
 }
 
-interface ExportWalletProps {
-    route: {params: ExportWalletParams};
-}
-
-const ExportWalletScreen = (props:ExportWalletProps) => {
+const ExportWalletScreen = (props:IProps) => {
     const {type} = props.route.params;
 
     return (

@@ -1,15 +1,15 @@
 import React from "react";
 import StepOne from "@/organisms/createWallet/stepOne";
 
+interface IProps {
+    route: {params: CreateStepOneParams};
+}
+
 export type CreateStepOneParams = {
     mnemonic?: any;
 }
 
-interface Props {
-    route: {params: CreateStepOneParams};
-}
-
-const CreateStepOneScreen = (props:Props) => {
+const CreateStepOneScreen = (props:IProps) => {
     const {mnemonic} = props.route.params;
    
     return (

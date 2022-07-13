@@ -7,7 +7,7 @@ import CustomModal from "./customModal";
 import ValidationModal from "./validationModal";
 import { useAppSelector } from "@/redux/hooks";
 
-interface Props {
+interface IProps {
     title: string,
     amount: number;
     fee: number;
@@ -17,7 +17,7 @@ interface Props {
     transactionHandler: (password:string) => void; 
 }
 
-const TransactionConfirmModal = ({title, amount = 0, fee = 0, vote = "", open, setOpenModal, transactionHandler}: Props) => {
+const TransactionConfirmModal = ({title, amount = 0, fee = 0, vote = "", open, setOpenModal, transactionHandler}: IProps) => {
     const {common} = useAppSelector(state => state);
 
     const signMoalText = {

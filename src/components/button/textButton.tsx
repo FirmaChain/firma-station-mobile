@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { DisableColor, Lato, TextButtonColor, TextColor } from "@/constants/theme";
 
-interface Props {
+interface IProps {
     title: string;
     bgColor?: string;
     active?: boolean;
@@ -10,7 +10,7 @@ interface Props {
     onPressEvent: Function;
 }
 
-const TextButton = ({title, bgColor = TextButtonColor, active = true, opacity = true, onPressEvent}:Props) => {
+const TextButton = ({title, bgColor = TextButtonColor, active = true, opacity = true, onPressEvent}:IProps) => {
     const backgroundColor = active? (bgColor? bgColor:TextButtonColor):DisableColor;
 
     const handleOnPress = (value?:any) => {

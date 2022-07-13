@@ -1,16 +1,15 @@
-import Web from "@/organisms/web/web";
 import React from "react";
+import Web from "@/organisms/web/web";
+
+interface IProps {
+    route: {params: WebParams};
+}
 
 export type WebParams = {
     uri: any;
 }
 
-interface Props {
-    route: {params: WebParams};
-}
-
-
-const WebScreen = (props:Props) => {
+const WebScreen = (props:IProps) => {
     const {uri} = props.route.params;
     return (
         <Web uri={uri}/>

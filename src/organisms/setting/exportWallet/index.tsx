@@ -18,11 +18,11 @@ import InputBox from "./inputBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ExportWallet>;
 
-interface Props {
+interface IProps {
     type: string;
 }
 
-const ExportWallet = ({type}:Props) => {
+const ExportWallet = ({type}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation();
     const {wallet} = useAppSelector(state => state);
 

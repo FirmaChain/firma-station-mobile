@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
 import { MenuIcon, Radio } from "../icon/icon";
 
-interface Props {
+interface IProps {
     initVal: number;
     data: any[];
     handleEditWalletList: (list:string, newIndex:number) => void;
@@ -17,7 +17,7 @@ type Item = {
     label: string;
 };
 
-const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:Props) => {
+const ModalWalletList = ({initVal, data, handleEditWalletList, onPressEvent}:IProps) => {
     const initialData = useMemo(() => {
         return data.map((item, index) => {
             return {

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { StorageActions } from "@/redux/actions";
-import { StakingState } from "@/hooks/staking/hooks";
+import { IStakingState } from "@/hooks/staking/hooks";
 import { convertAmount, 
         convertCurrent, 
         convertNumber, 
@@ -18,14 +18,14 @@ import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
 import { FirmaUtil } from "@firmachain/firma-js";
 
-interface Props {
-    stakingValues: StakingState;
+interface IProps {
+    stakingValues: IStakingState;
     handleSend: Function;
     handleStaking: Function;
     chainInfo: any;
 }
 
-const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:Props) => {
+const BalanceBox = ({stakingValues, handleSend, handleStaking, chainInfo}:IProps) => {
     const {storage, staking} = useAppSelector(state => state);
     
     const [currencyIndex, setCurrencyIndex] = useState(0);

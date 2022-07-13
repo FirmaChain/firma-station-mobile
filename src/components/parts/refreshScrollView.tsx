@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
 
-interface Props {
+interface IProps {
     scrollEndFunc?: Function;
     refreshFunc: Function;
     background?: string;
@@ -15,7 +15,7 @@ interface Props {
     children: JSX.Element;
 }
 
-const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparent", toTopButton = false, children}:Props) => {
+const RefreshScrollView = ({scrollEndFunc, refreshFunc, background = "transparent", toTopButton = false, children}:IProps) => {
     const {common: removeable} = useAppSelector(state => state);
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView>(null);

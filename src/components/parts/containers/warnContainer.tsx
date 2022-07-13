@@ -3,16 +3,16 @@ import { StyleSheet, Text, View } from "react-native";
 import { ExclamationCircle, QuestionCircle } from "@/components/icon/icon";
 import { BoxColor, Lato, TextWarnColor } from "@/constants/theme";
 
-interface Props {
-    bgColor?: string;
-    paddingVertival?: number;
-    align?: string; 
+interface IProps {
     text: string;
     textColor?: string;
+    bgColor?: string;
+    align?: string; 
+    paddingVertival?: number;
     question?: boolean;
 }
 
-const WarnContainer = ({bgColor = BoxColor, paddingVertival = 15, text, textColor = TextWarnColor, question = false}:Props) => {
+const WarnContainer = ({bgColor = BoxColor, paddingVertival = 15, text, textColor = TextWarnColor, question = false}:IProps) => {
     return (
         <View style={[styles.wranContainer, {backgroundColor: bgColor, paddingVertical: paddingVertival}]}>
             <View style={styles.box}>

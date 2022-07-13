@@ -2,11 +2,11 @@ import React from "react";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import Home from "@/organisms/home";
 
-interface Props {
+interface IProps {
     route: {}
 }
 
-const HomeScreen = (props:Props) => {
+const HomeScreen = (props:IProps) => {
     const routeName = getFocusedRouteNameFromRoute(props.route);
     return (
         <Home title={routeName === undefined? "Wallet" : routeName} />

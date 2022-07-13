@@ -4,14 +4,14 @@ import { DarkGrayColor, Lato, TextColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { VALIDATOR_PROFILE } from '@/constants/images';
 
-interface Props {
+interface IProps {
     validator: {
         avatarURL: string;
         moniker: string;
     };
 }
 
-const MonikerSection = ({validator}:Props) => {
+const MonikerSection = ({validator}:IProps) => {
 
     const [avatarError, setAvatarError] = useState(false);
 

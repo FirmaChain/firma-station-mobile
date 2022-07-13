@@ -4,12 +4,12 @@ import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor, TextWarnColor }
 import { ARROW_DISABLE, ARROW_ENABLE, FIRMA_LOGO } from "@/constants/images";
 import WalletIcon from "react-native-vector-icons/Ionicons";
 
-interface Props {
+interface IProps {
     title: string;
     desc?: string;
 }
 
-const Description = ({title, desc}:Props) => {
+const Description = ({title, desc}:IProps) => {
 
     const [arrowIndex, setArrowIndex] = useState(0);
 

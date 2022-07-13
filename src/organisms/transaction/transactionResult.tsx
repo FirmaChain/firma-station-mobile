@@ -3,16 +3,16 @@ import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native
 import { BgColor, Lato, PointLightColor, TextAddressColor, TextColor, TextGrayColor, TextWarnColor } from "@/constants/theme";
 import { EXPLORER_URL } from "@/constants/common";
 import { FailCircle, SuccessCircle } from "@/components/icon/icon";
-import { ResultState } from ".";
+import { IResultState } from ".";
 import Button from "@/components/button/button";
 
-interface Props {
-    result: ResultState;
+interface IProps {
+    result: IResultState;
     handleExplorer: (uri:string)=>void;
     handleBack: ()=>void;
 }
 
-const TransactionResult = ({result, handleExplorer, handleBack}:Props) => {
+const TransactionResult = ({result, handleExplorer, handleBack}:IProps) => {
 
     const convertTransactionCodeToText = (code:number) => {
         if(code === 0) return "Transaction Success";

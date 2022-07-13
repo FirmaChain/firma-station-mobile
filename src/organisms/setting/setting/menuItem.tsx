@@ -3,13 +3,13 @@ import { BgColor, BoxColor, Lato, TextColor, WhiteColor } from "@/constants/them
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ForwardArrow } from "@/components/icon/icon";
 
-interface Props {
+interface IProps {
     title: string;
     path: string;
     handleMenus: (path:string) => void;
 }
 
-const MenuItem = ({title, path, handleMenus}:Props) => {
+const MenuItem = ({title, path, handleMenus}:IProps) => {
     return (
         <TouchableOpacity onPress={()=>handleMenus(path)}>
             <View style={styles.listItem}>

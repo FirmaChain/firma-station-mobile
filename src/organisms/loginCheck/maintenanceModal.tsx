@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import AlertModal from "@/components/modal/alertModal";
 
-interface Props {
+interface IProps {
     data: any;
 }
 
-const MaintenanceModal = ({data}:Props) => {
+const MaintenanceModal = ({data}:IProps) => {
     const [openAlertModal, setOpenAlertModal] = useState(true);
 
     const handleAlertModalOpen = (open:boolean) => {

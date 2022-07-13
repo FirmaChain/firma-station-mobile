@@ -14,7 +14,7 @@ import { Action,
     CURRENT_APP_VERSION,
     DATA_LOAD_STATUS, } from "../types";
 
-export interface State {
+export interface IState {
     currentAppVer: string;
     chainVer: string,
     sdkVer: string,

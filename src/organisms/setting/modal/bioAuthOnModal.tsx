@@ -9,7 +9,7 @@ import Button from "@/components/button/button";
 import InputSetVertical from "@/components/input/inputSetVertical";
 import CustomModal from "@/components/modal/customModal";
 
-interface Props {
+interface IProps {
     walletName: string;
     open: boolean;
     book: {
@@ -21,7 +21,7 @@ interface Props {
     bioAuthhandler: (value:string) => void;
 }
 
-const RadioOnModal = ({walletName, open, book, setOpenModal, bioAuthhandler}: Props) => {
+const RadioOnModal = ({walletName, open, book, setOpenModal, bioAuthhandler}: IProps) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 

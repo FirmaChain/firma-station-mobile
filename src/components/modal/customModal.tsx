@@ -5,7 +5,7 @@ import { BgColor, BoxColor } from "@/constants/theme";
 import CustomToast from "../toast/customToast";
 import Modal from "react-native-modal";
 
-interface Props {
+interface IProps {
     visible: boolean;
     fade?: boolean;
     keyboardAvoiing?: boolean;
@@ -15,7 +15,7 @@ interface Props {
     children: JSX.Element;
 }
 
-const CustomModal = ({visible, fade = false, keyboardAvoiing = true, lockBackButton = false, bgColor = BoxColor, handleOpen, children}:Props) => {
+const CustomModal = ({visible, fade = false, keyboardAvoiing = true, lockBackButton = false, bgColor = BoxColor, handleOpen, children}:IProps) => {
     const {common} = useAppSelector(state => state);
 
     const closeModal = () => {

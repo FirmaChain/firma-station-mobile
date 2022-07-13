@@ -12,11 +12,11 @@ import { GUIDE_URI } from "@/../config";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 
-interface Props {
+interface IProps {
     wallet: any;
 }
 
-const StepTwo = ({wallet}:Props) => {
+const StepTwo = ({wallet}:IProps) => {
     const navigation:ScreenNavgationProps = useNavigation(); 
 
     const onMoveToStepThree = () => {

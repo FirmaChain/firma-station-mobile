@@ -18,14 +18,14 @@ import InputSetVertical from "../input/inputSetVertical";
 import ArrowButton from "../button/arrowButton";
 import CustomModal from "./customModal";
 
-interface Props {
+interface IProps {
     type: string;
     open: boolean;
     setOpenModal: Function;
     validationHandler: (password:string) => void; 
 }
 
-const ValidationModal = ({type, open, setOpenModal, validationHandler}:Props) => {
+const ValidationModal = ({type, open, setOpenModal, validationHandler}:IProps) => {
     const {wallet, common} = useAppSelector(state => state);
 
     const screenHeight = ScreenHeight();

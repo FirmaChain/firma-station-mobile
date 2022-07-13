@@ -3,14 +3,14 @@ import { Pressable, StyleSheet, ScrollView, Text, Platform, View } from "react-n
 import { BgColor, BoxDarkColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { Radio } from "../icon/icon";
 
-interface Props {
+interface IProps {
     initVal: number;
     data: any[];
     subData?: any[];
     onPressEvent: (index:number) => void;
 }
 
-const ModalItems = ({initVal, data, subData, onPressEvent}:Props) => {
+const ModalItems = ({initVal, data, subData, onPressEvent}:IProps) => {
     const [selected, setSelected] = useState(initVal);
 
     const handleSelect = (index:number) => {

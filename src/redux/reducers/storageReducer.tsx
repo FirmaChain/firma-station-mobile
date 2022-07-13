@@ -2,7 +2,7 @@ import { Action,
         HANDLE_CURRENCY, 
         HANDLE_NETWORK } from "../types";
 
-export interface State {
+export interface IState {
     currency: string;
     network: string;
 }
