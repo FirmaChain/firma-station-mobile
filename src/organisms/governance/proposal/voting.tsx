@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
@@ -9,6 +9,7 @@ import Button from "@/components/button/button";
 import CustomModal from "@/components/modal/customModal";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import AlertModal from "@/components/modal/alertModal";
+import { wait } from "@/util/common";
 
 interface IProps {
     isVotingPeriod: boolean;
@@ -77,20 +78,24 @@ const Voting = ({isVotingPeriod, proposalId, transactionHandler}:IProps) => {
             setVotingGas(result);
             setAlertDescription("");
             CommonActions.handleLoadingProgress(false);
+            setActive(true);
+            wait(100).then(() => {
+                handleTransactionModal(true);
+            })
         } catch (error) {
             console.log(error);
             CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
-            handleModalOpen(true);
             setActive(true);
+            wait(100).then(() => {
+                handleModalOpen(true);
+            })
             throw error;
         }
-        setActive(true);
-        handleTransactionModal(true);
     }
 
     return(
-        <>
+        <React.Fragment>
         <View style={{paddingHorizontal: 20, display: "flex"}}>
             {isVotingPeriod &&
                 <Button title="Vote" active={active} onPressEvent={()=>handleVoteModal(true)} />
@@ -144,7 +149,7 @@ const Voting = ({isVotingPeriod, proposalId, transactionHandler}:IProps) => {
             desc={alertDescription}
             confirmTitle={"OK"}
             type={"ERROR"}/>
-        </>
+        </React.Fragment>
     )
 }
 

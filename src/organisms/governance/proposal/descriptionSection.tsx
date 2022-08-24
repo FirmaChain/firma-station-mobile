@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     },
     dividerDashed: {
         width: "100%",
-        height: 1,
+        height: 0,
         borderWidth: 1,
         borderColor: DividerColor,
         borderStyle: "dashed",

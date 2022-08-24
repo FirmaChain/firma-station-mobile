@@ -1,5 +1,6 @@
 import React from "react";
 import { View } from "react-native";
+import { TextCatTitleColor } from "@/constants/theme";
 import Button from "@/components/button/button";
 
 interface IProps {
@@ -15,6 +16,8 @@ const RecoverMenus = ({recoverViaSeed, recoverViaQR}:IProps) => {
                     title="Use seed phrase"
                     active={true}
                     border={true}
+                    borderColor={TextCatTitleColor}
+                    borderTextColor={TextCatTitleColor}
                     onPressEvent={recoverViaSeed}/>
             </View>
             <View style={{paddingBottom: 20}}>
@@ -22,6 +25,8 @@ const RecoverMenus = ({recoverViaSeed, recoverViaQR}:IProps) => {
                     title="Scan QR code"
                     active={true}
                     border={true}
+                    borderColor={TextCatTitleColor}
+                    borderTextColor={TextCatTitleColor}
                     onPressEvent={() => recoverViaQR(true)}/>
             </View>
         </View>

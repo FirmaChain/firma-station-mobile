@@ -6,6 +6,7 @@ import { CaretUp } from "@/components/icon/icon";
 import { ScreenWidth } from "@/util/getScreenSize";
 import { useAppSelector } from "@/redux/hooks";
 import { ICON_VOTE_CHECK } from "@/constants/images";
+import { FirmaUtil } from "@firmachain/firma-js";
 
 interface IProps {
     data: any;
@@ -40,15 +41,7 @@ const VotingPercentage = ({data}:IProps) => {
                 else{return false;}
         })
         return result
-    }, [tally, data])
-
-    const verificationVote = (option:string) => {
-        const vote = data.voters
-                .filter((voter: any) => voter.option === option)
-                .find((voter:any) => voter.voterAddress === wallet.address)
-        return vote;
-    }
-
+    }, [tally])
 
     const totalVote = () => {
         let total:number = 0;
@@ -71,11 +64,18 @@ const VotingPercentage = ({data}:IProps) => {
     }
     
     const calculateRatio = (value:number, max:number|string, graph:boolean = false) => {
-        if(value <= 0 || max <= 0 || max === undefined) return 0;
-        const ratio = convertNumber((convertNumber(makeDecimalPoint(value, 6)) / convertNumber(makeDecimalPoint(max, 6))));
+        let voteValue = convertNumber(FirmaUtil.getFCTStringFromUFCT(value));
+        let totlaValue = convertNumber(FirmaUtil.getFCTStringFromUFCT(convertNumber(max)));
+        if(voteValue <= 0 || totlaValue <= 0 || totlaValue === undefined) return 0;
+
+        const ratio = convertNumber((convertNumber(makeDecimalPoint(voteValue, 6)) / convertNumber(makeDecimalPoint(totlaValue, 6))));
 
         if(graph){
-            const result = convertNumber(makeDecimalPoint(ratio, 4));
+            let convertRatio = ratio;
+            if(voteValue < 1){
+                convertRatio = 0.001;
+            }
+            const result = convertNumber(makeDecimalPoint(convertRatio, 4));
             return result;
         } else {
             return ratio;
@@ -121,7 +121,7 @@ const VotingPercentage = ({data}:IProps) => {
                             <Text style={[styles.vote, {color: votingColor(item.title)}]}>{item.title}</Text>
                         </View>
                         <View style={styles.dataBox}>
-                            {item.title !== "Abstain" && <Text style={styles.percent}>{((calculateRatio(item.vote, totalVote()) * 100).toFixed(2)) + ' %'}</Text>}
+                            {item.title !== "Abstain" && <Text style={styles.percent}>{(makeDecimalPoint((calculateRatio(item.vote, totalVote()) * 100))) + ' %'}</Text>}
                             <Text style={[styles.amount, {textAlign: "right"}]}>{convertAmount(item.vote)}</Text>
                         </View>
                         <View style={[styles.stampWrapper, {display: myVote[index]?"flex":"none"}]}>
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
         position: "absolute", 
         top: -18, 
         height: 25, 
-        width: 2, 
+        width: 0, 
         // backgroundColor: WhiteColor, 
         borderColor: WhiteColor,
         borderWidth: 1,
