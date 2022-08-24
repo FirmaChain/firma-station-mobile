@@ -3,50 +3,50 @@ import { useAppSelector } from "@/redux/hooks";
 import { StakingActions } from "@/redux/actions";
 import { useDelegationsQuery, useValidatorFromAddressQuery, useValidatorFromAddressQueryForTestNet, useValidatorsDescriptionQuery, useValidatorsDescriptionQueryForTestNet, useValidatorsQuery, useValidatorsQueryForTestNet } from "@/apollo/gqls";
 import { convertNumber, convertPercentage, convertToFctNumber, makeDecimalPoint } from "@/util/common";
-import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getUndelegations } from "@/util/firma";
+import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getStakingGrant, getUndelegations } from "@/util/firma";
 import { BLOCKS_PER_YEAR } from "@/../config";
 import { FirmaUtil } from "@firmachain/firma-js";
 
-export interface ValidatorState {
+export interface IValidatorState {
     status: number;
     jailed: boolean;
     tombstoned: boolean;
-    description: ValidatorDescription;
-    address: ValidatorAddress;
-    percentageData: ValidatorData;
+    description: IValidatorDescription;
+    address: IValidatorAddress;
+    percentageData: IValidatorData;
 }
 
-export interface ValidatorDescription {
+export interface IValidatorDescription {
     avatar: string;
     moniker: string;
     description: string;
     website: string;
 }
 
-export interface ValidatorAddress {
+export interface IValidatorAddress {
     operatorAddress: string;
     accountAddress: string;
 }
 
-export interface StakingData {
+export interface IStakingData {
     data: string;
     amount?: number;
 }
 
-export interface ValidatorData {
-    address: ValidatorAddress,
+export interface IValidatorData {
+    address: IValidatorAddress,
     APR: string;
     APY: string;
 
     // chain upgrade response
-    votingPower?: StakingData;
-    commission?: StakingData;
-    uptime?: StakingData;
+    votingPower?: IStakingData;
+    commission?: IStakingData;
+    uptime?: IStakingData;
     
     state?: Array<any>;
 }
 
-export interface StakeInfo {
+export interface IStakeInfo {
     validatorAddress: string;
     delegatorAddress: string;
     moniker: string;
@@ -55,7 +55,7 @@ export interface StakeInfo {
     reward: number;
 }
 
-export interface RedelegationInfo {
+export interface IRedelegationInfo {
     srcAddress: string;
     srcMoniker: string;
     srcAvatarURL: string;
@@ -66,7 +66,7 @@ export interface RedelegationInfo {
     completionTime: string;
 }
 
-export interface UndelegationInfo {
+export interface IUndelegationInfo {
     validatorAddress: string;
     moniker: string;
     avatarURL: string;
@@ -74,7 +74,24 @@ export interface UndelegationInfo {
     completionTime: string;
 }
 
-export interface StakingState {
+export interface StakingGrantState {
+    list: Array<any>,
+    count: number,
+    expire: string,
+}
+
+export interface IGrantState {
+    authorization: {
+        allow_list: {
+            address: Array<string>
+        },
+    }
+    authorization_type: string,
+    max_tokens: number | null,
+    expiration: string,
+}
+
+export interface IStakingState {
     available: number;
     delegated: number;
     undelegate: number;
@@ -83,9 +100,14 @@ export interface StakingState {
 
 export const useDelegationData = () => {
     const {wallet, staking, common, storage} = useAppSelector(state => state);
-    const [delegationList, setDelegationList] = useState<Array<StakeInfo>>([]);
-    const [redelegationList, setRedelegationList] = useState<Array<RedelegationInfo>>([]);
-    const [undelegationList, setUndelegationList] = useState<Array<UndelegationInfo>>([]);
+    const [delegationList, setDelegationList] = useState<Array<IStakeInfo>>([]);
+    const [redelegationList, setRedelegationList] = useState<Array<IRedelegationInfo>>([]);
+    const [undelegationList, setUndelegationList] = useState<Array<IUndelegationInfo>>([]);
+    const [stakingGrantList, setStakingGrantList] = useState<StakingGrantState>({
+        list: [],
+        count: 0,
+        expire: new Date().toString(),
+    });
     const [validatorsDescList, setValidatorsDescList] = useState<Array<any>>([]);
 
     const {refetch, loading, data} = storage.network === "TestNet"?useValidatorsDescriptionQueryForTestNet():useValidatorsDescriptionQuery();
@@ -102,12 +124,9 @@ export const useDelegationData = () => {
         try {
             await refetch();
             await handleDelegationState();
-            if(redelegationList.length > 0){
-                await handleRedelegationState();
-            }
-            if(undelegationList.length > 0){
-                await handleUndelegationState();
-            }
+            await handleStakingGrantState();
+            await handleRedelegationState();
+            await handleUndelegationState();
         } catch (error) {
             throw error;
         }
@@ -115,7 +134,7 @@ export const useDelegationData = () => {
 
     const handleDelegationState = async() => {
         try {
-            const result:Array<StakeInfo> = await getDelegations(wallet.address);
+            const result:Array<IStakeInfo> = await getDelegations(wallet.address);
             setDelegationList(
                 result.filter(value => 
                     convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 || 
@@ -127,7 +146,7 @@ export const useDelegationData = () => {
 
     const handleRedelegationState = async() => {
         try {
-            const redelegationResult:Array<RedelegationInfo> = await getRedelegations(wallet.address);
+            const redelegationResult:Array<IRedelegationInfo> = await getRedelegations(wallet.address);
             setRedelegationList(redelegationResult);
         } catch (error) {
            throw error; 
@@ -136,8 +155,17 @@ export const useDelegationData = () => {
 
     const handleUndelegationState = async() => {
         try {
-            const undelegateionResult:Array<UndelegationInfo> = await getUndelegations(wallet.address);
+            const undelegateionResult:Array<IUndelegationInfo> = await getUndelegations(wallet.address);
             setUndelegationList(undelegateionResult);
+        } catch (error) {
+           throw error; 
+        }
+    }
+
+    const handleStakingGrantState = async() => {
+        try {
+            const grantStakeResult:Array<any> = await getStakingGrant(wallet.address);
+            setStakingGrantList(StakingGrantData(delegationList, grantStakeResult[0]));
         } catch (error) {
            throw error; 
         }
@@ -150,26 +178,42 @@ export const useDelegationData = () => {
         }
     }, [staking.delegate])
 
-    const delegationState:Array<StakeInfo> = useMemo(() => {
+    const delegationState:Array<IStakeInfo> = useMemo(() => {
         if(validatorsDescList.length > 0){
             return useValidatorDescription(delegationList, validatorsDescList);
         }
         return [];
     }, [delegationList, validatorsDescList]);
 
-    const redelegationState:Array<RedelegationInfo> = useMemo(() => {
+    const redelegationState:Array<IRedelegationInfo> = useMemo(() => {
         if(validatorsDescList.length > 0){
             return useValidatorDescriptionForRedelegation(redelegationList, validatorsDescList);
         }
         return [];
     }, [redelegationList, validatorsDescList]);
 
-    const undelegationState:Array<UndelegationInfo> = useMemo(() => {
+    const undelegationState:Array<IUndelegationInfo> = useMemo(() => {
         if(validatorsDescList.length > 0){
             return useValidatorDescription(undelegationList, validatorsDescList);
         }
         return [];
     }, [undelegationList, validatorsDescList]);
+
+    const stakingGrantState:StakingGrantState = useMemo(() => {
+        if(validatorsDescList.length > 0 && stakingGrantList.list.length > 0){
+            let list = useValidatorDescription(stakingGrantList.list, validatorsDescList);
+            return {
+                list: list,
+                count: stakingGrantList.count,
+                expire: stakingGrantList.expire,
+            }
+        }
+        return {
+            list: [],
+            count: 0,
+            expire: new Date().toString(),
+        };
+    }, [stakingGrantList, validatorsDescList]);
 
     const refetchValidatorDescList = async() => {
         return await refetch();
@@ -180,6 +224,11 @@ export const useDelegationData = () => {
             setDelegationList([]);
             setRedelegationList([]);
             setUndelegationList([]);
+            setStakingGrantList({
+                list: [],
+                count: 0,
+                expire: new Date().toString(),
+            });
             setValidatorsDescList([]);
             handleTotalDelegationPolling();
         }
@@ -189,18 +238,66 @@ export const useDelegationData = () => {
         delegationState,
         redelegationState,
         undelegationState,
+        stakingGrantState,
+        validatorsDescList,
         handleDelegationState,
         handleRedelegationState,
         handleUndelegationState,
         handleTotalDelegationPolling,
+        handleStakingGrantState,
         refetchValidatorDescList,
     }
+}
 
+export const StakingGrantData = (delegationList:Array<any>, stakingGrantList:IGrantState) => {
+    let grantList: string[] = [];
+    let expireDate = new Date().toString();
+    if(stakingGrantList !== undefined){
+        grantList = stakingGrantList.authorization.allow_list.address;
+        expireDate = stakingGrantList.expiration;
+    }
+    let grantAllowList = grantList;
+
+    let restakeListWithDelegation = delegationList.map((dData) => {
+        grantAllowList = grantAllowList.filter((aData) => aData.includes(dData.validatorAddress) === false);
+        
+        return {
+            validatorAddress: dData.validatorAddress,
+            avatarURL: dData.avatarURL,
+            moniker: dData.moniker,
+            delegated: dData.amount,
+            stakingReward: dData.reward,
+            isActive: grantList.includes(dData.validatorAddress),
+        };
+    });
+
+    let restakeListWithoutDelegation = grantAllowList.map((value) => {
+        return {
+            validatorAddress: value,
+            avatarURL: "",
+            moniker: value,
+            delegated: 0,
+            stakingReward: 0,
+            isActive: true,
+        }
+    })
+
+    let restakeCount = 0;
+    if(restakeListWithDelegation.length > 0){
+        restakeCount = restakeListWithDelegation.filter((value) => value.isActive === true).length;
+    }
+
+    let list = restakeListWithDelegation.concat(restakeListWithoutDelegation);
+    return {
+        list: list,
+        count: restakeCount,
+        expire: expireDate,
+    }
 }
 
 export const useStakingData = () => {
     const {wallet, common, storage} = useAppSelector(state => state);
-    const [stakingState, setStakingState] = useState<StakingState>({
+    const [stakingState, setStakingState] = useState<IStakingState>({
         available: 0,
         delegated: 0,
         undelegate: 0,
@@ -267,7 +364,7 @@ export const useValidatorDescription = (delegations:Array<any>, validators:Array
     return result;
 }
 
-export const useValidatorDescriptionForRedelegation = (redelegations:Array<RedelegationInfo>, validators:Array<any>) => {
+export const useValidatorDescriptionForRedelegation = (redelegations:Array<IRedelegationInfo>, validators:Array<any>) => {
     const result = redelegations.map((value) => {
         const src = validators.find(val => val.validatorInfo.operatorAddress === value.srcAddress);
         const dst = validators.find(val => val.validatorInfo.operatorAddress === value.dstAddress);
@@ -352,7 +449,7 @@ export const useValidatorData = () => {
 export const useValidatorDataFromAddress = (address:string) => {
     const {storage} = useAppSelector(state => state);
 
-    const [validatorState, setValidatorState] = useState<ValidatorState>();
+    const [validatorState, setValidatorState] = useState<IValidatorState>();
 
     const {refetch, loading, data} = storage.network === "TestNet"?useValidatorFromAddressQueryForTestNet({
         address: address.toString(),
@@ -373,19 +470,19 @@ export const useValidatorDataFromAddress = (address:string) => {
                 const jailed = validator[0].jailed;
                 const tombstoned = validator[0].tombstoned;
     
-                const description:ValidatorDescription = {
+                const description:IValidatorDescription = {
                     avatar: validator[0].validatorAvatar,
                     moniker: validator[0].validatorMoniker,
                     description: validator[0].validatorDetail,
                     website: validator[0].validatorWebsite,
                 }
     
-                const address:ValidatorAddress = {
+                const address:IValidatorAddress = {
                     operatorAddress: validator[0].validatorAddress,
                     accountAddress: validator[0].selfDelegateAddress,
                 }
     
-                const percentageData:ValidatorData = {
+                const percentageData:IValidatorData = {
                     address: address,
                     APR: convertPercentage(validator[0].APR),
                     APY: convertPercentage(validator[0].APY),
@@ -445,7 +542,7 @@ export const useValidatorDataFromAddress = (address:string) => {
 }
 
 export const useSelfDelegationData = (operatorAddress: string, accountAddress: string) => {
-    const [selfDelegation, setSelfDelegation] = useState<StakingData>({
+    const [selfDelegation, setSelfDelegation] = useState<IStakingData>({
         data: "0",
         amount: 0,
     });

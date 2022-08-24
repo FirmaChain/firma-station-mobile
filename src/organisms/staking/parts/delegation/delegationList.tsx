@@ -4,45 +4,40 @@ import { CommonActions, StakingActions } from "@/redux/actions";
 import { useAppSelector } from "@/redux/hooks";
 import { useDelegationData } from "@/hooks/staking/hooks";
 import { convertToFctNumber } from "@/util/common";
-import { BgColor, BoxColor, DisableColor, GrayColor, Lato, PointLightColor, TextGrayColor } from "@/constants/theme";
 import { DownArrow } from "@/components/icon/icon";
-// import { RESTAKE_API } from "@/../config";
+import { BgColor, BorderColor, GrayColor, Lato, PointLightColor, TextGrayColor } from "@/constants/theme";
+import { DELEGATE_NOT_EXIST, REDELEGATE_NOT_EXIST, UNDELEGATE_NOT_EXIST } from "@/constants/common";
 import CustomModal from "@/components/modal/customModal";
 import ModalItems from "@/components/modal/modalItems";
 import DelegateItem from "./delegateItem";
 import RedelegateItem from "./redelegateItem";
 import UndelegateItem from "./undelegateItem";
 import RestakeItem from "./restakeItem";
+import NoticeItem from "./noticeItem";
 
-interface Props {
+interface IProps {
     visible: boolean;
     isRefresh: boolean;
     handleIsRefresh: (refresh:boolean) => void;
     navigateValidator: (address:string) => void;
 }
 
-interface RestakeStates {
-    validatorAddress: string,
-    accRestakeAmount: number,
-    isActive: boolean,
-}
+const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:IProps) => {
+    const {common} = useAppSelector(state => state);
 
-const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:Props) => {
-    const {wallet, common} = useAppSelector(state => state);
-
-    // const sortItems = ['Delegate', 'Redelegate', 'Undelegate', 'Restake'];
-    const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
+    const sortItems = ['Delegate', 'Redelegate', 'Undelegate', 'Restake'];
+    // const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
-    const [stakingGrantListFromBot, setStakingGrantListFromBot] = useState([]);
 
     const { delegationState, 
         redelegationState, 
         undelegationState, 
-        // stakingGrantState,
+        stakingGrantState,
         handleDelegationState,
         handleRedelegationState,
         handleUndelegationState,
+        handleStakingGrantState,
         refetchValidatorDescList } = useDelegationData();
 
     const delegationList = useMemo(() => {
@@ -57,30 +52,9 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
         return undelegationState;
     }, [undelegationState]);
 
-    // const stakingGrantList:Array<String> = useMemo(() => {
-    //     if(stakingGrantState.length > 0){
-    //         return stakingGrantState[0].authorization.allow_list;
-    //     }
-    //     return [];
-    // }, [stakingGrantState])
-
-    // const restakeList = useMemo(() => {
-
-    // },[delegationList, stakingGrantList, stakingGrantListFromBot])
-
-    // useEffect(() => {
-    //     const getStakingGrantListFromBot = async() => {
-    //         try {
-    //             const result = await fetch(RESTAKE_API + wallet.address);
-    //             const json = await result.json();
-    //             setStakingGrantListFromBot(json);
-    //         } catch (error) {
-    //             console.log(error);
-    //             return [];
-    //         }
-    //     }
-    //     getStakingGrantListFromBot();
-    // }, [stakingGrantList])
+    const stakingGrantList = useMemo(() => {
+        return stakingGrantState;
+    }, [stakingGrantState])
 
     const allReward = useMemo(() => {
         let reward = 0;
@@ -98,15 +72,12 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
 
     const refreshStakings = async() => {
         try {
-            await refetchValidatorDescList();
             await handleDelegationState();
-            if(redelegationList.length > 0){
-                await handleRedelegationState();
-            }
-            if(undelegationList.length > 0){
-                await handleUndelegationState();
-            }
-            CommonActions.handleLoadingProgress(false);
+            await refetchValidatorDescList();
+            await handleRedelegationState();
+            await handleUndelegationState();
+            await handleStakingGrantState();
+        CommonActions.handleLoadingProgress(false);
             handleIsRefresh(false);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
@@ -128,23 +99,16 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
         try {
             switch (index) {
                 case 0:
-                    if(delegationList.length === 0){
-                        await handleDelegationState();
-                    }
+                    await handleDelegationState();
                     return;
                 case 1:
-                    if(redelegationList.length === 0){
-                        CommonActions.handleLoadingProgress(true);
-                        await handleRedelegationState();
-                        CommonActions.handleLoadingProgress(false);
-                    }
+                    await handleRedelegationState();
                     return;
                 case 2:
-                    if(undelegationList.length === 0){
-                        CommonActions.handleLoadingProgress(true);
-                        await handleUndelegationState();
-                        CommonActions.handleLoadingProgress(false);
-                    }
+                    await handleUndelegationState();
+                    return;
+                case 3:
+                    await handleStakingGrantState();
                     return;
             }
         } catch (error) {
@@ -161,12 +125,12 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
                 return redelegationList? redelegationList.length : 0;
             case 2:
                 return undelegationList? undelegationList.length : 0;
-            // case 3:
-            //     return delegationList? delegationList.length : 0;
+            case 3:
+                return stakingGrantState.count;
             default:
                 return 0;
         }
-    }, [selected, delegationList, redelegationList, undelegationList]);
+    }, [selected, delegationList, redelegationList, undelegationList, stakingGrantState]);
 
     const ClassifyByType = () => {
         switch (selected) {
@@ -176,8 +140,8 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
                 return redelegate();
             case 2:
                 return undelegate();
-            // case 3:
-            //     return restake();
+            case 3:
+                return restake();
         }
     }
 
@@ -204,19 +168,36 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
     }, [selected])
 
     useEffect(() => {
-        if(isRefresh && visible || visible){
+        if(isRefresh && visible){
             refreshStakings();
         }
     }, [isRefresh, visible])
 
+    useEffect(() => {
+        if(visible){
+            refreshStakings();
+        }
+    }, [visible])
+
     const delegate = () => {
         return (
             <View>
-            {delegationList.map((value, index) => {
+            {delegationList.length > 0?
+            delegationList.map((value, index) => {
+                const isLastItem = index === delegationList.length -1;
                 return (
-                    <DelegateItem key={index} data={value} navigate={navigateValidator} />
+                    <View
+                        key={index}
+                        style={isLastItem?
+                            styles.itemBoxLast:
+                            styles.itemBox}>
+                        <DelegateItem data={value} navigate={navigateValidator} />
+                    </View>
                 )
-            })}
+            })
+            :
+            <NoticeItem notification={DELEGATE_NOT_EXIST} />
+            }
             </View>
         )
     }
@@ -224,11 +205,22 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
     const redelegate = () => {
         return (
             <View>
-            {redelegationList.map((value, index) => {
+            {redelegationList.length > 0?
+            redelegationList.map((value, index) => {
+                const isLastItem = index === redelegationList.length -1;
                 return (
-                    <RedelegateItem key={index} data={value} navigate={navigateValidator} />
+                    <View
+                        key={index}
+                        style={isLastItem?
+                            styles.itemBoxLast:
+                            styles.itemBox}>
+                        <RedelegateItem data={value} navigate={navigateValidator} />
+                    </View>
                 )
-            })}
+            })
+            :
+            <NoticeItem notification={REDELEGATE_NOT_EXIST} />
+            }
             </View>
         )
     }
@@ -236,34 +228,59 @@ const DelegationList = ({visible, isRefresh, handleIsRefresh, navigateValidator}
     const undelegate = () => {
         return (
             <View>
-            {undelegationList.map((value, index) => {
+            {undelegationList.length > 0?
+            undelegationList.map((value, index) => {
+                const isLastItem = index === undelegationList.length -1;
                 return (
-                    <UndelegateItem key={index} data={value} navigate={navigateValidator} />
+                    <View
+                        key={index}
+                        style={isLastItem?
+                            styles.itemBoxLast:
+                            styles.itemBox}>
+                        <UndelegateItem data={value} navigate={navigateValidator} />
+                    </View>
                 )
-            })}
+            })
+            :
+            <NoticeItem notification={UNDELEGATE_NOT_EXIST} />
+            }
             </View>
         )
     }
 
-    // const restake = () => {
-    //     return (
-    //         <View>
-    //         {delegationList.map((value, index) => {
-    //             return (
-    //                 <RestakeItem key={index} data={value} grantList={stakingGrantList} grantListFromBot={stakingGrantListFromBot} navigate={navigateValidator} />
-    //             )
-    //         })}
-    //         </View>
-    //     )
-    // }
+    const restake = () => {
+        return (
+            <View>
+            {stakingGrantList.list.length > 0?
+            stakingGrantList.list.map((value, index) => {
+                const isLastItem = index === stakingGrantList.list.length -1;
+                return (
+                    <View
+                        key={index}
+                        style={isLastItem?
+                            styles.itemBoxLast:
+                            styles.itemBox}>
+                        <RestakeItem data={value} navigate={navigateValidator} />
+                    </View>
+                )
+            })
+            :
+            <NoticeItem notification={DELEGATE_NOT_EXIST} />
+            }
+            </View>
+        )
+    }
 
     return (
         <>
         {visible &&
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>List 
-                    <Text style={{color: PointLightColor}}> {listLength}</Text>
+                <Text style={styles.title}>List
+                    <Text style={{color: PointLightColor}}>{" " + listLength}</Text>
+                    {selected === 3 &&
+                    <Text style={{color: TextGrayColor, opacity: .6}}>{"/" + stakingGrantList.list.length}</Text>
+                    }
                 </Text>
                 <View style={{flexDirection: "row", alignItems: "center"}}>
                     <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
@@ -292,35 +309,29 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 20,
         paddingHorizontal: 20,
-        backgroundColor: BoxColor,
     },
     header: {
         height: 48,
         paddingHorizontal: 20,
-        borderBottomLeftRadius: 8,
-        borderBottomRightRadius: 8,
-        marginBottom: 5,
         backgroundColor: BgColor,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
-    item : {
-        paddingTop: 22,
-        backgroundColor: BgColor,
-        marginVertical: 5,
-        borderRadius: 8,
+    itemBox: {
+        borderBottomColor: BorderColor,
+        borderBottomWidth: .5,
+    },
+    itemBoxLast: {
+        borderBottomStartRadius: 8,
+        borderBottomEndRadius: 8,
+        overflow: "hidden",
     },
     title: {
         flex: 2,
         fontFamily: Lato,
         fontSize: 16,
         color: TextGrayColor,
-    },
-    divider: {
-        height: 1,
-        marginHorizontal: 20,
-        backgroundColor: DisableColor,
     },
     sortButton: {
         flexDirection: 'row',

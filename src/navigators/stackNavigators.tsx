@@ -21,6 +21,7 @@ import SendScreen from "../screens/home/wallet/send";
 
 import ValidatorScreen from "../screens/home/staking/validator";
 import DelegateScreen from "../screens/home/staking/delegate";
+import RestakeScreen from "../screens/home/staking/restake";
 
 import ProposalScreen from "../screens/home/governance/proposal";
 import DepositScreen from "@/screens/home/governance/deposit";
@@ -154,6 +155,10 @@ const StackNavigator = () => {
                     options={{headerShown: false}}
                     name={Screens.Delegate}
                     component={DelegateScreen} />
+                <Stack.Screen
+                    options={{headerShown: false}}
+                    name={Screens.Restake}
+                    component={RestakeScreen} />
             </Stack.Group>
 
             <Stack.Group>

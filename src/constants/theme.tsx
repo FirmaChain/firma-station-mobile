@@ -31,7 +31,10 @@ export const BorderColor = '#696974';
 export const DisableColor = '#44444f';
 export const DividerColor = '#33333a';
 export const FailedColor = '#de3d3d';
-export const SuccessColor = '#2BA891';
+
+export const RestakeNoDelegationColor= '#c4c4c4';
+export const RestakeActiveColor = '#3dd598';
+export const RestakeInactiveColor = '#b08dff';
 
 export const TextButtonColor = '#0f3f92';
 export const ButtonPointLightColor = '#5b75dc';

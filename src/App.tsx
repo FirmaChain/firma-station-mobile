@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import Router from "./navigators/router";
 import persistStore from "redux-persist/es/persistStore";
-import AppStateManager from "./navigators/appStateManager";
 
 export default function App() {
     LogBox.ignoreLogs(["[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"]);
@@ -19,7 +18,6 @@ export default function App() {
                 animated={true}
                 barStyle={'light-content'} />
             <Router />
-            <AppStateManager />
         </PersistGate>
     </Provider>
     )

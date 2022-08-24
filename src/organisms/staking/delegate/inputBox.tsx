@@ -9,7 +9,7 @@ import { AUTO_ENTERED_AMOUNT_TEXT, FEE_INSUFFICIENT_NOTICE, REDELEGATE_NOTICE_TE
 import { DownArrow } from "@/components/icon/icon";
 import WarnContainer from "@/components/parts/containers/warnContainer";
 import InputSetVerticalForAmount from "@/components/input/inputSetVerticalForAmount";
-import WalletInfo from "@/organisms/wallet/send/walletInfo";
+import BalanceInfo from "@/components/parts/balanceInfo";
 import ValidatorSelectModal from "./validatorSelectModal";
 
 interface IProps {
@@ -228,7 +228,7 @@ const InputBox = ({type, operatorAddress, delegationState, resetRedelegateValues
     return (
         <ScrollView>
             <View style={{paddingHorizontal: 20}}>
-                <WalletInfo type={type} available={available} reward={reward}/>
+                <BalanceInfo type={type} available={available} reward={reward}/>
             </View>
             {ClassifyByType()}
             <ValidatorSelectModal 

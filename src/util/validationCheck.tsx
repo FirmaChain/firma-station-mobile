@@ -33,7 +33,7 @@ export const VersionCheck = (server:string, app:string) => {
     const serverVer = server.split(".");
     const appVer = app.split(".");
 
-    for(let i=0; i<serverVer.length; i++){
+    for(let i=serverVer.length-1; i>=0; i--){
         if(convertNumber(serverVer[i]) > convertNumber(appVer[i])){
             return false;
         }

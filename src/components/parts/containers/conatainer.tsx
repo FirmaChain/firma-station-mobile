@@ -8,6 +8,7 @@ import TitleBar from "../titleBar";
 
 interface IProps {
     title?: string;
+    subTitle?: string;
     titleOn?: boolean;
     step?: number;
     bgColor?: string;
@@ -16,7 +17,7 @@ interface IProps {
     children: JSX.Element;
 }
 
-const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0, backEvent, handleGuide, children}:IProps) => {
+const Container = ({title = "", subTitle = "", titleOn = true, bgColor = BoxDarkColor ,step = 0, backEvent, handleGuide, children}:IProps) => {
     const handleMoveBack = () => {
         backEvent && backEvent();
     }
@@ -24,7 +25,7 @@ const Container = ({title = "", titleOn = true, bgColor = BoxDarkColor ,step = 0
     return (
         <View style={[styles.container, {backgroundColor: bgColor}]}>
             <Header step={step} bgColor={bgColor} onPressEvent={() => handleMoveBack()} />
-            {titleOn && <TitleBar title={title} handleGuide={handleGuide}/>}
+            {titleOn && <TitleBar title={title} subTitle={subTitle} handleGuide={handleGuide}/>}
             {children}
         </View>
     )

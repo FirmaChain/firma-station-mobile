@@ -2,15 +2,22 @@ import React, { useEffect, useState } from "react";
 import { AppState, Platform, StyleSheet, View } from "react-native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions, StorageActions } from "@/redux/actions";
-import { convertNumber, getTimeStamp } from "@/util/common";
+import { convertNumber, getTimeStamp, wait } from "@/util/common";
 import { Detect } from "@/util/detect";
 import { BgColor } from "@/constants/theme";
-import { JAILBREAK_ALERT } from "@/constants/common";
-import ValidationModal from "@/components/modal/validationModal";
+import { JAILBREAK_ALERT, setExplorerUrl } from "@/constants/common";
+import { QRCodeScannerModal, WalletConnectModal, WalletResultModal } from "@/components/modal";
+import { useNetInfo } from "@react-native-community/netinfo";
+import { setClient } from "@/apollo";
+import { setFirmaSDK } from "@/util/firma";
+import SplashScreen from "react-native-splash-screen";
+import Progress from "@/components/parts/progress";
 import AlertModal from "@/components/modal/alertModal";
+import ValidationModal from "@/components/modal/validationModal";
 
 const AppStateManager = () => {
-    const {wallet, storage, common} = useAppSelector(state => state);
+    const {wallet, storage, common, modal} = useAppSelector(state => state);
+    const netInfo = useNetInfo();
 
     const [openAlertModal, setOpenAlertModal] = useState(false);
 
@@ -65,6 +72,37 @@ const AppStateManager = () => {
     }, [common.appState, common.appPausedTime]);
 
     useEffect(() => {
+        const connect = netInfo.isConnected === null? false:netInfo.isConnected;
+        if(connect === false){
+            SplashScreen.hide();
+        }
+        CommonActions.handleIsNetworkChange(false);
+        CommonActions.handleLoadingProgress(!connect);
+        CommonActions.handleIsConnection(connect);
+    }, [netInfo])
+
+    useEffect(() => {
+        if(common.lockStation === false && (common.connect === false || common.isNetworkChanged)) {
+            CommonActions.handleLoadingProgress(true);
+        }
+    }, [common.connect, common.isNetworkChanged, common.loading]);
+
+    useEffect(() => {
+        if(common.loggedIn){
+            wait(3000).then(() => {
+                CommonActions.handleIsNetworkChange(false);
+                CommonActions.handleLoadingProgress(false);
+            })
+        }
+    }, [storage.network]);
+
+    useEffect(() => {
+        CommonActions.handleLoggedIn(false);
+        CommonActions.handleIsConnection(true);
+        setClient(storage.network);
+        setFirmaSDK(storage.network);
+        setExplorerUrl(storage.network);
+
         CommonActions.handleAppPausedTime("");
         CommonActions.handleAppState("active");
         CommonActions.handleLockStation(false);
@@ -74,27 +112,33 @@ const AppStateManager = () => {
     }, [])
 
     return (
-        <>
-        {(wallet.name !== "" && common.loggedIn) &&<>
-        {(common.isBioAuthInProgress === false && common.appState !== "active") && <View style={styles.dim}/>}
-        {(common.isBioAuthInProgress === false && common.appPausedTime !== "")&& <View style={styles.dim}/>}
-        <ValidationModal 
-            type={"lock"} 
-            open={common.lockStation}
-            setOpenModal={handleUnlock} 
-            validationHandler={handleUnlock}/>
-        </>}
-        {openAlertModal && <>
-        <View style={styles.dim}/>
-        <AlertModal
-            visible={openAlertModal}
-            handleOpen={handleAlertModalOpen}
-            title={"Jailbroken detected"}
-            desc={JAILBREAK_ALERT}
-            confirmTitle={"OK"}
-            type={"ERROR"}/>
-        </>}
-        </>
+        <React.Fragment>
+            {common.loading && <Progress />}
+            {(wallet.name !== "" && common.loggedIn) &&
+            <React.Fragment>
+                {(common.isBioAuthInProgress === false && common.appState !== "active") && <View style={styles.dim}/>}
+                {(common.isBioAuthInProgress === false && common.appPausedTime !== "")&& <View style={styles.dim}/>}
+                {modal.qrScannerModal && <QRCodeScannerModal />}
+                <WalletConnectModal />
+                <WalletResultModal />
+                <ValidationModal 
+                    type={"lock"} 
+                    open={common.lockStation}
+                    setOpenModal={handleUnlock} 
+                    validationHandler={handleUnlock}/>
+            </React.Fragment>}
+            {openAlertModal && 
+            <React.Fragment>
+                <View style={styles.dim}/>
+                <AlertModal
+                    visible={openAlertModal}
+                    handleOpen={handleAlertModalOpen}
+                    title={"Jailbroken detected"}
+                    desc={JAILBREAK_ALERT}
+                    confirmTitle={"OK"}
+                    type={"ERROR"}/>
+            </React.Fragment>}
+        </React.Fragment>
     )
 }
 

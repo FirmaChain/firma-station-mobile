@@ -31,6 +31,7 @@ export enum Screens {
     Staking = 'Staking',
     Validator = 'Validator',
     Delegate = 'Delegate',
+    Restake = 'Restake',
     
     Governance = 'Governance',
     Proposal = "Proposal",
@@ -65,6 +66,7 @@ export type StackParamList = {
     Staking: undefined;
     Validator: ValidatorParams;
     Delegate: DelegateParams;
+    Restake: undefined;
 
     Governance: undefined;
     Proposal: ProposalParams;

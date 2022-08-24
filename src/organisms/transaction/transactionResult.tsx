@@ -16,20 +16,21 @@ const TransactionResult = ({result, handleExplorer, handleBack}:IProps) => {
 
     const convertTransactionCodeToText = (code:number) => {
         if(code === 0) return "Transaction Success";
+        if(code === 1) return "Sign Success";
         return "Transaction Failed";
     }
 
     return (
         <View style={styles.container}>
             <View style={[styles.resultBox, {flex: 1, justifyContent: "center", alignItems: "center"}]}>
-                {result.code === 0? 
-                <SuccessCircle size={45} color={PointLightColor}/>        
-                :
+                {result.code === -1? 
                 <FailCircle size={45} color={TextWarnColor}/>
+                :
+                <SuccessCircle size={45} color={PointLightColor}/>        
                 }
-                <Text style={[styles.result, {color: result.code === 0? PointLightColor:TextWarnColor}]}>{convertTransactionCodeToText(result.code)}</Text>
+                <Text style={[styles.result, {color: result.code === -1? TextWarnColor:PointLightColor}]}>{convertTransactionCodeToText(result.code)}</Text>
                 <View style={styles.resultWrapper}>
-                    {result.code !== -1 && <Text style={[styles.hash, {color: TextGrayColor}]}>HASH: </Text>}
+                    {result.code === 0 && <Text style={[styles.hash, {color: TextGrayColor}]}>HASH: </Text>}
                     <TouchableOpacity disabled={result.code !== 0} onPress={()=>handleExplorer(EXPLORER_URL() + '/transactions/' + result.result)}>
                         <Text numberOfLines={result.code === -1?10:1} ellipsizeMode={"middle"} style={[styles.hash, {color: result.code === -1? TextColor:TextAddressColor, paddingHorizontal: 5}]}>{result.result}</Text>
                     </TouchableOpacity>

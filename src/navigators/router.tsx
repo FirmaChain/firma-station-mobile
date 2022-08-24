@@ -2,23 +2,15 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
-import { setFirmaSDK } from "@/util/firma";
-import { wait } from "@/util/common";
-import { DATA_LOAD_DELAYED_NOTICE, setExplorerUrl } from "@/constants/common";
-import { ApolloProvider, getClient, setClient } from "@/apollo";
-import { useNetInfo } from "@react-native-community/netinfo";
-import Progress from "@/components/parts/progress";
+import { DATA_LOAD_DELAYED_NOTICE } from "@/constants/common";
+import { ApolloProvider, getClient } from "@/apollo";
 import CustomToast from "@/components/toast/customToast";
-import SplashScreen from "react-native-splash-screen";
 import StackNavigator from "./stackNavigators";
 import AlertModal from "@/components/modal/alertModal";
-import HomeQrScanner from "@/components/modal/qrcode/homeQrScanner";
-import WalletConnectModal from "@/components/modal/walletConnectModal";
-import WalletResultModal from "@/components/modal/walletResultModal";
+import AppStateManager from "./appStateManager";
 
 const Router = () => {
-    const {storage, common, modal} = useAppSelector(state => state);
-    const netInfo = useNetInfo();
+    const {common} = useAppSelector(state => state);
 
     const [openAlertModal, setOpenAlertModal] = useState(false);
     const handleAlertModalOpen = (open:boolean) => {
@@ -39,47 +31,11 @@ const Router = () => {
         }
     }, [common.dataLoadStatus, common.lockStation])
 
-    useEffect(() => {
-        const connect = netInfo.isConnected === null? false:netInfo.isConnected;
-        if(connect === false){
-            SplashScreen.hide();
-        }
-        CommonActions.handleIsNetworkChange(false);
-        CommonActions.handleLoadingProgress(!connect);
-        CommonActions.handleIsConnection(connect);
-    }, [netInfo])
-
-    useEffect(() => {
-        if(common.lockStation === false && (common.connect === false || common.isNetworkChanged)) {
-            CommonActions.handleLoadingProgress(true);
-        }
-    }, [common.connect, common.isNetworkChanged, common.loading]);
-
-    useEffect(() => {
-        if(common.loggedIn){
-            wait(3000).then(() => {
-                CommonActions.handleIsNetworkChange(false);
-                CommonActions.handleLoadingProgress(false);
-            })
-        }
-    }, [storage.network]);
-
-    useEffect(() => {
-        CommonActions.handleLoggedIn(false);
-        CommonActions.handleIsConnection(true);
-        setClient(storage.network);
-        setFirmaSDK(storage.network);
-        setExplorerUrl(storage.network);
-    }, []);
-
     return (
         <ApolloProvider client={getClient()}>
             <NavigationContainer theme={DarkTheme}>
                 <StackNavigator/>
-                {common.loading && <Progress />}
-                <HomeQrScanner />
-                <WalletConnectModal />
-                <WalletResultModal />
+                <AppStateManager />
                 <AlertModal
                     visible={openAlertModal}
                     handleOpen={handleAlertModalOpen}

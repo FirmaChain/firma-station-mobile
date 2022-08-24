@@ -17,7 +17,7 @@ import Button from "@/components/button/button";
 import TransactionConfirmModal from "@/components/modal/transactionConfirmModal";
 import AlertModal from "@/components/modal/alertModal";
 import SendInputBox from "./sendInputBox";
-import WalletInfo from "./walletInfo";
+import BalanceInfo from "@/components/parts/balanceInfo";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
@@ -127,7 +127,7 @@ const Send = () => {
                     <View style={{flex: 6}}>
                         <ScrollView
                             keyboardShouldPersistTaps={"handled"}>
-                            <WalletInfo available={balance} />
+                            <BalanceInfo available={balance} />
                             <SendInputBox handleSendInfo={handleSendInfo} available={balance} dstAddress={wallet.dstAddress} reset={resetInputValues}/>
                         </ScrollView>
                     </View>
@@ -135,7 +135,7 @@ const Send = () => {
                         <Button
                             title="Send"
                             active={sendInfoState.address !== '' && convertNumber(sendInfoState.amount) > 0}
-                            onPressEvent={handleSend}/>
+                            onPressEvent={() => handleSend()}/>
                     </View>
 
                     <TransactionConfirmModal

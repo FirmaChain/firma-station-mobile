@@ -1,18 +1,23 @@
 import React from "react";
 import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { GrayColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from "@/constants/theme";
+import { GrayColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from "@/constants/theme";
 import { ScreenWidth } from "@/util/getScreenSize";
 import { QuestionFilledCircle } from "../icon/icon";
 
 interface IProps {
     title: string;
+    subTitle?: string;
     handleGuide?: ()=>void;
 }
 
-const TitleBar = ({title, handleGuide}:IProps) => {
+const TitleBar = ({title, subTitle = "", handleGuide}:IProps) => {
     return (
         <Pressable style={styles.container} onPress={()=>Keyboard.dismiss()}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.title}>{title}
+            {subTitle !== "" &&
+                <Text style={[styles.title, {fontSize: 14, color: InputPlaceholderColor}]}>{` ${subTitle}`}</Text>
+            }
+            </Text>
             {handleGuide &&
             <TouchableOpacity style={styles.guide} onPress={()=>handleGuide()}>
                 <QuestionFilledCircle size={18} color={GrayColor}/>

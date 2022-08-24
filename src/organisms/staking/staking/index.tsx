@@ -1,19 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Screens, StackParamList } from "@/navigators/appRoutes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useAppSelector } from "@/redux/hooks";
 import { CommonActions } from "@/redux/actions";
-import { useStakingData } from "@/hooks/staking/hooks";
+import { useDelegationData, useStakingData } from "@/hooks/staking/hooks";
 import { useHistoryData } from "@/hooks/wallet/hooks";
-import { BgColor, BoxColor, Lato, TextCatTitleColor } from "@/constants/theme";
+import { BgColor, BoxColor } from "@/constants/theme";
 import { TRANSACTION_TYPE } from "@/constants/common";
 import RefreshScrollView from "@/components/parts/refreshScrollView";
 import RewardBox from "./rewardBox";
 import BalanceBox from "./balanceBox";
 import StakingLists from "./stakingLists";
-// import SmallButton from "@/components/button/smallButton";
+import RestakeInfoBox from "./restakeInfoBox";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
@@ -23,6 +23,7 @@ const Staking = () => {
     const { wallet, staking, common } = useAppSelector(state => state);
 
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
+    const { stakingGrantState, handleStakingGrantState } = useDelegationData();
     const { recentHistory, currentHistoryPolling } = useHistoryData();
 
     const [isInit, setIsInit] = useState(false);
@@ -46,9 +47,9 @@ const Staking = () => {
         navigation.navigate(Screens.Transaction, {state: transactionState});
     }
 
-    // const moveToRestake = () => {
-    //     navigation.navigate(Screens.Restake);
-    // }
+    const moveToRestake = () => {
+        navigation.navigate(Screens.Restake);
+    }
 
     const moveToValidator = (address:string) => {
         navigation.navigate(Screens.Validator, {
@@ -68,6 +69,7 @@ const Staking = () => {
         }
         try {
             await getStakingState();
+            await handleStakingGrantState();
             refreshAtFocus();
             handleIsRefresh(isFocused);
         } catch (error) {
@@ -137,19 +139,10 @@ const Staking = () => {
                             reward={stakingReward}
                             transactionHandler={handleWithdrawAll}/>
                         <BalanceBox stakingValues={stakingState}/>
-                        {/* <View style={{ padding: 20, marginTop: 12, backgroundColor: BoxColor, borderRadius: 8, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <View style={{flex: 1, marginRight: 25}}>
-                                <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5,}}>
-                                    <Text style={styles.title}>title</Text>
-                                    <Text style={styles.title}>value</Text>
-                                </View>
-                            </View>
-                            <SmallButton 
-                                title="Restake"
-                                size={125}
-                                active={stakingState.delegated > 0}
-                                onPressEvent={() => moveToRestake()}/>
-                        </View> */}
+                        <RestakeInfoBox 
+                            delegationStates={stakingState.delegated > 0} 
+                            grantStates={stakingGrantState}
+                            moveToRestake={moveToRestake} />
                     </View>
                     <StakingLists isRefresh={isListRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={moveToValidator} />
                 </View>
@@ -170,12 +163,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 20,
         backgroundColor: BgColor,
-    },
-    title: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextCatTitleColor,
-        textAlign: "center",
     },
 })
 
