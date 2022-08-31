@@ -15,6 +15,7 @@ import ViewContainer from "@/components/parts/containers/viewContainer";
 import Button from "@/components/button/button";
 import ExportWalletModal from "./exportWalletModal";
 import InputBox from "./inputBox";
+import { wait } from "@/util/common";
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ExportWallet>;
 
@@ -73,6 +74,7 @@ const ExportWallet = ({type}:IProps) => {
             if(result){
                 setMnemonic(result);
                 handleModalOpen(false);
+                handleExportWallet(result);
             } else {
                 handleModalOpen(true);
             }
@@ -84,35 +86,31 @@ const ExportWallet = ({type}:IProps) => {
         }
     }
 
-    useEffect(() => {
-        if(mnemonic !== ''){
-            if(exportPK){
-                const getPrivatekey = async() => {
-                    if(mnemonic !== ''){
-                        try {
-                            const result = await getPrivateKeyFromMnemonic(mnemonic);
-                            if(result){
-                                setPrivatekey(result);
-                            }
-                            setStatus(1);
-                            handleModalOpen(true);
-                        } catch (error) {
-                            console.log(error);
-                            setMnemonic("");
-                            Toast.show({
-                                type: 'error',
-                                text1: String(error),
-                            });
-                        }
+    const handleExportWallet = async(mnemonic: string) => {
+        if(exportPK){
+            const getPrivatekey = async() => {
+                try {
+                    const result = await getPrivateKeyFromMnemonic(mnemonic);
+                    if(result){
+                        setPrivatekey(result);
                     }
+                    setStatus(1);
+                    handleModalOpen(true);
+                } catch (error) {
+                    console.log(error);
+                    setMnemonic("");
+                    Toast.show({
+                        type: 'error',
+                        text1: String(error),
+                    });
                 }
-                getPrivatekey();
-            } else {
-                setStatus(1);
-                handleModalOpen(true);
             }
+            getPrivatekey();
+        } else {
+            setStatus(1);
+            handleModalOpen(true);
         }
-    }, [mnemonic])
+    }
 
     const handleMoveToWeb = () => {
         let key = type.toLowerCase()

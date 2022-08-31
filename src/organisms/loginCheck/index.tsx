@@ -76,7 +76,7 @@ const LoginCheck = () => {
                 WalletActions.handleWalletName(name);
                 WalletActions.handleWalletAddress(adr);
 
-                setBioAuth(name, password);
+                await setBioAuth(name, password);
                 CommonActions.handleLoadingProgress(true);
                 navigation.reset({routes: [{name: Screens.Home}]});
             }
@@ -108,7 +108,7 @@ const LoginCheck = () => {
             }
 
             const result = passwordFromBio;
-            if(common.appState === "active" && result !== ""){
+            if(result !== ""){
                 isProcessing = false;
                 CommonActions.handleLoadingProgress(true);
                 navigation.reset({routes: [{name: Screens.Home}]});
