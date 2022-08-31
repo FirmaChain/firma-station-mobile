@@ -6,17 +6,19 @@ interface IProps {
     title: string;
     active: boolean;
     border?: boolean;
+    borderColor?: string;
+    borderTextColor?: string;
     onPressEvent: () => void;
 }
 
-const Button = ({title, active, border = false, onPressEvent}:IProps) => {
+const Button = ({title, active, border = false, borderColor = BorderColor, borderTextColor = TextGrayColor, onPressEvent}:IProps) => {
 
     return (
         <TouchableOpacity 
             disabled={!active} 
             onPress={() => onPressEvent()}
-            style={[styles.button , !active? styles.disableButton : border? styles.borderButton : styles.blueButton]} >
-            <Text style={[styles.text, !active?{color: TextDisableColor}: border?{color:TextGrayColor}:{color:TextColor}]}>{title}</Text>
+            style={[styles.button , !active? styles.disableButton : border? [styles.borderButton, {borderColor: borderColor}] : styles.blueButton]} >
+            <Text style={[styles.text, !active?{color: TextDisableColor}: border?{color:borderTextColor}:{color:TextColor}]}>{title}</Text>
         </TouchableOpacity>
     )
 }
@@ -36,7 +38,6 @@ const styles = StyleSheet.create({
     },
     borderButton: {
         borderWidth: 1,
-        borderColor: BorderColor,
     },
     text: {
         fontFamily: Lato,

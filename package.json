@@ -1,6 +1,6 @@
 {
   "name": "firma-station-mobile",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@apollo/client": "3.4.16",
     "@apollo/react-hooks": "4.0.0",
-    "@firmachain/firma-js": "^0.2.40",
+    "@firmachain/firma-js": "^0.2.43",
     "@react-native-async-storage/async-storage": "^1.17.3",
     "@react-native-clipboard/clipboard": "^1.8.5",
     "@react-native-community/masked-view": "^0.1.11",
@@ -78,6 +78,7 @@
     "redux-thunk": "^2.4.1",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
+    "text-encoding-polyfill": "^0.6.7",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",

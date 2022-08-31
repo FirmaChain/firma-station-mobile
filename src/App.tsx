@@ -8,9 +8,8 @@ import persistStore from "redux-persist/es/persistStore";
 
 export default function App() {
     LogBox.ignoreLogs(["[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"]);
-
     const persistor = persistStore(store);
-  
+
     return (
     <Provider store={store}>
         <PersistGate persistor={persistor}>

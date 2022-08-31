@@ -53,6 +53,8 @@ const BioAuthModal = (props:IProps) => {
                                 title={CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT.cancelTitle}
                                 active={true}
                                 border={true}
+                                borderColor={TextCatTitleColor}
+                                borderTextColor={TextCatTitleColor}
                                 onPressEvent={() => handleResult(false)}/>
                         </View>
                     </View>
