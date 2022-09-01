@@ -1,13 +1,15 @@
 import { CreateStepOneParams } from '../screens/createWallet/stepOne';
 import { CreateStepTwoParams } from '../screens/createWallet/stepTwo';
 import { CreateStepThreeParams } from '../screens/createWallet/stepThree';
-import { ExportWalletParams } from "../screens/setting/exportWallet";
-import { ValidatorParams } from "../screens/home/staking/validator";
-import { ProposalParams } from "../screens/home/governance/proposal";
-import { DelegateParams } from "../screens/home/staking/delegate";
-import { DepositParams } from "@/screens/home/governance/deposit";
+import { ExportWalletParams } from '../screens/setting/exportWallet';
+import { ValidatorParams } from '../screens/home/staking/validator';
+import { ProposalParams } from '../screens/home/governance/proposal';
+import { DelegateParams } from '../screens/home/staking/delegate';
+import { DepositParams } from '@/screens/home/governance/deposit';
 import { TransactionParams } from '@/screens/transaction/transaction';
 import { WebParams } from '@/screens/webScreen';
+import { DappDetailParams } from '@/screens/home/dapps/dapp/dappDetail';
+import { NFTParams } from '@/screens/home/dapps/nft/nft';
 
 export enum Screens {
     LoginCheck = 'LoginCheck',
@@ -24,7 +26,7 @@ export enum Screens {
     Home = 'Home',
     History = 'History',
     Transaction = 'Transaction',
-    
+
     Wallet = 'Wallet',
     Send = 'Send',
 
@@ -32,16 +34,20 @@ export enum Screens {
     Validator = 'Validator',
     Delegate = 'Delegate',
     Restake = 'Restake',
-    
+
     Governance = 'Governance',
-    Proposal = "Proposal",
-    Deposit = "Deposit",
+    Proposal = 'Proposal',
+    Deposit = 'Deposit',
+
+    Dapps = 'Dapps',
+    DappDetail = 'DappDetail',
+    NFT = 'NFT',
 
     Setting = 'Setting',
     ChangePassword = 'ChangePassword',
     ChangeWalletName = 'ChangeWalletName',
     ExportWallet = 'ExportWallet',
-    Version = 'Version',
+    Version = 'Version'
 }
 
 export type StackParamList = {
@@ -72,9 +78,13 @@ export type StackParamList = {
     Proposal: ProposalParams;
     Deposit: DepositParams;
 
+    Dapps: undefined;
+    DappDetail: DappDetailParams;
+    NFT: NFTParams;
+
     Setting: undefined;
     ChangePassword: undefined;
     ChangeWalletName: undefined;
     ExportWallet: ExportWalletParams;
     Version: undefined;
-}
+};
