@@ -4,7 +4,7 @@ import { getAdrFromMnemonic } from "./firma";
 import { checkBioMetrics } from "./bioAuth";
 import { decrypt, encrypt, keyEncrypt } from "./keystore";
 import { getChain, removeChain, setChain } from "./secureKeyChain";
-import { USE_BIO_AUTH, WALLET_LIST } from "@/../config";
+import { CONNECT_ID_LIST, CONNECT_SESSION, USE_BIO_AUTH, WALLET_LIST } from "@/../config";
 
 const UNIQUE_ID = getUniqueId();
 
@@ -287,6 +287,71 @@ export const setWalletWithBioAuth = async(name:string, password:string, mnemonic
         return result;
     } catch (error) {
         CommonActions.handleLoadingProgress(false);
+        throw error;
+    }
+}
+
+export const setDAppConnectSession = async(name:string, session:string) => {
+    try {
+        const encSession = encrypt(session, UNIQUE_ID + name);
+        await setChain(CONNECT_SESSION + name, encSession);
+    } catch (error) {
+        CommonActions.handleLoadingProgress(false);
+        throw error;
+    }
+}
+
+export const getDAppConnectSession = async(name:string) => {
+    let session = null;
+    try {
+        const result = await getChain(CONNECT_SESSION + name);
+        if(result === false) return null;
+        session = decrypt(result.password, UNIQUE_ID + name);
+        return session;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const removeDAppConnectSession = async(name:string) =>{
+    try {
+        await removeChain(CONNECT_SESSION + name);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+export const setDAppProjectIdList = async(name:string, key:string, list:string) => {
+    try {
+        const encList = encrypt(list, key + name);
+        await setChain(CONNECT_ID_LIST + name, encList);
+    } catch (error) {
+        CommonActions.handleLoadingProgress(false);
+        throw error;
+    }
+}
+
+export const getDAppProjectIdList = async(name:string, key:string) => {
+    let list = null;
+    try {
+        const result = await getChain(CONNECT_ID_LIST + name);
+        if(result === false) return null;
+        list = decrypt(result.password, key + name);
+        return list;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const removeDAppProjectIdList = async(name:string) =>{
+    try {
+        await removeChain(CONNECT_ID_LIST + name);
+    } catch (error) {
+        console.log(error);
         throw error;
     }
 }

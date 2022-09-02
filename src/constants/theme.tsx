@@ -5,12 +5,12 @@ export const BgColor = '#1c1c24';
 export const BoxColor = '#292932';
 export const BoxDarkColor = '#14141a';
 
-export const WhiteColor = '#fff';
+export const WhiteColor = '#ffffff';
 export const GrayColor = '#8d8d91';
 export const DarkGrayColor = '#a1a1ac';
 export const LightGrayColor = '#393945';
 
-export const TextColor = '#fff';
+export const TextColor = '#ffffff';
 export const TextGrayColor = '#8d8d91';
 export const TextDarkGrayColor = '#a1a1ac';
 export const TextLightGrayColor = '#bfbfcc';
@@ -32,7 +32,7 @@ export const DisableColor = '#44444f';
 export const DividerColor = '#33333a';
 export const FailedColor = '#de3d3d';
 
-export const RestakeNoDelegationColor= '#c4c4c4';
+export const RestakeNoDelegationColor = '#c4c4c4';
 export const RestakeActiveColor = '#3dd598';
 export const RestakeInactiveColor = '#b08dff';
 

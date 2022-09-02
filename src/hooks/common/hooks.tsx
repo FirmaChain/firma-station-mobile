@@ -1,5 +1,5 @@
-import { useMaintenance, useVersion } from "@/apollo/gqls";
-import { useEffect, useState } from "react";
+import { useMaintenance, useVersion } from '@/apollo/gqls';
+import { useEffect, useRef, useState } from 'react';
 
 interface IMaintenanceState {
     isShow: boolean;
@@ -8,47 +8,47 @@ interface IMaintenanceState {
 }
 
 export const useChainVersion = () => {
-    const [chainVer, setChainVer] = useState("");
-    const [sdkVer, setSdkVer] = useState("");
+    const [chainVer, setChainVer] = useState('');
+    const [sdkVer, setSdkVer] = useState('');
 
-    const {loading , data} = useVersion();
+    const { loading, data } = useVersion();
 
     useEffect(() => {
-        if(loading === false){
-            if(data){
+        if (loading === false) {
+            if (data) {
                 setChainVer(data.version[0].chainVer);
                 setSdkVer(data.version[0].sdkVer);
             }
         }
-    }, [loading])
-    
+    }, [loading]);
+
     return {
         chainVer,
         sdkVer
-    }
-}
+    };
+};
 
 export const useServerMessage = () => {
-    const [minAppVer, setMinAppVer] = useState<string|undefined>();
-    const [currentAppVer, setCurrentAppVer] = useState<string|undefined>();
-    const [maintenanceState, setMaintenanceState] = useState<IMaintenanceState|undefined>();
+    const [minAppVer, setMinAppVer] = useState<string | undefined>();
+    const [currentAppVer, setCurrentAppVer] = useState<string | undefined>();
+    const [maintenanceState, setMaintenanceState] = useState<IMaintenanceState | undefined>();
 
-    const {loading , data } = useMaintenance();
+    const { loading, data } = useMaintenance();
 
-    const initState = () =>{
-        setMinAppVer("");
-        setCurrentAppVer("");
+    const initState = () => {
+        setMinAppVer('');
+        setCurrentAppVer('');
         setMaintenanceState({
             isShow: false,
-            title: "",
-            content: "",
+            title: '',
+            content: ''
         });
-    }
+    };
 
     useEffect(() => {
-        if(loading === false){
-            if(data){
-                if(data.maintenance.length === 0){
+        if (loading === false) {
+            if (data) {
+                if (data.maintenance.length === 0) {
                     initState();
                 } else {
                     setMinAppVer(data.maintenance[0].minAppVer);
@@ -59,11 +59,11 @@ export const useServerMessage = () => {
                 initState();
             }
         }
-    }, [loading])
-    
+    }, [loading]);
+
     return {
         minAppVer,
         currentAppVer,
-        maintenanceState,
-    }
-}
+        maintenanceState
+    };
+};

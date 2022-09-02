@@ -1,154 +1,220 @@
-import React, { useEffect, useState } from "react";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation } from "@react-navigation/native";
-import { useAppSelector } from "@/redux/hooks";
-import { getMnemonic } from "@/util/wallet";
-import { delegate, grant, redelegate, revoke, sendFCT, undelegate, voting, withdrawAllRewards, withdrawRewards } from "@/util/firma";
-import { BgColor } from "@/constants/theme";
-import { TRANSACTION_TYPE } from "@/constants/common";
-import ViewContainer from "@/components/parts/containers/viewContainer";
-import ProgressTransaction from "./progressTransaction";
-import TransactionResult from "./transactionResult";
+import React, { useEffect, useState } from 'react';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import { useAppSelector } from '@/redux/hooks';
+import { getMnemonic } from '@/util/wallet';
+import {
+    delegate,
+    grant,
+    recoverFromMnemonic,
+    redelegate,
+    revoke,
+    sendFCT,
+    undelegate,
+    voting,
+    withdrawAllRewards,
+    withdrawRewards
+} from '@/util/firma';
+import { BgColor } from '@/constants/theme';
+import { TRANSACTION_TYPE } from '@/constants/common';
+import ViewContainer from '@/components/parts/containers/viewContainer';
+import ProgressTransaction from './progressTransaction';
+import TransactionResult from './transactionResult';
+import ConnectClient from '@/util/connectClient';
+import { CHAIN_NETWORK } from '@/../config';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Transaction>;
 
-interface Props {
+interface IProps {
     state: any;
 }
 
-export interface ResultState {
+export interface IResultState {
     code: number;
     result: any;
 }
 
-const Transaction = ({state}:Props) => {
-    const navigation:ScreenNavgationProps = useNavigation();
-    const {wallet} = useAppSelector(state => state);
+const Transaction = ({ state }: IProps) => {
+    const navigation: ScreenNavgationProps = useNavigation();
+
+    const { storage, wallet } = useAppSelector((state) => state);
+    const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
 
     const [mnemonic, setMnemonic] = useState('');
-    const [transactionResult, setTransactionResult] = useState<ResultState>({
+    const [transactionResult, setTransactionResult] = useState<IResultState>({
         code: 0,
-        result: "",
+        result: ''
     });
 
     useEffect(() => {
-        const getMnemonicFromChain = async() => {
+        const getMnemonicFromChain = async () => {
             try {
                 let result = await getMnemonic(wallet.name, state.password);
-                if(result){
+                if (result) {
                     setMnemonic(result);
                 }
             } catch (error) {
-                setTransactionResult({code: -1, result: String(error)})
+                setTransactionResult({ code: -1, result: String(error) });
             }
-        }
+        };
         getMnemonicFromChain();
     }, []);
 
     useEffect(() => {
-        if(mnemonic === '') return;
-        const transaction = async() => {
+        if (mnemonic === '') return;
+        const transaction = async () => {
             try {
                 switch (state.type) {
-                    case TRANSACTION_TYPE["SEND"]:
+                    case TRANSACTION_TYPE['SEND']:
                         const sendResult = await sendFCT(mnemonic, state.targetAddress, state.amount, state.gas, state.memo);
                         setTransactionResult({
                             code: sendResult.code,
-                            result: sendResult.transactionHash});
+                            result: sendResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["DELEGATE"]:
+                    case TRANSACTION_TYPE['DELEGATE']:
                         const delegateResult = await delegate(mnemonic, state.operatorAddressDst, state.amount, state.gas);
                         setTransactionResult({
                             code: delegateResult.code,
-                            result: delegateResult.transactionHash});
+                            result: delegateResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["REDELEGATE"]:
-                        const redelegateResult = await redelegate(mnemonic, state.operatorAddressSrc, state.operatorAddressDst, state.amount, state.gas);
+                    case TRANSACTION_TYPE['REDELEGATE']:
+                        const redelegateResult = await redelegate(
+                            mnemonic,
+                            state.operatorAddressSrc,
+                            state.operatorAddressDst,
+                            state.amount,
+                            state.gas
+                        );
                         setTransactionResult({
                             code: redelegateResult.code,
-                            result: redelegateResult.transactionHash});
+                            result: redelegateResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["UNDELEGATE"]:
+                    case TRANSACTION_TYPE['UNDELEGATE']:
                         const undelegateResult = await undelegate(mnemonic, state.operatorAddressDst, state.amount, state.gas);
                         setTransactionResult({
                             code: undelegateResult.code,
-                            result: undelegateResult.transactionHash});
+                            result: undelegateResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["GRANT"]:
+                    case TRANSACTION_TYPE['GRANT']:
                         const grantResult = await grant(mnemonic, state.validatorAddressList, state.maxTokens, state.gas);
                         setTransactionResult({
                             code: grantResult.code,
-                            result: grantResult.transactionHash});
+                            result: grantResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["REVOKE"]:
+                    case TRANSACTION_TYPE['REVOKE']:
                         const revokeResult = await revoke(mnemonic, state.gas);
                         setTransactionResult({
                             code: revokeResult.code,
-                            result: revokeResult.transactionHash});
+                            result: revokeResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["WITHDRAW"]:
+                    case TRANSACTION_TYPE['WITHDRAW']:
                         const withdrawResult = await withdrawRewards(mnemonic, state.operatorAddress, state.gas);
                         setTransactionResult({
                             code: withdrawResult.code,
-                            result: withdrawResult.transactionHash});
+                            result: withdrawResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["WITHDRAW_ALL"]:
+                    case TRANSACTION_TYPE['WITHDRAW_ALL']:
                         const withdrawAllResult = await withdrawAllRewards(mnemonic, state.gas);
                         setTransactionResult({
                             code: withdrawAllResult.code,
-                            result: withdrawAllResult.transactionHash});
+                            result: withdrawAllResult.transactionHash
+                        });
                         break;
-                    case TRANSACTION_TYPE["VOTING"]:
+                    case TRANSACTION_TYPE['VOTING']:
                         const votingResult = await voting(mnemonic, state.proposalId, state.votingOpt, state.gas);
                         setTransactionResult({
                             code: votingResult.code,
-                            result: votingResult.transactionHash});
+                            result: votingResult.transactionHash
+                        });
+                        break;
+                    case TRANSACTION_TYPE['DAPP']:
+                        const Wallet = await recoverFromMnemonic(mnemonic);
+                        let isValid = false;
+                        let rawData = '';
+
+                        let code = 0;
+                        let resultMessage = '';
+                        if (connectClient.isDirectSign(state.data)) {
+                            const { txRaw, signature } = await connectClient.getDirectSignRawData(Wallet, state.data);
+                            if (await connectClient.verifySign(JSON.parse(state.session), state.data, signature)) {
+                                rawData = await connectClient.broadcast(Wallet, txRaw);
+                                resultMessage = JSON.parse(rawData).transactionHash;
+                                isValid = true;
+                            }
+                        } else {
+                            rawData = await connectClient.getArbitarySignRawData(Wallet, state.data);
+                            isValid = true;
+                            code = 1;
+                            resultMessage = 'Signature is complete';
+                        }
+
+                        if (isValid) {
+                            await connectClient.approve(JSON.parse(state.session), state.data, {
+                                address: wallet.address,
+                                chainId: state.chainId,
+                                rawData: rawData
+                            });
+                            setTransactionResult({
+                                code: code,
+                                result: resultMessage
+                            });
+                        }
                         break;
                     default:
                         break;
                 }
             } catch (error) {
-                console.log("ERROR : ", error); 
-                setTransactionResult({code: -1, result: String(error)})
+                console.log('ERROR : ', error);
+                setTransactionResult({ code: -1, result: String(error) });
             }
-        }
+        };
         transaction();
-    }, [mnemonic])
+    }, [mnemonic]);
 
-    const handleMoveToWeb = (uri:string) => {
-        navigation.navigate(Screens.WebScreen, {uri: uri});
-    }
+    const handleMoveToWeb = (uri: string) => {
+        navigation.navigate(Screens.WebScreen, { uri: uri });
+    };
 
     const handleBack = () => {
         switch (state.type) {
-            case TRANSACTION_TYPE["SEND"]:
-                navigation.reset({routes: [{name: Screens.Home}]});
+            case TRANSACTION_TYPE['SEND']:
+            case TRANSACTION_TYPE['DAPP']:
+                navigation.reset({ routes: [{ name: Screens.Home }] });
                 break;
-            case TRANSACTION_TYPE["DELEGATE"]:
-            case TRANSACTION_TYPE["REDELEGATE"]:
-            case TRANSACTION_TYPE["UNDELEGATE"]:
+            case TRANSACTION_TYPE['DELEGATE']:
+            case TRANSACTION_TYPE['REDELEGATE']:
+            case TRANSACTION_TYPE['UNDELEGATE']:
                 navigation.navigate(Screens.Validator, {
-                    validatorAddress: state.operatorAddressDst,
+                    validatorAddress: state.operatorAddressDst
                 });
+                break;
+            case TRANSACTION_TYPE['GRANT']:
+            case TRANSACTION_TYPE['REVOKE']:
+                navigation.navigate(Screens.Staking);
                 break;
             default:
                 navigation.goBack();
                 break;
         }
-    }
+    };
 
     return (
-        <ViewContainer
-            full={true}
-            bgColor={BgColor}>
-                {transactionResult.result !== ""?
-                <TransactionResult result={transactionResult} handleExplorer={handleMoveToWeb} handleBack={handleBack}/> 
-                :
+        <ViewContainer full={true} bgColor={BgColor}>
+            {transactionResult.result !== '' ? (
+                <TransactionResult result={transactionResult} handleExplorer={handleMoveToWeb} handleBack={handleBack} />
+            ) : (
                 <ProgressTransaction />
-                }
+            )}
         </ViewContainer>
-    )
-}
+    );
+};
 
 export default Transaction;

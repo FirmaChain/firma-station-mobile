@@ -232,9 +232,9 @@ export const useDelegationData = () => {
     const stakingGrantState: IStakingGrantState = useMemo(() => {
         if (validatorsDescList.length > 0 && stakingGrantList.list.length > 0) {
             let list = useValidatorDescription(stakingGrantList.list, validatorsDescList);
-            let sortList = list.sort((a: any, b: any) => b.stakingReward - a.stakingReward);
+
             return {
-                list: sortList,
+                list: list,
                 count: stakingGrantList.count,
                 expire: stakingGrantList.expire,
                 expiration: stakingGrantList.expiration
@@ -671,17 +671,17 @@ export const useRestakeInfoData = () => {
             return setRestakeInfo({
                 frequency: info.frequency,
                 round: info.round,
-                minimumRewards: convertToFctNumber(info.minimumRewards),
+                minimum_Rewards: convertToFctNumber(info.minimumRewards),
                 nextRoundDateTime: info.nextRoundDateTime,
-                expiryDate: nextYear
+                expiry_Date: nextYear
             });
         }
         setRestakeInfo({
             frequency: '4 hours',
             round: 0,
-            minimumRewards: 10,
+            minimum_Rewards: 10,
             nextRoundDateTime: '',
-            expiryDate: nextYear
+            expiry_Date: nextYear
         });
     }, [info]);
 
