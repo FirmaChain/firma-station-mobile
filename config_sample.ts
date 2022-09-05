@@ -15,27 +15,36 @@ export const FIRMACHAIN_DEFAULT_CONFIG = {
 
 export const BLOCKS_PER_YEAR = 0;
 
-export const RESTAKE_ADDRESS = '';
-export const RESTAKE_API = '';
-
 export const CHAIN_NETWORK = {
     MainNet: {
         FIRMACHAIN_CONFIG: '',
         EXPLORER: '',
         GRAPHQL: '',
-        RELAY_HOST: ''
+        RELAY_HOST: '',
+        RESTAKE_API: '',
+        RESTAKE_REWARD_API: '',
+        RESTAKE_ADDRESS: '',
+        RESTAKE_URL: ''
     },
     TestNet: {
         FIRMACHAIN_CONFIG: '',
         EXPLORER: '',
         GRAPHQL: '',
-        RELAY_HOST: ''
+        RELAY_HOST: '',
+        RESTAKE_API: '',
+        RESTAKE_REWARD_API: '',
+        RESTAKE_ADDRESS: '',
+        RESTAKE_URL: ''
     },
     DevNet: {
         FIRMACHAIN_CONFIG: '',
         EXPLORER: '',
         GRAPHQL: '',
-        RELAY_HOST: ''
+        RELAY_HOST: '',
+        RESTAKE_API: '',
+        RESTAKE_REWARD_API: '',
+        RESTAKE_ADDRESS: '',
+        RESTAKE_URL: ''
     }
 };
 export const COINGECKO = '';
