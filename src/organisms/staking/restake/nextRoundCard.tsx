@@ -94,37 +94,50 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
     };
 
     return (
-        <View style={[styles.infoBox, { display: grantExist ? 'flex' : 'none' }]}>
-            <TouchableOpacity style={[styles.wrapper, { paddingBottom: 20 }]} onPress={handleMoveToWeb}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                    <Text style={[styles.text, { fontSize: 16, color: TextCatTitleColor }]}>{'Next Round'}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-                        <Text style={[styles.text, { fontSize: 13, opacity: 0.7 }]}>{`  (${nextRound}`}</Text>
-                        <Text style={[styles.text, { fontSize: 10, opacity: 0.7 }]}>{`${createOrdinal(nextRound)}`}</Text>
-                        <Text style={[styles.text, { fontSize: 13, opacity: 0.7 }]}>{')'}</Text>
+        <React.Fragment>
+            {grantExist ? (
+                <View style={styles.infoBox}>
+                    <TouchableOpacity style={[styles.wrapper, { paddingBottom: 20 }]} onPress={handleMoveToWeb}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                            <Text style={[styles.text, { fontSize: 16, color: TextCatTitleColor }]}>{'Next Round'}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                                <Text style={[styles.text, { fontSize: 13, opacity: 0.7 }]}>{`  (${nextRound}`}</Text>
+                                <Text style={[styles.text, { fontSize: 10, opacity: 0.7 }]}>{`${createOrdinal(nextRound)}`}</Text>
+                                <Text style={[styles.text, { fontSize: 13, opacity: 0.7 }]}>{')'}</Text>
+                            </View>
+                        </View>
+                        <ForwardArrow size={16} color={TextCatTitleColor} />
+                    </TouchableOpacity>
+                    <View style={styles.wrapper}>
+                        <Text style={styles.text}>{'Remaining Time'}</Text>
+                        <Text style={[styles.label, { backgroundColor: defaultColor + '30', color: defaultColor, marginLeft: 6 }]}>
+                            {nextRoundDateTime}
+                        </Text>
+                    </View>
+                    <View style={styles.wrapper}>
+                        <Text style={styles.text}>{'Restake Amount'}</Text>
+                        <Text style={styles.text}>{expectationReward}</Text>
+                    </View>
+                    <View style={styles.wrapper}>
+                        <Text style={styles.text}>{'Restake Validators'}</Text>
+                        <TouchableOpacity style={styles.textButton} onPress={() => handleOpenListModal(true)}>
+                            <Text style={[styles.text, expectationCount > 0 ? { color: RestakeActiveColor } : {}]}>{expectationCount}</Text>
+                            <Text style={[styles.text, { paddingRight: 6 }]}>{'/' + totalCount}</Text>
+                            <DownArrow size={12} color={GrayColor} />
+                        </TouchableOpacity>
                     </View>
                 </View>
-                <ForwardArrow size={16} color={TextCatTitleColor} />
-            </TouchableOpacity>
-            <View style={styles.wrapper}>
-                <Text style={styles.text}>{'Remaining Time'}</Text>
-                <Text style={[styles.label, { backgroundColor: defaultColor + '30', color: defaultColor, marginLeft: 6 }]}>
-                    {nextRoundDateTime}
-                </Text>
-            </View>
-            <View style={styles.wrapper}>
-                <Text style={styles.text}>{'Restake Amount'}</Text>
-                <Text style={styles.text}>{expectationReward}</Text>
-            </View>
-            <View style={styles.wrapper}>
-                <Text style={styles.text}>{'Restake Validators'}</Text>
-                <TouchableOpacity style={styles.textButton} onPress={() => handleOpenListModal(true)}>
-                    <Text style={[styles.text, expectationCount > 0 ? { color: RestakeActiveColor } : {}]}>{expectationCount}</Text>
-                    <Text style={[styles.text, { paddingRight: 6 }]}>{'/' + totalCount}</Text>
-                    <DownArrow size={12} color={GrayColor} />
-                </TouchableOpacity>
-            </View>
-        </View>
+            ) : (
+                <View style={styles.infoBox}>
+                    <TouchableOpacity style={styles.wrapper} onPress={handleMoveToWeb}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                            <Text style={[styles.text, { fontSize: 16, color: TextCatTitleColor }]}>{'More Information'}</Text>
+                        </View>
+                        <ForwardArrow size={16} color={TextCatTitleColor} />
+                    </TouchableOpacity>
+                </View>
+            )}
+        </React.Fragment>
     );
 };
 

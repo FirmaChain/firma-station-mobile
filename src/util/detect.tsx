@@ -7,28 +7,28 @@ export const Detect = () => {
     const jail = JailMonkey.isJailBroken();
     return jail;
     // return false;
-}
+};
 
-export const removeAllData = async() => {
+export const removeAllData = async () => {
     let list: Array<any> = [];
     try {
         await removeWalletWithAutoLogin();
         await removePasswordViaBioAuth();
-        
+
         const result = await getWalletList();
-        if(result){
+        if (result) {
             list = result;
         }
 
-        if(list){
-            list.map(async(value) => {
+        if (list) {
+            list.map(async (value) => {
                 await removeWallet(value);
                 await removeUseBioAuth(value);
-            })
+            });
         }
         await removeChain(WALLET_LIST);
     } catch (error) {
         console.log(error);
         throw error;
     }
-}
+};

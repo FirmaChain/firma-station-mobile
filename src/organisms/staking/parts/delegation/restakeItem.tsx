@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { convertAmount } from '@/util/common';
-import { BgColor } from '@/constants/theme';
+import { BgColor, TextColor, TextDisableColor } from '@/constants/theme';
 import { RESTAKE_STATUS } from '@/constants/common';
 import DataSection from '../list/dataSection';
 import MonikerSection from '../list/monikerSection';
@@ -24,13 +24,22 @@ const RestakeItem = ({ data, navigate }: IProps) => {
         }
     }, [data]);
 
+    const latestRestake = useMemo(() => {
+        if (data.latestReward === 0)
+            return {
+                color: TextColor + '65',
+                value: 'Not yet'
+            };
+        return { color: TextDisableColor, value: convertAmount(data.latestReward, true, 6) + ' FCT' };
+    }, [data]);
+
     return (
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
             <View style={[styles.item]}>
                 <MonikerSection validator={data} />
                 <DataSection title="Delegated" data={convertAmount(data.delegated, true, 6) + ' FCT'} />
                 <DataSection title="Reward" data={convertAmount(data.stakingReward, true, 6) + ' FCT'} />
-                {data.latestReward > 0 && <DataSection title="Restake" data={convertAmount(data.latestReward, true, 6) + ' FCT'} />}
+                <DataSection title="Latest Restake" color={latestRestake.color} data={latestRestake.value} />
                 <DataSection title="Grant Status" data={status.title} color={status.color} label={true} />
                 <View style={{ paddingBottom: 22 }} />
             </View>

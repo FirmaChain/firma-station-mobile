@@ -7,7 +7,7 @@ import { convertAmount, convertCurrent, convertNumber, convertToFctNumber, makeD
 import { DownArrow, ForwardArrow } from '@/components/icon/icon';
 import { FIRMA_LOGO } from '@/constants/images';
 import { CHAIN_CURRENCY, CURRENCY_LIST, CURRENCY_SYMBOL } from '@/constants/common';
-import { BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { BgColor, BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import SmallButton from '@/components/button/smallButton';
 import CustomModal from '@/components/modal/customModal';
 import ModalItems from '@/components/modal/modalItems';
@@ -158,8 +158,8 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
                                 <DownArrow size={12} color={GrayColor} />
                             </TouchableOpacity>
                             {CurrencyText()}
-                            <CustomModal visible={openCurrencySelectModal} handleOpen={handleCurrencySelectModal}>
-                                <>
+                            <CustomModal visible={openCurrencySelectModal} bgColor={BgColor} handleOpen={handleCurrencySelectModal}>
+                                <React.Fragment>
                                     <View style={styles.headerBox}>
                                         <Text style={styles.headerTitle}>Currency</Text>
                                     </View>
@@ -169,7 +169,7 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
                                         subData={symbolList}
                                         onPressEvent={handleSelectCurrency}
                                     />
-                                </>
+                                </React.Fragment>
                             </CustomModal>
                         </View>
                         <View style={[styles.wrapperH, { justifyContent: 'flex-end', paddingTop: 5 }]}>

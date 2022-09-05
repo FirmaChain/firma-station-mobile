@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -11,7 +11,7 @@ import { convertAmount, createOrdinal } from '@/util/common';
 import { getEstimateGasGrantStakeAuthorization, getEstimateGasRevokeStakeAuthorization, getFeesFromGas } from '@/util/firma';
 import { RESTAKE_NOTICE_TEXT, RESTAKE_TYPE, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor, TextCatTitleColor } from '@/constants/theme';
-import { FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
+import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
 import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -74,7 +74,7 @@ const Restake = () => {
             const { nextRoundDateTime, round, ...other } = restakeInfo;
             json = {
                 ...other,
-                minimumRewards: convertAmount(restakeInfo.minimumRewards, false, 2) + ' FCT'
+                minimum_Rewards: convertAmount(restakeInfo.minimum_Rewards, false, 2) + ' FCT'
             };
         }
         return json;
@@ -97,7 +97,7 @@ const Restake = () => {
 
     const minimumRewards = useMemo(() => {
         if (restakeInfo) {
-            return restakeInfo.minimumRewards;
+            return restakeInfo.minimum_Rewards;
         }
         return 0;
     }, [restakeInfo]);
@@ -190,6 +190,10 @@ const Restake = () => {
         setIsAlertModalOpen(open);
     };
 
+    const handleMoveToWeb = () => {
+        Linking.openURL(GUIDE_URI['restake']);
+    };
+
     const handleBack = () => {
         navigation.goBack();
     };
@@ -199,7 +203,7 @@ const Restake = () => {
     }, []);
 
     return (
-        <Container title={'Restake'} bgColor={BgColor} backEvent={handleBack}>
+        <Container title={'Restake'} handleGuide={handleMoveToWeb} bgColor={BgColor} backEvent={handleBack}>
             <ViewContainer>
                 <View style={styles.container}>
                     <View style={{ flex: 1 }}>
@@ -232,7 +236,7 @@ const Restake = () => {
                         </ScrollView>
                         <View style={styles.boxContainer}>
                             {grantExist && (
-                                <>
+                                <React.Fragment>
                                     <View style={{ flex: 1 }}>
                                         <Button
                                             title="Disable"
@@ -244,7 +248,7 @@ const Restake = () => {
                                         />
                                     </View>
                                     <View style={{ width: 10 }} />
-                                </>
+                                </React.Fragment>
                             )}
                             <View style={{ flex: 1 }}>
                                 <Button

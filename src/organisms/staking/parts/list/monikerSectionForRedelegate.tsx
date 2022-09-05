@@ -10,56 +10,74 @@ interface IProps {
     navigateValidator: Function;
 }
 
-const MonikerSectionForRedelegate = ({validators, navigateValidator}:IProps) => {
+const MonikerSectionForRedelegate = ({ validators, navigateValidator }: IProps) => {
     const [srcAvatarError, setSrcAvatarError] = useState(false);
     const [dstAvatarError, setDstAvatarError] = useState(false);
     return (
-        <View style={[styles.vdWrapperH, {alignItems: "center"}]}>
-            <TouchableOpacity style={styles.moniikerWrapperH} onPress={()=>navigateValidator(validators.srcAddress)}>
+        <View style={[styles.vdWrapperH, { alignItems: 'center' }]}>
+            <TouchableOpacity style={styles.monikerWrapperH} onPress={() => navigateValidator(validators.srcAddress)}>
                 <Image
                     style={styles.avatar}
-                    onError={() => {setSrcAvatarError(true)}}
-                    source={(srcAvatarError || validators.srcAvatarURL === null || validators.srcAvatarURL === "")?VALIDATOR_PROFILE:{uri: validators.srcAvatarURL}}/>
-                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.moniker}>{validators.srcMoniker}</Text>
+                    onError={() => {
+                        setSrcAvatarError(true);
+                    }}
+                    source={
+                        srcAvatarError || validators.srcAvatarURL === null || validators.srcAvatarURL === ''
+                            ? VALIDATOR_PROFILE
+                            : { uri: validators.srcAvatarURL }
+                    }
+                />
+                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.moniker}>
+                    {validators.srcMoniker}
+                </Text>
             </TouchableOpacity>
-            <View style={{paddingRight: 5}}>
+            <View style={{ paddingRight: 5 }}>
                 <ForwardArrowWithTail size={20} color={TextDarkGrayColor} />
             </View>
-            <TouchableOpacity style={styles.moniikerWrapperH} onPress={()=>navigateValidator(validators.dstAddress)}>
+            <TouchableOpacity style={styles.monikerWrapperH} onPress={() => navigateValidator(validators.dstAddress)}>
                 <Image
                     style={styles.avatar}
-                    onError={() => {setDstAvatarError(true)}}
-                    source={(dstAvatarError || validators.dstAvatarURL === null || validators.dstAvatarURL === "")?VALIDATOR_PROFILE:{uri: validators.dstAvatarURL}}/>
-                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.moniker}>{validators.dstMoniker}</Text>
+                    onError={() => {
+                        setDstAvatarError(true);
+                    }}
+                    source={
+                        dstAvatarError || validators.dstAvatarURL === null || validators.dstAvatarURL === ''
+                            ? VALIDATOR_PROFILE
+                            : { uri: validators.dstAvatarURL }
+                    }
+                />
+                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.moniker}>
+                    {validators.dstMoniker}
+                </Text>
             </TouchableOpacity>
-            <ForwardArrow size={24} color={DarkGrayColor}/>
+            <ForwardArrow size={24} color={DarkGrayColor} />
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     vdWrapperH: {
         paddingHorizontal: 20,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     vdWrapper: {
         flex: 1,
-        alignItems: 'flex-start',
+        alignItems: 'flex-start'
     },
     desc: {
         fontFamily: Lato,
         fontSize: 12,
-        color: TextDisableColor,
+        color: TextDisableColor
     },
-    moniikerWrapperH: {
+    monikerWrapperH: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
         paddingRight: 5,
-        paddingVertical: 6,
+        paddingVertical: 6
     },
     avatar: {
         flex: 1,
@@ -68,18 +86,18 @@ const styles = StyleSheet.create({
         height: 32,
         borderRadius: 50,
         overflow: 'hidden',
-        marginRight: 10,
+        marginRight: 10
     },
     moniker: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 18,
-        fontWeight: "600",
-        color: TextColor,
+        fontWeight: '600',
+        color: TextColor
     },
     icon: {
-        marginRight: 10,
-    },
+        marginRight: 10
+    }
 });
 
 export default MonikerSectionForRedelegate;
