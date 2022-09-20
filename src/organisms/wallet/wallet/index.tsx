@@ -83,7 +83,7 @@ const Wallet = () => {
     };
 
     useEffect(() => {
-        if (isFocused) {
+        if (isFocused && common.dataLoadStatus > 0) {
             let count = 0;
             let intervalId = setInterval(() => {
                 if (common.dataLoadStatus > 0 && common.dataLoadStatus < 2) {
@@ -108,11 +108,13 @@ const Wallet = () => {
     }, [recentHistory]);
 
     useEffect(() => {
-        if (isInit) {
-            refreshAtFocus();
-        } else {
-            refreshStates();
-            setIsInit(true);
+        if (isFocused) {
+            if (isInit) {
+                refreshAtFocus();
+            } else {
+                refreshStates();
+                setIsInit(true);
+            }
         }
     }, [isFocused]);
 

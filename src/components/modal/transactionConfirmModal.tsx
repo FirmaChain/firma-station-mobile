@@ -68,7 +68,7 @@ const TransactionConfirmModal = ({
         let values = value.split('_');
         let result = '';
         for (var i = 0; i < values.length; i++) {
-            result = result + values[i].charAt(0).toUpperCase() + values[0].slice(1);
+            result = result + values[i].charAt(0).toUpperCase() + values[i].slice(1);
             if (i !== values.length - 1) result = result + ' ';
         }
         return result;
