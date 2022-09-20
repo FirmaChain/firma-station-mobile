@@ -1,8 +1,6 @@
 import { FirmaUtil } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { getDAppConnectSession, setDAppConnectSession } from './wallet';
-import { CHAIN_NETWORK } from '@/../config';
-import { useAppSelector } from '@/redux/hooks';
 
 export interface UserSession {
     userkey: string;
@@ -17,6 +15,7 @@ interface ResponseProjectData {
 }
 
 interface ResponseQRData {
+    qrType: number;
     signParams: SignParams;
     projectMetaData: ProjectMetaData;
 }
@@ -41,6 +40,7 @@ interface ProjectMetaData {
 }
 
 export interface QRData {
+    qrType: number;
     apiCode: string;
     requestKey: string;
     signParams: SignParams;
@@ -83,12 +83,13 @@ class ConnectClient {
     public async getUserSession(walletName: string): Promise<UserSession> {
         try {
             let result = await getDAppConnectSession(walletName);
-
             if (result === null) {
                 result = await this.connectNewUser();
                 setDAppConnectSession(walletName, JSON.stringify(result));
+            } else {
+                result = JSON.parse(result);
             }
-            return JSON.parse(result);
+            return result;
         } catch (error) {
             throw new Error('Failed Request');
         }
@@ -121,10 +122,12 @@ class ConnectClient {
                     { userkey: session.userkey }
                 );
 
+                const qrType = response.qrType;
                 const signParams = response.signParams;
                 const projectMetaData = response.projectMetaData;
 
                 return {
+                    qrType,
                     apiCode,
                     requestKey,
                     signParams,
