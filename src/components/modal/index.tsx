@@ -3,4 +3,4 @@ import DappConnectModal from './dappConnectModal';
 import DappSignModal from './dappSignModal';
 import DappDirectSignModal from './dappDirectSignModal';
 
-export { QRCodeScannerModal, DappConnectModal, DappSignModal };
+export { QRCodeScannerModal, DappConnectModal, DappDirectSignModal, DappSignModal };

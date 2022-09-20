@@ -6,7 +6,7 @@ import { convertNumber, getTimeStamp, wait } from '@/util/common';
 import { Detect } from '@/util/detect';
 import { BgColor } from '@/constants/theme';
 import { JAILBREAK_ALERT, setExplorerUrl } from '@/constants/common';
-import { QRCodeScannerModal, DappConnectModal, DappSignModal } from '@/components/modal';
+import { QRCodeScannerModal } from '@/components/modal';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { setClient } from '@/apollo';
 import { setFirmaSDK } from '@/util/firma';
@@ -14,7 +14,7 @@ import SplashScreen from 'react-native-splash-screen';
 import Progress from '@/components/parts/progress';
 import AlertModal from '@/components/modal/alertModal';
 import ValidationModal from '@/components/modal/validationModal';
-import DappDirectSignModal from '@/components/modal/dappDirectSignModal';
+import DeepLinkManager from './deppLinkManager';
 
 const AppStateManager = () => {
     const { wallet, storage, common, modal } = useAppSelector((state) => state);
@@ -31,6 +31,7 @@ const AppStateManager = () => {
     };
 
     const handleUnlock = (result: string) => {
+        if (result === '') return;
         CommonActions.handleLoggedIn(true);
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime('');
@@ -116,13 +117,11 @@ const AppStateManager = () => {
                 <React.Fragment>
                     {common.isBioAuthInProgress === false && common.appState !== 'active' && <View style={styles.dim} />}
                     {common.isBioAuthInProgress === false && common.appPausedTime !== '' && <View style={styles.dim} />}
-                    {modal.qrScannerModal && <QRCodeScannerModal />}
-                    <DappConnectModal />
-                    <DappSignModal />
-                    <DappDirectSignModal />
+                    <DeepLinkManager />
                     <ValidationModal type={'lock'} open={common.lockStation} setOpenModal={handleUnlock} validationHandler={handleUnlock} />
                 </React.Fragment>
             )}
+            {modal.qrScannerModal && <QRCodeScannerModal />}
             {openAlertModal && (
                 <React.Fragment>
                     <View style={styles.dim} />

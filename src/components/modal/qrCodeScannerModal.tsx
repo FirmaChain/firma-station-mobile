@@ -30,7 +30,7 @@ const QRCodeScannerModal = () => {
     };
 
     // const handleReaderTest = () => {
-    //     ModalActions.handleModalData({ result: 'sign://749ea435-b047-4d79-b992-df8c465e02f9' });
+    //     ModalActions.handleModalData({ result: 'sign://d86abf8b-e71a-4bed-adf0-dbd56861054f' });
     //     closeModal();
     // };
 

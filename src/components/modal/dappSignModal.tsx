@@ -108,16 +108,13 @@ const DappSignModal = () => {
     };
 
     const getBalance = async () => {
-        CommonActions.handleLoadingProgress(true);
         try {
             const balandeResult = await getBalanceFromAdr(wallet.address);
             setBalance(convertNumber(makeDecimalPoint(convertToFctNumber(balandeResult), 2)));
             const chainInfo = await getChainInfo();
             setCurrency(convertNumber(chainInfo.market_data.current_price['usd']));
-            CommonActions.handleLoadingProgress(false);
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -130,7 +127,7 @@ const DappSignModal = () => {
         const initializeModalData = async () => {
             try {
                 setChainId(getFirmaSDK().Config.chainID);
-                let session = await getDAppConnectSession(wallet.name);
+                let session = await getDAppConnectSession(wallet.name + storage.network);
                 setUserSession(session);
             } catch (error) {
                 console.log(error);
@@ -143,13 +140,19 @@ const DappSignModal = () => {
     }, [QRData]);
 
     useEffect(() => {
-        if (iconUrl !== '') {
-            Image.getSize(iconUrl, (width, height) => {
-                let ratio = height / width;
-                setIconHeight(115 * ratio);
-            });
+        if (isVisible && iconUrl !== '') {
+            Image.getSize(
+                iconUrl,
+                (width, height) => {
+                    let ratio = convertNumber(height / width);
+                    setIconHeight(115 * ratio);
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
         }
-    }, [iconUrl]);
+    }, [isVisible, iconUrl]);
 
     useEffect(() => {
         if (isVisible) {
@@ -185,11 +188,20 @@ const DappSignModal = () => {
                         <Text style={styles.desc}>{description}</Text>
                     </View>
                     <View style={styles.balanceBox}>
-                        <View style={[styles.boxV, { alignItems: 'center' }]}>
-                            <Text style={[styles.address, { paddingBottom: 8 }]} numberOfLines={1} ellipsizeMode="middle">
-                                {wallet.address}
-                            </Text>
-                            <Text style={styles.balance}>{'Available : $' + currencyData + '  (' + balanceData + ' FCT)'}</Text>
+                        <View style={[styles.boxV, { alignItems: 'flex-start' }]}>
+                            <View style={{ flexDirection: 'row', paddingBottom: 8 }}>
+                                <Text style={[styles.address, { flex: 1 }]}>{'Wallet : '}</Text>
+                                <Text style={[styles.address, { flex: 3 }]} numberOfLines={1} ellipsizeMode="middle">
+                                    {wallet.name}
+                                </Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', paddingBottom: 8 }}>
+                                <Text style={[styles.address, { flex: 1 }]}>{'Address : '}</Text>
+                                <Text style={[styles.address, { flex: 3 }]} numberOfLines={1} ellipsizeMode="middle">
+                                    {wallet.address}
+                                </Text>
+                            </View>
+                            {/* <Text style={styles.balance}>{'Available : $' + currencyData + '  (' + balanceData + ' FCT)'}</Text> */}
                         </View>
                     </View>
                     <View style={styles.modalButtonBox}>

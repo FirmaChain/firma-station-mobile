@@ -13,9 +13,10 @@ import {
     TextColor,
     TextDarkGrayColor,
     TextDisableColor,
+    TextWarnColor,
     WhiteColor
 } from '@/constants/theme';
-import { TRANSACTION_TYPE } from '@/constants/common';
+import { DAPP_NOT_ENOUGHT_BALANCE, TRANSACTION_TYPE } from '@/constants/common';
 import { CHAIN_NETWORK } from '@/../config';
 import { URLLockIcon } from '../icon/icon';
 import { convertAmount, convertCurrent, convertNumber, convertToFctNumber, makeDecimalPoint } from '@/util/common';
@@ -24,6 +25,8 @@ import ConnectClient from '@/util/connectClient';
 import Button from '../button/button';
 import CustomModal from './customModal';
 import ValidationModal from './validationModal';
+import WarnContainer from '../parts/containers/warnContainer';
+import { isDataView } from 'util/types';
 
 const DappDirectSignModal = () => {
     const { common, wallet, storage, modal } = useAppSelector((state) => state);
@@ -36,6 +39,8 @@ const DappDirectSignModal = () => {
     const [iconHeight, setIconHeight] = useState(0);
     const [description, setDescription] = useState('');
     const [balance, setBalance] = useState(0);
+    const [productPrice, setProductPrice] = useState(0);
+    const [productPriceSymbol, setProductPriceSymbol] = useState('FCT');
 
     const [chainID, setChainId] = useState('');
     const [userSession, setUserSession] = useState(null);
@@ -51,30 +56,40 @@ const DappDirectSignModal = () => {
         return null;
     }, [modal.modalData, isVisible]);
 
-    const CompanyName = useMemo(() => {
+    const companyName = useMemo(() => {
         if (QRData) {
             if (QRData.signParams.argument?.corpName !== undefined) return QRData.signParams.argument.corpName;
         }
         return '';
     }, [QRData]);
 
-    const ProductName = useMemo(() => {
+    const productName = useMemo(() => {
         if (QRData) {
             if (QRData.signParams.argument?.name !== undefined) return QRData.signParams.argument.name;
         }
         return '';
     }, [QRData]);
 
-    const ProductPrice = useMemo(() => {
+    useEffect(() => {
         if (QRData) {
-            if (QRData.signParams.argument?.fctPrice !== undefined) return convertAmount(QRData.signParams.argument.fctPrice, false, 6);
+            if (QRData.signParams.argument?.fctPrice !== undefined) {
+                setProductPrice(convertNumber(QRData.signParams.argument.fctPrice));
+            } else if (QRData.signParams.argument?.token !== undefined) {
+                setProductPrice(convertToFctNumber(QRData.signParams.argument.token.amount));
+                setProductPriceSymbol(QRData.signParams.argument.token.symbol);
+            }
         }
-        return '0';
     }, [QRData]);
 
-    const balanceData = useMemo(() => {
+    const availableBalance = useMemo(() => {
         return convertCurrent(balance);
     }, [balance]);
+
+    const defaultFee = convertToFctNumber(CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.defaultFee);
+
+    const enoughBalanceToPay = useMemo(() => {
+        return balance > productPrice + defaultFee;
+    }, [balance, productPrice]);
 
     const handleModal = (open: boolean) => {
         ModalActions.handleModalData(null);
@@ -112,14 +127,11 @@ const DappDirectSignModal = () => {
     };
 
     const getBalance = async () => {
-        CommonActions.handleLoadingProgress(true);
         try {
             const balandeResult = await getBalanceFromAdr(wallet.address);
             setBalance(convertNumber(makeDecimalPoint(convertToFctNumber(balandeResult), 2)));
-            CommonActions.handleLoadingProgress(false);
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -132,7 +144,7 @@ const DappDirectSignModal = () => {
         const initializeModalData = async () => {
             try {
                 setChainId(getFirmaSDK().Config.chainID);
-                let session = await getDAppConnectSession(wallet.name);
+                let session = await getDAppConnectSession(wallet.name + storage.network);
                 setUserSession(session);
             } catch (error) {
                 console.log(error);
@@ -145,13 +157,19 @@ const DappDirectSignModal = () => {
     }, [QRData]);
 
     useEffect(() => {
-        if (iconUrl !== '') {
-            Image.getSize(iconUrl, (width, height) => {
-                let ratio = height / width;
-                setIconHeight(115 * ratio);
-            });
+        if (isVisible && iconUrl !== '') {
+            Image.getSize(
+                iconUrl,
+                (width, height) => {
+                    let ratio = convertNumber(height / width);
+                    setIconHeight(115 * ratio);
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
         }
-    }, [iconUrl]);
+    }, [isVisible, iconUrl]);
 
     useEffect(() => {
         if (isVisible) {
@@ -185,11 +203,11 @@ const DappDirectSignModal = () => {
                             </View>
                         )}
                         <Text style={styles.desc}>{description}</Text>
-                        {ProductName !== '' && (
+                        {productName !== '' && (
                             <View style={styles.productBox}>
-                                <Text style={styles.productTitle}>{ProductName}</Text>
+                                <Text style={styles.productTitle}>{productName}</Text>
                                 <View style={[styles.boxH, { alignItems: 'baseline' }]}>
-                                    <Text style={styles.productPrice}>{ProductPrice}</Text>
+                                    <Text style={styles.productPrice}>{productPrice}</Text>
                                     <Text style={[styles.productTitle, { color: TextDisableColor }]}>{'FCT'}</Text>
                                 </View>
                             </View>
@@ -197,45 +215,68 @@ const DappDirectSignModal = () => {
 
                         <View style={[styles.boxV, { paddingTop: 17, paddingBottom: 30 }]}>
                             <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
-                                <Text style={styles.title}>{'Available amount'}</Text>
-                                <Text style={styles.value}>{`${balanceData} FCT`}</Text>
-                            </View>
-                            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between' }]}>
-                                <Text style={styles.title}>{'My address'}</Text>
-                                <Text style={styles.value} numberOfLines={1} ellipsizeMode={'middle'}>
+                                <Text style={styles.title}>{'My Address'}</Text>
+                                <Text style={[styles.value, { color: AddressTextColor }]} numberOfLines={1} ellipsizeMode={'middle'}>
                                     {wallet.address}
                                 </Text>
+                            </View>
+                            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between' }]}>
+                                <Text style={styles.title}>{'My Balance'}</Text>
+                                <Text style={[styles.value, { color: AddressTextColor }]}>{`${availableBalance} FCT`}</Text>
                             </View>
                         </View>
                         <View style={{ width: '100%', height: 1, backgroundColor: WhiteColor + '10' }} />
                         <View style={[styles.boxV, { paddingTop: 20, paddingBottom: 17 }]}>
-                            {CompanyName !== '' && (
+                            {companyName !== '' && (
                                 <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
                                     <Text style={styles.title}>{'Company'}</Text>
-                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{CompanyName}</Text>
+                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{companyName}</Text>
                                 </View>
                             )}
-                            {ProductName !== '' && (
+                            {productName !== '' && (
                                 <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
                                     <Text style={styles.title}>{'Plan'}</Text>
-                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{ProductName}</Text>
+                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{productName}</Text>
                                 </View>
                             )}
-                            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between' }]}>
-                                <Text style={styles.title}>{'Amount of payment'}</Text>
-                                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${ProductPrice} FCT`}</Text>
+                            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
+                                <Text style={styles.title}>{'Fee'}</Text>
+                                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${defaultFee} FCT`}</Text>
+                            </View>
+                            {productName === '' && (
+                                <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
+                                    <Text style={styles.title}>{'Amount'}</Text>
+                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount(
+                                        productPrice,
+                                        false,
+                                        6
+                                    )} ${productPriceSymbol}`}</Text>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                    {enoughBalanceToPay ? (
+                        <View style={styles.modalButtonBox}>
+                            <View style={{ flex: 1 }}>
+                                <Button title={'Reject'} active={true} border={true} onPressEvent={() => handleReject()} />
+                            </View>
+                            <View style={{ width: 10 }} />
+                            <View style={{ flex: 1 }}>
+                                <Button title={'Sign'} active={true} onPressEvent={() => handleValidation(true)} />
                             </View>
                         </View>
-                    </View>
-                    <View style={styles.modalButtonBox}>
-                        <View style={{ flex: 1 }}>
-                            <Button title={'Reject'} active={true} border={true} onPressEvent={() => handleReject()} />
+                    ) : (
+                        <View style={[styles.boxV, { paddingTop: 30 }]}>
+                            <View style={[styles.boxH, { justifyContent: 'center' }]}>
+                                <WarnContainer bgColor={BgColor} text={DAPP_NOT_ENOUGHT_BALANCE} />
+                            </View>
+                            <View style={[styles.modalButtonBox, { paddingTop: 10 }]}>
+                                <View style={{ flex: 1 }}>
+                                    <Button title={'Close'} active={true} border={true} onPressEvent={() => handleReject()} />
+                                </View>
+                            </View>
                         </View>
-                        <View style={{ width: 10 }} />
-                        <View style={{ flex: 1 }}>
-                            <Button title={'Sign'} active={true} onPressEvent={() => handleValidation(true)} />
-                        </View>
-                    </View>
+                    )}
                 </View>
                 <ValidationModal
                     type={'transaction'}

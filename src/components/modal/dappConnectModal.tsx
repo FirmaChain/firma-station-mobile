@@ -1,14 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
-import { CommonActions, ModalActions } from '@/redux/actions';
-import { getBalanceFromAdr } from '@/util/firma';
+import { ModalActions } from '@/redux/actions';
 import { setDAppProjectIdList } from '@/util/wallet';
-import { convertCurrent, convertNumber, convertToFctNumber, makeDecimalPoint, wait } from '@/util/common';
-import { BgColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { CHAIN_NETWORK, COINGECKO } from '@/../config';
+import { convertNumber, wait } from '@/util/common';
+import { BgColor, Lato, TextCatTitleColor, TextDarkGrayColor } from '@/constants/theme';
+import { CHAIN_NETWORK } from '@/../config';
 import { URLLockIcon } from '../icon/icon';
-import Toast from 'react-native-toast-message';
 import Button from '../button/button';
 import CustomModal from './customModal';
 import ConnectClient from '@/util/connectClient';
@@ -42,7 +40,7 @@ const DappConnectModal = () => {
     }, [modal.modalData, isVisible]);
 
     useEffect(() => {
-        if (isVisible) {
+        if (QRData) {
             try {
                 setUrl(QRData.projectMetaData.url);
                 setIconUrl(QRData.projectMetaData.icon);
@@ -51,7 +49,7 @@ const DappConnectModal = () => {
                 handleModal(false);
             }
         }
-    }, [isVisible, QRData]);
+    }, [QRData]);
 
     const handleCloseModal = () => {
         handleModal(false);
@@ -82,13 +80,19 @@ const DappConnectModal = () => {
     };
 
     useEffect(() => {
-        if (iconUrl !== '') {
-            Image.getSize(iconUrl, (width, height) => {
-                let ratio = height / width;
-                setIconHeight(115 * ratio);
-            });
+        if (isVisible && iconUrl !== '') {
+            Image.getSize(
+                iconUrl,
+                (width, height) => {
+                    let ratio = convertNumber(height / width);
+                    setIconHeight(115 * ratio);
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
         }
-    }, [iconUrl]);
+    }, [isVisible, iconUrl]);
 
     useEffect(() => {
         if (common.appState !== 'active' && common.isBioAuthInProgress === false) handleCloseModal();

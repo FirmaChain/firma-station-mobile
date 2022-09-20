@@ -1,20 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { useAppSelector } from '@/redux/hooks';
 import { QRCodeScannerIcon, QuestionFilledCircle, Setting } from '@/components/icon/icon';
 import { BgColor, GrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import { ICON_HISTORY } from '@/constants/images';
-import { ModalActions, WalletActions } from '@/redux/actions';
-import { addressCheck } from '@/util/firma';
-import { wait } from '@/util/common';
+import { ModalActions } from '@/redux/actions';
 import { useIsFocused } from '@react-navigation/native';
-import { getDAppProjectIdList } from '@/util/wallet';
-import { DAPP_INVALID_QR } from '@/constants/common';
 import { CHAIN_NETWORK } from '@/../config';
 import ConnectClient from '@/util/connectClient';
 import NetworkBadge from '../networkBadge';
-import Toast from 'react-native-toast-message';
 
 interface IProps {
     title: string;
@@ -26,18 +21,8 @@ interface IProps {
 
 const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, children }: IProps) => {
     const isFocused = useIsFocused();
-    const { storage, wallet, modal } = useAppSelector((state) => state);
+    const { storage, common, wallet, modal } = useAppSelector((state) => state);
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
-
-    const getProjectId = async (session: string, id: string) => {
-        try {
-            let result = await getDAppProjectIdList(wallet.name, session);
-            return JSON.parse(result);
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
-    };
 
     const handleQRScanner = async (active: boolean) => {
         ModalActions.handleQRScannerModal(active);
@@ -53,73 +38,6 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
     const handleMoveToHistory = () => {
         historyNavEvent && historyNavEvent();
     };
-
-    const handleQRResult = async (result: any) => {
-        const isValidAddress = addressCheck(result);
-        if (isValidAddress) {
-            WalletActions.handleDstAddress(result);
-        } else {
-            try {
-                let session = await connectClient.getUserSession(wallet.name);
-                let QRData = await connectClient.requestQRData(session, result);
-                const verification = await connectClient.verifyConnectedWallet(wallet.address, QRData);
-                if (verification === false) {
-                    return Toast.show({
-                        type: 'error',
-                        text1: DAPP_INVALID_QR
-                    });
-                }
-
-                let sessionKey = session.userkey === undefined ? '' : session.userkey;
-                let projectId = QRData.projectMetaData === undefined ? '' : QRData.projectMetaData.projectId;
-                let idList = await getProjectId(sessionKey, projectId);
-                let list = idList ? idList.list : [];
-                if (idList || list.includes(projectId)) {
-                    ModalActions.handleModalData(QRData);
-
-                    if (connectClient.isDirectSign(QRData)) {
-                        wait(500).then(() => {
-                            ModalActions.handleDAppDirectSignModal(true);
-                        });
-                    } else {
-                        wait(500).then(() => {
-                            ModalActions.handleDAppSignModal(true);
-                        });
-                    }
-                } else {
-                    let updateList = { list: [...list, projectId] };
-                    ModalActions.handleModalData({
-                        data: QRData,
-                        idState: {
-                            session: sessionKey,
-                            list: JSON.stringify(updateList)
-                        }
-                    });
-                    wait(500).then(() => {
-                        ModalActions.handleDAppConnectModal(true);
-                    });
-                }
-            } catch (error) {
-                return Toast.show({
-                    type: 'error',
-                    text1: String(error)
-                });
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (isFocused) {
-            if (modal.modalData?.result !== undefined) {
-                handleQRResult(modal.modalData.result);
-                ModalActions.handleResetModal();
-            }
-
-            if (modal.modalData?.qrcodeurl !== undefined) {
-                handleQRResult(modal.modalData.qrcodeurl);
-            }
-        }
-    }, [isFocused, modal.modalData]);
 
     return (
         <View style={styles.container}>
