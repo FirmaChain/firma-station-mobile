@@ -18,6 +18,12 @@ export interface ITransactionState {
     amount: number;
 }
 
+export interface INftItemType {
+    id: string;
+    owner: string;
+    tokenURI: string;
+}
+
 let firmaSDK: FirmaMobileSDK;
 let restakeAddress: string;
 
@@ -87,6 +93,23 @@ export const getBalanceFromAdr = async (address: string) => {
         return balance;
     } catch (error) {
         console.log('getBalanceFromAdr error : ' + error);
+        throw error;
+    }
+};
+
+export const getTokenBalance = async (address: string, denom: string) => {
+    try {
+        let balance = 0;
+        let allList = await getFirmaSDK().Bank.getTokenBalanceList(address);
+        allList
+            .filter((token) => token.denom === denom)
+            .map((value) => {
+                return (balance += Number(value.amount));
+            });
+
+        return balance;
+    } catch (error) {
+        console.log(error);
         throw error;
     }
 };
@@ -576,4 +599,22 @@ export const getStaking = async (address: string) => {
     } catch (error) {
         throw error;
     }
+};
+
+export const getNFTIdListOfOwner = async (address: string) => {
+    try {
+        let result = await getFirmaSDK().Nft.getNftIdListOfOwner(address);
+        let idList = result.nftIdList;
+
+        return idList;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
+export const getNFTItemFromId = async (id: string) => {
+    let nft = await getFirmaSDK().Nft.getNftItem(id);
+
+    return nft;
 };
