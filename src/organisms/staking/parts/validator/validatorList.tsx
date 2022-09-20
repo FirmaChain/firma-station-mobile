@@ -1,23 +1,33 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { CommonActions } from "@/redux/actions";
-import { useAppSelector } from "@/redux/hooks";
-import { useValidatorData } from "@/hooks/staking/hooks";
-import { BgColor, DisableColor, GrayColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from "@/constants/theme";
-import { DownArrow, SortASC, SortDESC } from "@/components/icon/icon";
-import CustomModal from "@/components/modal/customModal";
-import ModalItems from "@/components/modal/modalItems";
-import ValidatorItem from "./validatorItem";
+import React, { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { useValidatorData } from '@/hooks/staking/hooks';
+import {
+    BgColor,
+    DisableColor,
+    GrayColor,
+    Lato,
+    PointLightColor,
+    TextColor,
+    TextDarkGrayColor,
+    TextDisableColor,
+    TextGrayColor
+} from '@/constants/theme';
+import { DownArrow, SortASC, SortDESC } from '@/components/icon/icon';
+import CustomModal from '@/components/modal/customModal';
+import ModalItems from '@/components/modal/modalItems';
+import ValidatorItem from './validatorItem';
 
 interface IProps {
     visible: boolean;
     isRefresh: boolean;
-    handleIsRefresh: (refresh:boolean) => void;
-    navigateValidator: (address:string) => void;
+    handleIsRefresh: (refresh: boolean) => void;
+    navigateValidator: (address: string) => void;
 }
 
-const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:IProps) => {
-    const {common} = useAppSelector(state => state);
+const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator }: IProps) => {
+    const { common } = useAppSelector((state) => state);
     const { validators, handleValidatorsPolling } = useValidatorData();
 
     const sortItems = ['Voting Power', 'Commission', 'Uptime'];
@@ -30,110 +40,110 @@ const ValidatorList = ({visible, isRefresh, handleIsRefresh, navigateValidator}:
     }, [validators]);
 
     useMemo(() => {
-        if(validatorList.length === 0) return;
+        if (validatorList.length === 0) return;
         switch (selected) {
-        case 0:
-            return validatorList.sort((a:any, b:any) => sortWithDesc?(b.votingPower - a.votingPower):(a.votingPower - b.votingPower));
-        case 1:
-            return validatorList.sort((a:any, b:any) => sortWithDesc?(a.commission - b.commission):(b.commission - a.commission));
-        case 2:
-            return validatorList.sort((a:any, b:any) => sortWithDesc?(b.condition - a.condition):(a.condition - b.condition));
+            case 0:
+                return validatorList.sort((a: any, b: any) =>
+                    sortWithDesc ? b.votingPower - a.votingPower : a.votingPower - b.votingPower
+                );
+            case 1:
+                return validatorList.sort((a: any, b: any) => (sortWithDesc ? a.commission - b.commission : b.commission - a.commission));
+            case 2:
+                return validatorList.sort((a: any, b: any) => (sortWithDesc ? b.condition - a.condition : a.condition - b.condition));
         }
-    }, [selected, validatorList, sortWithDesc])
+    }, [selected, validatorList, sortWithDesc]);
 
-    const handleOpenModal = (open:boolean) => {
+    const handleOpenModal = (open: boolean) => {
         setOpenModal(open);
-    }
+    };
 
-    const handleSelectSort = (index:number) => {
+    const handleSelectSort = (index: number) => {
         setSelected(index);
         handleOpenModal(false);
-    }
+    };
 
-    const refreshValidators = async() => {
-        if(validatorList.length === 0){
+    const refreshValidators = async () => {
+        if (validatorList.length === 0) {
             CommonActions.handleLoadingProgress(true);
         }
         try {
-            if(visible){
+            if (visible) {
                 await handleValidatorsPolling();
             }
             CommonActions.handleLoadingProgress(false);
             handleIsRefresh(false);
         } catch (error) {
-            if(visible){
+            if (visible) {
                 CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             }
             console.log(error);
         }
-    }
+    };
 
     const renderSortIcon = () => {
-        let sort = sortItems[selected] === "Commission"? !sortWithDesc:sortWithDesc;
+        let sort = sortItems[selected] === 'Commission' ? !sortWithDesc : sortWithDesc;
         switch (sort) {
             case true:
-                return (<SortDESC size={20} color={GrayColor} />)
+                return <SortDESC size={20} color={GrayColor} />;
             case false:
-                return (<SortASC size={20} color={GrayColor} />)
-        }        
-    }
+                return <SortASC size={20} color={GrayColor} />;
+        }
+    };
 
     useEffect(() => {
-        if(isRefresh && visible){
+        if (isRefresh && visible) {
             refreshValidators();
         }
-    }, [isRefresh, visible])
+    }, [isRefresh, visible]);
 
     useEffect(() => {
-        if(visible){
+        if (visible) {
             refreshValidators();
         }
-    }, [visible])
+    }, [visible]);
 
     return (
         <>
-        {visible &&
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>List 
-                        <Text style={{color: PointLightColor}}> {validatorList.length}</Text>
-                    </Text>
-                    <View style={{flexDirection: "row", alignItems: "center"}}>
-                        <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                            <Text style={[styles.sortItem, {paddingRight: 4}]}>{sortItems[selected]}</Text>
-                            <DownArrow size={12} color={GrayColor} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{paddingLeft: 10, paddingVertical: 10,}} onPress={() => setSortWithDesc(!sortWithDesc)}>
-                            {renderSortIcon()}
-                        </TouchableOpacity>
-    
+            {visible && (
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <Text style={styles.title}>
+                            List
+                            <Text style={{ color: PointLightColor }}> {validatorList.length}</Text>
+                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
+                                <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
+                                <DownArrow size={12} color={GrayColor} />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={{ paddingLeft: 10, paddingVertical: 10 }}
+                                onPress={() => setSortWithDesc(!sortWithDesc)}
+                            >
+                                {renderSortIcon()}
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                    {validatorList.map((vd: any, index: number) => {
+                        const isLastItem = index === validatorList.length - 1;
+                        return <ValidatorItem key={index} data={vd} isLastItem={isLastItem} navigate={navigateValidator} />;
+                    })}
+                    <CustomModal bgColor={BgColor} visible={openModal} handleOpen={handleOpenModal}>
+                        <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort} />
+                    </CustomModal>
                 </View>
-                {validatorList.map((vd:any, index:number) => {
-                    const isLastItem = index === validatorList.length - 1;
-                    return (
-                        <ValidatorItem key={index} data={vd} isLastItem={isLastItem} navigate={navigateValidator} />
-                    )
-                })}
-                <CustomModal 
-                    bgColor={BgColor}
-                    visible={openModal} 
-                    handleOpen={handleOpenModal}>
-                    <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort}/>
-                </CustomModal>
-            </View>
-        }
+            )}
         </>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         borderRadius: 4,
-        overflow: "hidden",
+        overflow: 'hidden',
         justifyContent: 'center',
         marginBottom: 20,
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
     header: {
         height: 48,
@@ -141,45 +151,45 @@ const styles = StyleSheet.create({
         backgroundColor: BgColor,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     title: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextGrayColor,
+        color: TextGrayColor
     },
     sortButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 10,
+        paddingVertical: 10
     },
     sortItem: {
         color: GrayColor,
         fontFamily: Lato,
-        fontSize: 16,
+        fontSize: 16
     },
 
     moniikerWrapperH: {
         flex: 2,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start'
     },
     vdWrapperH: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     descWrapperH: {
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingBottom: 5,
+        paddingBottom: 5
     },
     vdWrapperV: {
         flex: 1,
-        alignItems: 'flex-start',
+        alignItems: 'flex-start'
     },
     avatar: {
         width: 35,
@@ -187,33 +197,33 @@ const styles = StyleSheet.create({
         height: 35,
         borderRadius: 50,
         overflow: 'hidden',
-        marginRight: 10,
+        marginRight: 10
     },
     icon: {
-        marginRight: 10,
+        marginRight: 10
     },
     moniker: {
         fontSize: 16,
         paddingBottom: 5,
         fontFamily: Lato,
-        color: TextColor,
+        color: TextColor
     },
     divider: {
         height: 1,
         marginHorizontal: 20,
-        backgroundColor: DisableColor,
+        backgroundColor: DisableColor
     },
     descTitle: {
         fontFamily: Lato,
         fontSize: 14,
-        color: TextDisableColor,
+        color: TextDisableColor
     },
     descItem: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: "600",
-        color: TextDarkGrayColor,
-    },
-})
+        fontWeight: '600',
+        color: TextDarkGrayColor
+    }
+});
 
 export default ValidatorList;

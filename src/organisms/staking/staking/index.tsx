@@ -94,7 +94,7 @@ const Staking = () => {
     }, [isListRefresh]);
 
     useEffect(() => {
-        if (isFocused) {
+        if (isFocused && common.dataLoadStatus > 0) {
             let count = 0;
             let intervalId = setInterval(() => {
                 if (common.dataLoadStatus > 0 && common.dataLoadStatus < 2) {
@@ -119,11 +119,13 @@ const Staking = () => {
     }, [recentHistory]);
 
     useEffect(() => {
-        if (isInit === false) {
-            CommonActions.handleLoadingProgress(true);
-            setIsInit(true);
+        if (isFocused) {
+            if (isInit === false) {
+                CommonActions.handleLoadingProgress(true);
+                setIsInit(true);
+            }
+            refreshAtFocus();
         }
-        refreshAtFocus();
     }, [isFocused]);
 
     return (

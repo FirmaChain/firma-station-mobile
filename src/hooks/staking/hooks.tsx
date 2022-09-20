@@ -121,7 +121,7 @@ export const useDelegationData = () => {
     const [validatorsDescList, setValidatorsDescList] = useState<Array<any>>([]);
 
     const { refetch, loading, data } =
-        storage.network === 'TestNet' ? useValidatorsDescriptionQueryForTestNet() : useValidatorsDescriptionQuery();
+        storage.network === 'MainNet' ? useValidatorsDescriptionQuery() : useValidatorsDescriptionQueryForTestNet();
 
     useEffect(() => {
         if (loading === false) {
@@ -437,7 +437,7 @@ export const useValidatorData = () => {
     const [totalVotingPower, setTotalVotingPower] = useState(0);
     const [polling, setPolling] = useState(false);
 
-    const { refetch, loading, data } = storage.network === 'TestNet' ? useValidatorsQueryForTestNet() : useValidatorsQuery();
+    const { refetch, loading, data } = storage.network === 'MainNet' ? useValidatorsQuery() : useValidatorsQueryForTestNet();
 
     useEffect(() => {
         if (polling) {
@@ -500,14 +500,13 @@ export const useValidatorDataFromAddress = (address: string) => {
     const [validatorState, setValidatorState] = useState<IValidatorState>();
 
     const { refetch, loading, data } =
-        storage.network === 'TestNet'
-            ? useValidatorFromAddressQueryForTestNet({
+        storage.network === 'MainNet'
+            ? useValidatorFromAddressQuery({
                   address: address.toString()
               })
-            : useValidatorFromAddressQuery({
+            : useValidatorFromAddressQueryForTestNet({
                   address: address.toString()
               });
-
     useEffect(() => {
         if (loading === false) {
             if (data) {
