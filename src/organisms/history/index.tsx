@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Linking, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { FlatList, Linking, NativeScrollEvent, NativeSyntheticEvent, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { IHistoryState, useHistoryData } from '@/hooks/wallet/hooks';
-import { BgColor } from '@/constants/theme';
+import { BgColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
+import { HISTORY_NOT_EXIST } from '@/constants/common';
 import { wait } from '@/util/common';
 import { GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
-import RefreshScrollView from '@/components/parts/refreshScrollView';
 import HistoryList from './historyList';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
@@ -20,20 +20,10 @@ const History = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const { historyList, handleHistoryOffset, handleHisotyPolling } = useHistoryData();
+
+    const [isLoaded, setIsLoaded] = useState(false);
     const [historyRefresh, setHistoryRefresh] = useState(false);
     const [loadedHistoryList, setLoadedHistoryList] = useState<Array<IHistoryState>>([]);
-
-    const onScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        if (common.loading === false && historyRefresh === false) {
-            if (
-                event.nativeEvent.contentOffset.y > 0 &&
-                event.nativeEvent.contentOffset.y + 50 >= event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height
-            ) {
-                CommonActions.handleLoadingProgress(true);
-                historyOffsetHandler(false);
-            }
-        }
-    };
 
     const historyOffsetHandler = (reset: boolean) => {
         handleHistoryOffset && handleHistoryOffset(reset);
@@ -42,12 +32,8 @@ const History = () => {
     const refreshStates = () => {
         if (handleHisotyPolling !== undefined) {
             setHistoryRefresh(true);
-            CommonActions.handleLoadingProgress(true);
             handleHisotyPolling();
-            wait(800).then(() => {
-                CommonActions.handleLoadingProgress(false);
-                setHistoryRefresh(false);
-            });
+            setHistoryRefresh(false);
         }
     };
 
@@ -76,35 +62,62 @@ const History = () => {
         }
     }, [historyList, historyRefresh]);
 
-    useEffect(() => {
-        if (loadedHistoryList.length > 0) {
-            wait(100).then(() => CommonActions.handleLoadingProgress(false));
-        }
-    }, [loadedHistoryList]);
-
     useFocusEffect(
         useCallback(() => {
             CommonActions.handleLoadingProgress(true);
-            wait(800).then(() => CommonActions.handleLoadingProgress(false));
+            wait(800).then(() => {
+                setIsLoaded(true);
+                CommonActions.handleLoadingProgress(false);
+            });
         }, [])
     );
 
     return (
         <Container title="History" handleGuide={() => handleMoveToWeb('history')} backEvent={handleBack}>
             <View style={[styles.listBox, { justifyContent: historyList.list.length > 0 ? 'space-between' : 'center' }]}>
-                <RefreshScrollView toTopButton={true} scrollEndFunc={onScrollEnd} refreshFunc={refreshStates}>
-                    <HistoryList
-                        historyList={loadedHistoryList}
-                        isEmpty={loadedHistoryList.length === 0}
-                        handleExplorer={handleMoveToWeb}
-                    />
-                </RefreshScrollView>
+                <View style={styles.container}>
+                    {loadedHistoryList.length > 0 ? (
+                        <FlatList
+                            data={loadedHistoryList}
+                            showsVerticalScrollIndicator={false}
+                            refreshControl={
+                                <RefreshControl
+                                    tintColor={WhiteColor}
+                                    progressBackgroundColor={'transparent'}
+                                    refreshing={historyRefresh}
+                                    onRefresh={refreshStates}
+                                />
+                            }
+                            onEndReached={() => historyOffsetHandler(false)}
+                            onEndReachedThreshold={0.6}
+                            renderItem={({ item }) => {
+                                return <HistoryList item={item} handleExplorer={handleMoveToWeb} />;
+                            }}
+                        />
+                    ) : (
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <Text style={[styles.notice, { display: isLoaded ? 'flex' : 'none' }]}>{HISTORY_NOT_EXIST}</Text>
+                        </View>
+                    )}
+                </View>
             </View>
         </Container>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        paddingVertical: 20
+    },
+    notice: {
+        textAlign: 'center',
+        fontFamily: Lato,
+        fontSize: 18,
+        color: TextDarkGrayColor,
+        opacity: 0.8
+    },
     listBox: {
         flex: 1,
         backgroundColor: BgColor
