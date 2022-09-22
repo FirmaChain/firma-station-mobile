@@ -67,6 +67,24 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
         const result = await getUseBioAuth(wallet.name);
         setDimActive(result);
         setUseBio(result);
+        handleBackbuttonLockByUseBio(result);
+    };
+
+    const handleBackbuttonLockByUseBio = (useBio: boolean) => {
+        if (useBio) {
+            wait(600).then(() => {
+                handleValidation(useBio);
+                wait(100).then(() => {
+                    if (type === 'transaction') {
+                        setBackbuttonLock(false);
+                    }
+                });
+            });
+        } else {
+            if (type === 'transaction') {
+                setBackbuttonLock(false);
+            }
+        }
     };
 
     const handleModal = (open: boolean) => {
@@ -163,23 +181,6 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
             initValues();
         }
     }, [open]);
-
-    useEffect(() => {
-        if (useBio) {
-            wait(600).then(() => {
-                handleValidation(useBio);
-                wait(100).then(() => {
-                    if (type === 'transaction') {
-                        setBackbuttonLock(false);
-                    }
-                });
-            });
-        } else {
-            if (type === 'transaction') {
-                setBackbuttonLock(false);
-            }
-        }
-    }, [useBio]);
 
     useEffect(() => {
         if (common.appState === 'background') {

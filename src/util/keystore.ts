@@ -1,4 +1,4 @@
-import CryptoJS from "crypto-js";
+import CryptoJS from 'crypto-js';
 
 const keySize = 256;
 const iterations = 100;
@@ -14,21 +14,21 @@ export const keyEncrypt = (name: string, password: string): string => {
         const key = CryptoJS.enc.Utf8.parse(password);
         const iv = CryptoJS.enc.Utf8.parse(name);
 
-        var encObj = CryptoJS.AES.encrypt('key', key, {iv: iv});
-        
+        var encObj = CryptoJS.AES.encrypt('key', key, { iv: iv });
+
         return encObj.toString();
     } catch (error) {
         console.log(error);
-        return "";
+        return '';
     }
-}
+};
 
 export const encrypt = (originalMessage: string, pass: string): string => {
     try {
         const salt = CryptoJS.lib.WordArray.random(128 / 8);
         const key = CryptoJS.PBKDF2(pass, salt, {
             keySize: keySize / 32,
-            iterations: iterations,
+            iterations: iterations
         });
 
         const iv = CryptoJS.lib.WordArray.random(128 / 8);
@@ -36,38 +36,37 @@ export const encrypt = (originalMessage: string, pass: string): string => {
         const encrypted = CryptoJS.AES.encrypt(originalMessage, key, {
             iv: iv,
             padding: CryptoJS.pad.Pkcs7,
-            mode: CryptoJS.mode.CBC,
+            mode: CryptoJS.mode.CBC
         });
 
         return salt.toString() + iv.toString() + encrypted.toString();
     } catch (error) {
         console.log(error);
-        return "";
+        return '';
     }
 };
 
 export const decrypt = (encryptMessage: string, pass: string): any => {
     try {
         const salt = CryptoJS.enc.Hex.parse(encryptMessage.substr(0, 32));
-        
+
         const iv = CryptoJS.enc.Hex.parse(encryptMessage.substr(32, 32));
         const encrypted = encryptMessage.substring(64);
-        
+
         const key = CryptoJS.PBKDF2(pass, salt, {
             keySize: keySize / 32,
-            iterations: iterations,
+            iterations: iterations
         });
 
         const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
             iv: iv,
             padding: CryptoJS.pad.Pkcs7,
-            mode: CryptoJS.mode.CBC,
+            mode: CryptoJS.mode.CBC
         }).toString(CryptoJS.enc.Utf8);
 
-        if(decrypted === "") return "";
         return decrypted;
     } catch (error) {
         console.log(error);
-        return "";
+        return '';
     }
 };

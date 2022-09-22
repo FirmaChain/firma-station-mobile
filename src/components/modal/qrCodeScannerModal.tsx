@@ -30,7 +30,7 @@ const QRCodeScannerModal = () => {
     };
 
     // const handleReaderTest = () => {
-    //     ModalActions.handleModalData({ result: 'sign://d86abf8b-e71a-4bed-adf0-dbd56861054f' });
+    //     ModalActions.handleModalData({ result: 'https://firmachain.org' });
     //     closeModal();
     // };
 

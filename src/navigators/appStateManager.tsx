@@ -14,7 +14,7 @@ import SplashScreen from 'react-native-splash-screen';
 import Progress from '@/components/parts/progress';
 import AlertModal from '@/components/modal/alertModal';
 import ValidationModal from '@/components/modal/validationModal';
-import DeepLinkManager from './deppLinkManager';
+import DeepLinkManager from './deepLinkManager';
 
 const AppStateManager = () => {
     const { wallet, storage, common, modal } = useAppSelector((state) => state);

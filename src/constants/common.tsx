@@ -135,7 +135,7 @@ export const RESTAKE_NOTICE_TEXT = [
 export const DAPP_INVALID_QR = 'Invalid wallet. Please check your wallet.';
 export const DAPP_NO_SERVICE = 'There are no services available.';
 export const DAPP_NO_NFT = 'NFT does not exist.';
-export const DAPP_NOT_ENOUGHT_BALANCE = 'Not enough balance to pay.';
+export const DAPP_NOT_ENOUGHT_BALANCE = 'Not enough balance.';
 export const DAPP_SERVICE_USING_NOTICE = 'Please go to the service you were using';
 
 // transaction

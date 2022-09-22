@@ -36,7 +36,10 @@ const DappDetail = ({ data }: IProps) => {
     }, [dappData]);
 
     const isBalanceSectionOpen = useMemo(() => {
-        return dappData.token !== undefined && isServiceOnly === false;
+        if (isServiceOnly === false) {
+            return dappData.token !== undefined;
+        }
+        return false;
     }, [dappData, isServiceOnly]);
 
     const handleBack = () => {

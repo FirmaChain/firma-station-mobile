@@ -16,6 +16,7 @@ interface IProps {
 
 const Home = ({ title }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
+    const key = title.toLowerCase();
 
     const moveToSetting = () => {
         navigation.navigate(Screens.Setting);
@@ -26,7 +27,6 @@ const Home = ({ title }: IProps) => {
     };
 
     const handleMoveToWeb = () => {
-        let key = title.toLowerCase();
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
     };
@@ -38,7 +38,12 @@ const Home = ({ title }: IProps) => {
     }, []);
 
     return (
-        <TabContainer title={title} handleGuide={handleMoveToWeb} settingNavEvent={moveToSetting} historyNavEvent={moveToHistory}>
+        <TabContainer
+            title={title}
+            handleGuide={key === 'dapps' ? undefined : handleMoveToWeb}
+            settingNavEvent={moveToSetting}
+            historyNavEvent={moveToHistory}
+        >
             <TabNavigators />
         </TabContainer>
     );

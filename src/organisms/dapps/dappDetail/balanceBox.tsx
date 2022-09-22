@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { convertAmount, resizeFontSize } from '@/util/common';
 import { BgColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { getTokenBalance } from '@/util/firma';
-import { useIsFocused } from '@react-navigation/native';
 
 interface IProps {
     tokenData: {
@@ -14,8 +13,6 @@ interface IProps {
 }
 
 const BalanceBox = ({ tokenData }: IProps) => {
-    const isFocused = useIsFocused();
-
     const { wallet } = useAppSelector((state) => state);
     const [balanceTextSize, setBalanceTextSize] = useState(20);
     const [balance, setBalance] = useState(0);
@@ -33,6 +30,7 @@ const BalanceBox = ({ tokenData }: IProps) => {
     const getBalance = async () => {
         try {
             let result = await getTokenBalance(wallet.address, tokenDenom);
+            setBalanceTextSize(resizeFontSize(result, 100000000000, 20));
             setBalance(result);
         } catch (error) {
             console.log(error);
@@ -40,12 +38,10 @@ const BalanceBox = ({ tokenData }: IProps) => {
     };
 
     useEffect(() => {
-        setBalanceTextSize(resizeFontSize(balance, 100000000000, 20));
-    }, [balance]);
-
-    useEffect(() => {
-        getBalance();
-    }, [isFocused]);
+        if (tokenDenom !== '') {
+            getBalance();
+        }
+    }, [tokenDenom]);
 
     return (
         <View style={styles.container}>

@@ -9,7 +9,7 @@ import { setExplorerUrl } from '@/constants/common';
 import { BgColor, BoxColor, Lato, TextColor, TextGrayColor, YesColor } from '@/constants/theme';
 import { useChainVersion } from '@/hooks/common/hooks';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { CommonActions, StorageActions } from '@/redux/actions';
+import { CommonActions, ModalActions, StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { setFirmaSDK } from '@/util/firma';
 import { VersionCheck } from '@/util/validationCheck';
@@ -50,6 +50,8 @@ const Version = () => {
         setFirmaSDK(networkList[index]);
         setClient(networkList[index]);
         setExplorerUrl(networkList[index]);
+        ModalActions.handleDAppData(null);
+        ModalActions.handleModalData(null);
         StorageActions.handleNetwork(networkList[index]);
         setSelectedNetworkIndex(index);
         setOpenNetworkSelectModal(false);

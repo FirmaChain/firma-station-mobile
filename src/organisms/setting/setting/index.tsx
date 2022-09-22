@@ -1,96 +1,93 @@
-import React from "react";
-import { Linking, ScrollView, StyleSheet, View } from "react-native";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation } from "@react-navigation/native";
-import { useAppSelector } from "@/redux/hooks";
-import { AddressBoxColor, BgColor, TextCatTitleColor } from "@/constants/theme";
-import { removeWalletWithAutoLogin } from "@/util/wallet";
-import { GUIDE_URI, VERSION } from "@/../config";
-import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
-import BioAuthRadio from "./bioAuthRadio";
-import MenuItem from "./menuItem";
-import Disconnect from "./disconnect";
-import Delete from "./delete";
-import TextMenuItem from "./textMenuItem";
+import React from 'react';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import { useAppSelector } from '@/redux/hooks';
+import { AddressBoxColor, BgColor, TextCatTitleColor } from '@/constants/theme';
+import { removeWalletWithAutoLogin } from '@/util/wallet';
+import { GUIDE_URI, VERSION } from '@/../config';
+import Container from '@/components/parts/containers/conatainer';
+import ViewContainer from '@/components/parts/containers/viewContainer';
+import BioAuthRadio from './bioAuthRadio';
+import MenuItem from './menuItem';
+import Disconnect from './disconnect';
+import Delete from './delete';
+import TextMenuItem from './textMenuItem';
+import { ModalActions } from '@/redux/actions';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
 const Setting = () => {
-    const navigation:ScreenNavgationProps = useNavigation();
-    const {wallet, storage, common} = useAppSelector(state => state);
+    const navigation: ScreenNavgationProps = useNavigation();
+    const { wallet, storage, common } = useAppSelector((state) => state);
 
     const settingList = [
-        {title: 'Change Password', path: 'ChangePW'},
-        {title: 'Export Mnemonic', path: 'ExportMN'},
-        {title: 'Export Private Key', path: 'ExportPK'},
+        { title: 'Change Password', path: 'ChangePW' },
+        { title: 'Export Mnemonic', path: 'ExportMN' },
+        { title: 'Export Private Key', path: 'ExportPK' }
     ];
 
-    const handleMenus = (path:string) => {
+    const handleMenus = (path: string) => {
         switch (path) {
-            case "ChangeWN":
+            case 'ChangeWN':
                 navigation.navigate(Screens.ChangeWalletName);
                 break;
-            case "ChangePW":
+            case 'ChangePW':
                 navigation.navigate(Screens.ChangePassword);
                 break;
-            case "ExportPK":
-            case "ExportMN":
-                navigation.navigate(Screens.ExportWallet, {type: path});
+            case 'ExportPK':
+            case 'ExportMN':
+                navigation.navigate(Screens.ExportWallet, { type: path });
                 break;
-            case "Version":
+            case 'Version':
                 navigation.navigate(Screens.Version);
                 break;
             default:
                 break;
         }
-    }
+    };
 
-    const disconnectWallet = async() => {
+    const disconnectWallet = async () => {
         await removeWalletWithAutoLogin();
-        navigation.reset({routes: [{name: Screens.Welcome}]});
-    }
+        ModalActions.handleDAppData(null);
+        ModalActions.handleModalData(null);
+        navigation.reset({ routes: [{ name: Screens.Welcome }] });
+    };
 
-    const handleMoveToWeb = (key:string) => {
+    const handleMoveToWeb = (key: string) => {
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
-    }
-    
+    };
+
     const handleBack = () => {
         navigation.goBack();
-    }
+    };
 
     return (
-        <Container
-            title="Setting"
-            handleGuide={()=>handleMoveToWeb("setting")}
-            backEvent={handleBack}>
+        <Container title="Setting" handleGuide={() => handleMoveToWeb('setting')} backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <View style={{flex: 1}}>
-                    <ScrollView 
-                        keyboardShouldPersistTaps={"handled"}
-                        style={{borderTopWidth: 1, borderTopColor: BgColor}}>
+                <View style={{ flex: 1 }}>
+                    <ScrollView keyboardShouldPersistTaps={'handled'} style={{ borderTopWidth: 1, borderTopColor: BgColor }}>
                         <View style={styles.topButtonsBox}>
-                            <TextMenuItem 
-                                title="Wallet" 
-                                content={wallet.name} 
-                                bgColor={AddressBoxColor} 
-                                icon={true} 
+                            <TextMenuItem
+                                title="Wallet"
+                                content={wallet.name}
+                                bgColor={AddressBoxColor}
+                                icon={true}
                                 iconColor={TextCatTitleColor}
                                 iconSize={20}
-                                iconName={"square-edit-outline"} 
-                                iconType={"MaterialCommunityIcons"}
-                                onPressEvent={()=>handleMenus("ChangeWN")}/>
+                                iconName={'square-edit-outline'}
+                                iconType={'MaterialCommunityIcons'}
+                                onPressEvent={() => handleMenus('ChangeWN')}
+                            />
                         </View>
-                        <BioAuthRadio wallet={wallet}/>
+                        <BioAuthRadio wallet={wallet} />
                         {settingList.map((item, index) => {
-                            return (
-                                <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />
-                            )
+                            return <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />;
                         })}
-                        <View style={styles.bottomButtonsBox} >
-                            <MenuItem title={"Version"} path={"Version"} handleMenus={handleMenus} />
+                        <View style={styles.bottomButtonsBox}>
+                            <MenuItem title={'Version'} path={'Version'} handleMenus={handleMenus} />
                         </View>
                         <View style={styles.bottomButtonsBox}>
                             <Disconnect handleDisconnect={disconnectWallet} />
@@ -100,16 +97,16 @@ const Setting = () => {
                 </View>
             </ViewContainer>
         </Container>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     topButtonsBox: {
-        paddingBottom: 20,
+        paddingBottom: 20
     },
     bottomButtonsBox: {
-        paddingTop: 20,
-    },
-})
+        paddingTop: 20
+    }
+});
 
 export default Setting;

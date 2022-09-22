@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { wait } from '@/util/common';
 import { BgColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
@@ -23,9 +23,26 @@ const ServicesBox = ({ visible, data }: IProps) => {
         return itemLength > 0;
     }, [itemLength]);
 
-    const handleMoveToWeb = (url: string) => {
+    const handleMoveToWeb = useCallback((url: string) => {
         Linking.openURL(url);
-    };
+    }, []);
+
+    const NFTItem = useCallback(
+        ({ item, size }: any) => {
+            return (
+                <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => handleMoveToWeb(item.url)}>
+                    <View style={{ paddingHorizontal: 10 }}>
+                        <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={{ uri: item.icon }} />
+                        {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.icon} /> */}
+                        <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={2}>
+                            {item.name}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            );
+        },
+        [handleMoveToWeb]
+    );
 
     useEffect(() => {
         setIsRendered(false);
@@ -33,20 +50,6 @@ const ServicesBox = ({ visible, data }: IProps) => {
             setIsRendered(true);
         });
     }, []);
-
-    const NFTItem = ({ item, size }: any) => {
-        return (
-            <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => handleMoveToWeb(item.url)}>
-                <View style={{ paddingHorizontal: 10 }}>
-                    <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={{ uri: item.icon }} />
-                    {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.icon} /> */}
-                    <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={2}>
-                        {item.name}
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        );
-    };
 
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>

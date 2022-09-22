@@ -4,7 +4,6 @@ import { BgColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteCol
 import { useNFT } from '@/hooks/dapps/hooks';
 import NFTsBox from './nftsBox';
 import ServicesBox from './servicesBox';
-import { useIsFocused } from '@react-navigation/native';
 
 interface IProps {
     data: any;
@@ -12,8 +11,7 @@ interface IProps {
 }
 
 const TabBox = ({ data, serviceOnly }: IProps) => {
-    const isFocused = useIsFocused();
-    const { MyNFTS, handleNFTIdList, handleIdentity } = useNFT();
+    const { MyNFTS, NFTCount, handleNFTIdList, handleIdentity } = useNFT();
 
     const [tab, setTab] = useState(0);
 
@@ -21,39 +19,17 @@ const TabBox = ({ data, serviceOnly }: IProps) => {
         return MyNFTS;
     }, [MyNFTS]);
 
-    const isNFTExist = useMemo(() => {
-        return NFTS.length > 0;
-    }, [NFTS]);
-
-    const identity = useMemo(() => {
-        return data.identity;
-    }, [data.identity]);
-
     useEffect(() => {
-        if (isFocused) {
-            handleNFTIdList();
-            handleIdentity(identity);
-        }
-    }, [identity, isFocused]);
-
-    useEffect(() => {
-        if (isNFTExist) {
+        if (serviceOnly) {
             setTab(0);
         } else {
-            setTab(1);
+            handleNFTIdList();
         }
-    }, [isNFTExist]);
+    }, [serviceOnly]);
 
     useEffect(() => {
-        if (isFocused) {
-            if (serviceOnly) {
-                setTab(1);
-            } else {
-                handleNFTIdList();
-                handleIdentity(identity);
-            }
-        }
-    }, [isFocused, serviceOnly, identity]);
+        handleIdentity(data.identity);
+    }, []);
 
     return (
         <View style={{ flex: 1 }}>
@@ -68,21 +44,23 @@ const TabBox = ({ data, serviceOnly }: IProps) => {
                             style={[styles.tab, { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' }]}
                             onPress={() => setTab(0)}
                         >
-                            <Text style={tab === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>NFTs</Text>
+                            <Text style={tab === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>Services</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={[styles.tab, { borderBottomColor: tab === 1 ? WhiteColor : 'transparent' }]}
                             onPress={() => setTab(1)}
                         >
-                            <Text style={tab === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>Services</Text>
+                            <Text style={tab === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>
+                                {NFTCount > 0 ? `NFTs (${NFTCount})` : 'NFTs'}
+                            </Text>
                         </TouchableOpacity>
                     </React.Fragment>
                 )}
             </View>
             <View style={{ flex: 1, paddingHorizontal: 20 }}>
-                <NFTsBox visible={tab === 0} NFTS={NFTS} />
-                <ServicesBox visible={tab === 1} data={data.serviceList} />
+                <ServicesBox visible={tab === 0} data={data.serviceList} />
+                <NFTsBox visible={tab === 1} NFTS={NFTS} NFTCount={NFTCount} />
             </View>
         </View>
     );
@@ -128,4 +106,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default TabBox;
+export default React.memo(TabBox);

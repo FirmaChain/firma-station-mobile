@@ -80,16 +80,18 @@ class ConnectClient {
         }
     }
 
-    public async getUserSession(walletName: string): Promise<UserSession> {
+    public async getUserSession(walletKey: string): Promise<UserSession> {
         try {
-            let result = await getDAppConnectSession(walletName);
-            if (result === null) {
-                result = await this.connectNewUser();
-                setDAppConnectSession(walletName, JSON.stringify(result));
-            } else {
-                result = JSON.parse(result);
-            }
-            return result;
+            let result = await getDAppConnectSession(walletKey);
+
+            const isSessionExist = result !== null;
+
+            if (isSessionExist) return JSON.parse(result);
+
+            const newKey = await this.connectNewUser();
+            setDAppConnectSession(walletKey, JSON.stringify(newKey));
+
+            return newKey;
         } catch (error) {
             throw new Error('Failed Request');
         }
@@ -138,7 +140,7 @@ class ConnectClient {
             }
         } catch (e) {
             console.log(e);
-            throw new Error('Invalid QR');
+            throw new Error('Invalid QR(' + e + ')');
         }
     }
 
@@ -159,7 +161,7 @@ class ConnectClient {
             return jsonString;
         } catch (error) {
             console.log(error);
-            throw new Error('Invalid Raw');
+            throw new Error('Invalid Raw(' + error + ')');
         }
     }
 
@@ -181,7 +183,7 @@ class ConnectClient {
             }
         } catch (error) {
             console.log(error);
-            throw new Error('Invalid Raw');
+            throw new Error('Invalid Raw(' + error + ')');
         }
     }
 
@@ -197,7 +199,7 @@ class ConnectClient {
 
             return response.isValid;
         } catch (e) {
-            throw new Error('Invalid QR');
+            throw new Error('Invalid QR(' + e + ')');
         }
     }
 
@@ -209,8 +211,7 @@ class ConnectClient {
             return JSON.stringify(result);
         } catch (e) {
             console.log(e);
-
-            throw new Error('Invalid QR');
+            throw new Error('Invalid QR(' + e + ')');
         }
     }
 
@@ -230,7 +231,7 @@ class ConnectClient {
             }
         } catch (e) {
             console.log(e);
-            throw new Error('Invalid QR');
+            throw new Error('Invalid QR(' + e + ')');
         }
     }
 
@@ -249,7 +250,7 @@ class ConnectClient {
                 throw new Error('Invalid API Code');
             }
         } catch (e) {
-            throw new Error('Invalid QR');
+            throw new Error('Invalid QR(' + e + ')');
         }
     }
 }

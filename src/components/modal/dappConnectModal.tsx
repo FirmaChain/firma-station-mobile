@@ -63,9 +63,8 @@ const DappConnectModal = () => {
     const handleConnect = () => {
         handleModal(false);
         if (common.appState === 'active') {
-            let sessionKey = IdState.session;
-            let updateList = IdState.list;
-            setDAppProjectIdList(wallet.name, sessionKey, updateList);
+            let updateList = JSON.stringify(IdState.list);
+            setDAppProjectIdList(wallet.name, storage.network, updateList);
             ModalActions.handleModalData(QRData);
             if (connectClient.isDirectSign(QRData)) {
                 wait(500).then(() => {

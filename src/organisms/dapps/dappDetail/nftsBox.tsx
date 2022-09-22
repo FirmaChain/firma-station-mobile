@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BgColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
+import { BgColor, BoxColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
 import { DAPP_NO_NFT } from '@/constants/common';
 import { useNFTTransaction } from '@/hooks/dapps/hooks';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
@@ -12,41 +12,48 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDeta
 interface IProps {
     visible: boolean;
     NFTS: Array<any>;
+    NFTCount: number;
 }
 
 const itemCountPerLine = 3;
 
-const NFTsBox = ({ visible, NFTS }: IProps) => {
+const NFTsBox = ({ visible, NFTS, NFTCount }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const [containerSize, setContainerSize] = useState(0);
 
-    const itemLength = useMemo(() => {
-        return NFTS.length;
+    const NFTList = useMemo(() => {
+        return NFTS;
     }, [NFTS]);
 
     const nftsExist = useMemo(() => {
-        return itemLength > 0;
-    }, [itemLength]);
+        return NFTCount > 0;
+    }, [NFTCount]);
 
-    const moveToNFTDetail = (id: any) => {
-        let nft = NFTS.find((value: any) => id === value.id);
-        navigation.navigate(Screens.NFT, { data: { nft: nft } });
-    };
+    const moveToNFTDetail = useCallback(
+        (id: any) => {
+            let nft = NFTS.find((value: any) => id === value.id);
+            navigation.navigate(Screens.NFT, { data: { nft: nft } });
+        },
+        [NFTS]
+    );
 
-    const NFTItem = ({ item, size }: any) => {
-        return (
-            <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
-                <View style={{ paddingHorizontal: 10 }}>
-                    <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={{ uri: item.image }} />
-                    {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.image} /> */}
-                    <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
-                        {item.name}
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        );
-    };
+    const NFTItem = useCallback(
+        ({ item, size }: any) => {
+            return (
+                <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
+                    <View style={{ paddingHorizontal: 10 }}>
+                        <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={{ uri: item.image }} />
+                        {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.image} /> */}
+                        <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
+                            {item.name}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            );
+        },
+        [moveToNFTDetail]
+    );
 
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
@@ -54,13 +61,13 @@ const NFTsBox = ({ visible, NFTS }: IProps) => {
                 <View style={[styles.header, { display: nftsExist ? 'flex' : 'none' }]}>
                     <Text style={styles.title}>
                         List
-                        <Text style={{ color: PointLightColor }}> {itemLength}</Text>
+                        <Text style={{ color: PointLightColor }}> {NFTCount}</Text>
                     </Text>
                 </View>
                 <View style={[styles.infoBox, nftsExist === false && { height: '100%' }]}>
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
                         {nftsExist ? (
-                            NFTS.map((value, key) => {
+                            NFTList.map((value, key) => {
                                 return <NFTItem key={key} item={value} size={(containerSize - 20) / itemCountPerLine} />;
                             })
                         ) : (
@@ -130,6 +137,7 @@ const styles = StyleSheet.create({
     contentImage: {
         resizeMode: 'contain',
         overflow: 'hidden',
+        backgroundColor: BoxColor,
         borderRadius: 8
     },
     contentTitle: {

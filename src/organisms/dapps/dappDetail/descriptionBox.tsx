@@ -154,4 +154,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default DescriptionBox;
+export default React.memo(DescriptionBox);

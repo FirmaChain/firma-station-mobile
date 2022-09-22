@@ -26,9 +26,7 @@ const Governance = () => {
 
     const refreshStates = async () => {
         try {
-            CommonActions.handleLoadingProgress(true);
             await handleGovernanceListPolling();
-            CommonActions.handleLoadingProgress(false);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);

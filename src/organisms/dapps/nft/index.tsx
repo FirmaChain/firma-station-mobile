@@ -11,6 +11,8 @@ import ViewContainer from '@/components/parts/containers/viewContainer';
 import DescriptionBox from './descriptionBox';
 import InfoBox from './infoBox';
 import PropertiesBox from './propertiesBox';
+import wallet from '@/screens/home/wallet/wallet';
+import { useAppSelector } from '@/redux/hooks';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.NFT>;
 
@@ -26,6 +28,7 @@ interface IMetaData {
 
 const NFT = ({ data }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
+    const { wallet } = useAppSelector((state) => state);
 
     const { getNFTMetaData } = useNFT();
     const { NFTTransactionsList } = useNFTTransaction();
@@ -42,7 +45,7 @@ const NFT = ({ data }: IProps) => {
     }, [data]);
 
     const TxData = useMemo(() => {
-        let transaction = NFTTransactionsList.find((value: any) => NFTData.id === value.nftId);
+        let transaction = NFTTransactionsList.find((value: any) => wallet.address === value.to && NFTData.id === value.nftId);
         return transaction;
     }, [NFTTransactionsList, NFTData]);
 

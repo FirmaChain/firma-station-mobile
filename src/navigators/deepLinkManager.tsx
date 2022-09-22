@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import { ModalActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
@@ -76,9 +76,9 @@ const DeepLinkManager = () => {
         }
     }, [modal.dappData]);
 
-    const getProjectId = async (session: string, id: string) => {
+    const getProjectId = async () => {
         try {
-            let result = await getDAppProjectIdList(wallet.name, session);
+            let result = await getDAppProjectIdList(wallet.name, storage.network);
             return JSON.parse(result);
         } catch (error) {
             console.log(error);
@@ -86,10 +86,19 @@ const DeepLinkManager = () => {
         }
     };
 
+    const urlForWebLinkCheck = (url: string) => {
+        if (url.includes('http://') || url.includes('https://')) return true;
+        return false;
+    };
+
     const handleQRResult = async (result: any) => {
         const isValidAddress = addressCheck(result);
+        const isURL = urlForWebLinkCheck(result);
+
         if (isValidAddress) {
             WalletActions.handleDstAddress(result);
+        } else if (isURL) {
+            Linking.openURL(result);
         } else {
             try {
                 let session = await connectClient.getUserSession(wallet.name + storage.network);
@@ -102,11 +111,12 @@ const DeepLinkManager = () => {
                     });
                 }
 
-                let sessionKey = session.userkey === undefined ? '' : session.userkey;
                 let projectId = QRData.projectMetaData === undefined ? '' : QRData.projectMetaData.projectId;
-                let idList = await getProjectId(sessionKey, projectId);
-                let list = idList ? idList.list : [];
-                if (idList || list.includes(projectId)) {
+                let idList = await getProjectId();
+
+                let list = idList ? idList : [];
+
+                if (list.includes(projectId)) {
                     ModalActions.handleModalData(QRData);
 
                     if (connectClient.isDirectSign(QRData)) {
@@ -122,10 +132,7 @@ const DeepLinkManager = () => {
                     let updateList = { list: [...list, projectId] };
                     ModalActions.handleModalData({
                         data: QRData,
-                        idState: {
-                            session: sessionKey,
-                            list: JSON.stringify(updateList)
-                        }
+                        idState: updateList
                     });
                     wait(500).then(() => {
                         ModalActions.handleDAppConnectModal(true);
@@ -142,12 +149,15 @@ const DeepLinkManager = () => {
 
     useEffect(() => {
         if (isFocused && common.lockStation === false) {
-            if (modal.modalData?.result !== undefined) {
-                handleQRResult(modal.modalData.result);
-            }
+            const data = modal.modalData;
+            if (data !== null) {
+                if (data?.result !== undefined) {
+                    handleQRResult(data.result);
+                }
 
-            if (modal.modalData?.qrcodeurl !== undefined) {
-                handleQRResult(modal.modalData.qrcodeurl);
+                if (data?.qrcodeurl !== undefined) {
+                    handleQRResult(data.qrcodeurl);
+                }
             }
         }
     }, [isFocused, common.lockStation, modal.modalData]);

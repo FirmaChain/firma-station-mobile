@@ -150,19 +150,17 @@ export const setUseBioAuth = async (name: string) => {
 };
 
 export const getUseBioAuth = async (name: string) => {
-    let result = false;
     try {
         const useBioAuth = await getChain(USE_BIO_AUTH + name);
         if (useBioAuth) {
-            result = Boolean(useBioAuth.password);
+            return Boolean(useBioAuth.password);
         } else {
-            result = false;
+            return false;
         }
     } catch (error) {
         console.log(error);
+        return false;
     }
-
-    return result;
 };
 
 export const removeUseBioAuth = async (name: string) => {
@@ -305,15 +303,17 @@ export const setDAppConnectSession = async (name: string, session: string) => {
 };
 
 export const getDAppConnectSession = async (name: string) => {
-    let session = null;
     try {
         const result = await getChain(CONNECT_SESSION + name);
+
         if (result === false) return null;
-        session = decrypt(result.password, UNIQUE_ID + name);
+
+        const session = decrypt(result.password, UNIQUE_ID + name);
+        return session === '' ? null : session;
     } catch (error) {
         console.log(error);
+        return null;
     }
-    return session;
 };
 
 export const removeDAppConnectSession = async (name: string) => {
@@ -327,7 +327,7 @@ export const removeDAppConnectSession = async (name: string) => {
 
 export const setDAppProjectIdList = async (name: string, key: string, list: string) => {
     try {
-        const encList = encrypt(list, key + name);
+        const encList = encrypt(list, CONNECT_ID_LIST + key + '_' + name);
         await setChain(CONNECT_ID_LIST + name, encList);
     } catch (error) {
         CommonActions.handleLoadingProgress(false);
@@ -340,7 +340,7 @@ export const getDAppProjectIdList = async (name: string, key: string) => {
     try {
         const result = await getChain(CONNECT_ID_LIST + name);
         if (result === false) return null;
-        list = decrypt(result.password, key + name);
+        list = decrypt(result.password, CONNECT_ID_LIST + key + '_' + name);
         return list;
     } catch (error) {
         console.log(error);

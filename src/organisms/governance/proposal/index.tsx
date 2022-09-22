@@ -68,9 +68,7 @@ const Proposal = ({ proposalId }: IProps) => {
 
     const refreshStates = async () => {
         try {
-            CommonActions.handleLoadingProgress(true);
             await handleProposalPolling();
-            CommonActions.handleLoadingProgress(false);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);

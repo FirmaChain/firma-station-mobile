@@ -604,9 +604,7 @@ export const getStaking = async (address: string) => {
 export const getNFTIdListOfOwner = async (address: string) => {
     try {
         let result = await getFirmaSDK().Nft.getNftIdListOfOwner(address);
-        let idList = result.nftIdList;
-
-        return idList;
+        return result;
     } catch (error) {
         console.log(error);
         throw error;
@@ -614,7 +612,11 @@ export const getNFTIdListOfOwner = async (address: string) => {
 };
 
 export const getNFTItemFromId = async (id: string) => {
-    let nft = await getFirmaSDK().Nft.getNftItem(id);
-
-    return nft;
+    try {
+        let nft = await getFirmaSDK().Nft.getNftItem(id);
+        return nft;
+    } catch (error) {
+        console.log('error');
+        return null;
+    }
 };

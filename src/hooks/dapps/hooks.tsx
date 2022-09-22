@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNFTTransactionQuery } from '@/apollo/gqls';
+import { useNFTTransactionQuery, useNFTTransactionQueryForTestNet } from '@/apollo/gqls';
 import { FIRMA_LOGO } from '@/constants/images';
 import { useAppSelector } from '@/redux/hooks';
 import { getNFTIdListOfOwner, getNFTItemFromId, INftItemType } from '@/util/firma';
@@ -14,6 +14,7 @@ export interface INFTTransctionState {
 
 export const useNFT = () => {
     const { wallet } = useAppSelector((state) => state);
+    const [NFTCount, setNFTCount] = useState(0);
     const [NFTIdList, setNFTIdLIst] = useState<Array<string>>([]);
     const [NFTS, setNFTS] = useState<Array<INftItemType>>([]);
     const [MyNFTS, setMyNFTS] = useState<Array<any>>([]);
@@ -33,7 +34,8 @@ export const useNFT = () => {
     const handleNFTIdList = async () => {
         try {
             let list = await getNFTIdListOfOwner(wallet.address);
-            setNFTIdLIst(list);
+            setNFTIdLIst(list.nftIdList);
+            setNFTCount(list.pagination.total);
         } catch (error) {
             console.log(error);
             throw error;
@@ -45,7 +47,9 @@ export const useNFT = () => {
             let list: Array<INftItemType> = [];
             for (let i = 0; i < NFTIdList.length; i++) {
                 let nft = await getNFTItemFromId(NFTIdList[i]);
-                list.push(nft);
+                if (nft) {
+                    list.push(nft);
+                }
             }
             setNFTS(list);
         } catch (error) {
@@ -61,7 +65,7 @@ export const useNFT = () => {
                 let NFT = NFTS[i];
                 const res = await fetch(NFT.tokenURI);
                 const json = await res.json();
-                const image = await checkImageFile(json.imageURI);
+                const image = json.imageURI;
                 const metaURI = json.metaURI !== undefined ? json.metaURI : '';
 
                 if (identity === json.identity) {
@@ -93,16 +97,6 @@ export const useNFT = () => {
         }
     };
 
-    const checkImageFile = async (uri: string) => {
-        try {
-            const file_res = await fetch(uri);
-            const file_blob = await file_res.blob();
-            return file_blob.type.includes('image') ? uri : FIRMA_LOGO;
-        } catch (error) {
-            return FIRMA_LOGO;
-        }
-    };
-
     useEffect(() => {
         if (NFTIdList.length > 0) {
             handleNFTSList();
@@ -113,21 +107,24 @@ export const useNFT = () => {
         if (NFTS.length > 0 && identity !== '') {
             handleMyNFTList();
         }
-    }, [NFTIdList, NFTS]);
+    }, [NFTS, identity]);
 
     useEffect(() => {
         initValues();
     }, []);
 
-    return { MyNFTS, handleNFTIdList, handleIdentity, getNFTMetaData };
+    return { MyNFTS, NFTIdList, NFTCount, handleNFTIdList, handleIdentity, getNFTMetaData };
 };
 
 export const useNFTTransaction = () => {
-    const { wallet } = useAppSelector((state) => state);
+    const { storage, wallet } = useAppSelector((state) => state);
 
     const [NFTTransactionsList, setNFTTransactionsList] = useState<Array<INFTTransctionState>>([]);
 
-    const { refetch, loading, data } = useNFTTransactionQuery({ address: `{${wallet.address}}` });
+    const { refetch, loading, data } =
+        storage.network === 'MainNet'
+            ? useNFTTransactionQuery({ address: `{${wallet.address}}` })
+            : useNFTTransactionQueryForTestNet({ address: `{${wallet.address}}` });
 
     const handleRefetchNFTTransaction = async () => {
         try {

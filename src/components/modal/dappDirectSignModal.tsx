@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
-import { CommonActions, ModalActions } from '@/redux/actions';
-import { getBalanceFromAdr, getFirmaSDK } from '@/util/firma';
+import { ModalActions } from '@/redux/actions';
+import { getBalanceFromAdr, getFirmaSDK, getTokenBalance } from '@/util/firma';
 import { getDAppConnectSession } from '@/util/wallet';
 import {
     AddressTextColor,
@@ -13,7 +13,6 @@ import {
     TextColor,
     TextDarkGrayColor,
     TextDisableColor,
-    TextWarnColor,
     WhiteColor
 } from '@/constants/theme';
 import { DAPP_NOT_ENOUGHT_BALANCE, TRANSACTION_TYPE } from '@/constants/common';
@@ -26,7 +25,6 @@ import Button from '../button/button';
 import CustomModal from './customModal';
 import ValidationModal from './validationModal';
 import WarnContainer from '../parts/containers/warnContainer';
-import { isDataView } from 'util/types';
 
 const DappDirectSignModal = () => {
     const { common, wallet, storage, modal } = useAppSelector((state) => state);
@@ -38,12 +36,22 @@ const DappDirectSignModal = () => {
     const [iconUrl, setIconUrl] = useState('');
     const [iconHeight, setIconHeight] = useState(0);
     const [description, setDescription] = useState('');
+    const [isFCT, setIsFCT] = useState(true);
     const [balance, setBalance] = useState(0);
+    const [tokenBalance, setTokenBalance] = useState(0);
     const [productPrice, setProductPrice] = useState(0);
     const [productPriceSymbol, setProductPriceSymbol] = useState('FCT');
 
     const [chainID, setChainId] = useState('');
     const [userSession, setUserSession] = useState(null);
+
+    const initValues = () => {
+        setIsFCT(true);
+        setBalance(0);
+        setTokenBalance(0);
+        setProductPrice(0);
+        setProductPriceSymbol('FCT');
+    };
 
     const isVisible = useMemo(() => {
         return modal.dappDirectSignModal;
@@ -73,8 +81,11 @@ const DappDirectSignModal = () => {
     useEffect(() => {
         if (QRData) {
             if (QRData.signParams.argument?.fctPrice !== undefined) {
+                setIsFCT(true);
                 setProductPrice(convertNumber(QRData.signParams.argument.fctPrice));
             } else if (QRData.signParams.argument?.token !== undefined) {
+                setIsFCT(false);
+                getTokenBalanceFromDenom(QRData.signParams.argument.token.denom);
                 setProductPrice(convertToFctNumber(QRData.signParams.argument.token.amount));
                 setProductPriceSymbol(QRData.signParams.argument.token.symbol);
             }
@@ -87,9 +98,33 @@ const DappDirectSignModal = () => {
 
     const defaultFee = convertToFctNumber(CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.defaultFee);
 
+    const engoughBalance = useCallback(() => {
+        if (productPrice > 0) {
+            if (isFCT) {
+                return balance >= productPrice + defaultFee;
+            } else {
+                return balance >= defaultFee;
+            }
+        } else {
+            return true;
+        }
+    }, [productPrice, isFCT, balance]);
+
+    const engoughTokenBalance = useCallback(() => {
+        if (productPrice > 0) {
+            if (isFCT) {
+                return true;
+            } else {
+                return tokenBalance >= productPrice;
+            }
+        } else {
+            return true;
+        }
+    }, [productPrice, isFCT, tokenBalance]);
+
     const enoughBalanceToPay = useMemo(() => {
-        return balance > productPrice + defaultFee;
-    }, [balance, productPrice]);
+        return engoughBalance() && engoughTokenBalance();
+    }, [engoughBalance, engoughTokenBalance]);
 
     const handleModal = (open: boolean) => {
         ModalActions.handleModalData(null);
@@ -140,6 +175,16 @@ const DappDirectSignModal = () => {
         }
     };
 
+    const getTokenBalanceFromDenom = async (denom: string) => {
+        try {
+            let result = await getTokenBalance(wallet.address, denom);
+            let token = convertToFctNumber(result);
+            setTokenBalance(token);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         const initializeModalData = async () => {
             try {
@@ -181,6 +226,8 @@ const DappDirectSignModal = () => {
             } catch (error) {
                 handleModal(false);
             }
+        } else {
+            initValues();
         }
     }, [isVisible]);
 
@@ -189,7 +236,7 @@ const DappDirectSignModal = () => {
     }, [common.appState]);
 
     return (
-        <CustomModal visible={modal.dappDirectSignModal} handleOpen={handleModal}>
+        <CustomModal visible={isVisible} handleOpen={handleModal}>
             <React.Fragment>
                 <View style={styles.modalTextContents}>
                     <View style={[styles.boxV, { alignItems: 'center' }]}>

@@ -497,6 +497,35 @@ export const useNFTTransactionQuery = ({ address }: IQueryParam) => {
     return useQuery(
         gql`
             query getNftTransactionByAddress($address: _text, $types: _text = "{firmachain.firmachain.nft.MsgTransfer}") {
+                messagesByAddress: messages_by_address(args: { addresses: $address, types: $types }, order_by: { index: desc }) {
+                    type
+                    index
+                    transaction_hash
+                    value
+                    transaction {
+                        success
+                        fee
+                        block {
+                            timestamp
+                        }
+                    }
+                }
+            }
+        `,
+        {
+            pollInterval: 0,
+            notifyOnNetworkStatusChange: true,
+            variables: {
+                address
+            }
+        }
+    );
+};
+
+export const useNFTTransactionQueryForTestNet = ({ address }: IQueryParam) => {
+    return useQuery(
+        gql`
+            query getNftTransactionByAddress($address: _text, $types: _text = "{firmachain.firmachain.nft.MsgTransfer}") {
                 messagesByAddress: messages_by_address(args: { addresses: $address, types: $types }, order_by: { height: desc }) {
                     type
                     height
