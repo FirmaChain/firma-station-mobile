@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
-import { ModalActions } from '@/redux/actions';
+import { CommonActions, ModalActions } from '@/redux/actions';
 import { getBalanceFromAdr, getFirmaSDK, getTokenBalance } from '@/util/firma';
 import { getDAppConnectSession } from '@/util/wallet';
 import {
@@ -37,6 +37,8 @@ const DappDirectSignModal = () => {
     const [iconHeight, setIconHeight] = useState(0);
     const [description, setDescription] = useState('');
     const [isFCT, setIsFCT] = useState(true);
+    const [isGetBalanceData, setIsGetBalanceData] = useState(false);
+    const [isGetTokenBalanceData, setIsGetTokenBalanceData] = useState(false);
     const [balance, setBalance] = useState(0);
     const [tokenBalance, setTokenBalance] = useState(0);
     const [productPrice, setProductPrice] = useState(0);
@@ -51,11 +53,33 @@ const DappDirectSignModal = () => {
         setTokenBalance(0);
         setProductPrice(0);
         setProductPriceSymbol('FCT');
+        setIsGetBalanceData(false);
+        setIsGetTokenBalanceData(false);
+    };
+
+    const closeModal = () => {
+        ModalActions.handleModalData(null);
+        CommonActions.handleLoadingProgress(false);
+        ModalActions.handleDAppDirectSignModal(false);
     };
 
     const isVisible = useMemo(() => {
         return modal.dappDirectSignModal;
     }, [modal.dappDirectSignModal]);
+
+    const isLoadedAllBalanceData = useMemo(() => {
+        if (isFCT) {
+            return isGetBalanceData;
+        } else {
+            return isGetBalanceData && isGetTokenBalanceData;
+        }
+    }, [isGetBalanceData, isGetTokenBalanceData]);
+
+    useEffect(() => {
+        if (isLoadedAllBalanceData) {
+            CommonActions.handleLoadingProgress(false);
+        }
+    }, [isLoadedAllBalanceData]);
 
     const QRData = useMemo(() => {
         if (isVisible) {
@@ -80,14 +104,22 @@ const DappDirectSignModal = () => {
 
     useEffect(() => {
         if (QRData) {
-            if (QRData.signParams.argument?.fctPrice !== undefined) {
-                setIsFCT(true);
-                setProductPrice(convertNumber(QRData.signParams.argument.fctPrice));
-            } else if (QRData.signParams.argument?.token !== undefined) {
-                setIsFCT(false);
-                getTokenBalanceFromDenom(QRData.signParams.argument.token.denom);
-                setProductPrice(convertToFctNumber(QRData.signParams.argument.token.amount));
-                setProductPriceSymbol(QRData.signParams.argument.token.symbol);
+            try {
+                if (QRData.signParams.argument?.fctPrice !== undefined) {
+                    setIsFCT(true);
+                    setProductPrice(convertNumber(QRData.signParams.argument.fctPrice));
+                } else if (QRData.signParams.argument?.token !== undefined) {
+                    setIsFCT(false);
+                    getTokenBalanceFromDenom(QRData.signParams.argument.token.denom);
+                    setProductPrice(convertToFctNumber(QRData.signParams.argument.token.amount));
+                    setProductPriceSymbol(QRData.signParams.argument.token.symbol);
+                }
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: String(error)
+                });
+                closeModal();
             }
         }
     }, [QRData]);
@@ -126,29 +158,29 @@ const DappDirectSignModal = () => {
         return engoughBalance() && engoughTokenBalance();
     }, [engoughBalance, engoughTokenBalance]);
 
-    const handleModal = (open: boolean) => {
-        ModalActions.handleModalData(null);
-        ModalActions.handleDAppDirectSignModal(open);
-    };
-
     const handleReject = async () => {
         try {
             if (userSession && QRData) {
                 await connectClient.reject(JSON.parse(userSession), QRData);
             }
-            handleModal(false);
+            closeModal();
         } catch (error) {
             console.log(error);
+            Toast.show({
+                type: 'error',
+                text1: String(error)
+            });
+            closeModal();
         }
     };
 
-    const handleValidation = async (open: boolean) => {
+    const handleValidation = (open: boolean) => {
         if (common.appState === 'active') {
             setOpenValidationModal(open);
         }
     };
 
-    const handleTransaction = async (result: string) => {
+    const handleTransaction = (result: string) => {
         if (common.appState === 'active') {
             ModalActions.handleDAppData({
                 type: TRANSACTION_TYPE['DAPP'],
@@ -157,7 +189,7 @@ const DappDirectSignModal = () => {
                 chainId: chainID,
                 session: userSession
             });
-            handleModal(false);
+            closeModal();
         }
     };
 
@@ -165,6 +197,7 @@ const DappDirectSignModal = () => {
         try {
             const balandeResult = await getBalanceFromAdr(wallet.address);
             setBalance(convertNumber(makeDecimalPoint(convertToFctNumber(balandeResult), 2)));
+            setIsGetBalanceData(true);
         } catch (error) {
             console.log(error);
             Toast.show({
@@ -180,6 +213,7 @@ const DappDirectSignModal = () => {
             let result = await getTokenBalance(wallet.address, denom);
             let token = convertToFctNumber(result);
             setTokenBalance(token);
+            setIsGetTokenBalanceData(true);
         } catch (error) {
             console.log(error);
         }
@@ -224,7 +258,12 @@ const DappDirectSignModal = () => {
                 setDescription(QRData.signParams.info);
                 getBalance();
             } catch (error) {
-                handleModal(false);
+                CommonActions.handleLoadingProgress(false);
+                Toast.show({
+                    type: 'error',
+                    text1: String(error)
+                });
+                closeModal();
             }
         } else {
             initValues();
@@ -232,11 +271,11 @@ const DappDirectSignModal = () => {
     }, [isVisible]);
 
     useEffect(() => {
-        if (common.appState !== 'active' && common.isBioAuthInProgress === false) handleModal(false);
+        if (common.appState !== 'active' && common.isBioAuthInProgress === false) closeModal();
     }, [common.appState]);
 
     return (
-        <CustomModal visible={isVisible} handleOpen={handleModal}>
+        <CustomModal visible={isLoadedAllBalanceData} handleOpen={closeModal}>
             <React.Fragment>
                 <View style={styles.modalTextContents}>
                     <View style={[styles.boxV, { alignItems: 'center' }]}>

@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
-import { ModalActions, WalletActions } from '@/redux/actions';
+import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { DappConnectModal, DappDirectSignModal, DappSignModal } from '@/components/modal';
 import { Screens, StackParamList } from './appRoutes';
 import { wait } from '@/util/common';
@@ -19,7 +19,6 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 const DeepLinkManager = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const isFocused = useIsFocused();
     const { storage, wallet, common, modal } = useAppSelector((state) => state);
     const [deepLink, setDeepLink] = useState('');
 
@@ -53,14 +52,13 @@ const DeepLinkManager = () => {
         if (common.appState !== 'active') return;
         if (common.isBioAuthInProgress) return;
         if (common.lockStation) return;
-        if (isFocused) {
-            if (deepLink !== '' && deepLink !== undefined) {
-                let convertLink = deepLink.replace('firmastation', 'sign');
-                setDeepLink('');
-                ModalActions.handleModalData({ qrcodeurl: convertLink });
-            }
+        if (deepLink !== '' && deepLink !== undefined) {
+            CommonActions.handleLoadingProgress(true);
+            let convertLink = deepLink.replace('firmastation', 'sign');
+            setDeepLink('');
+            ModalActions.handleModalData({ deeplink: convertLink });
         }
-    }, [isFocused, common, deepLink]);
+    }, [common, deepLink]);
 
     useEffect(() => {
         if (common.appState === 'background') {
@@ -96,8 +94,10 @@ const DeepLinkManager = () => {
         const isURL = urlForWebLinkCheck(result);
 
         if (isValidAddress) {
+            CommonActions.handleLoadingProgress(false);
             WalletActions.handleDstAddress(result);
         } else if (isURL) {
+            CommonActions.handleLoadingProgress(false);
             Linking.openURL(result);
         } else {
             try {
@@ -139,6 +139,9 @@ const DeepLinkManager = () => {
                     });
                 }
             } catch (error) {
+                CommonActions.handleLoadingProgress(false);
+                ModalActions.handleModalData(null);
+                ModalActions.handleDAppData(null);
                 return Toast.show({
                     type: 'error',
                     text1: String(error)
@@ -148,19 +151,17 @@ const DeepLinkManager = () => {
     };
 
     useEffect(() => {
-        if (isFocused && common.lockStation === false) {
+        if (common.lockStation === false) {
             const data = modal.modalData;
             if (data !== null) {
                 if (data?.result !== undefined) {
                     handleQRResult(data.result);
-                }
-
-                if (data?.qrcodeurl !== undefined) {
-                    handleQRResult(data.qrcodeurl);
+                } else if (data?.deeplink !== undefined) {
+                    handleQRResult(data.deeplink);
                 }
             }
         }
-    }, [isFocused, common.lockStation, modal.modalData]);
+    }, [common.lockStation, modal.modalData]);
 
     return (
         <React.Fragment>

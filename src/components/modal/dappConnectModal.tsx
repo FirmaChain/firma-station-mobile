@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
-import { ModalActions } from '@/redux/actions';
+import { CommonActions, ModalActions } from '@/redux/actions';
 import { setDAppProjectIdList } from '@/util/wallet';
 import { convertNumber, wait } from '@/util/common';
 import { BgColor, Lato, TextCatTitleColor, TextDarkGrayColor } from '@/constants/theme';
@@ -24,6 +24,10 @@ const DappConnectModal = () => {
     const isVisible = useMemo(() => {
         return modal.dappConnectModal;
     }, [modal.dappConnectModal]);
+
+    useEffect(() => {
+        CommonActions.handleLoadingProgress(false);
+    }, [isVisible]);
 
     const QRData = useMemo(() => {
         if (isVisible) {
@@ -98,7 +102,7 @@ const DappConnectModal = () => {
     }, [common.appState]);
 
     return (
-        <CustomModal visible={modal.dappConnectModal} handleOpen={handleModal}>
+        <CustomModal visible={isVisible} handleOpen={handleModal}>
             <View style={styles.modalTextContents}>
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
                     <View style={[styles.urlBox]}>

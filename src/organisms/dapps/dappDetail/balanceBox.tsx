@@ -4,6 +4,7 @@ import { convertAmount, resizeFontSize } from '@/util/common';
 import { BgColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { getTokenBalance } from '@/util/firma';
+import { useIsFocused } from '@react-navigation/native';
 
 interface IProps {
     tokenData: {
@@ -13,6 +14,8 @@ interface IProps {
 }
 
 const BalanceBox = ({ tokenData }: IProps) => {
+    const isFocused = useIsFocused();
+
     const { wallet } = useAppSelector((state) => state);
     const [balanceTextSize, setBalanceTextSize] = useState(20);
     const [balance, setBalance] = useState(0);
@@ -38,10 +41,12 @@ const BalanceBox = ({ tokenData }: IProps) => {
     };
 
     useEffect(() => {
-        if (tokenDenom !== '') {
-            getBalance();
+        if (isFocused) {
+            if (tokenDenom !== '') {
+                getBalance();
+            }
         }
-    }, [tokenDenom]);
+    }, [isFocused, tokenDenom]);
 
     return (
         <View style={styles.container}>

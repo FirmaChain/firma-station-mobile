@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BarCodeReadEvent } from 'react-native-camera';
-import { ModalActions } from '@/redux/actions';
+import { CommonActions, ModalActions } from '@/redux/actions';
 import { ScreenHeight, ScreenWidth } from '@/util/getScreenSize';
 import { QRCODE_SCANNER_MODAL_TEXT } from '@/constants/common';
 import { Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
@@ -20,19 +20,20 @@ const QRCodeScannerModal = () => {
         // wait(1000).then(() => handleReaderTest());
     };
 
+    // const handleReaderTest = () => {
+    //     ModalActions.handleModalData({ result: 'sign://17db8171-a7c8-4023-b9b2-1c07b0b1d0d9' });
+    //     closeModal();
+    // };
+
     useEffect(() => {
         handleCameraPermission();
     }, []);
 
     const handleReader = (event: BarCodeReadEvent) => {
+        CommonActions.handleLoadingProgress(true);
         ModalActions.handleModalData({ result: event.data });
         closeModal();
     };
-
-    // const handleReaderTest = () => {
-    //     ModalActions.handleModalData({ result: 'https://firmachain.org' });
-    //     closeModal();
-    // };
 
     const closeModal = () => {
         ModalActions.handleQRScannerModal(false);
