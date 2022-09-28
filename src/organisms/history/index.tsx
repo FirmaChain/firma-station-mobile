@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Linking, NativeScrollEvent, NativeSyntheticEvent, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Linking, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { IHistoryState, useHistoryData } from '@/hooks/wallet/hooks';
 import { BgColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import { HISTORY_NOT_EXIST } from '@/constants/common';
-import { wait } from '@/util/common';
 import { GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
 import HistoryList from './historyList';
@@ -16,10 +15,9 @@ import HistoryList from './historyList';
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
 const History = () => {
-    const { common } = useAppSelector((state) => state);
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { historyList, handleHistoryOffset, handleHisotyPolling } = useHistoryData();
+    const { historyExist, historyList, handleHistoryOffset, handleHisotyPolling } = useHistoryData();
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [historyRefresh, setHistoryRefresh] = useState(false);
@@ -62,44 +60,49 @@ const History = () => {
         }
     }, [historyList, historyRefresh]);
 
-    useFocusEffect(
-        useCallback(() => {
-            CommonActions.handleLoadingProgress(true);
-            wait(800).then(() => {
-                setIsLoaded(true);
+    useEffect(() => {
+        if (historyExist) {
+            if (isLoaded) {
                 CommonActions.handleLoadingProgress(false);
-            });
-        }, [])
-    );
+            } else {
+                CommonActions.handleLoadingProgress(true);
+                if (loadedHistoryList.length > 0) {
+                    setIsLoaded(true);
+                }
+            }
+        }
+    }, [historyExist, loadedHistoryList, isLoaded]);
 
     return (
         <Container title="History" handleGuide={() => handleMoveToWeb('history')} backEvent={handleBack}>
             <View style={[styles.listBox, { justifyContent: historyList.list.length > 0 ? 'space-between' : 'center' }]}>
-                <View style={styles.container}>
-                    {loadedHistoryList.length > 0 ? (
-                        <FlatList
-                            data={loadedHistoryList}
-                            showsVerticalScrollIndicator={false}
-                            refreshControl={
-                                <RefreshControl
-                                    tintColor={WhiteColor}
-                                    progressBackgroundColor={'transparent'}
-                                    refreshing={historyRefresh}
-                                    onRefresh={refreshStates}
-                                />
-                            }
-                            onEndReached={() => historyOffsetHandler(false)}
-                            onEndReachedThreshold={0.6}
-                            renderItem={({ item }) => {
-                                return <HistoryList item={item} handleExplorer={handleMoveToWeb} />;
-                            }}
-                        />
-                    ) : (
-                        <View style={{ flex: 1, justifyContent: 'center' }}>
-                            <Text style={[styles.notice, { display: isLoaded ? 'flex' : 'none' }]}>{HISTORY_NOT_EXIST}</Text>
-                        </View>
-                    )}
-                </View>
+                {loadedHistoryList && (
+                    <View style={styles.container}>
+                        {historyExist ? (
+                            <FlatList
+                                data={loadedHistoryList}
+                                showsVerticalScrollIndicator={false}
+                                refreshControl={
+                                    <RefreshControl
+                                        tintColor={WhiteColor}
+                                        progressBackgroundColor={'transparent'}
+                                        refreshing={historyRefresh}
+                                        onRefresh={refreshStates}
+                                    />
+                                }
+                                onEndReached={() => historyOffsetHandler(false)}
+                                onEndReachedThreshold={0.6}
+                                renderItem={({ item }) => {
+                                    return <HistoryList item={item} handleExplorer={handleMoveToWeb} />;
+                                }}
+                            />
+                        ) : (
+                            <View style={{ flex: 1, justifyContent: 'center' }}>
+                                <Text style={[styles.notice, { display: isLoaded ? 'flex' : 'none' }]}>{HISTORY_NOT_EXIST}</Text>
+                            </View>
+                        )}
+                    </View>
+                )}
             </View>
         </Container>
     );

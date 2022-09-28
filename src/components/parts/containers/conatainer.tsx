@@ -1,7 +1,7 @@
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
+import { StyleSheet, View } from 'react-native';
 import { BoxDarkColor } from '@/constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '@/components/header/header';
 import TitleBar from '../titleBar';
 
@@ -26,12 +26,14 @@ const Container = ({
     handleGuide,
     children
 }: IProps) => {
+    const insets = useSafeAreaInsets();
+
     const handleMoveBack = () => {
         backEvent && backEvent();
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: bgColor }]}>
+        <View style={[styles.container, { backgroundColor: bgColor, paddingTop: insets.top }]}>
             <Header step={step} bgColor={bgColor} onPressEvent={() => handleMoveBack()} />
             {titleOn && <TitleBar title={title} subTitle={subTitle} handleGuide={handleGuide} />}
             {children}
@@ -41,8 +43,7 @@ const Container = ({
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        paddingTop: Platform.select({ android: 0, ios: getStatusBarHeight() })
+        flex: 1
     }
 });
 

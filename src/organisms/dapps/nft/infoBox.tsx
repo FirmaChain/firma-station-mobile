@@ -1,23 +1,75 @@
-import { CHAIN_NETWORK } from '@/../config';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAppSelector } from '@/redux/hooks';
 import { EXPLORER_URL } from '@/constants/common';
 import { FIRMA_LOGO } from '@/constants/images';
-import { Lato, PointLightColor, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { useAppSelector } from '@/redux/hooks';
-import { convertTime } from '@/util/common';
-import React, { useEffect, useMemo } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Lato, TextAddressColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { convertTime, wait } from '@/util/common';
+import { CHAIN_NETWORK } from '@/../config';
+import TextSkeleton from '@/components/skeleton/textSkeleton';
+import { fadeIn } from '@/util/animation';
 
 interface IProps {
     data: any;
     handleExplorer: (url: string) => void;
 }
 
+interface IDataRenderProps {
+    value: string;
+    color: string;
+    loading: boolean;
+}
+
 const InfoBox = ({ data, handleExplorer }: IProps) => {
     const { storage } = useAppSelector((state) => state);
+
+    const fadeAnimText = useRef(new Animated.Value(0)).current;
+
+    const [isLoading, setIsLoading] = useState(true);
 
     const chainID = useMemo(() => {
         return `(${CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.chainID})`;
     }, []);
+
+    const timestamp = useMemo(() => {
+        if (data.timestamp === undefined) return '';
+        return convertTime(data.timestamp, true);
+    }, [data.timestamp]);
+
+    const fromAddress = useMemo(() => {
+        if (data.from === undefined) return '';
+        return data.from;
+    }, [data.from]);
+
+    const transactionHash = useMemo(() => {
+        if (data.hash === undefined) return '';
+        return data.hash;
+    }, [data.hash]);
+
+    useEffect(() => {
+        if (timestamp !== '' && fromAddress !== '' && transactionHash !== '') {
+            wait(1000).then(() => {
+                fadeIn(Animated, fadeAnimText, 500);
+                setIsLoading(false);
+            });
+        }
+    }, [timestamp, fromAddress, transactionHash]);
+
+    const InfoDataRender = ({ value, color, loading }: IDataRenderProps) => {
+        if (loading) {
+            return (
+                <View style={{ flex: 4, width: '100%', height: 16 }}>
+                    <TextSkeleton height={16} />
+                </View>
+            );
+        } else {
+            return (
+                <Animated.Text style={[styles.value, { color: color, opacity: fadeAnimText }]} numberOfLines={1} ellipsizeMode={'middle'}>
+                    {value}
+                </Animated.Text>
+            );
+        }
+    };
 
     return (
         <View>
@@ -37,22 +89,18 @@ const InfoBox = ({ data, handleExplorer }: IProps) => {
             </View>
             <View style={styles.box}>
                 <Text style={styles.title}>Time</Text>
-                <Text style={styles.value}>{convertTime(data.timestamp, true)}</Text>
+                <InfoDataRender value={timestamp} color={TextColor} loading={isLoading} />
             </View>
             <View style={styles.box}>
                 <Text style={styles.title}>From</Text>
                 <TouchableOpacity style={[{ flex: 4 }]} onPress={() => handleExplorer(EXPLORER_URL() + '/accounts/' + data.from)}>
-                    <Text style={[styles.value, { color: TextAddressColor }]} numberOfLines={1} ellipsizeMode={'middle'}>
-                        {data.from}
-                    </Text>
+                    <InfoDataRender value={fromAddress} color={TextAddressColor} loading={isLoading} />
                 </TouchableOpacity>
             </View>
             <View style={styles.box}>
                 <Text style={styles.title}>Hash</Text>
                 <TouchableOpacity style={[{ flex: 4 }]} onPress={() => handleExplorer(EXPLORER_URL() + '/transactions/' + data.hash)}>
-                    <Text style={[styles.value, { color: TextAddressColor }]} numberOfLines={1} ellipsizeMode={'middle'}>
-                        {data.hash}
-                    </Text>
+                    <InfoDataRender value={transactionHash} color={TextAddressColor} loading={isLoading} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -74,6 +122,7 @@ const styles = StyleSheet.create({
     },
     value: {
         flex: 4,
+        height: 16,
         paddingLeft: 2,
         fontFamily: Lato,
         fontSize: 16,

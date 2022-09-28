@@ -1,14 +1,11 @@
 import React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppSelector } from '@/redux/hooks';
-import { QRCodeScannerIcon, QuestionFilledCircle, Setting } from '@/components/icon/icon';
-import { BgColor, GrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
-import { ICON_HISTORY } from '@/constants/images';
 import { ModalActions } from '@/redux/actions';
-import { useIsFocused } from '@react-navigation/native';
-import { CHAIN_NETWORK } from '@/../config';
-import ConnectClient from '@/util/connectClient';
+import { QRCodeScannerIcon, QuestionFilledCircle, Setting } from '@/components/icon/icon';
+import { ICON_HISTORY } from '@/constants/images';
+import { BgColor, GrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import NetworkBadge from '../networkBadge';
 
 interface IProps {
@@ -20,9 +17,8 @@ interface IProps {
 }
 
 const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, children }: IProps) => {
-    const isFocused = useIsFocused();
-    const { storage, common, wallet, modal } = useAppSelector((state) => state);
-    const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const insets = useSafeAreaInsets();
+    const { storage } = useAppSelector((state) => state);
 
     const handleQRScanner = async (active: boolean) => {
         ModalActions.handleQRScannerModal(active);
@@ -40,7 +36,7 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.titleContainer}>
                 <View style={[styles.boxH, { paddingLeft: 10 }]}>
                     <Text style={[styles.title, { paddingLeft: 10 }]}>{title}</Text>
@@ -78,7 +74,6 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: Platform.select({ android: 0, ios: getStatusBarHeight() }),
         backgroundColor: BgColor
     },
     boxH: {
@@ -92,8 +87,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        flexDirection: 'row',
-        marginTop: 15
+        flexDirection: 'row'
     },
     title: {
         fontFamily: Lato,

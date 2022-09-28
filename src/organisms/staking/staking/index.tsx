@@ -58,9 +58,7 @@ const Staking = () => {
     };
 
     const handleCurrentHistoryPolling = async (polling: boolean) => {
-        if (currentHistoryPolling) {
-            await currentHistoryPolling(polling);
-        }
+        await currentHistoryPolling(polling);
     };
 
     const refreshStates = async () => {
@@ -83,8 +81,8 @@ const Staking = () => {
         if (staking.stakingReward > 0 && isFocused) {
             updateStakingState(staking.stakingReward);
         }
-        handleCurrentHistoryPolling(isFocused);
-        handleIsRefresh(isFocused);
+        handleCurrentHistoryPolling(true);
+        handleIsRefresh(true);
     };
 
     useEffect(() => {
@@ -125,6 +123,8 @@ const Staking = () => {
                 setIsInit(true);
             }
             refreshAtFocus();
+        } else {
+            handleCurrentHistoryPolling(false);
         }
     }, [isFocused]);
 

@@ -5,9 +5,8 @@ import { DAPP_SERVICE_USING_NOTICE, EXPLORER_URL, TRANSACTION_TYPE } from '@/con
 import { ExclamationCircle, FailCircle, SuccessCircle } from '@/components/icon/icon';
 import { IResultState } from '.';
 import Button from '@/components/button/button';
-import WarnContainer from '@/components/parts/containers/warnContainer';
 import { wait } from '@/util/common';
-import { easeInAndOutAnim, fadeIn, LayoutAnim } from '@/util/animation';
+import { fadeIn } from '@/util/animation';
 
 interface IProps {
     result: IResultState;
@@ -16,8 +15,6 @@ interface IProps {
 }
 
 const TransactionResult = ({ result, handleExplorer, handleBack }: IProps) => {
-    const [buttonLock, setButtonLock] = useState(true);
-
     const buttonOpacityValue = useMemo(() => {
         if (result.type === TRANSACTION_TYPE['DAPP']) {
             return 0;
@@ -43,8 +40,6 @@ const TransactionResult = ({ result, handleExplorer, handleBack }: IProps) => {
                     fadeIn(Animated, fadeAnimEnterButton, 500);
                 });
             });
-        } else {
-            setButtonLock(false);
         }
     }, [result]);
 

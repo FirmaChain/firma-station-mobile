@@ -149,7 +149,7 @@ const DappSignModal = () => {
                                     {wallet.name}
                                 </Text>
                             </View>
-                            <View style={{ flexDirection: 'row', paddingBottom: 8 }}>
+                            <View style={{ flexDirection: 'row' }}>
                                 <Text style={[styles.address, { flex: 1 }]}>{'Address : '}</Text>
                                 <Text style={[styles.address, { flex: 3 }]} numberOfLines={1} ellipsizeMode="middle">
                                     {wallet.address}
