@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import RefreshScrollView from '@/components/parts/refreshScrollView';
 import AddressBox from './addressBox';
 import BalanceBox from './balanceBox';
 import HistoryBox from './historyBox';
+import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
@@ -21,11 +22,15 @@ const Wallet = () => {
     const isFocused = useIsFocused();
     const { wallet, staking, common } = useAppSelector((state) => state);
 
-    const { recentHistory, currentHistoryPolling } = useHistoryData();
+    const { recentHistory, historyExist, currentHistoryPolling } = useHistoryData();
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
 
     const [isInit, setIsInit] = useState(false);
     const [chainInfo, setChainInfo]: Array<any> = useState([]);
+
+    const isHistoryExist = useMemo(() => {
+        return historyExist;
+    }, [historyExist]);
 
     const moveToSendScreen = () => {
         navigation.navigate(Screens.Send);
@@ -38,9 +43,7 @@ const Wallet = () => {
     };
 
     const handleCurrentHistoryPolling = async (polling: boolean) => {
-        if (currentHistoryPolling) {
-            await currentHistoryPolling(polling);
-        }
+        await currentHistoryPolling(polling);
     };
 
     const handleMoveToWeb = (uri: string) => {
@@ -51,6 +54,9 @@ const Wallet = () => {
         try {
             const result = await fetch(COINGECKO);
             const json = await result.json();
+
+            LayoutAnim();
+            easeInAndOutCustomAnim(150);
             setChainInfo(json);
         } catch (error) {
             console.log(error);
@@ -58,16 +64,10 @@ const Wallet = () => {
     };
 
     const refreshStates = async () => {
-        if (isFocused) {
-            CommonActions.handleLoadingProgress(true);
-        }
         try {
             await getChainInfo();
             await getStakingState();
             refreshAtFocus();
-            if (common.isNetworkChanged === false) {
-                CommonActions.handleLoadingProgress(false);
-            }
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
@@ -102,8 +102,10 @@ const Wallet = () => {
     }, [common.dataLoadStatus]);
 
     useEffect(() => {
-        if (recentHistory !== undefined && common.isNetworkChanged === false) {
-            refreshStates();
+        if (isInit) {
+            if (recentHistory !== undefined && common.isNetworkChanged === false) {
+                refreshStates();
+            }
         }
     }, [recentHistory]);
 
@@ -112,9 +114,10 @@ const Wallet = () => {
             if (isInit) {
                 refreshAtFocus();
             } else {
-                refreshStates();
                 setIsInit(true);
             }
+        } else {
+            handleCurrentHistoryPolling(false);
         }
     }, [isFocused]);
 
@@ -130,7 +133,12 @@ const Wallet = () => {
                             handleStaking={moveToStakingTab}
                             chainInfo={chainInfo}
                         />
-                        <HistoryBox handleHistory={moveToHistoryScreen} recentHistory={recentHistory} handleExplorer={handleMoveToWeb} />
+                        <HistoryBox
+                            handleHistory={moveToHistoryScreen}
+                            historyExist={isHistoryExist}
+                            recentHistory={recentHistory}
+                            handleExplorer={handleMoveToWeb}
+                        />
                     </View>
                 </RefreshScrollView>
             )}

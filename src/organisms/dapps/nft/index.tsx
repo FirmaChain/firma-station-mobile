@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -28,10 +28,9 @@ interface IMetaData {
 
 const NFT = ({ data }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet } = useAppSelector((state) => state);
 
     const { getNFTMetaData } = useNFT();
-    const { NFTTransactionsList } = useNFTTransaction();
+    const { NFTTransaction, handleNFTId } = useNFTTransaction();
 
     const [metaData, setMetaData] = useState<IMetaData>({
         name: '',
@@ -45,11 +44,10 @@ const NFT = ({ data }: IProps) => {
     }, [data]);
 
     const TxData = useMemo(() => {
-        let transaction = NFTTransactionsList.find((value: any) => wallet.address === value.to && NFTData.id === value.nftId);
-        return transaction;
-    }, [NFTTransactionsList, NFTData]);
+        return NFTTransaction;
+    }, [NFTTransaction]);
 
-    const handleMetaData = async () => {
+    const handleMetaData = useCallback(async () => {
         try {
             let result = await getNFTMetaData(NFTData.metaURI);
             let name = result.name === undefined ? NFTData.name : result.name;
@@ -65,9 +63,10 @@ const NFT = ({ data }: IProps) => {
         } catch (error) {
             console.log(error);
         }
-    };
+    }, [NFTData]);
 
     useEffect(() => {
+        handleNFTId(NFTData.id);
         setMetaData({
             name: NFTData.name,
             description: NFTData.description,
@@ -79,7 +78,7 @@ const NFT = ({ data }: IProps) => {
     useEffect(() => {
         const { name, description, metaURI, ...nftValues } = NFTData;
         setInformation({ ...information, ...nftValues, ...TxData, ...metaData });
-    }, [TxData, metaData]);
+    }, [NFTData, TxData, metaData]);
 
     const handleMoveToWeb = (uri: string) => {
         navigation.navigate(Screens.WebScreen, { uri: uri });

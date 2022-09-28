@@ -1,11 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, BoxColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
 import { DAPP_NO_NFT } from '@/constants/common';
 import { useNFTTransaction } from '@/hooks/dapps/hooks';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import SquareSkeleton from '@/components/skeleton/squareSkeleton';
+import { fadeOut } from '@/util/animation';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
 
@@ -19,7 +21,6 @@ const itemCountPerLine = 3;
 
 const NFTsBox = ({ visible, NFTS, NFTCount }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-
     const [containerSize, setContainerSize] = useState(0);
 
     const NFTList = useMemo(() => {
@@ -40,14 +41,30 @@ const NFTsBox = ({ visible, NFTS, NFTCount }: IProps) => {
 
     const NFTItem = useCallback(
         ({ item, size }: any) => {
+            const fadeAnimImage = useRef(new Animated.Value(1)).current;
+            const [imageLoading, setImageLoading] = useState(true);
+
+            useEffect(() => {
+                if (imageLoading === false) {
+                    fadeOut(Animated, fadeAnimImage, 500);
+                }
+            }, [imageLoading]);
+
             return (
                 <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
                     <View style={{ paddingHorizontal: 10 }}>
-                        <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={{ uri: item.image }} />
+                        <Image
+                            style={[styles.contentImage, { width: '100%', height: size - 20 }]}
+                            source={{ uri: item.image }}
+                            onLoadEnd={() => setImageLoading(false)}
+                        />
                         {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.image} /> */}
                         <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
                             {item.name}
                         </Text>
+                        <Animated.View style={{ position: 'absolute', top: 0, left: 10, opacity: fadeAnimImage }}>
+                            <SquareSkeleton size={size - 20} marginBottom={0} />
+                        </Animated.View>
                     </View>
                 </TouchableOpacity>
             );

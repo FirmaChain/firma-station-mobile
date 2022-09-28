@@ -5,6 +5,7 @@ import { getBalanceFromAdr } from '@/util/firma';
 import { convertNumber, wait } from '@/util/common';
 import { TRANSACTION_TYPE_MODEL } from '@/constants/common';
 import { PointColor } from '@/constants/theme';
+import { StorageActions } from '@/redux/actions';
 
 export interface IBalanceState {
     available: number;
@@ -58,13 +59,12 @@ export const useBalanceData = () => {
 
 export const useHistoryData = () => {
     const { wallet, storage, common } = useAppSelector((state) => state);
+    const [historyExist, setHistoryExist] = useState(false);
     const [historyList, setHistoryList] = useState<IHistoryListState>({
         list: []
     });
     const [recentHistory, setRecentHistory] = useState<IHistoryState>();
     const [historyOffset, setHistoryOffset] = useState(0);
-
-    if (wallet.address === '' || wallet.address === undefined) return { historyList };
 
     const handleHistoryOffset = (reset: boolean) => {
         setHistoryOffset(reset ? 0 : historyOffset + 30);
@@ -89,7 +89,6 @@ export const useHistoryData = () => {
 
     const {
         startPolling: startHistoryPolling,
-        stopPolling: stopHistoryPolling,
         refetch: historyRefetch,
         loading: historyLoading,
         data: historyData
@@ -98,6 +97,13 @@ export const useHistoryData = () => {
     useEffect(() => {
         if (historyLoading === false) {
             if (historyData) {
+                if (historyOffset === 0) {
+                    StorageActions.handleHistoryVolume({
+                        ...storage.historyVolume,
+                        [wallet.address]: historyData.messagesByAddress.length
+                    });
+                }
+
                 const list = historyData.messagesByAddress.map((value: any) => {
                     const result = {
                         hash: value.transaction.hash,
@@ -129,9 +135,17 @@ export const useHistoryData = () => {
             await historyRefetch();
             startHistoryPolling(30000);
         } else {
-            stopHistoryPolling();
+            startHistoryPolling(0);
         }
     };
+
+    useEffect(() => {
+        if (wallet.address !== '' && wallet.address !== undefined) {
+            if (storage.historyVolume[wallet.address] !== undefined) {
+                setHistoryExist(Number(storage.historyVolume[wallet.address]) > 0);
+            }
+        }
+    }, [storage.historyVolume, wallet.address]);
 
     useEffect(() => {
         if (common.lockStation === false) {
@@ -143,6 +157,7 @@ export const useHistoryData = () => {
 
     return {
         historyList,
+        historyExist,
         recentHistory,
         handleHisotyPolling,
         currentHistoryPolling,

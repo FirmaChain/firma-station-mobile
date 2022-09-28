@@ -59,7 +59,7 @@ const TabBox = ({ data, serviceOnly }: IProps) => {
                 )}
             </View>
             <View style={{ flex: 1, paddingHorizontal: 20 }}>
-                <ServicesBox visible={tab === 0} data={data.serviceList} />
+                <ServicesBox visible={tab === 0} identity={data.identity} data={data.serviceList} />
                 <NFTsBox visible={tab === 1} NFTS={NFTS} NFTCount={NFTCount} />
             </View>
         </View>

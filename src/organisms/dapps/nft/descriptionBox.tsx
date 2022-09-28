@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
-import { Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { Animated, Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
+import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 import LinearGradient from 'react-native-linear-gradient';
+import SquareSkeleton from '@/components/skeleton/squareSkeleton';
+import { wait } from '@/util/common';
 
 interface IProps {
     data: any;
@@ -12,10 +14,13 @@ interface IProps {
 const NUM_OF_LINES = 3;
 
 const DescriptionBox = ({ data }: IProps) => {
+    const fadeAnimImage = useRef(new Animated.Value(1)).current;
+
     const [maxLines, setMaxLines] = useState(999);
     const [descLines, setDescLines] = useState(0);
     const [showMore, setShowMore] = useState(false);
     const [openAccordion, setOpenAccordion] = useState(false);
+    const [imageLoading, setImageLoading] = useState(true);
 
     const handleMaxLines = () => {
         setOpenAccordion(!openAccordion);
@@ -46,12 +51,20 @@ const DescriptionBox = ({ data }: IProps) => {
         }
     }, [openAccordion]);
 
+    useEffect(() => {
+        if (imageLoading === false) {
+            fadeOut(Animated, fadeAnimImage, 500);
+        }
+    }, [imageLoading]);
+
     return (
         <React.Fragment>
             <View style={{ alignItems: 'center' }}>
                 <View style={{ justifyContent: 'flex-start' }}>
-                    <Image style={styles.contentImage} source={{ uri: data.image }} />
-                    {/* <Image style={styles.contentImage} source={data.image} /> */}
+                    <Image style={styles.contentImage} source={{ uri: data.image }} onLoadEnd={() => setImageLoading(false)} />
+                    <Animated.View style={{ position: 'absolute', top: 0, left: 0, opacity: fadeAnimImage }}>
+                        <SquareSkeleton size={200} marginBottom={20} />
+                    </Animated.View>
                 </View>
                 <View style={styles.box}>
                     <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.contentTitle]}>

@@ -3,15 +3,15 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { StorageActions } from '@/redux/actions';
 import { IStakingState } from '@/hooks/staking/hooks';
+import { FirmaUtil } from '@firmachain/firma-js';
 import { convertAmount, convertCurrent, convertNumber, convertToFctNumber, makeDecimalPoint, resizeFontSize } from '@/util/common';
-import { DownArrow, ForwardArrow } from '@/components/icon/icon';
 import { FIRMA_LOGO } from '@/constants/images';
 import { CHAIN_CURRENCY, CURRENCY_LIST, CURRENCY_SYMBOL } from '@/constants/common';
 import { BgColor, BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { DownArrow, ForwardArrow } from '@/components/icon/icon';
 import SmallButton from '@/components/button/smallButton';
 import CustomModal from '@/components/modal/customModal';
 import ModalItems from '@/components/modal/modalItems';
-import { FirmaUtil } from '@firmachain/firma-js';
 
 interface IProps {
     stakingValues: IStakingState;
@@ -149,36 +149,34 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
                     </View>
                     <SmallButton title="Send" active={available > 0} size={90} onPressEvent={handleSend} />
                 </View>
-                {currencyList.length > 0 && (
-                    <React.Fragment>
-                        <View style={styles.divider} />
-                        <View style={[styles.wrapperH, { justifyContent: 'space-between', paddingTop: 12 }]}>
-                            <TouchableOpacity style={styles.currency} onPress={() => handleCurrencySelectModal(true)}>
-                                <Text style={[styles.chainName, { fontSize: 16, paddingRight: 4 }]}>{storage.currency}</Text>
-                                <DownArrow size={12} color={GrayColor} />
-                            </TouchableOpacity>
-                            {CurrencyText()}
-                            <CustomModal visible={openCurrencySelectModal} bgColor={BgColor} handleOpen={handleCurrencySelectModal}>
-                                <React.Fragment>
-                                    <View style={styles.headerBox}>
-                                        <Text style={styles.headerTitle}>Currency</Text>
-                                    </View>
-                                    <ModalItems
-                                        initVal={currencyIndex}
-                                        data={currencyList}
-                                        subData={symbolList}
-                                        onPressEvent={handleSelectCurrency}
-                                    />
-                                </React.Fragment>
-                            </CustomModal>
-                        </View>
-                        <View style={[styles.wrapperH, { justifyContent: 'flex-end', paddingTop: 5 }]}>
-                            <Text style={[styles.balance, { fontSize: 12, fontWeight: 'normal', color: TextDarkGrayColor }]}>
-                                {'(1 FCT = $ ' + currentExchange + ')'}
-                            </Text>
-                        </View>
-                    </React.Fragment>
-                )}
+                <View style={{ maxHeight: currencyList.length > 0 ? 500 : 0 }}>
+                    <View style={[styles.divider, { height: currencyList.length > 0 ? 1 : 0 }]} />
+                    <View style={[styles.wrapperH, { justifyContent: 'space-between', paddingTop: 12 }]}>
+                        <TouchableOpacity style={styles.currency} onPress={() => handleCurrencySelectModal(true)}>
+                            <Text style={[styles.chainName, { fontSize: 16, paddingRight: 4 }]}>{storage.currency}</Text>
+                            <DownArrow size={12} color={GrayColor} />
+                        </TouchableOpacity>
+                        {CurrencyText()}
+                        <CustomModal visible={openCurrencySelectModal} bgColor={BgColor} handleOpen={handleCurrencySelectModal}>
+                            <React.Fragment>
+                                <View style={styles.headerBox}>
+                                    <Text style={styles.headerTitle}>Currency</Text>
+                                </View>
+                                <ModalItems
+                                    initVal={currencyIndex}
+                                    data={currencyList}
+                                    subData={symbolList}
+                                    onPressEvent={handleSelectCurrency}
+                                />
+                            </React.Fragment>
+                        </CustomModal>
+                    </View>
+                    <View style={[styles.wrapperH, { justifyContent: 'flex-end', paddingTop: 5 }]}>
+                        <Text style={[styles.balance, { fontSize: 12, fontWeight: 'normal', color: TextDarkGrayColor }]}>
+                            {'(1 FCT = $ ' + currentExchange + ')'}
+                        </Text>
+                    </View>
+                </View>
             </View>
 
             <TouchableOpacity style={[styles.box, { marginVertical: 16, paddingHorizontal: 0 }]} onPress={() => handleStaking()}>

@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
-import {
-    Animated,
-    Image,
-    Linking,
-    NativeSyntheticEvent,
-    StyleSheet,
-    Text,
-    TextLayoutEventData,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { Image, Linking, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
 import { DownEmptyArrow, ExternalLink, UpEmptyArrow } from '@/components/icon/icon';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import LinearGradient from 'react-native-linear-gradient';

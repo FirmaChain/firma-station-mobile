@@ -1,12 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { BgColor, Lato, TextCatTitleColor, TextDisableColor } from '@/constants/theme';
+import { BgColor, BoxColor, Lato, TextCatTitleColor, TextDisableColor } from '@/constants/theme';
 import { CHAIN_NETWORK } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
+import { StorageActions } from '@/redux/actions';
+import { wait } from '@/util/common';
+import { fadeIn } from '@/util/animation';
 import ConnectClient from '@/util/connectClient';
+import DappsSkeleton from '@/components/skeleton/dappsSkeleton';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Dapps>;
 
@@ -18,14 +22,31 @@ const Dapps = () => {
 
     const { storage } = useAppSelector((state) => state);
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const fadeAnimDapp = useRef(new Animated.Value(0)).current;
 
     const [containerSize, setContainerSize] = useState(0);
     const [projectList, setProjectList] = useState<Array<any>>([]);
 
+    const dappsVolumes = useMemo(() => {
+        if (storage.contentVolume?.dapps === undefined) return 0;
+        return storage.contentVolume.dapps;
+    }, [storage.contentVolume]);
+
+    const itemSize = useMemo(() => {
+        return (containerSize - 20) / itemCountPerLine;
+    }, [containerSize]);
+
     const getProjectList = async () => {
         try {
             let list = await connectClient.getProjects();
-            setProjectList(list.projectList);
+            StorageActions.handleContentVolume({
+                ...storage.contentVolume,
+                dapps: list.projectList.length
+            });
+
+            wait(800).then(() => {
+                setProjectList(list.projectList);
+            });
         } catch (error) {
             console.log(error);
         }
@@ -39,18 +60,35 @@ const Dapps = () => {
         ({ item, size }: any) => {
             return (
                 <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToDetail(item)}>
-                    <View style={{ paddingHorizontal: 10 }}>
-                        <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={{ uri: item.icon }} />
+                    <Animated.View style={{ paddingHorizontal: 10 }}>
+                        <View style={[styles.contentImage, { width: '100%', height: size - 20, backgroundColor: BoxColor }]}>
+                            <Animated.Image
+                                style={[styles.contentImage, { width: '100%', height: size - 20, opacity: fadeAnimDapp }]}
+                                source={{ uri: item.icon }}
+                            />
+                        </View>
                         {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.icon} /> */}
-                        <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
+                        <Animated.Text style={[styles.contentTitle, { width: '100%', opacity: fadeAnimDapp }]} numberOfLines={1}>
                             {item.name}
-                        </Text>
-                    </View>
+                        </Animated.Text>
+                    </Animated.View>
                 </TouchableOpacity>
             );
         },
         [moveToDetail]
     );
+
+    useEffect(() => {
+        if (projectList.length >= dappsVolumes || projectList.length > 0) {
+            fadeIn(Animated, fadeAnimDapp, 500);
+
+            let list = storage.dappServicesVolume;
+            projectList.map((value) => {
+                list = { ...list, [value.identity]: value.serviceList.length };
+                StorageActions.handleDappServicesVolume(list);
+            });
+        }
+    }, [projectList]);
 
     useEffect(() => {
         if (isFocused) {
@@ -63,10 +101,14 @@ const Dapps = () => {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.box}>
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
-                        {projectList.length > 0 ? (
-                            projectList.map((value, index) => {
-                                return <DappItem key={index} item={value} size={(containerSize - 20) / itemCountPerLine} />;
-                            })
+                        {dappsVolumes > 0 ? (
+                            projectList.length > 0 ? (
+                                projectList.map((value, index) => {
+                                    return <DappItem key={index} item={value} size={itemSize} />;
+                                })
+                            ) : (
+                                <DappsSkeleton volumes={dappsVolumes} size={itemSize} />
+                            )
                         ) : (
                             <View style={styles.noDappsBox}>
                                 <Text style={styles.noDappsText}>No Dapps</Text>
