@@ -1,10 +1,10 @@
 {
   "name": "firma-station-mobile",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --simulator='iPhone 14 Pro'",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
@@ -42,6 +42,7 @@
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
     "react": "17.0.2",
+    "react-content-loader": "^6.2.0",
     "react-native": "0.67.4",
     "react-native-animated-number": "^1.2.0",
     "react-native-biometrics": "^2.1.4",
@@ -65,7 +66,7 @@
     "react-native-screens": "^3.13.1",
     "react-native-splash-screen": "^3.3.0",
     "react-native-status-bar-height": "^2.6.0",
-    "react-native-svg": "^12.3.0",
+    "react-native-svg": "^12.4.4",
     "react-native-tcp": "^3.3.2",
     "react-native-toast-message": "^2.1.5",
     "react-native-udp": "^2.7.0",
