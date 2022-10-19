@@ -9,8 +9,8 @@ import {
 } from '../types';
 
 export interface IContentVolume {
-    proposals: number;
-    dapps: number;
+    proposals: number | null;
+    dapps: number | null;
 }
 
 export interface IState {
@@ -25,9 +25,8 @@ const initialState = {
     currency: 'USD',
     network: 'MainNet',
     contentVolume: {
-        proposals: 0,
-        dapps: 0,
-        history: 0
+        proposals: null,
+        dapps: null
     },
     historyVolume: {},
     dappServicesVolume: {}

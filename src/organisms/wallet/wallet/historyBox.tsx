@@ -9,12 +9,12 @@ import { fadeIn } from '@/util/animation';
 
 interface IProps {
     recentHistory: any;
-    historyExist: boolean;
+    historyVolume: number | null;
     handleHistory: Function;
     handleExplorer: (uri: string) => void;
 }
 
-const HistoryBox = ({ recentHistory, historyExist, handleHistory, handleExplorer }: IProps) => {
+const HistoryBox = ({ recentHistory, historyVolume, handleHistory, handleExplorer }: IProps) => {
     const fadeAnimHiostory = useRef(new Animated.Value(0)).current;
 
     const historyData = useMemo(() => {
@@ -45,8 +45,12 @@ const HistoryBox = ({ recentHistory, historyExist, handleHistory, handleExplorer
                     <Text style={styles.title}>Recent History</Text>
                     {recentHistory !== undefined && <ForwardArrow size={20} color={TextCatTitleColor} />}
                 </View>
-                {historyExist ? (
-                    recentHistory !== undefined ? (
+                {historyVolume !== null ? (
+                    historyVolume === 0 ? (
+                        <View style={[styles.wrapperH, styles.wrapper, { justifyContent: 'center', alignItems: 'center', paddingTop: 18 }]}>
+                            <Text style={[styles.contentItem, { fontSize: 14 }]}>{HISTORY_NOT_EXIST}</Text>
+                        </View>
+                    ) : recentHistory !== undefined ? (
                         <Animated.View style={{ opacity: fadeAnimHiostory }}>
                             <View
                                 style={[
@@ -118,9 +122,7 @@ const HistoryBox = ({ recentHistory, historyExist, handleHistory, handleExplorer
                         <RecentHistorySkeleton />
                     )
                 ) : (
-                    <View style={[styles.wrapperH, styles.wrapper, { justifyContent: 'center', alignItems: 'center', paddingTop: 18 }]}>
-                        <Text style={[styles.contentItem, { fontSize: 14 }]}>{HISTORY_NOT_EXIST}</Text>
-                    </View>
+                    <RecentHistorySkeleton />
                 )}
             </TouchableOpacity>
         </View>

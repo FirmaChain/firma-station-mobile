@@ -14,7 +14,7 @@ interface IProps {
 }
 
 export const Close = ({ size, color }: IProps) => {
-    return <Ionicons name="close-outline" size={size} color={color} />;
+    return <Ionicons name="ios-close" size={size} color={color} />;
 };
 
 export const QRCodeIcon = ({ size, color }: IProps) => {
@@ -49,6 +49,10 @@ export const ForwardArrowWithTail = ({ size, color }: IProps) => {
     return <Ionicons name="arrow-forward" size={size} color={color} />;
 };
 
+export const BackArrowWithTail = ({ size, color }: IProps) => {
+    return <Ionicons name="arrow-back" size={size} color={color} />;
+};
+
 export const ForwardArrow = ({ size, color }: IProps) => {
     return <MaterialIcons name="arrow-forward-ios" size={size} color={color} />;
 };
@@ -70,6 +74,10 @@ export const DownEmptyArrow = ({ size, color }: IProps) => {
 
 export const MoreViewArrow = ({ size, color }: IProps) => {
     return <Ionicons name="caret-up" size={size} color={color} />;
+};
+
+export const RefreshIcon = ({ size, color }: IProps) => {
+    return <MaterialIcons name="refresh" size={size} color={color} />;
 };
 
 export const Radio = ({ size, color, active }: IProps) => {

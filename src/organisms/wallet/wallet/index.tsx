@@ -20,17 +20,19 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 const Wallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const { wallet, staking, common } = useAppSelector((state) => state);
+    const { storage, wallet, staking, common } = useAppSelector((state) => state);
 
-    const { recentHistory, historyExist, currentHistoryPolling } = useHistoryData();
+    const { recentHistory, currentHistoryPolling } = useHistoryData();
     const { stakingState, getStakingState, updateStakingState } = useStakingData();
 
     const [isInit, setIsInit] = useState(false);
     const [chainInfo, setChainInfo]: Array<any> = useState([]);
 
-    const isHistoryExist = useMemo(() => {
-        return historyExist;
-    }, [historyExist]);
+    const historyVolume = useMemo(() => {
+        if (storage.historyVolume === undefined) return null;
+        if (storage.historyVolume[wallet.address] === undefined) return null;
+        return storage.historyVolume[wallet.address];
+    }, [storage.historyVolume]);
 
     const moveToSendScreen = () => {
         navigation.navigate(Screens.Send);
@@ -135,7 +137,7 @@ const Wallet = () => {
                         />
                         <HistoryBox
                             handleHistory={moveToHistoryScreen}
-                            historyExist={isHistoryExist}
+                            historyVolume={historyVolume}
                             recentHistory={recentHistory}
                             handleExplorer={handleMoveToWeb}
                         />

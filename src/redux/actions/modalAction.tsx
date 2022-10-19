@@ -6,7 +6,8 @@ import {
     QR_SCANNER_MODAL,
     DAPP_CONNECT_MODAL,
     DAPP_SIGN_MODAL,
-    DAPP_DIRECT_SIGN_MODAL
+    DAPP_DIRECT_SIGN_MODAL,
+    DAPP_SERVICE_REG_MODAL
 } from '../types';
 
 export const handleResetModal = () => ({ type: HANDLE_RESET_MODAL });
@@ -18,3 +19,4 @@ export const handleQRScannerModal = (open: boolean) => ({ type: QR_SCANNER_MODAL
 export const handleDAppConnectModal = (open: boolean) => ({ type: DAPP_CONNECT_MODAL, payload: open });
 export const handleDAppSignModal = (open: boolean) => ({ type: DAPP_SIGN_MODAL, payload: open });
 export const handleDAppDirectSignModal = (open: boolean) => ({ type: DAPP_DIRECT_SIGN_MODAL, payload: open });
+export const handleDAppServiceRegistModal = (open: boolean) => ({ type: DAPP_SERVICE_REG_MODAL, payload: open });

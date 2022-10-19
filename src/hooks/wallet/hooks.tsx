@@ -59,7 +59,6 @@ export const useBalanceData = () => {
 
 export const useHistoryData = () => {
     const { wallet, storage, common } = useAppSelector((state) => state);
-    const [historyExist, setHistoryExist] = useState(false);
     const [historyList, setHistoryList] = useState<IHistoryListState>({
         list: []
     });
@@ -98,12 +97,17 @@ export const useHistoryData = () => {
         if (historyLoading === false) {
             if (historyData) {
                 if (historyOffset === 0) {
-                    StorageActions.handleHistoryVolume({
-                        ...storage.historyVolume,
-                        [wallet.address]: historyData.messagesByAddress.length
-                    });
+                    if (storage.historyVolume === undefined) {
+                        StorageActions.handleHistoryVolume({
+                            [wallet.address]: historyData.messagesByAddress.length
+                        });
+                    } else {
+                        StorageActions.handleHistoryVolume({
+                            ...storage.historyVolume,
+                            [wallet.address]: historyData.messagesByAddress.length
+                        });
+                    }
                 }
-
                 const list = historyData.messagesByAddress.map((value: any) => {
                     const result = {
                         hash: value.transaction.hash,
@@ -117,6 +121,7 @@ export const useHistoryData = () => {
                 if (list.length > 0 && list[0].block !== recentHistory?.block) {
                     setRecentHistory(list[0]);
                 }
+
                 setHistoryList((prevState) => ({
                     ...prevState,
                     list
@@ -140,14 +145,6 @@ export const useHistoryData = () => {
     };
 
     useEffect(() => {
-        if (wallet.address !== '' && wallet.address !== undefined) {
-            if (storage.historyVolume[wallet.address] !== undefined) {
-                setHistoryExist(Number(storage.historyVolume[wallet.address]) > 0);
-            }
-        }
-    }, [storage.historyVolume, wallet.address]);
-
-    useEffect(() => {
         if (common.lockStation === false) {
             setHistoryList({ list: [] });
             setRecentHistory(undefined);
@@ -157,7 +154,6 @@ export const useHistoryData = () => {
 
     return {
         historyList,
-        historyExist,
         recentHistory,
         handleHisotyPolling,
         currentHistoryPolling,

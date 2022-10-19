@@ -7,7 +7,8 @@ import {
     QR_SCANNER_MODAL,
     DAPP_CONNECT_MODAL,
     DAPP_SIGN_MODAL,
-    DAPP_DIRECT_SIGN_MODAL
+    DAPP_DIRECT_SIGN_MODAL,
+    DAPP_SERVICE_REG_MODAL
 } from '../types';
 
 export interface IState {
@@ -18,6 +19,7 @@ export interface IState {
     dappConnectModal: boolean;
     dappSignModal: boolean;
     dappDirectSignModal: boolean;
+    dappServiceRegModal: boolean;
 }
 
 const initialState = {
@@ -27,7 +29,8 @@ const initialState = {
     qrScannerModal: false,
     dappConnectModal: false,
     dappSignModal: false,
-    dappDirectSignModal: false
+    dappDirectSignModal: false,
+    dappServiceRegModal: false
 };
 
 const reducer = (state = initialState, action: Action) => {
@@ -70,6 +73,11 @@ const reducer = (state = initialState, action: Action) => {
             return {
                 ...state,
                 dappDirectSignModal: action.payload
+            };
+        case DAPP_SERVICE_REG_MODAL:
+            return {
+                ...state,
+                dappServiceRegModal: action.payload
             };
         default:
             return state;
