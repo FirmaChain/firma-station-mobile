@@ -1,47 +1,45 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { CommonActions, StakingActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { useDelegationData } from '@/hooks/staking/hooks';
-import { convertToFctNumber } from '@/util/common';
+import { IStakeInfo, useDelegationData } from '@/hooks/staking/hooks';
+import { convertToFctNumber, wait } from '@/util/common';
 import { DownArrow } from '@/components/icon/icon';
 import { BgColor, BorderColor, GrayColor, Lato, PointLightColor, TextGrayColor } from '@/constants/theme';
 import { DELEGATE_NOT_EXIST, REDELEGATE_NOT_EXIST, UNDELEGATE_NOT_EXIST } from '@/constants/common';
-import { CHAIN_NETWORK } from '@/../config';
 import CustomModal from '@/components/modal/customModal';
 import ModalItems from '@/components/modal/modalItems';
 import DelegateItem from './delegateItem';
 import RedelegateItem from './redelegateItem';
 import UndelegateItem from './undelegateItem';
-import RestakeItem from './restakeItem';
 import NoticeItem from './noticeItem';
 
 interface IProps {
     visible: boolean;
     isRefresh: boolean;
+    delegationState: Array<IStakeInfo>;
+    handleDelegationLoading: (loading: boolean) => void;
+    handleDelegationExist: (exist: boolean) => void;
     handleIsRefresh: (refresh: boolean) => void;
     navigateValidator: (address: string) => void;
 }
 
-const DelegationList = ({ visible, isRefresh, handleIsRefresh, navigateValidator }: IProps) => {
-    const { common, wallet, storage } = useAppSelector((state) => state);
+const DelegationList = ({
+    visible,
+    isRefresh,
+    delegationState,
+    handleDelegationLoading,
+    handleDelegationExist,
+    handleIsRefresh,
+    navigateValidator
+}: IProps) => {
+    const { common } = useAppSelector((state) => state);
 
-    const sortItems = ['Delegate', 'Redelegate', 'Undelegate', 'Restake'];
-    // const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
+    const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
-    const [restakeLatestInfo, setRestakeLatestInfo]: any = useState(null);
 
-    const {
-        delegationState,
-        redelegationState,
-        undelegationState,
-        stakingGrantState,
-        handleDelegationState,
-        handleRedelegationState,
-        handleUndelegationState,
-        handleStakingGrantState
-    } = useDelegationData();
+    const { redelegationState, undelegationState, handleRedelegationState, handleUndelegationState } = useDelegationData();
 
     const delegationList = useMemo(() => {
         return delegationState;
@@ -55,10 +53,6 @@ const DelegationList = ({ visible, isRefresh, handleIsRefresh, navigateValidator
         return undelegationState;
     }, [undelegationState]);
 
-    const stakingGrantList = useMemo(() => {
-        return stakingGrantState;
-    }, [stakingGrantState]);
-
     const allReward = useMemo(() => {
         let reward = 0;
         delegationList.map((value) => {
@@ -66,6 +60,11 @@ const DelegationList = ({ visible, isRefresh, handleIsRefresh, navigateValidator
         });
         return reward;
     }, [delegationList]);
+
+    useEffect(() => {
+        let exist = delegationList.length > 0 || redelegationList.length > 0 || undelegationList.length > 0;
+        handleDelegationExist(exist);
+    }, [delegationList, redelegationList, undelegationList]);
 
     useEffect(() => {
         if (delegationList.length > 0) {
@@ -82,37 +81,26 @@ const DelegationList = ({ visible, isRefresh, handleIsRefresh, navigateValidator
         handleOpenModal(false);
     };
 
-    const refreshStakings = async () => {
+    const refreshStakings = useCallback(async () => {
         try {
-            await handleDelegationState();
             switch (selected) {
                 case 1:
                     await handleRedelegationState();
                 case 2:
                     await handleUndelegationState();
-                case 3:
-                    await handleStakingGrantState();
-                    await getLatestRestakeInfo();
                 default:
                     break;
             }
             CommonActions.handleLoadingProgress(false);
             handleIsRefresh(false);
+            wait(800).then(() => {
+                handleDelegationLoading(false);
+            });
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
         }
-    };
-
-    const getLatestRestakeInfo = async () => {
-        try {
-            const result = await fetch(CHAIN_NETWORK[storage.network].RESTAKE_REWARD_API + wallet.address);
-            const json = await result.json();
-            setRestakeLatestInfo(json);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    }, [selected]);
 
     const listLength = useMemo(() => {
         switch (selected) {
@@ -122,12 +110,10 @@ const DelegationList = ({ visible, isRefresh, handleIsRefresh, navigateValidator
                 return redelegationList ? redelegationList.length : 0;
             case 2:
                 return undelegationList ? undelegationList.length : 0;
-            case 3:
-                return stakingGrantState.count;
             default:
                 return 0;
         }
-    }, [selected, delegationList, redelegationList, undelegationList, stakingGrantState]);
+    }, [selected, delegationList, redelegationList, undelegationList]);
 
     const ClassifyByType = () => {
         if (visible) {
@@ -138,27 +124,13 @@ const DelegationList = ({ visible, isRefresh, handleIsRefresh, navigateValidator
                     return redelegate();
                 case 2:
                     return undelegate();
-                case 3:
-                    return restake();
             }
         }
     };
 
     useEffect(() => {
         refreshStakings();
-    }, [selected]);
-
-    useEffect(() => {
-        if (isRefresh && visible) {
-            refreshStakings();
-        }
-    }, [isRefresh, visible]);
-
-    useEffect(() => {
-        if (visible) {
-            refreshStakings();
-        }
-    }, [visible]);
+    }, [selected, isRefresh]);
 
     const delegate = () => {
         return (
@@ -217,63 +189,25 @@ const DelegationList = ({ visible, isRefresh, handleIsRefresh, navigateValidator
         );
     };
 
-    const restake = () => {
-        return (
-            <View>
-                {stakingGrantList.list.length > 0 ? (
-                    stakingGrantList.list.map((value, index) => {
-                        const isLastItem = index === stakingGrantList.list.length - 1;
-
-                        let latestReward = 0;
-                        if (restakeLatestInfo) {
-                            let result = restakeLatestInfo.find((restake: any) => restake.validatorAddr === value.validatorAddress);
-                            latestReward = result !== undefined ? result.rewards : 0;
-                        }
-
-                        let data = {
-                            ...value,
-                            latestReward: latestReward
-                        };
-
-                        return (
-                            <View key={index} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                                <RestakeItem data={data} navigate={navigateValidator} />
-                            </View>
-                        );
-                    })
-                ) : (
-                    <NoticeItem notification={DELEGATE_NOT_EXIST} />
-                )}
-            </View>
-        );
-    };
-
     return (
-        <>
-            {visible && (
-                <View style={styles.container}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>
-                            List
-                            <Text style={{ color: PointLightColor }}>{' ' + listLength}</Text>
-                            {selected === 3 && (
-                                <Text style={{ color: TextGrayColor, opacity: 0.6 }}>{'/' + stakingGrantList.list.length}</Text>
-                            )}
-                        </Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                                <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
-                                <DownArrow size={12} color={GrayColor} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    {ClassifyByType()}
-                    <CustomModal bgColor={BgColor} visible={openModal} handleOpen={handleOpenModal}>
-                        <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort} />
-                    </CustomModal>
+        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+            <View style={styles.header}>
+                <Text style={styles.title}>
+                    List
+                    <Text style={{ color: PointLightColor }}>{' ' + listLength}</Text>
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
+                        <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
+                        <DownArrow size={12} color={GrayColor} />
+                    </TouchableOpacity>
                 </View>
-            )}
-        </>
+            </View>
+            {ClassifyByType()}
+            <CustomModal bgColor={BgColor} visible={openModal} handleOpen={handleOpenModal}>
+                <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort} />
+            </CustomModal>
+        </View>
     );
 };
 

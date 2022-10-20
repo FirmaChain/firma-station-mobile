@@ -62,9 +62,6 @@ const Staking = () => {
     };
 
     const refreshStates = async () => {
-        if (isFocused) {
-            CommonActions.handleLoadingProgress(true);
-        }
         try {
             await handleDelegationState();
             await handleStakingGrantState();
@@ -119,7 +116,6 @@ const Staking = () => {
     useEffect(() => {
         if (isFocused) {
             if (isInit === false) {
-                CommonActions.handleLoadingProgress(true);
                 setIsInit(true);
             }
             refreshAtFocus();

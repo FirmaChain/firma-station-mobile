@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
@@ -31,6 +31,7 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
     const { validators, handleValidatorsPolling } = useValidatorData();
 
     const sortItems = ['Voting Power', 'Commission', 'Uptime'];
+    const [initLoad, setInitLoad] = useState(false);
     const [selected, setSelected] = useState(0);
     const [sortWithDesc, setSortWithDesc] = useState(true);
     const [openModal, setOpenModal] = useState(false);
@@ -62,12 +63,9 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
         handleOpenModal(false);
     };
 
-    const refreshValidators = async () => {
-        if (validatorList.length === 0) {
-            CommonActions.handleLoadingProgress(true);
-        }
+    const refreshValidators = useCallback(async () => {
         try {
-            if (visible) {
+            if (visible && initLoad === false) {
                 await handleValidatorsPolling();
             }
             CommonActions.handleLoadingProgress(false);
@@ -78,7 +76,7 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
             }
             console.log(error);
         }
-    };
+    }, [visible, initLoad]);
 
     const renderSortIcon = () => {
         let sort = sortItems[selected] === 'Commission' ? !sortWithDesc : sortWithDesc;
@@ -91,49 +89,46 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
     };
 
     useEffect(() => {
-        if (isRefresh && visible) {
-            refreshValidators();
+        if (isRefresh) {
+            setInitLoad(false);
+        } else {
+            setInitLoad(true);
         }
-    }, [isRefresh, visible]);
+    }, [isRefresh]);
 
     useEffect(() => {
-        if (visible) {
-            refreshValidators();
+        if (visible && common.appState === 'active') {
+            if (initLoad === false) {
+                refreshValidators();
+            }
         }
-    }, [visible]);
+    }, [initLoad, visible, common.appState]);
 
     return (
-        <>
-            {visible && (
-                <View style={styles.container}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>
-                            List
-                            <Text style={{ color: PointLightColor }}> {validatorList.length}</Text>
-                        </Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                                <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
-                                <DownArrow size={12} color={GrayColor} />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={{ paddingLeft: 10, paddingVertical: 10 }}
-                                onPress={() => setSortWithDesc(!sortWithDesc)}
-                            >
-                                {renderSortIcon()}
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    {validatorList.map((vd: any, index: number) => {
-                        const isLastItem = index === validatorList.length - 1;
-                        return <ValidatorItem key={index} data={vd} isLastItem={isLastItem} navigate={navigateValidator} />;
-                    })}
-                    <CustomModal bgColor={BgColor} visible={openModal} handleOpen={handleOpenModal}>
-                        <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort} />
-                    </CustomModal>
+        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+            <View style={styles.header}>
+                <Text style={styles.title}>
+                    List
+                    <Text style={{ color: PointLightColor }}> {validatorList.length}</Text>
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
+                        <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
+                        <DownArrow size={12} color={GrayColor} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ paddingLeft: 10, paddingVertical: 10 }} onPress={() => setSortWithDesc(!sortWithDesc)}>
+                        {renderSortIcon()}
+                    </TouchableOpacity>
                 </View>
-            )}
-        </>
+            </View>
+            {validatorList.map((vd: any, index: number) => {
+                const isLastItem = index === validatorList.length - 1;
+                return <ValidatorItem key={index} data={vd} isLastItem={isLastItem} navigate={navigateValidator} />;
+            })}
+            <CustomModal bgColor={BgColor} visible={openModal} handleOpen={handleOpenModal}>
+                <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort} />
+            </CustomModal>
+        </View>
     );
 };
 

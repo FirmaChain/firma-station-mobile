@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { convertAmount } from '@/util/common';
+import { convertAmount, convertDelegateAmount } from '@/util/common';
 import { BgColor, TextColor, TextDisableColor } from '@/constants/theme';
 import { RESTAKE_STATUS } from '@/constants/common';
 import DataSection from '../list/dataSection';
@@ -37,7 +37,7 @@ const RestakeItem = ({ data, navigate }: IProps) => {
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
             <View style={[styles.item]}>
                 <MonikerSection validator={data} />
-                <DataSection title="Delegated" data={convertAmount(data.delegated, true, 6) + ' FCT'} />
+                <DataSection title="Delegated" data={convertDelegateAmount(data.delegated) + ' FCT'} />
                 <DataSection title="Reward" data={convertAmount(data.stakingReward, true, 6) + ' FCT'} />
                 <DataSection title="Latest Restake" color={latestRestake.color} data={latestRestake.value} />
                 <DataSection title="Grant Status" data={status.title} color={status.color} label={true} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BorderColor, BoxColor, InputPlaceholderColor, Lato, PointLightColor, TextCatTitleColor, TextColor } from '@/constants/theme';
 import { RESTAKE_STATUS } from '@/constants/common';
@@ -52,6 +52,15 @@ const RestakeInfoBox = ({ moveToRestake, delegationStates, grantStates }: IProps
         }
     };
 
+    const handleRestakeProgress = useCallback(() => {
+        let result = convertTimerText(restakeInfoJson.nextRoundDateTime);
+        if (result.diff <= 0) {
+            getRestakeInfo();
+            return;
+        }
+        setNextRoundTime(result.time);
+    }, [restakeInfoJson]);
+
     useEffect(() => {
         if (isFocused) {
             getRestakeInfo();
@@ -63,17 +72,9 @@ const RestakeInfoBox = ({ moveToRestake, delegationStates, grantStates }: IProps
     useEffect(() => {
         let timerId: NodeJS.Timeout;
         if (restakeInfoJson) {
-            const handleProgress = () => {
-                let result = convertTimerText(restakeInfoJson.nextRoundDateTime);
-                setNextRoundTime(result.time);
-                if (result.diff < 0) {
-                    getRestakeInfo();
-                }
-            };
-
-            handleProgress();
+            handleRestakeProgress();
             timerId = setTimeout(function progress() {
-                handleProgress();
+                handleRestakeProgress();
                 timerId = setTimeout(progress, 1000);
             }, 1000);
         }
@@ -85,10 +86,7 @@ const RestakeInfoBox = ({ moveToRestake, delegationStates, grantStates }: IProps
     return (
         <TouchableOpacity style={styles.restakeButtonBox} disabled={!delegationStates} onPress={() => moveToRestake()}>
             <View style={styles.infoBox}>
-                <Text style={styles.title}>
-                    Restake
-                    <Text style={[styles.title, { fontSize: 13, color: InputPlaceholderColor }]}>{' (Beta)'}</Text>
-                </Text>
+                <Text style={styles.title}>Restake</Text>
                 <View style={[styles.infoBox, { justifyContent: 'flex-end', paddingHorizontal: delegationStates ? 10 : 0 }]}>
                     {stakingGrantExist && (
                         <Text style={[styles.label, { backgroundColor: defaultColor + '30', color: defaultColor, marginRight: 6 }]}>
