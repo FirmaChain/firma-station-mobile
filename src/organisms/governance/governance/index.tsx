@@ -24,7 +24,7 @@ const Governance = () => {
     const [proposalList, setProposalList] = useState<Array<IProposalItemState>>([]);
 
     const proposalVolumes = useMemo(() => {
-        if (storage.contentVolume?.proposals === undefined) return 0;
+        if (storage.contentVolume?.proposals === undefined) return null;
         return storage.contentVolume.proposals;
     }, [storage.contentVolume]);
 
@@ -42,10 +42,12 @@ const Governance = () => {
     };
 
     useEffect(() => {
-        if (governanceState.list.length >= proposalVolumes) {
-            wait(800).then(() => {
-                setProposalList(governanceState.list);
-            });
+        if (proposalVolumes) {
+            if (governanceState.list.length >= proposalVolumes) {
+                wait(800).then(() => {
+                    setProposalList(governanceState.list);
+                });
+            }
         }
     }, [proposalVolumes, governanceState]);
 

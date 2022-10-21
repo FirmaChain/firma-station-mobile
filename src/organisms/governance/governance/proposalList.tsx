@@ -8,7 +8,7 @@ import { fadeIn } from '@/util/animation';
 import ProposalSkeleton from '@/components/skeleton/proposalSkeleton';
 
 interface IProps {
-    volumes: number;
+    volumes: number | null;
     proposals: Array<IProposalItemState>;
     handleDetail: Function;
 }
@@ -47,60 +47,66 @@ const ProposalList = ({ volumes, proposals, handleDetail }: IProps) => {
     };
 
     useEffect(() => {
-        if (proposals.length >= volumes) {
-            fadeIn(Animated, fadeAnimProposal, 500);
+        if (volumes !== null) {
+            if (proposals.length >= volumes) {
+                fadeIn(Animated, fadeAnimProposal, 500);
+            }
         }
-    }, [proposals]);
+    }, [proposals, volumes]);
 
     return (
         <View style={styles.container}>
-            {volumes > 0 ? (
-                proposals.length > 0 ? (
-                    proposals.map((proposal, index) => {
-                        const periodState = handlePeriodStatus(proposal);
-                        return (
-                            <TouchableOpacity
-                                key={index}
-                                style={styles.item}
-                                onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}
-                            >
-                                <Animated.View style={{ opacity: fadeAnimProposal }}>
-                                    <View style={[styles.wrapperH, { paddingBottom: 10 }]}>
-                                        <Text style={styles.id}># {proposal.proposalId}</Text>
-                                        <Text
-                                            style={[
-                                                styles.status,
-                                                {
-                                                    backgroundColor: STATUS_COLOR[proposal.status] + '30',
-                                                    color: STATUS_COLOR[proposal.status]
-                                                }
-                                            ]}
-                                        >
-                                            {PROPOSAL_STATUS[proposal.status]}
-                                        </Text>
-                                    </View>
-                                    <View style={[styles.wrapperH, { paddingBottom: 10 }]}>
-                                        <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>
-                                            {proposal.title}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.wrapperH}>
-                                        <Text style={[styles.period, { color: TextDisableColor }]}>{periodState.period}</Text>
-                                        <Text style={[styles.period, { color: TextCatTitleColor, fontWeight: '600' }]}>
-                                            {periodState.dDay}
-                                        </Text>
-                                    </View>
-                                </Animated.View>
-                            </TouchableOpacity>
-                        );
-                    })
-                ) : (
-                    <ProposalSkeleton volumes={volumes} />
-                )
-            ) : (
-                <View style={{ flex: 1, justifyContent: 'center' }}>
-                    <Text style={styles.notice}>{PROPOSAL_NOT_REGISTERED}</Text>
-                </View>
+            {volumes != null && (
+                <React.Fragment>
+                    {volumes > 0 ? (
+                        proposals.length > 0 ? (
+                            proposals.map((proposal, index) => {
+                                const periodState = handlePeriodStatus(proposal);
+                                return (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={styles.item}
+                                        onPress={() => handleProposalDetail(convertNumber(proposal.proposalId))}
+                                    >
+                                        <Animated.View style={{ opacity: fadeAnimProposal }}>
+                                            <View style={[styles.wrapperH, { paddingBottom: 10 }]}>
+                                                <Text style={styles.id}># {proposal.proposalId}</Text>
+                                                <Text
+                                                    style={[
+                                                        styles.status,
+                                                        {
+                                                            backgroundColor: STATUS_COLOR[proposal.status] + '30',
+                                                            color: STATUS_COLOR[proposal.status]
+                                                        }
+                                                    ]}
+                                                >
+                                                    {PROPOSAL_STATUS[proposal.status]}
+                                                </Text>
+                                            </View>
+                                            <View style={[styles.wrapperH, { paddingBottom: 10 }]}>
+                                                <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>
+                                                    {proposal.title}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.wrapperH}>
+                                                <Text style={[styles.period, { color: TextDisableColor }]}>{periodState.period}</Text>
+                                                <Text style={[styles.period, { color: TextCatTitleColor, fontWeight: '600' }]}>
+                                                    {periodState.dDay}
+                                                </Text>
+                                            </View>
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                );
+                            })
+                        ) : (
+                            <ProposalSkeleton volumes={volumes} />
+                        )
+                    ) : (
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <Text style={styles.notice}>{PROPOSAL_NOT_REGISTERED}</Text>
+                        </View>
+                    )}
+                </React.Fragment>
             )}
         </View>
     );
