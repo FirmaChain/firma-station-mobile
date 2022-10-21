@@ -6,6 +6,7 @@ export const BoxColor = '#292932';
 export const BoxDarkColor = '#14141a';
 
 export const WhiteColor = '#ffffff';
+export const BlackColor = '#000000';
 export const GrayColor = '#8d8d91';
 export const DarkGrayColor = '#a1a1ac';
 export const LightGrayColor = '#393945';
