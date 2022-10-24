@@ -1,16 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { convertAmount, resizeFontSize } from '@/util/common';
 import { BgColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { getTokenBalance } from '@/util/firma';
 import { useIsFocused } from '@react-navigation/native';
+import { ITokenState } from '.';
 
 interface IProps {
-    tokenData: {
-        denom: string;
-        symbol: string;
-    };
+    tokenData: ITokenState | null;
 }
 
 const BalanceBox = ({ tokenData }: IProps) => {
@@ -21,12 +19,12 @@ const BalanceBox = ({ tokenData }: IProps) => {
     const [balance, setBalance] = useState(0);
 
     const tokenDenom = useMemo(() => {
-        if (tokenData?.denom !== undefined) return tokenData.denom;
+        if (tokenData !== null) return tokenData.denom;
         return '';
     }, [tokenData]);
 
     const tokenSymbol = useMemo(() => {
-        if (tokenData?.symbol !== undefined) return tokenData.symbol;
+        if (tokenData !== null) return tokenData.symbol;
         return '';
     }, [tokenData]);
 

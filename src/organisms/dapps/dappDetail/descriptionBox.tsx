@@ -61,9 +61,9 @@ const DescriptionBox = ({ data }: IProps) => {
                     <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.contentTitle]}>
                         {data.name}
                     </Text>
-                    <TouchableOpacity onPress={() => handleMoveToWeb(data.url)}>
+                    {/* <TouchableOpacity style={{ display: data.url === '' ? 'none' : 'flex' }} onPress={() => handleMoveToWeb(data.url)}>
                         <ExternalLink size={16} color={TextCatTitleColor} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 <View style={{ paddingBottom: openAccordion ? 20 : 0 }}>
                     <Text style={styles.desc} numberOfLines={maxLines} ellipsizeMode={'tail'} onTextLayout={onTextLayout}>

@@ -11,8 +11,6 @@ import ViewContainer from '@/components/parts/containers/viewContainer';
 import DescriptionBox from './descriptionBox';
 import InfoBox from './infoBox';
 import PropertiesBox from './propertiesBox';
-import wallet from '@/screens/home/wallet/wallet';
-import { useAppSelector } from '@/redux/hooks';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.NFT>;
 
@@ -24,61 +22,53 @@ interface IMetaData {
     name: string;
     description: string;
     attributes: Array<any>;
+    collection: { name: string; icon: string };
+    createdBy: string;
 }
 
 const NFT = ({ data }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const { getNFTMetaData } = useNFT();
-    const { NFTTransaction, handleNFTId } = useNFTTransaction();
 
     const [metaData, setMetaData] = useState<IMetaData>({
         name: '',
         description: '',
-        attributes: []
+        attributes: [],
+        collection: { name: '', icon: '' },
+        createdBy: ''
     });
-    const [information, setInformation] = useState({});
 
     const NFTData = useMemo(() => {
         return data.nft;
     }, [data]);
 
-    const TxData = useMemo(() => {
-        return NFTTransaction;
-    }, [NFTTransaction]);
+    const NFTInformation = useMemo(() => {
+        if (NFTData === undefined) return null;
+        const { name, description, metaURI, ...nftValues } = NFTData;
+        return { ...nftValues, ...metaData };
+    }, [NFTData, metaData]);
 
     const handleMetaData = useCallback(async () => {
         try {
+            if (NFTData === undefined) return;
             let result = await getNFTMetaData(NFTData.metaURI);
-            let name = result.name === undefined ? NFTData.name : result.name;
-            let description = result.description === undefined ? NFTData.description : result.description;
-            let attributes = result.attributes === undefined ? null : result.attributes;
 
-            setMetaData({
-                ...metaData,
-                name: name,
-                description: description,
-                attributes: attributes
-            });
+            metaData['name'] = result.name === undefined ? NFTData.name : result.name;
+            metaData['description'] = result.description === undefined ? NFTData.description : result.description;
+            metaData['attributes'] = result.attributes === undefined ? [] : result.attributes;
+            metaData['collection'] = result.collection === undefined ? { name: '', icon: '' } : result.collection;
+            metaData['createdBy'] = result.createdBy === undefined ? '' : result.createdBy;
+
+            setMetaData({ ...metaData });
         } catch (error) {
             console.log(error);
         }
     }, [NFTData]);
 
     useEffect(() => {
-        handleNFTId(NFTData.id);
-        setMetaData({
-            name: NFTData.name,
-            description: NFTData.description,
-            attributes: []
-        });
         handleMetaData();
     }, [NFTData]);
-
-    useEffect(() => {
-        const { name, description, metaURI, ...nftValues } = NFTData;
-        setInformation({ ...information, ...nftValues, ...TxData, ...metaData });
-    }, [NFTData, TxData, metaData]);
 
     const handleMoveToWeb = (uri: string) => {
         navigation.navigate(Screens.WebScreen, { uri: uri });
@@ -93,9 +83,9 @@ const NFT = ({ data }: IProps) => {
             <ViewContainer>
                 <React.Fragment>
                     <ScrollView contentContainerStyle={{ paddingHorizontal: 20 }}>
-                        <DescriptionBox data={information} />
+                        {NFTInformation !== null && <DescriptionBox data={NFTInformation} />}
                         <View style={styles.divider} />
-                        <InfoBox data={information} handleExplorer={handleMoveToWeb} />
+                        {NFTInformation !== null && <InfoBox data={NFTInformation} handleExplorer={handleMoveToWeb} />}
                         <PropertiesBox data={metaData.attributes} />
                     </ScrollView>
                     <View style={styles.buttonBox}>

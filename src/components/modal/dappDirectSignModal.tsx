@@ -335,7 +335,7 @@ const DappDirectSignModal = () => {
                                     <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount(
                                         productPrice,
                                         false,
-                                        6
+                                        productPrice > 0 ? 6 : 0
                                     )} ${productPriceSymbol}`}</Text>
                                 </View>
                             )}

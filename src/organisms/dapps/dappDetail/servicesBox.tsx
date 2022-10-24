@@ -1,18 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, BoxColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
 import { DAPP_NO_SERVICE } from '@/constants/common';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
-import SquareSkeleton from '@/components/skeleton/squareSkeleton';
 import { fadeIn } from '@/util/animation';
+import SquareSkeleton from '@/components/skeleton/squareSkeleton';
+import { ServiceData, ServiceMetaData } from '@/util/connectClient';
 
 interface IProps {
     visible: boolean;
     identity: string;
-    data: Array<any>;
+    data: Array<ServiceMetaData>;
 }
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
 
@@ -20,11 +21,8 @@ const itemCountPerLine = 3;
 
 const ServicesBox = ({ visible, identity, data }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-
     const fadeAnimImage = useRef(new Animated.Value(0)).current;
-
     const { storage } = useAppSelector((state) => state);
-
     const [containerSize, setContainerSize] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -34,23 +32,33 @@ const ServicesBox = ({ visible, identity, data }: IProps) => {
         return array;
     }, [storage.dappServicesVolume[identity]]);
 
+    const serviceList = useMemo(() => {
+        return data;
+    }, [data]);
+
     const itemLength = useMemo(() => {
-        return data.length;
-    }, data);
+        return serviceList.length;
+    }, [serviceList]);
 
     const servicesExist = useMemo(() => {
         return itemLength > 0;
     }, [itemLength]);
 
-    const handleMoveToWeb = useCallback((url: string) => {
-        // Linking.openURL(url);
-        navigation.navigate(Screens.WebScreen, { uri: url });
+    const handleMoveToWeb = useCallback((url: string, isExternal: boolean) => {
+        if (isExternal) {
+            Linking.openURL(url);
+        } else {
+            navigation.navigate(Screens.WebScreen, { uri: url });
+        }
     }, []);
 
-    const NFTItem = useCallback(
+    const ServiceItem = useCallback(
         ({ item, size }: any) => {
             return (
-                <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => handleMoveToWeb(item.url)}>
+                <TouchableOpacity
+                    style={[styles.contentWrap, { width: size }]}
+                    onPress={() => handleMoveToWeb(item.url, item.isExternalBrowser)}
+                >
                     <Animated.View style={{ paddingHorizontal: 10, opacity: fadeAnimImage }}>
                         <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={{ uri: item.icon }} />
                         {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.icon} /> */}
@@ -86,8 +94,8 @@ const ServicesBox = ({ visible, identity, data }: IProps) => {
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
                         {servicesExist ? (
                             isLoaded ? (
-                                data.map((value, key) => {
-                                    return <NFTItem key={key} item={value} size={(containerSize - 20) / itemCountPerLine} />;
+                                serviceList.map((value, key) => {
+                                    return <ServiceItem key={key} item={value} size={(containerSize - 20) / itemCountPerLine} />;
                                 })
                             ) : (
                                 itemsSkeleton.map((value, index) => {

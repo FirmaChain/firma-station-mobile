@@ -2,16 +2,19 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import { useNFT } from '@/hooks/dapps/hooks';
+import { useIsFocused } from '@react-navigation/native';
+import { IDappDataState } from '.';
 import NFTsBox from './nftsBox';
 import ServicesBox from './servicesBox';
 
 interface IProps {
-    data: any;
+    data: IDappDataState;
     serviceOnly: boolean;
 }
 
 const TabBox = ({ data, serviceOnly }: IProps) => {
-    const { MyNFTS, NFTCount, handleNFTIdList, handleIdentity } = useNFT();
+    const isFocused = useIsFocused();
+    const { MyNFTS, handleNFTIdList, handleIdentity } = useNFT();
 
     const [tab, setTab] = useState(0);
 
@@ -19,17 +22,25 @@ const TabBox = ({ data, serviceOnly }: IProps) => {
         return MyNFTS;
     }, [MyNFTS]);
 
-    useEffect(() => {
-        if (serviceOnly) {
-            setTab(0);
-        } else {
-            handleNFTIdList();
-        }
-    }, [serviceOnly]);
+    const NFTCount = useMemo(() => {
+        return NFTS.length;
+    }, [NFTS]);
 
     useEffect(() => {
-        handleIdentity(data.identity);
-    }, []);
+        if (isFocused) {
+            if (serviceOnly) {
+                setTab(0);
+            } else {
+                handleNFTIdList();
+            }
+        }
+    }, [serviceOnly, isFocused]);
+
+    useEffect(() => {
+        if (isFocused) {
+            handleIdentity(data.identity);
+        }
+    }, [isFocused]);
 
     return (
         <View style={{ flex: 1 }}>
@@ -60,7 +71,7 @@ const TabBox = ({ data, serviceOnly }: IProps) => {
             </View>
             <View style={{ flex: 1, paddingHorizontal: 20 }}>
                 <ServicesBox visible={tab === 0} identity={data.identity} data={data.serviceList} />
-                <NFTsBox visible={tab === 1} NFTS={NFTS} NFTCount={NFTCount} />
+                <NFTsBox visible={tab === 1} NFTS={NFTS} />
             </View>
         </View>
     );

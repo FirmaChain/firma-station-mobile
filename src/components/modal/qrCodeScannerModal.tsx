@@ -4,8 +4,8 @@ import { BarCodeReadEvent } from 'react-native-camera';
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { ScreenHeight, ScreenWidth } from '@/util/getScreenSize';
 import { QRCODE_SCANNER_MODAL_TEXT } from '@/constants/common';
-import { Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
-import { Close } from '../icon/icon';
+import { BlackColor, Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
+import { FailFilledCircle } from '../icon/icon';
 import { checkCameraPermission } from '@/util/permission';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import CustomToast from '../toast/customToast';
@@ -21,7 +21,7 @@ const QRCodeScannerModal = () => {
     };
 
     // const handleReaderTest = () => {
-    //     ModalActions.handleModalData({ result: 'sign://626da1c0-e9a1-46f5-84b1-b95d899622cb' });
+    //     ModalActions.handleModalData({ result: 'dapp://9e01a135-7670-49e3-9fb5-57a85fa0d7df' });
     //     closeModal();
     // };
 
@@ -50,14 +50,84 @@ const QRCodeScannerModal = () => {
                     customMarker={
                         <View style={styles.rectangleContainer}>
                             <View style={styles.topOverlay}>
-                                <TouchableOpacity style={{ padding: 20 }} onPress={() => closeModal()}>
-                                    <Close size={30} color={WhiteColor} />
-                                </TouchableOpacity>
-                                <Text style={styles.title}>{QRCODE_SCANNER_MODAL_TEXT}</Text>
+                                <View style={{ width: '100%', paddingVertical: 40, paddingHorizontal: 20, alignItems: 'flex-start' }}>
+                                    <TouchableOpacity style={{ width: 30, height: 30, borderRadius: 50 }} onPress={() => closeModal()}>
+                                        <View
+                                            style={{
+                                                width: 20,
+                                                height: 20,
+                                                position: 'absolute',
+                                                top: 5,
+                                                left: 5,
+                                                backgroundColor: WhiteColor
+                                            }}
+                                        />
+                                        <FailFilledCircle size={30} color={BlackColor} />
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.titleWrapper}>
+                                    <Text style={styles.title}>{QRCODE_SCANNER_MODAL_TEXT}</Text>
+                                </View>
                             </View>
                             <View style={{ flexDirection: 'row' }}>
                                 <View style={styles.leftAndRightOverlay} />
-                                <View style={styles.rectangle} />
+                                <View style={styles.rectangle}>
+                                    <View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            position: 'absolute',
+                                            top: -4,
+                                            left: -4,
+                                            borderTopWidth: 4,
+                                            borderLeftWidth: 4,
+                                            borderTopColor: WhiteColor,
+                                            borderLeftColor: WhiteColor
+                                        }}
+                                    />
+
+                                    <View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            position: 'absolute',
+                                            top: -4,
+                                            right: -4,
+                                            borderTopWidth: 4,
+                                            borderRightWidth: 4,
+                                            borderTopColor: WhiteColor,
+                                            borderRightColor: WhiteColor
+                                        }}
+                                    />
+
+                                    <View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            position: 'absolute',
+                                            bottom: -4,
+                                            left: -4,
+                                            borderBottomWidth: 4,
+                                            borderLeftWidth: 4,
+                                            borderBottomColor: WhiteColor,
+                                            borderLeftColor: WhiteColor
+                                        }}
+                                    />
+
+                                    <View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            position: 'absolute',
+                                            bottom: -4,
+                                            right: -4,
+                                            borderBottomWidth: 4,
+                                            borderRightWidth: 4,
+                                            borderBottomColor: WhiteColor,
+                                            borderRightColor: WhiteColor
+                                        }}
+                                    />
+                                </View>
                                 <View style={styles.leftAndRightOverlay} />
                             </View>
                             <View style={styles.bottomOverlay} />
@@ -72,6 +142,7 @@ const QRCodeScannerModal = () => {
 
 export default QRCodeScannerModal;
 
+// const overlayColor = 'rgba(255,255,255,0.5)';
 const overlayColor = 'rgba(0,0,0,0.5)';
 
 const rectDimensions = ScreenWidth() * 0.65;
@@ -86,10 +157,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    titleWrapper: {
+        borderRadius: 18,
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        backgroundColor: BlackColor + '80'
+    },
     title: {
-        width: '100%',
         fontFamily: Lato,
-        fontSize: 25,
+        fontSize: 18,
         textAlign: 'center',
         color: TextCatTitleColor
     },
@@ -103,8 +179,8 @@ const styles = StyleSheet.create({
     rectangle: {
         height: rectDimensions,
         width: rectDimensions,
-        borderWidth: rectBorderWidth,
-        borderColor: WhiteColor,
+        borderWidth: 4,
+        borderColor: overlayColor,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'transparent'
@@ -116,6 +192,7 @@ const styles = StyleSheet.create({
         width: ScreenWidth(),
         backgroundColor: overlayColor,
         justifyContent: 'space-between',
+        alignItems: 'center',
         paddingVertical: 30
     },
 
@@ -128,8 +205,7 @@ const styles = StyleSheet.create({
     },
 
     leftAndRightOverlay: {
-        height: ScreenWidth() * 0.65,
-        width: ScreenWidth(),
+        flex: 1,
         backgroundColor: overlayColor
     }
 });

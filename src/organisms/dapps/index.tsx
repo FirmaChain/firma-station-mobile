@@ -9,7 +9,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { StorageActions } from '@/redux/actions';
 import { wait } from '@/util/common';
 import { fadeIn } from '@/util/animation';
-import ConnectClient from '@/util/connectClient';
+import ConnectClient, { ProjectList } from '@/util/connectClient';
 import DappsSkeleton from '@/components/skeleton/dappsSkeleton';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Dapps>;
@@ -28,9 +28,15 @@ const Dapps = () => {
     const [projectList, setProjectList] = useState<Array<any>>([]);
 
     const dappsVolumes = useMemo(() => {
-        if (storage.contentVolume?.dapps === undefined) return 0;
+        if (storage.contentVolume?.dapps === undefined) return null;
         return storage.contentVolume.dapps;
     }, [storage.contentVolume]);
+
+    const itemsSkeleton = useMemo(() => {
+        if (dappsVolumes === null) return [];
+        let array = Array.from({ length: Number(dappsVolumes) });
+        return array;
+    }, [dappsVolumes]);
 
     const itemSize = useMemo(() => {
         return (containerSize - 20) / itemCountPerLine;
@@ -38,7 +44,7 @@ const Dapps = () => {
 
     const getProjectList = async () => {
         try {
-            let list = await connectClient.getProjects();
+            let list: ProjectList = await connectClient.getProjects();
             StorageActions.handleContentVolume({
                 ...storage.contentVolume,
                 dapps: list.projectList.length
@@ -79,14 +85,16 @@ const Dapps = () => {
     );
 
     useEffect(() => {
-        if (projectList.length >= dappsVolumes || projectList.length > 0) {
-            fadeIn(Animated, fadeAnimDapp, 500);
+        if (dappsVolumes !== null) {
+            if (projectList.length >= dappsVolumes || projectList.length > 0) {
+                fadeIn(Animated, fadeAnimDapp, 500);
 
-            let list = storage.dappServicesVolume;
-            projectList.map((value) => {
-                list = { ...list, [value.identity]: value.serviceList.length };
-                StorageActions.handleDappServicesVolume(list);
-            });
+                let list = storage.dappServicesVolume;
+                projectList.map((value) => {
+                    list = { ...list, [value.identity]: value.serviceList.length };
+                    StorageActions.handleDappServicesVolume(list);
+                });
+            }
         }
     }, [projectList]);
 
@@ -101,18 +109,24 @@ const Dapps = () => {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.box}>
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
-                        {dappsVolumes > 0 ? (
-                            projectList.length > 0 ? (
-                                projectList.map((value, index) => {
-                                    return <DappItem key={index} item={value} size={itemSize} />;
-                                })
-                            ) : (
-                                <DappsSkeleton volumes={dappsVolumes} size={itemSize} />
-                            )
-                        ) : (
-                            <View style={styles.noDappsBox}>
-                                <Text style={styles.noDappsText}>No Dapps</Text>
-                            </View>
+                        {dappsVolumes != null && (
+                            <React.Fragment>
+                                {dappsVolumes > 0 ? (
+                                    projectList.length > 0 ? (
+                                        projectList.map((value, index) => {
+                                            return <DappItem key={index} item={value} size={itemSize} />;
+                                        })
+                                    ) : (
+                                        itemsSkeleton.map((value, index) => {
+                                            return <DappsSkeleton key={index} size={itemSize} />;
+                                        })
+                                    )
+                                ) : (
+                                    <View style={styles.noDappsBox}>
+                                        <Text style={styles.noDappsText}>No Dapps</Text>
+                                    </View>
+                                )}
+                            </React.Fragment>
                         )}
                     </View>
                 </View>

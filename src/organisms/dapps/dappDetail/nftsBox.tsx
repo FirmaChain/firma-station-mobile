@@ -14,12 +14,11 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDeta
 interface IProps {
     visible: boolean;
     NFTS: Array<any>;
-    NFTCount: number;
 }
 
 const itemCountPerLine = 3;
 
-const NFTsBox = ({ visible, NFTS, NFTCount }: IProps) => {
+const NFTsBox = ({ visible, NFTS }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const [containerSize, setContainerSize] = useState(0);
 
@@ -27,22 +26,23 @@ const NFTsBox = ({ visible, NFTS, NFTCount }: IProps) => {
         return NFTS;
     }, [NFTS]);
 
+    const NFTCount = useMemo(() => {
+        return NFTList.length;
+    }, [NFTList]);
+
     const nftsExist = useMemo(() => {
         return NFTCount > 0;
     }, [NFTCount]);
 
-    const moveToNFTDetail = useCallback(
-        (id: any) => {
-            let nft = NFTS.find((value: any) => id === value.id);
-            navigation.navigate(Screens.NFT, { data: { nft: nft } });
-        },
-        [NFTS]
-    );
+    const moveToNFTDetail = (id: any) => {
+        let nft = NFTList.find((value: any) => id === value.id);
+        navigation.navigate(Screens.NFT, { data: { nft: nft } });
+    };
 
     const NFTItem = useCallback(
         ({ item, size }: any) => {
             const fadeAnimImage = useRef(new Animated.Value(1)).current;
-            const [imageLoading, setImageLoading] = useState(true);
+            const [imageLoading, setImageLoading] = useState(false);
 
             useEffect(() => {
                 if (imageLoading === false) {
@@ -56,6 +56,7 @@ const NFTsBox = ({ visible, NFTS, NFTCount }: IProps) => {
                         <Image
                             style={[styles.contentImage, { width: '100%', height: size - 20 }]}
                             source={{ uri: item.image }}
+                            onLoadStart={() => setImageLoading(true)}
                             onLoadEnd={() => setImageLoading(false)}
                         />
                         {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.image} /> */}
@@ -69,7 +70,7 @@ const NFTsBox = ({ visible, NFTS, NFTCount }: IProps) => {
                 </TouchableOpacity>
             );
         },
-        [moveToNFTDetail]
+        [visible]
     );
 
     return (
@@ -168,4 +169,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default NFTsBox;
+export default React.memo(NFTsBox);

@@ -13,7 +13,6 @@ export interface INFTTransctionState {
 
 export const useNFT = () => {
     const { wallet } = useAppSelector((state) => state);
-    const [NFTCount, setNFTCount] = useState(0);
     const [NFTIdList, setNFTIdLIst] = useState<Array<string>>([]);
     const [NFTS, setNFTS] = useState<Array<INftItemType>>([]);
     const [MyNFTS, setMyNFTS] = useState<Array<any>>([]);
@@ -30,16 +29,15 @@ export const useNFT = () => {
         setIdentity(id);
     };
 
-    const handleNFTIdList = async () => {
+    const handleNFTIdList = useCallback(async () => {
         try {
             let list = await getNFTIdListOfOwner(wallet.address);
             setNFTIdLIst(list.nftIdList);
-            setNFTCount(list.pagination.total);
         } catch (error) {
             console.log(error);
             throw error;
         }
-    };
+    }, [wallet.address]);
 
     const getNFTMetaData = async (uri: string) => {
         try {
@@ -52,15 +50,16 @@ export const useNFT = () => {
         }
     };
 
+    const handleNFTList = useCallback(async () => {
+        try {
+            const nftList = await getNFTSList(NFTIdList);
+            setNFTS(nftList);
+        } catch (error) {
+            console.log(error);
+        }
+    }, [NFTIdList]);
+
     useEffect(() => {
-        const handleNFTList = async () => {
-            try {
-                const nftList = await getNFTSList(NFTIdList);
-                setNFTS(nftList);
-            } catch (error) {
-                console.log(error);
-            }
-        };
         handleNFTList();
     }, [NFTIdList]);
 
@@ -80,7 +79,7 @@ export const useNFT = () => {
         initValues();
     }, []);
 
-    return { MyNFTS, NFTIdList, NFTCount, handleNFTIdList, handleIdentity, getNFTMetaData };
+    return { MyNFTS, NFTIdList, handleNFTIdList, handleIdentity, getNFTMetaData };
 };
 
 const getNFTSList = async (idList: Array<string>) => {

@@ -79,7 +79,7 @@ export const ADDRESS_QRCODE_MODAL_TEXT = {
     confirmTitle: 'Ok'
 };
 
-export const QRCODE_SCANNER_MODAL_TEXT = 'Scan QR code';
+export const QRCODE_SCANNER_MODAL_TEXT = 'Please read the QR code.';
 
 export const CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT = {
     title: 'Use Bio Auth',
@@ -111,6 +111,7 @@ export const SETTING_DELETE_WALLET_TEXT = {
 export const DELEGATE_NOT_EXIST = 'There are no delegation\ncurrently in progress.';
 export const REDELEGATE_NOT_EXIST = 'There are no redelegation\ncurrently in progress.';
 export const UNDELEGATE_NOT_EXIST = 'There are no undelegation\ncurrently in progress.';
+export const RESTAKE_NOT_EXIST = 'Restake is inactive';
 
 export const AUTO_ENTERED_AMOUNT_TEXT =
     'The entire amount is automatically entered except 0.1FCT, which will be used as a transaction fee.';
@@ -137,6 +138,9 @@ export const DAPP_NO_SERVICE = 'There are no services available.';
 export const DAPP_NO_NFT = 'NFT does not exist.';
 export const DAPP_NOT_ENOUGHT_BALANCE = 'Not enough balance.';
 export const DAPP_SERVICE_USING_NOTICE = 'Please go to the service you were using';
+export const DAPP_SERVICE_REGIST = 'Register for a new Dapp service.';
+export const DAPP_SERVICE_REGIST_SUCCESS = 'The service has been registered.\nAvailable on the Dapps tab.';
+export const DAPP_SERVICE_EXIST_NOTICE = 'This service is already registered.';
 
 // transaction
 export const TRANSACTION_TYPE: IKeyValue = {

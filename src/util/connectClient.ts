@@ -20,6 +20,19 @@ interface ResponseQRData {
     projectMetaData: ProjectMetaData;
 }
 
+interface ResponseDappQRData {
+    project: {
+        projectId: string;
+        name: string;
+        icon: string;
+    };
+    service: {
+        serviceId: string;
+        name: string;
+        icon: string;
+    };
+}
+
 interface ResponseAuthData {
     userkey: string;
 }
@@ -39,12 +52,53 @@ interface ProjectMetaData {
     icon: string;
 }
 
+export interface ServiceMetaData {
+    serviceId: string;
+    name: string;
+    url: string;
+    icon: string;
+    isExternalBrowser: boolean;
+}
+
+export interface ServiceData {
+    service: {
+        serviceId: string;
+        name: string;
+        url: string;
+        icon: string;
+        isExternalBrowser: boolean;
+    };
+}
+
+interface ResponseServiceData {
+    service: {
+        serviceId: string;
+        name: string;
+        url: string;
+        icon: string;
+        isExternalBrowser: boolean;
+    };
+}
+
 export interface QRData {
     qrType: number;
     apiCode: string;
     requestKey: string;
     signParams: SignParams;
     projectMetaData: ProjectMetaData;
+}
+
+export interface DappQRData {
+    project: {
+        projectId: string;
+        name: string;
+        icon: string;
+    };
+    service: {
+        serviceId: string;
+        name: string;
+        icon: string;
+    };
 }
 
 interface ApproveParam {
@@ -62,6 +116,20 @@ class ConnectClient {
 
             return {
                 projectList: response.projectList
+            };
+        } catch (e) {
+            throw new Error('Failed Request');
+        }
+    }
+
+    public async getUserDappService(identity: string, serviceId: string): Promise<ServiceData> {
+        try {
+            const response: ResponseServiceData = await this.requestService.requestGet<ResponseServiceData>(
+                `/v1/projects/dapps/${identity}/services/${serviceId}`
+            );
+
+            return {
+                service: response.service
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -111,6 +179,10 @@ class ConnectClient {
         }
     }
 
+    public isDappQR(qrcode: string) {
+        return qrcode.includes('dapp://');
+    }
+
     public async requestQRData(session: UserSession, QRCode: string): Promise<QRData> {
         try {
             if (QRCode.split('://').length < 2) throw new Error('Invalid QR Format');
@@ -141,6 +213,34 @@ class ConnectClient {
         } catch (e) {
             console.log(e);
             throw new Error('Invalid QR(' + e + ')');
+        }
+    }
+
+    public async requestDappQRData(session: UserSession, QRCode: string): Promise<DappQRData> {
+        try {
+            if (QRCode.split('://').length < 2) throw new Error('Invalid QR Format');
+
+            const apiCode = QRCode.split('://')[0];
+            const requestKey = QRCode.split('://')[1];
+            if (apiCode === 'dapp') {
+                const response: ResponseDappQRData = await this.requestService.requestGet<ResponseDappQRData>(
+                    `/v1/wallets/${apiCode}/${requestKey}`,
+                    { userkey: session.userkey }
+                );
+
+                const project = response.project;
+                const service = response.service;
+
+                return {
+                    project,
+                    service
+                };
+            } else {
+                throw new Error('Invalid API Code');
+            }
+        } catch (error) {
+            console.log(error);
+            throw new Error('Invalid QR(' + error + ')');
         }
     }
 

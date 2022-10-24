@@ -64,20 +64,24 @@ const DappConnectModal = () => {
         ModalActions.handleDAppConnectModal(open);
     };
 
-    const handleConnect = () => {
+    const handleConnect = async () => {
         handleModal(false);
         if (common.appState === 'active') {
-            let updateList = JSON.stringify(IdState.list);
-            setDAppProjectIdList(wallet.name, storage.network, updateList);
-            ModalActions.handleModalData(QRData);
-            if (connectClient.isDirectSign(QRData)) {
-                wait(500).then(() => {
-                    ModalActions.handleDAppDirectSignModal(true);
-                });
-            } else {
-                wait(500).then(() => {
-                    ModalActions.handleDAppSignModal(true);
-                });
+            try {
+                let updateList = JSON.stringify(IdState.list);
+                await setDAppProjectIdList(wallet.name, storage.network, updateList);
+                ModalActions.handleModalData(QRData);
+                if (connectClient.isDirectSign(QRData)) {
+                    wait(500).then(() => {
+                        ModalActions.handleDAppDirectSignModal(true);
+                    });
+                } else {
+                    wait(500).then(() => {
+                        ModalActions.handleDAppSignModal(true);
+                    });
+                }
+            } catch (error) {
+                console.log(error);
             }
         }
     };
