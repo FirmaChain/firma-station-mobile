@@ -4,7 +4,7 @@ import { getAdrFromMnemonic } from './firma';
 import { checkBioMetrics } from './bioAuth';
 import { decrypt, encrypt, keyEncrypt } from './keystore';
 import { getChain, removeChain, setChain } from './secureKeyChain';
-import { CONNECT_ID_LIST, CONNECT_SESSION, USE_BIO_AUTH, WALLET_LIST } from '@/../config';
+import { CONNECT_ID_LIST, CONNECT_SESSION, DAPPS_SERVICE_IDENTITY, USE_BIO_AUTH, WALLET_LIST } from '@/../config';
 
 const UNIQUE_ID = getUniqueId();
 
@@ -351,6 +351,38 @@ export const getDAppProjectIdList = async (name: string, key: string) => {
 export const removeDAppProjectIdList = async (name: string) => {
     try {
         await removeChain(CONNECT_ID_LIST + name);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
+export const setDAppServiceId = async (name: string, value: string) => {
+    try {
+        const encList = encrypt(value, DAPPS_SERVICE_IDENTITY + '_' + name + '_' + UNIQUE_ID);
+        await setChain(DAPPS_SERVICE_IDENTITY + name, encList);
+    } catch (error) {
+        CommonActions.handleLoadingProgress(false);
+        throw error;
+    }
+};
+
+export const getDAppServiceId = async (name: string) => {
+    let list = null;
+    try {
+        const result = await getChain(DAPPS_SERVICE_IDENTITY + name);
+        if (result === false) return null;
+        list = decrypt(result.password, DAPPS_SERVICE_IDENTITY + '_' + name + '_' + UNIQUE_ID);
+        return list;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
+export const removeDAppServiceId = async (name: string) => {
+    try {
+        await removeChain(DAPPS_SERVICE_IDENTITY + name);
     } catch (error) {
         console.log(error);
         throw error;

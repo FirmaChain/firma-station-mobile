@@ -13,6 +13,7 @@ import { DAPP_INVALID_QR } from '@/constants/common';
 import { CHAIN_NETWORK } from '@/../config';
 import ConnectClient from '@/util/connectClient';
 import Toast from 'react-native-toast-message';
+import DappServiceRegistModal from '@/components/modal/dappServiceRegistModal';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -102,6 +103,15 @@ const DeepLinkManager = () => {
         } else {
             try {
                 let session = await connectClient.getUserSession(wallet.name + storage.network);
+                let isDappQR = connectClient.isDappQR(result);
+                if (isDappQR) {
+                    let DappQRData = await connectClient.requestDappQRData(session, result);
+                    CommonActions.handleLoadingProgress(true);
+                    ModalActions.handleModalData({ data: DappQRData });
+                    ModalActions.handleDAppServiceRegistModal(true);
+                    return;
+                }
+
                 let QRData = await connectClient.requestQRData(session, result);
                 const verification = await connectClient.verifyConnectedWallet(wallet.address, QRData);
                 if (verification === false) {
@@ -168,6 +178,7 @@ const DeepLinkManager = () => {
             <DappConnectModal />
             <DappSignModal />
             <DappDirectSignModal />
+            <DappServiceRegistModal />
         </React.Fragment>
     );
 };
