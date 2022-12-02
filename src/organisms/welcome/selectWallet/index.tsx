@@ -8,7 +8,7 @@ import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from '@/util/wallet';
 import { PasswordCheck } from '@/util/validationCheck';
-import { getAdrFromMnemonic } from '@/util/firma';
+import { getAddressFromRecoverValue } from '@/util/firma';
 import { GUIDE_URI } from '@/../config';
 import Toast from 'react-native-toast-message';
 import Container from '@/components/parts/containers/conatainer';
@@ -105,7 +105,7 @@ const SelectWallet = () => {
     const onSelectWalletAndMoveToHome = async () => {
         try {
             let adr = '';
-            const result = await getAdrFromMnemonic(mnemonic);
+            const result = await getAddressFromRecoverValue(mnemonic);
             if (result !== undefined) adr = result;
 
             await setWalletWithAutoLogin(

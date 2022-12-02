@@ -10,6 +10,7 @@ import { TransactionParams } from '@/screens/transaction/transaction';
 import { WebParams } from '@/screens/webScreen';
 import { DappDetailParams } from '@/screens/home/dapps/dapp/dappDetail';
 import { NFTParams } from '@/screens/home/dapps/nft/nft';
+import { CreateStepRecoverParams } from '@/screens/createWallet/stepRecover';
 
 export enum Screens {
     LoginCheck = 'LoginCheck',
@@ -58,7 +59,7 @@ export type StackParamList = {
     CreateStepOne: CreateStepOneParams;
     CreateStepTwo: CreateStepTwoParams;
     CreateStepThree: CreateStepThreeParams;
-    StepRecover: undefined;
+    StepRecover: CreateStepRecoverParams;
     SelectWallet: undefined;
     RecoverWallet: undefined;
 

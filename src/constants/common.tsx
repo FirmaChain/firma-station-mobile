@@ -91,6 +91,8 @@ export const CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT = {
 export const CREATE_WALLET_FAILED = 'Wallet creation failed. Please try again.';
 export const RECOVER_WALLET_FAILED = 'Wallet recover failed. Please try again.';
 export const CHECK_MNEMONIC = 'Check your mnemonic again.';
+export const CHECK_PRIVATEKEY = 'Check your private key again.';
+export const CHECK_RECOVER_VALUE = 'Check your mnemonic or private key again.';
 
 export const HISTORY_NOT_EXIST = "There's no history yet.";
 
@@ -135,9 +137,10 @@ export const RESTAKE_NOTICE_TEXT = [
 
 export const DAPP_INVALID_QR = 'Invalid wallet. Please check your wallet.';
 export const DAPP_NO_SERVICE = 'There are no services available.';
+export const DAPP_LOADING_NFT = 'Loading NFT list.';
 export const DAPP_NO_NFT = 'NFT does not exist.';
 export const DAPP_NOT_ENOUGHT_BALANCE = 'Not enough balance.';
-export const DAPP_SERVICE_USING_NOTICE = 'Please go to the service you were using';
+export const DAPP_SERVICE_USING_NOTICE = 'Please go to the service you were using.';
 export const DAPP_SERVICE_REGIST = 'Register for a new Dapp service.';
 export const DAPP_SERVICE_REGIST_SUCCESS = 'The service has been registered.\nAvailable on the Dapps tab.';
 export const DAPP_SERVICE_EXIST_NOTICE = 'This service is already registered.';

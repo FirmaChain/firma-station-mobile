@@ -103,11 +103,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                         const result = await getChain(wallet.name);
                         if (result) {
                             let w = decrypt(result.password, key);
-                            if (w.split(' ').length === 24) {
-                                setActive(true);
-                            } else {
-                                setActive(false);
-                            }
+                            setActive(w !== '');
                         }
                     } catch (error) {
                         console.log(error);

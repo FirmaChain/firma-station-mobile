@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
@@ -11,10 +11,12 @@ import {
     removeDAppConnectSession,
     removeDAppProjectIdList,
     removePasswordViaBioAuth,
+    removeRecoverType,
     removeUseBioAuth,
     removeWallet,
     setBioAuth,
     setNewWallet,
+    setRecoverType,
     setUseBioAuth,
     setWalletList
 } from '@/util/wallet';
@@ -33,7 +35,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangeWa
 
 const ChangeWalletName = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet } = useAppSelector((state) => state);
+    const { wallet, storage } = useAppSelector((state) => state);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeButton, setActiveButton] = useState(false);
@@ -41,10 +43,10 @@ const ChangeWalletName = () => {
 
     const [newWalletName, setNewWalletName] = useState('');
     const [password, setPassword] = useState('');
-    const [mnemonic, setMnemonic] = useState('');
+    const [recoverValue, setRecoverValue] = useState('');
 
-    const handleMnemonic = (mnemonic: string) => {
-        setMnemonic(mnemonic);
+    const handleRecoverValue = (value: string) => {
+        setRecoverValue(value);
     };
 
     const handleActiveButton = (active: boolean) => {
@@ -73,8 +75,9 @@ const ChangeWalletName = () => {
         }
     };
 
-    const removeCurrentWallet = async () => {
+    const removeCurrentWallet = useCallback(async () => {
         try {
+            removeRecoverType(storage.recoverType, wallet.address);
             await removeWallet(wallet.name);
             await removeDAppProjectIdList(wallet.name);
             await removeDAppConnectSession(wallet.name);
@@ -83,7 +86,7 @@ const ChangeWalletName = () => {
             console.log(error);
             throw error;
         }
-    };
+    }, [storage.recoverType, wallet.name]);
 
     const createNewWallet = async () => {
         let newList: string = '';
@@ -98,7 +101,8 @@ const ChangeWalletName = () => {
             }
             await setWalletList(newList);
 
-            const setWalletResult = await setNewWallet(newWalletName, password, mnemonic, false);
+            const setWalletResult = await setNewWallet(newWalletName, password, recoverValue, false);
+            await setRecoverType(storage.recoverType, recoverValue, wallet.address);
 
             await handleUseBioAuthForNewWallet();
             WalletActions.handleWalletName(newWalletName);
@@ -142,7 +146,7 @@ const ChangeWalletName = () => {
                         validate={handleActiveButton}
                         newWalletName={setNewWalletName}
                         password={setPassword}
-                        mnemonic={handleMnemonic}
+                        recoverValue={handleRecoverValue}
                     />
                     <View style={styles.buttonBox}>
                         <Button title="Change" active={activeButton} onPressEvent={changeNewWalletName} />

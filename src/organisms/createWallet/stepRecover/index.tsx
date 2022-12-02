@@ -1,95 +1,100 @@
-import React, { useState } from "react";
-import { Linking, StyleSheet, View } from "react-native";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { CommonActions } from "@/redux/actions";
-import { BgColor, InputBgColor, Lato, TextColor } from "@/constants/theme";
-import { recoverFromMnemonic } from "@/util/firma";
-import { CHECK_MNEMONIC, RECOVER_WALLET_FAILED } from "@/constants/common";
-import Button from "@/components/button/button";
-import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
-import InputBox from "./inputBox";
-import Toast from "react-native-toast-message";
-import { GUIDE_URI } from "@/../config";
+import React, { useState } from 'react';
+import { Linking, StyleSheet, View } from 'react-native';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { CommonActions } from '@/redux/actions';
+import { BgColor, InputBgColor, Lato, TextColor } from '@/constants/theme';
+import { CHECK_MNEMONIC, CHECK_PRIVATEKEY, RECOVER_WALLET_FAILED } from '@/constants/common';
+import { GUIDE_URI } from '@/../config';
+import Button from '@/components/button/button';
+import Container from '@/components/parts/containers/conatainer';
+import ViewContainer from '@/components/parts/containers/viewContainer';
+import InputBox from './inputBox';
+import Toast from 'react-native-toast-message';
+import { mnemonicCheck, privateKeyCheck, recoverWallet } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
-const StepRecover = () => {
-    const navigation:ScreenNavgationProps = useNavigation();
+interface IProps {
+    type: 'mnemonic' | 'privateKey';
+}
 
-    const [activeRecover, setActiveRecover] = useState(false);
-    const [mnemonic, setMnemonic] = useState('');
+const StepRecover = ({ type }: IProps) => {
+    const navigation: ScreenNavgationProps = useNavigation();
 
-    const handleMnemonic = (mnemonic:string) => {
-        setMnemonic(mnemonic);
-    }
+    const [recoverValue, setRecoverValue] = useState('');
 
-    const handleRecoverViaSeed = async() => {
+    const handleRecoverValue = (value: string) => {
+        setRecoverValue(value);
+    };
+
+    const handleRecover = async () => {
         try {
             CommonActions.handleLoadingProgress(true);
-            const wallet = await recoverFromMnemonic(mnemonic);
+            let recover = false;
+            if(type === 'mnemonic'){
+                recover = await mnemonicCheck(recoverValue);
+            }
+            if(type === 'privateKey'){
+                recover = await privateKeyCheck(recoverValue);
+            }
+
             CommonActions.handleLoadingProgress(false);
-            if(wallet === undefined){
+            if (recover === false) {
+                let message = type === 'mnemonic' ? CHECK_MNEMONIC : CHECK_PRIVATEKEY;
                 return Toast.show({
                     type: 'error',
-                    text1: CHECK_MNEMONIC,
+                    text1: message
                 });
             }
-            navigation.navigate(Screens.CreateStepOne, {mnemonic});
+            navigation.navigate(Screens.CreateStepOne, { recoverValue: recoverValue });
         } catch (error) {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: RECOVER_WALLET_FAILED,
+                text1: RECOVER_WALLET_FAILED
             });
         }
-    }
+    };
 
     const handleMoveToWeb = () => {
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["recoverWallet"]});
-        Linking.openURL(GUIDE_URI["recoverWallet"]);
-    }
+        Linking.openURL(GUIDE_URI['recoverWallet']);
+    };
 
     const handleBack = () => {
         navigation.goBack();
-    }
+    };
 
     return (
-        <Container
-            title="Recover Wallet"
-            handleGuide={handleMoveToWeb}
-            backEvent={handleBack}>
-                <ViewContainer bgColor={BgColor}>
-                    <View style={styles.container}>
-                        <InputBox handleMnemonic={handleMnemonic} activateRecover={setActiveRecover} />
-                        <View style={{flex: 1, justifyContent: "flex-end"}}>
-                            <Button
-                                title="Recover"
-                                active={activeRecover}
-                                onPressEvent={handleRecoverViaSeed}/>
-                        </View>
+        <Container title="Recover Wallet" handleGuide={handleMoveToWeb} backEvent={handleBack}>
+            <ViewContainer bgColor={BgColor}>
+                <View style={styles.container}>
+                    <InputBox type={type} handleRecoverValue={handleRecoverValue} />
+                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                        <Button title="Recover" active={true} onPressEvent={handleRecover} />
                     </View>
-                </ViewContainer>
+                </View>
+            </ViewContainer>
         </Container>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 3,
         padding: 20
     },
-    wrapperH:{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignContent: "center",
+    wrapperH: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignContent: 'center'
     },
     title: {
         color: TextColor,
         fontFamily: Lato,
-        fontSize: 14,
+        fontSize: 14
     },
     inputWrapper: {
         height: 200,
@@ -97,12 +102,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: InputBgColor,
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 4
     },
     input: {
         color: TextColor,
-        flex: 1,
+        flex: 1
     }
-})
+});
 
 export default StepRecover;

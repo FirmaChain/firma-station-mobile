@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -6,7 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '@/redux/hooks';
 import { AddressBoxColor, BgColor, TextCatTitleColor } from '@/constants/theme';
 import { removeWalletWithAutoLogin } from '@/util/wallet';
-import { GUIDE_URI, VERSION } from '@/../config';
+import { GUIDE_URI } from '@/../config';
+import { ModalActions } from '@/redux/actions';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import BioAuthRadio from './bioAuthRadio';
@@ -14,19 +15,28 @@ import MenuItem from './menuItem';
 import Disconnect from './disconnect';
 import Delete from './delete';
 import TextMenuItem from './textMenuItem';
-import { ModalActions } from '@/redux/actions';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
 const Setting = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet, storage, common } = useAppSelector((state) => state);
+    const { wallet, storage } = useAppSelector((state) => state);
 
-    const settingList = [
-        { title: 'Change Password', path: 'ChangePW' },
-        { title: 'Export Mnemonic', path: 'ExportMN' },
-        { title: 'Export Private Key', path: 'ExportPK' }
-    ];
+    const settingList = useMemo(() => {
+        let settingList = [
+            { title: 'Change Password', path: 'ChangePW' },
+            { title: 'Export Private Key', path: 'ExportPK' }
+        ];
+        if (
+            storage.recoverType === undefined ||
+            storage.recoverType[wallet.address] === undefined ||
+            storage.recoverType[wallet.address] === 'mnemonic'
+        ) {
+            settingList.splice(1, 0, { title: 'Export Mnemonic', path: 'ExportMN' });
+        }
+
+        return settingList;
+    }, [storage.recoverType]);
 
     const handleMenus = (path: string) => {
         switch (path) {

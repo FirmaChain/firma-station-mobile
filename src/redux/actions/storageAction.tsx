@@ -1,6 +1,13 @@
 import { IKeyValue } from '@/constants/common';
 import { IContentVolume } from '../reducers/storageReducer';
-import { HANDLE_CURRENCY, HANDLE_NETWORK, HANDLE_CONTENT_VOLUME, HANDLE_HISTORY_VOLUME, HANDLE_DAPP_SERVICES_VOLUME } from '../types';
+import {
+    HANDLE_CURRENCY,
+    HANDLE_NETWORK,
+    HANDLE_CONTENT_VOLUME,
+    HANDLE_HISTORY_VOLUME,
+    HANDLE_DAPP_SERVICES_VOLUME,
+    HANDLE_RECOVER_TYPE
+} from '../types';
 
 export const handleCurrency = (currency: string) => ({
     type: HANDLE_CURRENCY,
@@ -25,4 +32,9 @@ export const handleHistoryVolume = (volumes: IKeyValue) => ({
 export const handleDappServicesVolume = (volumes: IKeyValue) => ({
     type: HANDLE_DAPP_SERVICES_VOLUME,
     payload: { ...volumes }
+});
+
+export const handleRecoverType = (typePerWallet: IKeyValue) => ({
+    type: HANDLE_RECOVER_TYPE,
+    payload: { ...typePerWallet }
 });

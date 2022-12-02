@@ -18,7 +18,7 @@ import {
     setWalletWithAutoLogin
 } from '@/util/wallet';
 import { easeInAndOutAnim, fadeIn, LayoutAnim } from '@/util/animation';
-import { getAdrFromMnemonic } from '@/util/firma';
+import { getAddressFromRecoverValue } from '@/util/firma';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import { removeAllData } from '@/util/detect';
 import { wait } from '@/util/common';
@@ -55,8 +55,8 @@ const LoginCheck = () => {
     // 1: maintenance check
     // 2: start
     const [appStartStatus, setAppStartStatus] = useState(0);
-    const [update, setUpdate] = useState(false);
-    const [maintenance, setMaintenance] = useState(false);
+    const [update, setUpdate] = useState<boolean | null>(null);
+    const [maintenance, setMaintenance] = useState<boolean | null>(null);
     const [maintenanceData, setMaintenanceData] = useState({});
 
     const [isKeyboardShown, setIsKeyboardShown] = useState(false);
@@ -64,9 +64,9 @@ const LoginCheck = () => {
     const [useBio, setUseBio] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const handleLogin = async (mnemonic: string, name: string, password: string) => {
+    const handleLogin = async (recoverValue: string, name: string, password: string) => {
         try {
-            let adr = await getAdrFromMnemonic(mnemonic);
+            let adr = await getAddressFromRecoverValue(recoverValue);
             if (adr) {
                 await setWalletWithAutoLogin(
                     JSON.stringify({
@@ -210,29 +210,43 @@ const LoginCheck = () => {
 
     useEffect(() => {
         SplashScreen.hide();
-
         if (minAppVer !== undefined && currentAppVer !== undefined) {
-            CommonActions.handleCurrentAppVer(currentAppVer);
-            const result = VersionCheck(minAppVer, VERSION);
-            if (result) {
-                setAppStartStatus(appStartStatus + 1);
-            } else {
-                setUpdate(true);
+            if (minAppVer !== null && currentAppVer !== null) {
+                CommonActions.handleCurrentAppVer(currentAppVer);
+                const result = VersionCheck(minAppVer, VERSION);
+
+                if (result) {
+                    setAppStartStatus(appStartStatus + 1);
+                    setUpdate(false);
+                } else {
+                    setUpdate(true);
+                }
             }
+        } else {
+            setAppStartStatus(appStartStatus + 1);
+            setUpdate(false);
         }
-    }, [minAppVer]);
+    }, [minAppVer, currentAppVer]);
 
     useEffect(() => {
-        if (appStartStatus === 1 && maintenanceState !== undefined) {
-            const isMaintenance = maintenanceState?.isShow;
-            if (isMaintenance) {
-                setMaintenance(isMaintenance);
-                setMaintenanceData(maintenanceState);
+        if (appStartStatus === 1) {
+            if (maintenanceState !== undefined) {
+                if (maintenanceState !== null) {
+                    const isMaintenance = maintenanceState?.isShow;
+                    if (isMaintenance) {
+                        setMaintenance(true);
+                        setMaintenanceData(maintenanceState);
+                    } else {
+                        setMaintenance(false);
+                        setAppStartStatus(appStartStatus + 1);
+                    }
+                }
             } else {
+                setMaintenance(false);
                 setAppStartStatus(appStartStatus + 1);
             }
         }
-    }, [appStartStatus]);
+    }, [appStartStatus, maintenanceState]);
 
     return (
         <ViewContainer bgColor={BgColor}>
@@ -266,8 +280,8 @@ const LoginCheck = () => {
                         </Animated.View>
                     </Pressable>
                 )}
-                {update && <UpdateModal />}
-                {maintenance && <MaintenanceModal data={maintenanceData} />}
+                {update !== null && update && <UpdateModal />}
+                {maintenance != null && maintenance && <MaintenanceModal data={maintenanceData} />}
             </KeyboardAvoidingView>
         </ViewContainer>
     );
