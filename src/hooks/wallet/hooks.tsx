@@ -64,6 +64,7 @@ export const useHistoryData = () => {
     });
     const [recentHistory, setRecentHistory] = useState<IHistoryState>();
     const [historyOffset, setHistoryOffset] = useState(0);
+    const [polling, setPolling] = useState(true);
 
     const handleHistoryOffset = (reset: boolean) => {
         setHistoryOffset(reset ? 0 : historyOffset + 30);
@@ -94,41 +95,43 @@ export const useHistoryData = () => {
     } = useHistoryByAddressQuery({ address: `{${wallet.address}}`, offset: historyOffset, limit: 30 });
 
     useEffect(() => {
-        if (historyLoading === false) {
-            if (historyData) {
-                if (historyOffset === 0) {
-                    if (storage.historyVolume === undefined) {
-                        StorageActions.handleHistoryVolume({
-                            [wallet.address]: historyData.messagesByAddress.length
-                        });
-                    } else {
-                        StorageActions.handleHistoryVolume({
-                            ...storage.historyVolume,
-                            [wallet.address]: historyData.messagesByAddress.length
-                        });
+        if (polling) {
+            if (historyLoading === false) {
+                if (historyData) {
+                    if (historyOffset === 0) {
+                        if (storage.historyVolume === undefined) {
+                            StorageActions.handleHistoryVolume({
+                                [wallet.address]: historyData.messagesByAddress.length
+                            });
+                        } else {
+                            StorageActions.handleHistoryVolume({
+                                ...storage.historyVolume,
+                                [wallet.address]: historyData.messagesByAddress.length
+                            });
+                        }
                     }
-                }
-                const list = historyData.messagesByAddress.map((value: any) => {
-                    const result = {
-                        hash: value.transaction.hash,
-                        success: convertResult(value.transaction.success),
-                        type: convertMsgType(value.transaction.messages[0]['@type']),
-                        timestamp: value.transaction.block.timestamp,
-                        block: value.transaction.block.height
-                    };
-                    return result;
-                });
-                if (list.length > 0 && list[0].block !== recentHistory?.block) {
-                    setRecentHistory(list[0]);
-                }
+                    const list = historyData.messagesByAddress.map((value: any) => {
+                        const result = {
+                            hash: value.transaction.hash,
+                            success: convertResult(value.transaction.success),
+                            type: convertMsgType(value.transaction.messages[0]['@type']),
+                            timestamp: value.transaction.block.timestamp,
+                            block: value.transaction.block.height
+                        };
+                        return result;
+                    });
+                    if (list.length > 0 && list[0].block !== recentHistory?.block) {
+                        setRecentHistory(list[0]);
+                    }
 
-                setHistoryList((prevState) => ({
-                    ...prevState,
-                    list
-                }));
+                    setHistoryList((prevState) => ({
+                        ...prevState,
+                        list
+                    }));
+                }
             }
         }
-    }, [historyLoading, historyData]);
+    }, [historyLoading, historyData, polling]);
 
     const handleHisotyPolling = () => {
         handleHistoryOffset(true);
@@ -137,20 +140,24 @@ export const useHistoryData = () => {
 
     const currentHistoryPolling = async (polling: boolean) => {
         if (polling) {
-            await historyRefetch();
+            historyRefetch();
             startHistoryPolling(30000);
+            setPolling(true);
         } else {
             startHistoryPolling(0);
+            setPolling(false);
         }
     };
 
     useEffect(() => {
-        if (common.lockStation === false) {
-            setHistoryList({ list: [] });
-            setRecentHistory(undefined);
-            handleHisotyPolling();
-        }
-    }, [storage.network, common.lockStation]);
+        setHistoryList({ list: [] });
+        setRecentHistory(undefined);
+        handleHisotyPolling();
+    }, [storage.network]);
+
+    useEffect(() => {
+        handleHisotyPolling();
+    }, [common.lockStation]);
 
     return {
         historyList,

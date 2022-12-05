@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import { StakingActions } from '@/redux/actions';
 import {
@@ -10,7 +10,7 @@ import {
     useValidatorsQuery,
     useValidatorsQueryForTestNet
 } from '@/apollo/gqls';
-import { convertAmount, convertNumber, convertPercentage, convertTime, convertToFctNumber, makeDecimalPoint } from '@/util/common';
+import { convertNumber, convertPercentage, convertTime, convertToFctNumber, makeDecimalPoint } from '@/util/common';
 import { getBalanceFromAdr, getDelegations, getRedelegations, getStaking, getStakingGrant, getUndelegations } from '@/util/firma';
 import { BLOCKS_PER_YEAR, CHAIN_NETWORK } from '@/../config';
 import { FirmaUtil } from '@firmachain/firma-js';
@@ -118,6 +118,7 @@ export const useDelegationData = () => {
         expire: '',
         expiration: 0
     });
+    const [stakingGrantActivation, setStakingGrantActivation] = useState<boolean | null>(null);
     const [validatorsDescList, setValidatorsDescList] = useState<Array<any>>([]);
 
     const { refetch, loading, data } =
@@ -125,7 +126,7 @@ export const useDelegationData = () => {
 
     useEffect(() => {
         if (loading === false) {
-            if (data) {
+            if (data !== undefined) {
                 setValidatorsDescList(data.validator);
             }
         }
@@ -153,6 +154,7 @@ export const useDelegationData = () => {
     const handleDelegationState = async () => {
         try {
             const result: Array<IStakeInfo> = await getDelegations(wallet.address);
+
             setDelegationList(
                 result.filter(
                     (value) =>
@@ -183,10 +185,21 @@ export const useDelegationData = () => {
         }
     };
 
-    const handleStakingGrantState = async () => {
+    const handleStakingGrantState = useCallback(async () => {
         try {
             const grantStakeResult: Array<any> = await getStakingGrant(wallet.address);
             setStakingGrantList(StakingGrantData(delegationList, grantStakeResult[0]));
+        } catch (error) {
+            throw error;
+        }
+    }, [delegationList]);
+
+    const handleStakingGrantActivationState = async () => {
+        try {
+            const grantStakingResult: Array<any> = await getStakingGrant(wallet.address);
+            let grantExist =
+                grantStakingResult[0] === undefined ? false : grantStakingResult[0].authorization.allow_list.address.length > 0;
+            setStakingGrantActivation(grantExist);
         } catch (error) {
             throw error;
         }
@@ -203,9 +216,7 @@ export const useDelegationData = () => {
     }, [staking.delegate]);
 
     useEffect(() => {
-        if (delegationList.length > 0) {
-            handleTotalDelegationPolling();
-        }
+        handleTotalDelegationPolling();
     }, [delegationList]);
 
     const delegationState: Array<IStakeInfo> = useMemo(() => {
@@ -246,38 +257,38 @@ export const useDelegationData = () => {
             expire: '',
             expiration: 0
         };
-    }, [stakingGrantList, delegationList, validatorsDescList]);
+    }, [stakingGrantList, validatorsDescList]);
 
     const refetchValidatorDescList = async () => {
         return await refetch();
     };
 
     useEffect(() => {
-        if (common.lockStation === false) {
-            setDelegationList([]);
-            setRedelegationList([]);
-            setUndelegationList([]);
-            setStakingGrantList({
-                list: [],
-                count: 0,
-                expire: '',
-                expiration: 0
-            });
-            setValidatorsDescList([]);
-            handleDelegationPolling();
-        }
-    }, [storage.network, common.lockStation]);
+        setDelegationList([]);
+        setRedelegationList([]);
+        setUndelegationList([]);
+        setStakingGrantList({
+            list: [],
+            count: 0,
+            expire: '',
+            expiration: 0
+        });
+        setValidatorsDescList([]);
+        handleDelegationPolling();
+    }, [storage.network]);
 
     return {
         delegationState,
         redelegationState,
         undelegationState,
         stakingGrantState,
+        stakingGrantActivation,
         validatorsDescList,
         handleDelegationState,
         handleRedelegationState,
         handleUndelegationState,
         handleStakingGrantState,
+        handleStakingGrantActivationState,
         handleTotalDelegationPolling,
         refetchValidatorDescList
     };
@@ -303,10 +314,10 @@ export const StakingGrantData = (delegationList: Array<any>, stakingGrantList: I
         expireDate = stakingGrantList.expiration;
         expiration = calculateExpiration(stakingGrantList.expiration);
     }
-    let revokeList = grantList;
 
+    let undelegatedList = grantList;
     let restakeListWithDelegation = delegationList.map((dData) => {
-        revokeList = revokeList.filter((aData) => aData.includes(dData.validatorAddress) === false);
+        undelegatedList = undelegatedList.filter((aData) => aData.includes(dData.validatorAddress) === false);
         return {
             validatorAddress: dData.validatorAddress,
             avatarURL: dData.avatarURL,
@@ -317,7 +328,7 @@ export const StakingGrantData = (delegationList: Array<any>, stakingGrantList: I
         };
     });
 
-    let restakeListWithoutDelegation = revokeList.map((value) => {
+    let restakeListWithoutDelegation = undelegatedList.map((value) => {
         return {
             validatorAddress: value,
             avatarURL: '',
@@ -344,52 +355,47 @@ export const StakingGrantData = (delegationList: Array<any>, stakingGrantList: I
 };
 
 export const useStakingData = () => {
-    const { wallet, common, storage } = useAppSelector((state) => state);
-    const [stakingState, setStakingState] = useState<IStakingState>({
-        available: 0,
-        delegated: 0,
-        undelegate: 0,
-        stakingReward: 0
-    });
+    const { wallet, storage } = useAppSelector((state) => state);
+    const [stakingState, setStakingState] = useState<IStakingState | null>(null);
 
     const getStakingState = async () => {
         try {
             const result = await getStaking(wallet.address);
-            if (result) {
-                setStakingState(result);
-                StakingActions.updateStakingRewardState(result.stakingReward);
-            }
+            setStakingState(result);
+            StakingActions.updateStakingRewardState(result.stakingReward);
         } catch (error) {
             throw error;
         }
     };
 
-    const updateStakingState = async (stakingReward: number) => {
-        try {
-            const balance = await getBalanceFromAdr(wallet.address);
-            setStakingState((prevState) => ({
-                ...prevState,
-                available: convertNumber(balance),
-                stakingReward
-            }));
-        } catch (error) {
-            throw error;
-        }
-    };
+    const updateStakingState = useCallback(
+        async (stakingReward: number) => {
+            try {
+                const balance = await getBalanceFromAdr(wallet.address);
+                if (stakingState !== null) {
+                    stakingState['available'] = convertNumber(balance);
+                    stakingState['stakingReward'] = stakingReward;
+
+                    setStakingState({ ...stakingState });
+                }
+            } catch (error) {
+                throw error;
+            }
+        },
+        [stakingState]
+    );
 
     useEffect(() => {
-        if (common.lockStation === false) {
-            if (wallet.address === '' || wallet.address === undefined) {
-                return setStakingState({
-                    available: 0,
-                    delegated: 0,
-                    undelegate: 0,
-                    stakingReward: 0
-                });
-            }
-            getStakingState();
+        if (wallet.address === '' || wallet.address === undefined) {
+            return setStakingState({
+                available: 0,
+                delegated: 0,
+                undelegate: 0,
+                stakingReward: 0
+            });
         }
-    }, [storage.network, common.lockStation]);
+        getStakingState();
+    }, [storage.network]);
 
     return {
         stakingState,
@@ -442,7 +448,7 @@ export const useValidatorData = () => {
     useEffect(() => {
         if (polling) {
             if (loading === false) {
-                if (data) {
+                if (data !== undefined) {
                     const stakingData = organizeStakingData(data);
                     const validatorsList = data.validator
                         .filter((validator: any) => {
@@ -482,10 +488,8 @@ export const useValidatorData = () => {
     };
 
     useEffect(() => {
-        if (common.lockStation === false) {
-            setValidators([]);
-        }
-    }, [storage.network, common.lockStation]);
+        setValidators([]);
+    }, [storage.network]);
 
     return {
         validators,
@@ -509,7 +513,7 @@ export const useValidatorDataFromAddress = (address: string) => {
               });
     useEffect(() => {
         if (loading === false) {
-            if (data) {
+            if (data !== undefined) {
                 const stakingData = organizeStakingData(data);
                 const validator = data.validator.map((data: any) => {
                     return organizeValidatorData(data, stakingData, storage.network);
@@ -612,7 +616,7 @@ export const useSelfDelegationData = (operatorAddress: string, accountAddress: s
 
     useEffect(() => {
         if (loading === false) {
-            if (data) {
+            if (data !== undefined) {
                 const delegations = data.delegations.delegations;
 
                 const totalDelegations = delegations.reduce((prev: number, current: any) => {
@@ -788,6 +792,13 @@ const organizeValidatorData = (validator: any, stakingData: any, network: string
     const missedBlockCounterExist = validator.validatorSigningInfos.length > 0;
     const missedBlockCounter = missedBlockCounterExist ? validator.validatorSigningInfos[0].missedBlocksCounter : 0;
     const tombstoned = missedBlockCounterExist ? validator.validatorSigningInfos[0].tombstoned : false;
+
+    // COMMISSION TODO
+    // const response = await axios.get(
+    //     ${FIRMACHAIN_CONFIG.restApiAddress}/cosmos/staking/v1beta1/validators/${validatorAddress}
+    // );
+    // const commissionRate = response.data.validator.commission.commission_rates.rate;
+
     const commissionExist = validator.validatorCommissions.length > 0;
     const commissionOrigin = commissionExist ? validator.validatorCommissions[0].commission : 0;
     const commission = makeDecimalPoint(commissionOrigin * 100);

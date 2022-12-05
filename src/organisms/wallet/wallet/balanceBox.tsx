@@ -14,7 +14,7 @@ import CustomModal from '@/components/modal/customModal';
 import ModalItems from '@/components/modal/modalItems';
 
 interface IProps {
-    stakingValues: IStakingState;
+    stakingValues: IStakingState | null;
     handleSend: Function;
     handleStaking: Function;
     chainInfo: any;
@@ -73,14 +73,17 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
     }, [chainInfo]);
 
     const available = useMemo(() => {
+        if (stakingValues === null) return 0;
         return stakingValues.available;
     }, [stakingValues]);
 
     const delegated = useMemo(() => {
+        if (stakingValues === null) return 0;
         return convertCurrent(makeDecimalPoint(stakingValues.delegated));
     }, [stakingValues]);
 
     const undelegate = useMemo(() => {
+        if (stakingValues === null) return 0;
         return convertCurrent(makeDecimalPoint(stakingValues.undelegate));
     }, [stakingValues]);
 

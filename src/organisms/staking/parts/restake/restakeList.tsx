@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { CommonActions, StakingActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
@@ -32,6 +32,10 @@ const RestakeList = ({ visible, isRefresh, delegationState, restakeState, handle
         return restakeState;
     }, [restakeState]);
 
+    const listLength = useMemo(() => {
+        return stakingGrantList.count;
+    }, [stakingGrantList]);
+
     const allReward = useMemo(() => {
         let reward = 0;
         delegationList.map((value) => {
@@ -46,17 +50,6 @@ const RestakeList = ({ visible, isRefresh, delegationState, restakeState, handle
         }
     }, [delegationList, allReward]);
 
-    const refreshStakings = useCallback(async () => {
-        try {
-            await getLatestRestakeInfo();
-            CommonActions.handleLoadingProgress(false);
-            handleIsRefresh(false);
-        } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
-            console.log(error);
-        }
-    }, [delegationList]);
-
     const getLatestRestakeInfo = async () => {
         try {
             const result = await fetch(CHAIN_NETWORK[storage.network].RESTAKE_REWARD_API + wallet.address);
@@ -67,15 +60,23 @@ const RestakeList = ({ visible, isRefresh, delegationState, restakeState, handle
         }
     };
 
-    const listLength = useMemo(() => {
-        return stakingGrantList.count;
-    }, [stakingGrantList]);
+    const refreshStakings = useCallback(async () => {
+        if (visible === false) return;
+        try {
+            await getLatestRestakeInfo();
+            CommonActions.handleLoadingProgress(false);
+            handleIsRefresh(false);
+        } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            console.log(error);
+        }
+    }, [visible]);
 
     useEffect(() => {
         refreshStakings();
     }, [isRefresh]);
 
-    const restake = () => {
+    const restake = useCallback(() => {
         return (
             <View>
                 {stakingGrantList.list.length > 0 ? (
@@ -104,7 +105,7 @@ const RestakeList = ({ visible, isRefresh, delegationState, restakeState, handle
                 )}
             </View>
         );
-    };
+    }, [stakingGrantList, restakeLatestInfo]);
 
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
@@ -163,4 +164,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default RestakeList;
+export default memo(RestakeList);

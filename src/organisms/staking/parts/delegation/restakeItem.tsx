@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { convertAmount, convertDelegateAmount } from '@/util/common';
 import { BgColor, TextColor, TextDisableColor } from '@/constants/theme';
@@ -54,4 +54,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default RestakeItem;
+export default memo(RestakeItem);

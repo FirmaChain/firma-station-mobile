@@ -20,10 +20,10 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 const Wallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const { storage, wallet, staking, common } = useAppSelector((state) => state);
+    const { storage, wallet, common } = useAppSelector((state) => state);
 
     const { recentHistory, currentHistoryPolling } = useHistoryData();
-    const { stakingState, getStakingState, updateStakingState } = useStakingData();
+    const { stakingState, getStakingState } = useStakingData();
 
     const [isInit, setIsInit] = useState(false);
     const [chainInfo, setChainInfo]: Array<any> = useState([]);
@@ -68,7 +68,6 @@ const Wallet = () => {
     const refreshStates = async () => {
         try {
             await getChainInfo();
-            await getStakingState();
             refreshAtFocus();
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
@@ -77,11 +76,14 @@ const Wallet = () => {
         }
     };
 
-    const refreshAtFocus = () => {
-        if (staking.stakingReward > 0) {
-            updateStakingState(staking.stakingReward);
+    const refreshAtFocus = async () => {
+        try {
+            await getStakingState();
+            handleCurrentHistoryPolling(true);
+        } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            console.log(error);
         }
-        handleCurrentHistoryPolling(true);
     };
 
     useEffect(() => {

@@ -7,7 +7,7 @@ import { FirmaUtil } from '@firmachain/firma-js';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { useDelegationData, useRestakeInfoData, useStakingData } from '@/hooks/staking/hooks';
-import { convertAmount, createOrdinal } from '@/util/common';
+import { convertAmount } from '@/util/common';
 import { getEstimateGasGrantStakeAuthorization, getEstimateGasRevokeStakeAuthorization, getFeesFromGas } from '@/util/firma';
 import { RESTAKE_NOTICE_TEXT, RESTAKE_TYPE, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor, TextCatTitleColor } from '@/constants/theme';
@@ -43,10 +43,12 @@ const Restake = () => {
     const { delegationState, stakingGrantState, handleDelegationState, handleStakingGrantState } = useDelegationData();
 
     const totalDelegate = useMemo(() => {
+        if (stakingState === null) return 0;
         return FirmaUtil.getUFCTFromFCT(stakingState.delegated);
     }, [stakingState]);
 
     const totalReward = useMemo(() => {
+        if (stakingState === null) return 0;
         return FirmaUtil.getUFCTFromFCT(stakingState.stakingReward);
     }, [stakingState]);
 
@@ -57,6 +59,11 @@ const Restake = () => {
         }
         return false;
     }, [stakingGrantState]);
+
+    const delegationStates = useMemo(() => {
+        if (stakingState === null) return null;
+        return delegationState;
+    }, [delegationState, stakingState]);
 
     const validatorAddressList = useMemo(() => {
         if (delegationState.length > 0) {
@@ -139,8 +146,10 @@ const Restake = () => {
         CommonActions.handleLoadingProgress(true);
         try {
             if (TRANSACTION_TYPE[restakeType] === TRANSACTION_TYPE['GRANT']) {
-                const result = await getEstimateGasGrantStakeAuthorization(wallet.name, validatorAddressList);
-                setGas(result);
+                if (validatorAddressList !== null) {
+                    const result = await getEstimateGasGrantStakeAuthorization(wallet.name, validatorAddressList);
+                    setGas(result);
+                }
             }
             if (TRANSACTION_TYPE[restakeType] === TRANSACTION_TYPE['REVOKE']) {
                 const result = await getEstimateGasRevokeStakeAuthorization(wallet.name);
@@ -212,7 +221,7 @@ const Restake = () => {
                                 <BalanceInfoForRestake available={totalDelegate} reward={totalReward} />
                                 <StatusBox
                                     grantState={stakingGrantState}
-                                    delegationState={delegationState}
+                                    delegationState={delegationStates}
                                     minimumRewards={minimumRewards}
                                 />
                                 <NextRoundCard

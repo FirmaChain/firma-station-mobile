@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
-import DelegationList from '../parts/delegation/delegationList';
-import ValidatorList from '../parts/validator/validatorList';
-import StakingSkeleton from '@/components/skeleton/stakingSkeleton';
-import RestakeList from '../parts/restake/restakeList';
 import { useDelegationData } from '@/hooks/staking/hooks';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { useIsFocused } from '@react-navigation/native';
+import DelegationList from '../parts/delegation/delegationList';
+import ValidatorList from '../parts/validator/validatorList';
+import StakingSkeleton from '@/components/skeleton/stakingSkeleton';
+import RestakeList from '../parts/restake/restakeList';
+import { wait } from '@/util/common';
 
 interface IProps {
     isRefresh: boolean;
@@ -19,7 +20,16 @@ interface IProps {
 const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps) => {
     const isFocused = useIsFocused();
     const { common } = useAppSelector((state) => state);
-    const { delegationState, stakingGrantState, handleDelegationState, handleStakingGrantState } = useDelegationData();
+    const {
+        delegationState,
+        redelegationState,
+        undelegationState,
+        stakingGrantState,
+        handleDelegationState,
+        handleStakingGrantState,
+        handleRedelegationState,
+        handleUndelegationState
+    } = useDelegationData();
 
     const [tab, setTab] = useState(0);
     const [dataLoading, setDataLoading] = useState(true);
@@ -45,24 +55,36 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
         }
     }, [delegationExist]);
 
+    const loadDelegationState = useCallback(async () => {
+        if (isFocused === false) return;
+        if (delegationExist && tab >= 2) return;
+        try {
+            await handleDelegationState();
+            wait(800).then(() => {
+                handleDelegationLoading(false);
+            });
+        } catch (error) {
+            console.log(error);
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+        }
+    }, [tab, isFocused]);
+
     useEffect(() => {
         handleTabFromDelegationData();
     }, [delegationExist]);
 
     useEffect(() => {
-        const loadDelegationState = async () => {
-            try {
-                await handleDelegationState();
-                await handleStakingGrantState();
-            } catch (error) {
-                console.log(error);
-                CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
-            }
-        };
-        if (isFocused && tab < 2) {
-            loadDelegationState();
-        }
+        loadDelegationState();
     }, [isFocused, tab]);
+
+    useEffect(() => {
+        loadDelegationState();
+    }, [isRefresh]);
+
+    useEffect(() => {
+        let exist = delegationState.length > 0 || redelegationState.length > 0 || undelegationState.length > 0;
+        handleDelegationExist(exist);
+    }, [delegationState]);
 
     return (
         <View style={styles.listContainer}>
@@ -96,9 +118,8 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
                     visible={tab === 0}
                     isRefresh={isRefresh}
                     delegationState={delegationState}
-                    handleDelegationLoading={handleDelegationLoading}
-                    handleDelegationExist={handleDelegationExist}
-                    handleIsRefresh={handleIsRefresh}
+                    redelegationState={redelegationState}
+                    undelegationState={undelegationState}
                     navigateValidator={navigateValidator}
                 />
                 <RestakeList

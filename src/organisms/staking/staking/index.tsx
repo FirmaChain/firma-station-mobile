@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -20,21 +20,49 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>
 const Staking = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const { wallet, staking, common } = useAppSelector((state) => state);
 
-    const { stakingState, getStakingState, updateStakingState } = useStakingData();
-    const { stakingGrantState, handleDelegationState, handleStakingGrantState } = useDelegationData();
+    const { wallet, staking, common } = useAppSelector((state) => state);
+    const { stakingState, getStakingState } = useStakingData();
+    const { stakingGrantActivation, handleStakingGrantActivationState } = useDelegationData();
     const { recentHistory, currentHistoryPolling } = useHistoryData();
 
     const [isInit, setIsInit] = useState(false);
     const [isListRefresh, setIsListRefresh] = useState(false);
+    const [stakingReward, setStakingReward] = useState(0);
 
-    const stakingReward = useMemo(() => {
-        return staking.stakingReward;
+    const handleStakingReward = useCallback(async () => {
+        setStakingReward(staking.stakingReward);
     }, [staking.stakingReward]);
 
-    const handleIsRefresh = (refresh: boolean) => {
-        setIsListRefresh(refresh);
+    useEffect(() => {
+        handleStakingReward();
+    }, [staking.stakingReward]);
+
+    const handleCurrentHistoryPolling = async (polling: boolean) => {
+        await currentHistoryPolling(polling);
+    };
+
+    const refreshAtFocus = useCallback(async () => {
+        try {
+            await getStakingState();
+            await handleStakingGrantActivationState();
+            await handleCurrentHistoryPolling(true);
+            handleIsRefresh(true);
+        } catch (error) {
+            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            console.log(error);
+        }
+    }, []);
+
+    const refreshStates = async () => {
+        if (isInit === true && recentHistory !== undefined && isListRefresh === false && common.isNetworkChanged === false) {
+            try {
+                await refreshAtFocus();
+            } catch (error) {
+                CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+                console.log(error);
+            }
+        }
     };
 
     const handleWithdrawAll = (password: string, gas: number) => {
@@ -57,34 +85,19 @@ const Staking = () => {
         });
     };
 
-    const handleCurrentHistoryPolling = async (polling: boolean) => {
-        await currentHistoryPolling(polling);
-    };
-
-    const refreshStates = async () => {
-        try {
-            await handleDelegationState();
-            await handleStakingGrantState();
-            await getStakingState();
-            refreshAtFocus();
-            handleIsRefresh(isFocused);
-        } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
-            console.log(error);
-        }
-    };
-
-    const refreshAtFocus = () => {
-        if (staking.stakingReward > 0 && isFocused) {
-            updateStakingState(staking.stakingReward);
-        }
-        handleCurrentHistoryPolling(true);
-        handleIsRefresh(true);
-    };
+    const handleIsRefresh = useCallback(
+        (refresh: boolean) => {
+            setIsListRefresh(refresh);
+        },
+        [isListRefresh]
+    );
 
     useEffect(() => {
         if (isListRefresh === false) {
             CommonActions.handleDataLoadStatus(0);
+            if (isInit === false) {
+                setIsInit(true);
+            }
         }
     }, [isListRefresh]);
 
@@ -108,16 +121,11 @@ const Staking = () => {
     }, [common.dataLoadStatus]);
 
     useEffect(() => {
-        if (recentHistory !== undefined && common.isNetworkChanged === false) {
-            refreshStates();
-        }
+        refreshStates();
     }, [recentHistory]);
 
     useEffect(() => {
         if (isFocused) {
-            if (isInit === false) {
-                setIsInit(true);
-            }
             refreshAtFocus();
         } else {
             handleCurrentHistoryPolling(false);
@@ -133,8 +141,8 @@ const Staking = () => {
                             <RewardBox walletName={wallet.name} reward={stakingReward} transactionHandler={handleWithdrawAll} />
                             <BalanceBox stakingValues={stakingState} />
                             <RestakeInfoBox
-                                delegationStates={stakingState.delegated > 0}
-                                grantStates={stakingGrantState}
+                                stakingState={stakingState}
+                                grantStates={stakingGrantActivation}
                                 moveToRestake={moveToRestake}
                             />
                         </View>

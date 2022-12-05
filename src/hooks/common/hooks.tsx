@@ -1,5 +1,7 @@
-import { useMaintenance, useVersion } from '@/apollo/gqls';
-import { useEffect, useRef, useState } from 'react';
+import { MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
+import { useVersion } from '@/apollo/gqls';
+import { useAppSelector } from '@/redux/hooks';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface IMaintenanceState {
     isShow: boolean;
@@ -11,55 +13,56 @@ export const useChainVersion = () => {
     const [chainVer, setChainVer] = useState('');
     const [sdkVer, setSdkVer] = useState('');
 
-    const { loading, data } = useVersion();
+    const { loading, data, refetch } = useVersion();
 
     useEffect(() => {
         if (loading === false) {
-            if (data) {
+            if (data !== undefined) {
                 setChainVer(data.version[0].chainVer);
                 setSdkVer(data.version[0].sdkVer);
+            } else {
+                setChainVer('');
+                setSdkVer('');
             }
         }
     }, [loading]);
 
     return {
+        refetch,
         chainVer,
         sdkVer
     };
 };
 
 export const useServerMessage = () => {
-    const [minAppVer, setMinAppVer] = useState<string | undefined>();
-    const [currentAppVer, setCurrentAppVer] = useState<string | undefined>();
-    const [maintenanceState, setMaintenanceState] = useState<IMaintenanceState | undefined>();
+    const { storage } = useAppSelector((state) => state);
+    const [minAppVer, setMinAppVer] = useState<string | null | undefined>(null);
+    const [currentAppVer, setCurrentAppVer] = useState<string | null | undefined>(null);
+    const [maintenanceState, setMaintenanceState] = useState<IMaintenanceState | null | undefined>(null);
 
-    const { loading, data } = useMaintenance();
+    const getMaintenanceData = useCallback(async () => {
+        try {
+            const response = await fetch(`${MAINTENANCE_API}/${MAINTENANCE_PATH[storage.network]}`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data: any = await response.json();
 
-    const initState = () => {
-        setMinAppVer('');
-        setCurrentAppVer('');
-        setMaintenanceState({
-            isShow: false,
-            title: '',
-            content: ''
-        });
-    };
+            setMinAppVer(data.minAppVer);
+            setCurrentAppVer(data.currentAppVer);
+            setMaintenanceState(data.maintenance);
+        } catch (e) {
+            setMinAppVer(undefined);
+            setCurrentAppVer(undefined);
+            setMaintenanceState(undefined);
+            throw new Error('Failed Request');
+        }
+    }, []);
 
     useEffect(() => {
-        if (loading === false) {
-            if (data) {
-                if (data.maintenance.length === 0) {
-                    initState();
-                } else {
-                    setMinAppVer(data.maintenance[0].minAppVer);
-                    setCurrentAppVer(data.maintenance[0].currentAppVer);
-                    setMaintenanceState(data.maintenance[0].maintenance);
-                }
-            } else {
-                initState();
-            }
-        }
-    }, [loading]);
+        getMaintenanceData();
+    }, []);
 
     return {
         minAppVer,

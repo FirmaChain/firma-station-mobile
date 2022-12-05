@@ -65,7 +65,7 @@ export const useGovernanceList = () => {
 
     useEffect(() => {
         if (loading === false) {
-            if (data) {
+            if (data !== undefined) {
                 StorageActions.handleContentVolume({
                     ...storage.contentVolume,
                     proposals: data.proposals.length
@@ -86,10 +86,8 @@ export const useGovernanceList = () => {
     };
 
     useEffect(() => {
-        if (common.lockStation === false) {
-            handleGovernanceListPolling();
-        }
-    }, [storage.network, common.lockStation]);
+        handleGovernanceListPolling();
+    }, [storage.network]);
 
     return {
         governanceState,
@@ -104,7 +102,7 @@ export const useProposalData = (id: number) => {
 
     useEffect(() => {
         if (loading === false) {
-            if (data) {
+            if (data !== undefined) {
                 if (data.proposal.length > 0) {
                     const classifiedData = () => {
                         if (data.proposal[0].content.changes) {

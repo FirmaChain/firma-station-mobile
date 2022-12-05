@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BgColor, BorderColor } from '@/constants/theme';
 import { convertPercentage } from '@/util/common';
@@ -42,4 +42,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ValidatorItem;
+export default memo(ValidatorItem);

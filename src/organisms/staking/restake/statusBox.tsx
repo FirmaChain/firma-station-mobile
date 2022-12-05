@@ -7,7 +7,7 @@ import { convertTime } from '@/util/common';
 
 interface IProps {
     grantState: IStakingGrantState;
-    delegationState: Array<IStakeInfo>;
+    delegationState: Array<IStakeInfo> | null;
     minimumRewards: number;
 }
 
@@ -20,6 +20,7 @@ const StatusBox = ({ grantState, delegationState, minimumRewards }: IProps) => {
     }, [grantState]);
 
     const delegationExist = useMemo(() => {
+        if (delegationState === null) return null;
         return delegationState.length > 0;
     }, [delegationState]);
 
@@ -43,8 +44,16 @@ const StatusBox = ({ grantState, delegationState, minimumRewards }: IProps) => {
         <View>
             <View style={styles.wrapper}>
                 <Text style={styles.text}>Restake Status</Text>
-
-                <Text style={[styles.label, { backgroundColor: restakeStatus.color + '30', color: restakeStatus.color }]}>
+                <Text
+                    style={[
+                        styles.label,
+                        {
+                            backgroundColor: restakeStatus.color + '30',
+                            color: restakeStatus.color,
+                            opacity: delegationExist === null ? 0 : 1
+                        }
+                    ]}
+                >
                     {restakeStatus.title}
                 </Text>
             </View>

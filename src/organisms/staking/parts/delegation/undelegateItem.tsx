@@ -1,35 +1,34 @@
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { convertAmount, convertTime } from "@/util/common";
-import { IUndelegationInfo } from "@/hooks/staking/hooks";
-import { BgColor } from "@/constants/theme";
-import DataSection from "../list/dataSection";
-import MonikerSection from "../list/monikerSection";
+import React, { memo } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { convertAmount, convertTime } from '@/util/common';
+import { IUndelegationInfo } from '@/hooks/staking/hooks';
+import { BgColor } from '@/constants/theme';
+import DataSection from '../list/dataSection';
+import MonikerSection from '../list/monikerSection';
 
 interface IProps {
     data: IUndelegationInfo;
-    navigate: (address:string) => void;
+    navigate: (address: string) => void;
 }
 
-
-const UndelegateItem = ({data, navigate}:IProps) => {
+const UndelegateItem = ({ data, navigate }: IProps) => {
     return (
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
             <View style={[styles.item]}>
                 <MonikerSection validator={data} />
-                <DataSection title="Amount" data={convertAmount(data.balance) + " FCT"} />
+                <DataSection title="Amount" data={convertAmount(data.balance) + ' FCT'} />
                 <DataSection title="Linked Until" data={convertTime(data.completionTime, true)} />
-                <View style={{paddingBottom: 22}} />
+                <View style={{ paddingBottom: 22 }} />
             </View>
         </TouchableOpacity>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
-    item : {
+    item: {
         paddingTop: 22,
-        backgroundColor: BgColor,
-    },
-})
+        backgroundColor: BgColor
+    }
+});
 
-export default UndelegateItem;
+export default memo(UndelegateItem);
