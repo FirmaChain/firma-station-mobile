@@ -5,7 +5,8 @@ import {
     HANDLE_NETWORK,
     HANDLE_CONTENT_VOLUME,
     HANDLE_HISTORY_VOLUME,
-    HANDLE_DAPP_SERVICES_VOLUME
+    HANDLE_DAPP_SERVICES_VOLUME,
+    HANDLE_RECOVER_TYPE
 } from '../types';
 
 export interface IContentVolume {
@@ -19,6 +20,7 @@ export interface IState {
     contentVolume: IContentVolume;
     historyVolume: IKeyValue;
     dappServicesVolume: IKeyValue;
+    recoverType: IKeyValue;
 }
 
 const initialState = {
@@ -29,7 +31,8 @@ const initialState = {
         dapps: null
     },
     historyVolume: {},
-    dappServicesVolume: {}
+    dappServicesVolume: {},
+    recoverType: {}
 };
 
 const reducer = (state = initialState, action: Action) => {
@@ -58,6 +61,11 @@ const reducer = (state = initialState, action: Action) => {
             return {
                 ...state,
                 dappServicesVolume: action.payload
+            };
+        case HANDLE_RECOVER_TYPE:
+            return {
+                ...state,
+                recoverType: action.payload
             };
         default:
             return state;

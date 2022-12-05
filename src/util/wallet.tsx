@@ -1,10 +1,11 @@
-import { CommonActions, WalletActions } from '@/redux/actions';
+import { CommonActions, StorageActions, WalletActions } from '@/redux/actions';
 import { getUniqueId } from 'react-native-device-info';
-import { getAdrFromMnemonic } from './firma';
+import { getAddressFromRecoverValue, mnemonicCheck } from './firma';
 import { checkBioMetrics } from './bioAuth';
 import { decrypt, encrypt, keyEncrypt } from './keystore';
 import { getChain, removeChain, setChain } from './secureKeyChain';
 import { CONNECT_ID_LIST, CONNECT_SESSION, DAPPS_SERVICE_IDENTITY, USE_BIO_AUTH, WALLET_LIST } from '@/../config';
+import { IKeyValue } from '@/constants/common';
 
 const UNIQUE_ID = getUniqueId();
 
@@ -31,10 +32,10 @@ export const getWalletList = async () => {
     }
 };
 
-export const setNewWallet = async (name: string, password: string, mnemonic: string, makeList: boolean) => {
+export const setNewWallet = async (name: string, password: string, recoverValue: string, makeList: boolean) => {
     try {
         const walletKey: string = keyEncrypt(name, password);
-        const encWallet = encrypt(mnemonic, walletKey.toString());
+        const encWallet = encrypt(recoverValue, walletKey.toString());
         await setChain(name, encWallet);
 
         if (makeList) {
@@ -46,7 +47,7 @@ export const setNewWallet = async (name: string, password: string, mnemonic: str
         }
 
         let adr = null;
-        const result = await getAdrFromMnemonic(mnemonic);
+        const result = await getAddressFromRecoverValue(recoverValue);
         if (result !== undefined) adr = result;
 
         await setWalletWithAutoLogin(
@@ -88,18 +89,20 @@ export const removeWallet = async (name: string) => {
     }
 };
 
-export const getMnemonic = async (walletName: string, password: string) => {
-    let mnemonic = null;
+export const getRecoverValue = async (walletName: string, password: string) => {
+    let recoverValue = null;
     const key: string = keyEncrypt(walletName, password);
+
     try {
         const result = await getChain(walletName);
+
         if (result) {
             let w = decrypt(result.password, key.toString());
-            if (w.split(' ').length === 24) {
-                mnemonic = w;
+            if (w !== '') {
+                recoverValue = w;
             }
         }
-        return mnemonic;
+        return recoverValue;
     } catch (error) {
         console.log(error);
         throw error;
@@ -266,10 +269,11 @@ export const setEncryptPassword = async (password: string) => {
     }
 };
 
-export const setWalletWithBioAuth = async (name: string, password: string, mnemonic: string) => {
+export const setWalletWithBioAuth = async (name: string, password: string, recoverValue: string) => {
     try {
         CommonActions.handleLoadingProgress(true);
-        const address = await setNewWallet(name, password, mnemonic, true);
+        const address = await setNewWallet(name, password, recoverValue, true);
+
         await setWalletWithAutoLogin(
             JSON.stringify({
                 name: name,
@@ -386,5 +390,34 @@ export const removeDAppServiceId = async (name: string) => {
     } catch (error) {
         console.log(error);
         throw error;
+    }
+};
+
+export const setRecoverType = async (typeList: IKeyValue | undefined, recoverValue: string, address: string) => {
+    try {
+        let isMnemonic = await mnemonicCheck(recoverValue);
+        let recoverType = isMnemonic ? 'mnemonic' : 'privateKey';
+
+        if (typeList === undefined) {
+            StorageActions.handleRecoverType({
+                [`${address}`]: recoverType
+            });
+        } else {
+            StorageActions.handleRecoverType({
+                ...typeList,
+                [`${address}`]: recoverType
+            });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const removeRecoverType = (typeList: IKeyValue | undefined, address: string) => {
+    if (typeList !== undefined) {
+        let recoverTypeList = { ...typeList };
+        delete recoverTypeList[`${address}`];
+
+        StorageActions.handleRecoverType(recoverTypeList);
     }
 };
