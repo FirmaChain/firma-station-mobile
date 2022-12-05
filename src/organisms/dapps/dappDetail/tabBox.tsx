@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
-import { useNFT } from '@/hooks/dapps/hooks';
+import { INFTProps, useNFT } from '@/hooks/dapps/hooks';
 import { useIsFocused } from '@react-navigation/native';
 import { IDappDataState } from '.';
 import NFTsBox from './nftsBox';
@@ -10,20 +10,25 @@ import ServicesBox from './servicesBox';
 interface IProps {
     data: IDappDataState;
     serviceOnly: boolean;
+    isRefresh: boolean;
+    handleRefresh: (refresh: boolean) => void;
 }
 
-const TabBox = ({ data, serviceOnly }: IProps) => {
+const TabBox = ({ data, serviceOnly, isRefresh, handleRefresh }: IProps) => {
     const isFocused = useIsFocused();
     const { MyNFTS, handleNFTIdList, handleIdentity } = useNFT();
 
     const [tab, setTab] = useState(0);
 
-    const NFTS = useMemo(() => {
+    const NFTS: Array<INFTProps> | null = useMemo(() => {
         return MyNFTS;
     }, [MyNFTS]);
 
     const NFTCount = useMemo(() => {
-        return NFTS.length;
+        if (NFTS !== null) {
+            return NFTS.length;
+        }
+        return 0;
     }, [NFTS]);
 
     useEffect(() => {
@@ -35,6 +40,13 @@ const TabBox = ({ data, serviceOnly }: IProps) => {
             }
         }
     }, [serviceOnly, isFocused]);
+
+    useEffect(() => {
+        if (isRefresh) {
+            handleNFTIdList();
+            handleRefresh(false);
+        }
+    }, [isRefresh]);
 
     useEffect(() => {
         if (isFocused) {
@@ -117,4 +129,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default React.memo(TabBox);
+export default memo(TabBox);

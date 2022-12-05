@@ -4,15 +4,16 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
 import { DividerColor } from '@/constants/theme';
+import ConnectClient, { ServiceData, ServiceMetaData } from '@/util/connectClient';
+import { CHAIN_NETWORK } from '@/../config';
+import { useAppSelector } from '@/redux/hooks';
+import { getDAppServiceId } from '@/util/wallet';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import DescriptionBox from './descriptionBox';
 import BalanceBox from './balanceBox';
 import TabBox from './tabBox';
-import ConnectClient, { ServiceData, ServiceMetaData } from '@/util/connectClient';
-import { CHAIN_NETWORK } from '@/../config';
-import { useAppSelector } from '@/redux/hooks';
-import { getDAppServiceId } from '@/util/wallet';
+import RefreshScrollView from '@/components/parts/refreshScrollView';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
 
@@ -51,6 +52,11 @@ const DappDetail = ({ data }: IProps) => {
 
     const [dappData, setDappData] = useState<IDappDataState>();
     const [isLoadedDappService, setIsLoadedDappService] = useState(false);
+    const [isRefresh, setIsRefresh] = useState(false);
+
+    const handleRefresh = (refresh: boolean) => {
+        setIsRefresh(refresh);
+    };
 
     const handleDappData = () => {
         let identity = data?.identity === undefined ? '' : data.identity;
@@ -88,7 +94,10 @@ const DappDetail = ({ data }: IProps) => {
                 let dappService: ServiceData = await connectClient.getUserDappService(ids.identity, ids.serviceId);
                 let prevList = dappData.serviceList;
 
-                dappData['serviceList'] = [...prevList, dappService.service];
+                let index = dappData.serviceList.findIndex((val) => val.serviceId === dappService.service.serviceId);
+                if (index === -1) {
+                    dappData['serviceList'] = [...prevList, dappService.service];
+                }
                 dappData['serviceList'].sort((a: any, b: any) => (a.serviceId < b.serviceId ? -1 : a.serviceId > b.serviceId ? 1 : 0));
 
                 setIsLoadedDappService(true);
@@ -130,7 +139,7 @@ const DappDetail = ({ data }: IProps) => {
     return (
         <Container titleOn={false} backEvent={handleBack}>
             <ViewContainer>
-                <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <RefreshScrollView refreshFunc={() => handleRefresh(true)}>
                     <View style={{ flex: 1 }}>
                         <DescriptionBox data={data} />
                         <View style={{ padding: 20 }}>
@@ -139,11 +148,11 @@ const DappDetail = ({ data }: IProps) => {
                         {dappData !== undefined && (
                             <React.Fragment>
                                 {isBalanceSectionOpen && <BalanceBox tokenData={dappData.token} />}
-                                <TabBox data={dappData} serviceOnly={isServiceOnly} />
+                                <TabBox data={dappData} serviceOnly={isServiceOnly} isRefresh={isRefresh} handleRefresh={handleRefresh} />
                             </React.Fragment>
                         )}
                     </View>
-                </ScrollView>
+                </RefreshScrollView>
             </ViewContainer>
         </Container>
     );

@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNFT, useNFTTransaction } from '@/hooks/dapps/hooks';
+import { useNFT } from '@/hooks/dapps/hooks';
 import { DividerColor } from '@/constants/theme';
 import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
@@ -64,15 +64,11 @@ const NFT = ({ data }: IProps) => {
         } catch (error) {
             console.log(error);
         }
-    }, [NFTData]);
+    }, [NFTData, metaData]);
 
     useEffect(() => {
         handleMetaData();
     }, [NFTData]);
-
-    const handleMoveToWeb = (uri: string) => {
-        navigation.navigate(Screens.WebScreen, { uri: uri });
-    };
 
     const handleBack = () => {
         navigation.goBack();
@@ -85,7 +81,7 @@ const NFT = ({ data }: IProps) => {
                     <ScrollView contentContainerStyle={{ paddingHorizontal: 20 }}>
                         {NFTInformation !== null && <DescriptionBox data={NFTInformation} />}
                         <View style={styles.divider} />
-                        {NFTInformation !== null && <InfoBox data={NFTInformation} handleExplorer={handleMoveToWeb} />}
+                        {NFTInformation !== null && <InfoBox data={NFTInformation} />}
                         <PropertiesBox data={metaData.attributes} />
                     </ScrollView>
                     <View style={styles.buttonBox}>
@@ -110,4 +106,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default NFT;
+export default memo(NFT);

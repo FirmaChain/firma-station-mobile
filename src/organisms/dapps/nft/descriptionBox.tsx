@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
 import { Animated, Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
-import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim, fadeOut, LayoutAnim } from '@/util/animation';
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 import LinearGradient from 'react-native-linear-gradient';
 import SquareSkeleton from '@/components/skeleton/squareSkeleton';
-import { wait } from '@/util/common';
+import FastImage from 'react-native-fast-image';
 
 interface IProps {
     data: any;
@@ -32,11 +32,15 @@ const DescriptionBox = ({ data }: IProps) => {
         }
     };
 
-    useEffect(() => {
+    const handleDescriptionShowMore = useCallback(() => {
         if (descLines > 0) {
             setShowMore(descLines > NUM_OF_LINES);
             setMaxLines(NUM_OF_LINES);
         }
+    }, [descLines]);
+
+    useEffect(() => {
+        handleDescriptionShowMore();
     }, [descLines]);
 
     useEffect(() => {
@@ -61,7 +65,14 @@ const DescriptionBox = ({ data }: IProps) => {
         <React.Fragment>
             <View style={{ alignItems: 'center' }}>
                 <View style={{ justifyContent: 'flex-start' }}>
-                    <Image style={styles.contentImage} source={{ uri: data.image }} onLoadEnd={() => setImageLoading(false)} />
+                    <FastImage
+                        style={styles.contentImage}
+                        source={{
+                            uri: data.image,
+                            priority: FastImage.priority.normal
+                        }}
+                        onLoadEnd={() => setImageLoading(false)}
+                    />
                     <Animated.View style={{ position: 'absolute', top: 0, left: 0, opacity: fadeAnimImage }}>
                         <SquareSkeleton size={200} marginBottom={20} />
                     </Animated.View>
@@ -73,9 +84,11 @@ const DescriptionBox = ({ data }: IProps) => {
                 </View>
             </View>
             <View style={[styles.descBox, { paddingBottom: openAccordion ? 20 : 0 }]}>
-                <Text style={styles.desc} numberOfLines={maxLines} ellipsizeMode={'tail'} onTextLayout={onTextLayout}>
-                    {data.description}
-                </Text>
+                {data.description !== '' && (
+                    <Text style={styles.desc} numberOfLines={maxLines} ellipsizeMode={'tail'} onTextLayout={onTextLayout}>
+                        {data.description}
+                    </Text>
+                )}
                 <View style={[styles.moreButtonBox, { width: '100%', display: showMore ? 'flex' : 'none' }]}>
                     <LinearGradient
                         start={{ x: 0, y: 0 }}

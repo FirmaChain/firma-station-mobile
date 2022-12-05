@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { FIRMA_LOGO, VALIDATOR_PROFILE } from '@/constants/images';
-import { GrayColor, Lato, TextAddressColor, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
+import { Lato, TextAddressColor, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import { wait } from '@/util/common';
 import { CHAIN_NETWORK } from '@/../config';
 import { fadeIn } from '@/util/animation';
@@ -11,7 +11,6 @@ import CircleSkeleton from '@/components/skeleton/circleSkeleton';
 
 interface IProps {
     data: any;
-    handleExplorer: (url: string) => void;
 }
 
 interface IDataRenderProps {
@@ -21,7 +20,7 @@ interface IDataRenderProps {
     loading: boolean;
 }
 
-const InfoBox = ({ data, handleExplorer }: IProps) => {
+const InfoBox = ({ data }: IProps) => {
     const { storage } = useAppSelector((state) => state);
 
     const chainID = useMemo(() => {
@@ -38,46 +37,58 @@ const InfoBox = ({ data, handleExplorer }: IProps) => {
         return data.collection;
     }, [data.collection]);
 
-    const InfoDataRender = useCallback(({ title, imageURI, color, loading }: IDataRenderProps) => {
+    const InfoDataRender = ({ title, imageURI, color, loading }: IDataRenderProps) => {
         const fadeAnimText = useRef(new Animated.Value(0)).current;
-        const [load, setLoad] = useState(true);
+        const [loaded, setLoaded] = useState(false);
 
-        if (loading === false && load === true) {
-            wait(1000).then(() => {
-                fadeIn(Animated, fadeAnimText, 500);
-                setLoad(false);
-            });
-        }
+        const handleLoadingItem = useCallback(() => {
+            if (loaded === false) {
+                wait(1000).then(() => {
+                    fadeIn(Animated, fadeAnimText, 500);
+                    setLoaded(true);
+                });
+            }
+        }, [loaded]);
 
-        if (load) {
+        useEffect(() => {
+            if (loading === false) {
+                handleLoadingItem();
+            }
+        }, [loading]);
+
+        const renderItem = useCallback(() => {
             return (
-                <View style={styles.wrap}>
-                    <View style={{ width: 15, height: 15 }}>
-                        <CircleSkeleton size={15} marginBottom={0} />
-                    </View>
-                    <View style={{ width: '90%', height: 16, marginLeft: 10 }}>
-                        <TextSkeleton height={16} />
-                    </View>
-                </View>
+                <Fragment>
+                    {loaded ? (
+                        <View style={styles.wrap}>
+                            <Animated.Image
+                                style={{ width: 15, height: 15, opacity: fadeAnimText, borderRadius: 50 }}
+                                source={imageURI === undefined ? VALIDATOR_PROFILE : { uri: imageURI }}
+                            />
+                            <Animated.Text
+                                style={[styles.value, { color: color, opacity: fadeAnimText, flex: 0, paddingLeft: 5, lineHeight: 17 }]}
+                                numberOfLines={1}
+                                ellipsizeMode={'middle'}
+                            >
+                                {title}
+                            </Animated.Text>
+                        </View>
+                    ) : (
+                        <View style={styles.wrap}>
+                            <View style={{ width: 15, height: 15 }}>
+                                <CircleSkeleton size={15} marginBottom={0} />
+                            </View>
+                            <View style={{ width: '90%', height: 16, marginLeft: 10 }}>
+                                <TextSkeleton height={16} />
+                            </View>
+                        </View>
+                    )}
+                </Fragment>
             );
-        } else {
-            return (
-                <View style={styles.wrap}>
-                    <Animated.Image
-                        style={{ width: 15, height: 15, opacity: fadeAnimText, borderRadius: 50 }}
-                        source={imageURI === undefined ? VALIDATOR_PROFILE : { uri: imageURI }}
-                    />
-                    <Animated.Text
-                        style={[styles.value, { color: color, opacity: fadeAnimText, flex: 0, paddingLeft: 5, lineHeight: 17 }]}
-                        numberOfLines={1}
-                        ellipsizeMode={'middle'}
-                    >
-                        {title}
-                    </Animated.Text>
-                </View>
-            );
-        }
-    }, []);
+        }, [loaded]);
+
+        return renderItem();
+    };
 
     return (
         <View style={{ paddingBottom: 10 }}>
@@ -143,4 +154,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default InfoBox;
+export default memo(InfoBox);

@@ -7,13 +7,14 @@ interface IProps {
     size: number;
     marginBottom: number;
     bgColor?: string;
+    borderRadius?: number;
 }
 
-const SquareSkeleton = ({ size, marginBottom, bgColor = BgColor }: IProps) => {
+const SquareSkeleton = ({ size, marginBottom, bgColor = BgColor, borderRadius = 8 }: IProps) => {
     return (
         <View style={{ width: size, height: size, marginBottom: marginBottom }}>
             <ContentLoader speed={0.8} animate={true} foregroundColor={DividerColor} backgroundColor={bgColor}>
-                <Rect x="0" y="0" rx="8" ry="8" width={'100%'} height={'100%'} />
+                <Rect x="0" y="0" rx={`${borderRadius}`} ry={`${borderRadius}`} width={'100%'} height={'100%'} />
             </ContentLoader>
         </View>
     );
