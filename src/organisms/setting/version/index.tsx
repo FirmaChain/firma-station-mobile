@@ -1,22 +1,20 @@
+import React, { useEffect, useMemo, useState } from 'react';
 import { VERSION } from '@/../config';
 import { setClient } from '@/apollo';
-import { VerifiedCircle } from '@/components/icon/icon';
-import CustomModal from '@/components/modal/customModal';
-import ModalItems from '@/components/modal/modalItems';
-import Container from '@/components/parts/containers/conatainer';
-import ViewContainer from '@/components/parts/containers/viewContainer';
 import { setExplorerUrl } from '@/constants/common';
-import { BgColor, BoxColor, Lato, TextColor, TextGrayColor, YesColor } from '@/constants/theme';
+import { BgColor, Lato, TextGrayColor } from '@/constants/theme';
 import { useChainVersion } from '@/hooks/common/hooks';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, ModalActions, StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { setFirmaSDK } from '@/util/firma';
-import { VersionCheck } from '@/util/validationCheck';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import CustomModal from '@/components/modal/customModal';
+import ModalItems from '@/components/modal/modalItems';
+import Container from '@/components/parts/containers/conatainer';
+import ViewContainer from '@/components/parts/containers/viewContainer';
 import TextMenuItem from '../setting/textMenuItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Version>;
@@ -24,7 +22,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Version>
 const Version = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { chainVer, sdkVer } = useChainVersion();
+    const { chainVer, sdkVer, refetch } = useChainVersion();
     const { storage, common } = useAppSelector((state) => state);
 
     // const networkList = ["MainNet", "TestNet"];
@@ -32,7 +30,14 @@ const Version = () => {
     const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
     const [openNetworkSelectModal, setOpenNetworkSelectModal] = useState(false);
     const [tabCount, setTabCount] = useState(common.networkChangeActivate ? 50 : 0);
-    const [versionCheck, setVersionCheck] = useState(false);
+
+    const ChainVer = useMemo(() => {
+        return common.chainVer;
+    }, [common.chainVer]);
+
+    const SDKVer = useMemo(() => {
+        return common.sdkVer;
+    }, [common.sdkVer]);
 
     const handleNetworkSelectModal = (open: boolean) => {
         if (tabCount >= 50) {
@@ -55,6 +60,7 @@ const Version = () => {
         StorageActions.handleNetwork(networkList[index]);
         setSelectedNetworkIndex(index);
         setOpenNetworkSelectModal(false);
+        refetch();
     };
 
     const handleBack = () => {
@@ -62,18 +68,8 @@ const Version = () => {
     };
 
     useEffect(() => {
-        const result = VersionCheck(common.currentAppVer, VERSION);
-
-        setVersionCheck(result);
-    }, [common.currentAppVer]);
-
-    useEffect(() => {
-        if (chainVer !== '') {
-            CommonActions.handleChainVer(chainVer);
-        }
-        if (sdkVer !== '') {
-            CommonActions.handleSDKVer(sdkVer);
-        }
+        CommonActions.handleChainVer(chainVer);
+        CommonActions.handleSDKVer(sdkVer);
     }, [chainVer, sdkVer]);
 
     useEffect(() => {
@@ -89,8 +85,8 @@ const Version = () => {
                     <Pressable onPress={() => handleNetworkSelectModal(true)}>
                         <TextMenuItem title="App Version" content={'v' + VERSION} contentColor={TextGrayColor} />
                     </Pressable>
-                    <TextMenuItem title="Chain Version" content={common.chainVer} contentColor={TextGrayColor} />
-                    <TextMenuItem title="SDK Version" content={common.sdkVer} contentColor={TextGrayColor} />
+                    <TextMenuItem title="Chain Version" content={ChainVer} contentColor={TextGrayColor} />
+                    <TextMenuItem title="SDK Version" content={SDKVer} contentColor={TextGrayColor} />
 
                     <CustomModal visible={openNetworkSelectModal} bgColor={BgColor} handleOpen={handleNetworkSelectModal}>
                         <ModalItems initVal={selectedNetworkIndex} data={networkList} onPressEvent={handleSelectNetwork} />

@@ -571,23 +571,23 @@ export const useVersion = () => {
     );
 };
 
-export const useMaintenance = () => {
-    return useQuery(
-        gql`
-            query {
-                maintenance(order_by: { index: desc }) {
-                    maintenance
-                    currentAppVer
-                    minAppVer
-                }
-            }
-        `,
-        {
-            pollInterval: 0,
-            notifyOnNetworkStatusChange: true,
-            variables: {
-                limit: 99999
-            }
-        }
-    );
-};
+// export const useMaintenance = () => {
+//     return useQuery(
+//         gql`
+//             query {
+//                 maintenance(order_by: { index: desc }) {
+//                     maintenance
+//                     currentAppVer
+//                     minAppVer
+//                 }
+//             }
+//         `,
+//         {
+//             pollInterval: 0,
+//             notifyOnNetworkStatusChange: true,
+//             variables: {
+//                 limit: 99999
+//             }
+//         }
+//     );
+// };
