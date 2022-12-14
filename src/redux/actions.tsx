@@ -1,18 +1,30 @@
-import { bindActionCreators } from "redux";
-import store from './store';
-// import actions
-import * as storageActions from "./actions/storageAction";
-import * as walletActions from "./actions/walletAction";
-import * as stakingActions from "./actions/stakingAction";
-import * as commonActions from "./actions/commonAction";
-import * as modalActions from "./actions/modalAction";
-const {dispatch} = store;
+import { bindActionCreators } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import { store } from './store';
+import { ACTIONS as commonActions } from './reducers/commonReducer';
+import { ACTIONS as modalActions } from './reducers/modalReducer';
+import { ACTIONS as stakingActions } from './reducers/stakingReducer';
+import { ACTIONS as storageActions } from './reducers/storageReducer';
+import { ACTIONS as walletActions } from './reducers/walletReducer';
 
-// export actions
-export const WalletActions = bindActionCreators(walletActions, dispatch);
-export const StorageActions = bindActionCreators(storageActions, dispatch);
-export const StakingActions = bindActionCreators(stakingActions, dispatch);
+const { dispatch } = store;
+
+declare module 'redux' {
+    export function bindActionCreators<M extends ActionCreatorsMapObject<any>>(
+        actionCreators: M,
+        dispatch: Dispatch
+    ): {
+        [N in keyof M]: ReturnType<M[N]> extends ThunkAction<any, any, any, any>
+            ? (...args: Parameters<M[N]>) => ReturnType<ReturnType<M[N]>>
+            : M[N];
+    };
+}
+
 export const CommonActions = bindActionCreators(commonActions, dispatch);
 export const ModalActions = bindActionCreators(modalActions, dispatch);
+export const StakingActions = bindActionCreators(stakingActions, dispatch);
+export const StorageActions = bindActionCreators(storageActions, dispatch);
+export const WalletActions = bindActionCreators(walletActions, dispatch);
+
 export type AppState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

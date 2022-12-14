@@ -1,43 +1,46 @@
-import { IValidatorState } from "@/hooks/staking/hooks";
-import { Action, UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from "../types";
+import { IValidatorDetailState } from '@/hooks/staking/hooks';
+import { createAction, createReducer } from '@reduxjs/toolkit';
+import { UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from '../types';
 
 export interface IDelegateUpdateState {
     address: string;
     reward: number;
 }
 
-export interface IState {
-    delegate: IDelegateUpdateState;
-    validator: IValidatorState;
+export interface IStakingStateProps {
+    delegate: IDelegateUpdateState | null;
+    validator: IValidatorDetailState | null;
     stakingReward: number;
 }
 
-const initialState = {
+const initialState: IStakingStateProps = {
     delegate: null,
     validator: null,
-    stakingReward: 0,
+    stakingReward: 0
 };
 
-const reducer = (state = initialState, action:Action) => {
-    switch (action.type) {
-        case UPDATE_DELEGATE_STATE : 
-        return{
-            ...state, 
-            delegate: action.payload,
-        }
-        case UPDATE_VALIDATOR_STATE : 
-        return{
-            ...state, 
-            validator: action.payload,
-        }
-        case UPDATE_STAKING_REWARD : 
-        return{
-            ...state, 
-            stakingReward: action.payload,
-        }
-        default :
-        return state
-    }
-}
+export const ACTION_CREATORS = {
+    UPDATE_DELEGATE_STATE: createAction<IDelegateUpdateState | null>(UPDATE_DELEGATE_STATE),
+    UPDATE_STAKING_REWARD: createAction<IValidatorDetailState | null>(UPDATE_STAKING_REWARD),
+    UPDATE_VALIDATOR_STATE: createAction<number>(UPDATE_VALIDATOR_STATE)
+};
+
+export const ACTIONS = {
+    updateDelegateState: ACTION_CREATORS.UPDATE_DELEGATE_STATE,
+    updateValidatorState: ACTION_CREATORS.UPDATE_STAKING_REWARD,
+    updateStakingRewardState: ACTION_CREATORS.UPDATE_VALIDATOR_STATE
+};
+
+const reducer = createReducer(initialState, (builder) => {
+    builder.addCase(ACTION_CREATORS.UPDATE_DELEGATE_STATE, (state, { payload }) => {
+        state.delegate = payload;
+    });
+    builder.addCase(ACTION_CREATORS.UPDATE_STAKING_REWARD, (state, { payload }) => {
+        state.validator = payload;
+    });
+    builder.addCase(ACTION_CREATORS.UPDATE_VALIDATOR_STATE, (state, { payload }) => {
+        state.stakingReward = payload;
+    });
+});
 
 export default reducer;
