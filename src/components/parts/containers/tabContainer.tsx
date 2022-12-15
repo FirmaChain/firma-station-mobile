@@ -23,7 +23,7 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
     const handleQRScanner = async (active: boolean) => {
         ModalActions.handleQRScannerModal(active);
         if (active === false) {
-            ModalActions.handleResetModal();
+            ModalActions.handleResetModal({});
         }
     };
 

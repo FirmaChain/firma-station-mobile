@@ -35,9 +35,10 @@ const RefreshScrollView = ({ scrollEndFunc, refreshFunc, background = 'transpare
     const onRefresh = async () => {
         try {
             setRefreshing(true);
-            await refreshFunc();
+            refreshFunc();
             setRefreshing(false);
         } catch (error) {
+            setRefreshing(false);
             console.log(error);
         }
     };

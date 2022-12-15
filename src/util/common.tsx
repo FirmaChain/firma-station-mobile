@@ -13,7 +13,7 @@ export const updateArray = (array: Array<any>, oldVal: any, newVal: any) => {
     return array;
 };
 
-export const convertNumber = (value: string | number | undefined) => {
+export const convertNumber = (value: string | number | null | undefined) => {
     if (!Number(value)) return 0;
     return Number(value);
 };
@@ -86,12 +86,11 @@ export const isValid = (data: any) => {
 export const convertTime = (time: string, fulltime: boolean, addTime?: boolean) => {
     if (time === undefined) return '';
 
-    const date = getLocalDate(time);
     const GMT = getGMT();
 
-    if (fulltime) return moment(new Date(date)).format('YYYY-MM-DD HH:mm:ss') + ` (${GMT})`;
-    if (addTime) return moment(new Date(date)).format('YYYY-MM-DD HH:mm:ss');
-    return moment(new Date(date)).format('YYYY-MM-DD');
+    if (fulltime) return moment(moment.utc(time).toDate()).format('YYYY-MM-DD HH:mm:ss') + ` (${GMT})`;
+    if (addTime) return moment(moment.utc(time).toDate()).format('YYYY-MM-DD HH:mm:ss');
+    return moment(moment.utc(time).toDate()).format('YYYY-MM-DD');
 };
 
 export const convertTimerText = (time: string) => {
@@ -124,13 +123,6 @@ export const getGMT = () => {
     const GMT = offset / 60 < 0 ? '+' + Math.abs(offset / 60) : (offset / 60) * -1;
 
     return 'GMT' + GMT;
-};
-
-export const getLocalDate = (time: string) => {
-    let date = new Date(time);
-    const offset = date.getTimezoneOffset();
-    date.setHours(date.getHours() - offset / 60);
-    return date;
 };
 
 export const createDecimalPoint = (value: number) => {

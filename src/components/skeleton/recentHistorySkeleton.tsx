@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import ContentLoader, { Rect } from 'react-content-loader/native';
 import { BoxColor, DividerColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { getGMT } from '@/util/common';
+import ContentLoader, { Rect } from 'react-content-loader/native';
 
 const RecentHistorySkeleton = () => {
     const skeleton = () => {
@@ -20,11 +20,6 @@ const RecentHistorySkeleton = () => {
     };
 
     return (
-        // <View style={[styles.wrapperH, styles.wrapper, { paddingTop: 18, height: '100%', width: '100%' }]}>
-        //     <ContentLoader speed={0.8} animate={true} foregroundColor={DividerColor} backgroundColor={BoxColor}>
-        //         <Rect x="0" y="0" rx="8" ry="8" width="100%" height={'100%'} />
-        //     </ContentLoader>
-        // </View>
         <React.Fragment>
             <View
                 style={[
