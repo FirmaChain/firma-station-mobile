@@ -22,9 +22,6 @@ import { getAddressFromRecoverValue } from '@/util/firma';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import { removeAllData } from '@/util/detect';
 import { wait } from '@/util/common';
-import { VersionCheck } from '@/util/validationCheck';
-import { useServerMessage } from '@/hooks/common/hooks';
-import { VERSION } from '@/../config';
 import SplashScreen from 'react-native-splash-screen';
 import Toast from 'react-native-toast-message';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -32,15 +29,11 @@ import Description from '../welcome/description';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import InputBox from './inputBox';
 import Button from '@/components/button/button';
-import UpdateModal from './updateModal';
-import MaintenanceModal from './maintenanceModal';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
 const LoginCheck = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-
-    const { minAppVer, currentAppVer, maintenanceState } = useServerMessage();
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const fadeAnimEnterButton = useRef(new Animated.Value(0)).current;
@@ -49,15 +42,6 @@ const LoginCheck = () => {
 
     const Title: string = 'LOGIN';
     const Desc: string = LOGIN_DESCRIPTION;
-
-    // status
-    // 0: idle & version check
-    // 1: maintenance check
-    // 2: start
-    const [appStartStatus, setAppStartStatus] = useState(0);
-    const [update, setUpdate] = useState<boolean | null>(null);
-    const [maintenance, setMaintenance] = useState<boolean | null>(null);
-    const [maintenanceData, setMaintenanceData] = useState({});
 
     const [isKeyboardShown, setIsKeyboardShown] = useState(false);
     const [dimActive, setDimActive] = useState(true);
@@ -154,7 +138,7 @@ const LoginCheck = () => {
     };
 
     useEffect(() => {
-        if (appStartStatus === 2) {
+        if (common.maintenanceState === false) {
             if (common.connect && loading === false) {
                 if (wallet.name !== '') {
                     getUseBioAuthState().then((res) => {
@@ -168,13 +152,15 @@ const LoginCheck = () => {
                 }
             }
         }
-    }, [loading, common.connect, appStartStatus]);
+    }, [loading, common.connect, common.maintenanceState]);
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);
         const hideSubscription = Keyboard.addListener('keyboardWillHide', onKeyboardDidHide);
 
-        if (appStartStatus === 2) {
+        SplashScreen.hide();
+
+        if (common.maintenanceState === false) {
             const getWalletForAutoLogin = async () => {
                 try {
                     const result = await getWalletWithAutoLogin();
@@ -206,47 +192,7 @@ const LoginCheck = () => {
             showSubscription.remove();
             hideSubscription.remove();
         };
-    }, [appStartStatus]);
-
-    useEffect(() => {
-        SplashScreen.hide();
-        if (minAppVer !== undefined && currentAppVer !== undefined) {
-            if (minAppVer !== null && currentAppVer !== null) {
-                CommonActions.handleCurrentAppVer(currentAppVer);
-                const result = VersionCheck(minAppVer, VERSION);
-
-                if (result) {
-                    setAppStartStatus(appStartStatus + 1);
-                    setUpdate(false);
-                } else {
-                    setUpdate(true);
-                }
-            }
-        } else {
-            setAppStartStatus(appStartStatus + 1);
-            setUpdate(false);
-        }
-    }, [minAppVer, currentAppVer]);
-
-    useEffect(() => {
-        if (appStartStatus === 1) {
-            if (maintenanceState !== undefined) {
-                if (maintenanceState !== null) {
-                    const isMaintenance = maintenanceState?.isShow;
-                    if (isMaintenance) {
-                        setMaintenance(true);
-                        setMaintenanceData(maintenanceState);
-                    } else {
-                        setMaintenance(false);
-                        setAppStartStatus(appStartStatus + 1);
-                    }
-                }
-            } else {
-                setMaintenance(false);
-                setAppStartStatus(appStartStatus + 1);
-            }
-        }
-    }, [appStartStatus, maintenanceState]);
+    }, [common.maintenanceState]);
 
     return (
         <ViewContainer bgColor={BgColor}>
@@ -280,8 +226,6 @@ const LoginCheck = () => {
                         </Animated.View>
                     </Pressable>
                 )}
-                {update !== null && update && <UpdateModal />}
-                {maintenance != null && maintenance && <MaintenanceModal data={maintenanceData} />}
             </KeyboardAvoidingView>
         </ViewContainer>
     );

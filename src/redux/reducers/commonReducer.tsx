@@ -1,6 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import {
     APP_STATE,
+    MAINTENANCE_STATE,
     CURRENT_APP_VERSION,
     CHAIN_VERSION,
     SDK_VERSION,
@@ -20,6 +21,7 @@ import {
 
 export interface ICommonStateProps {
     appState: string;
+    maintenanceState: boolean;
     currentAppVer: string;
     chainVer: string;
     sdkVer: string;
@@ -38,6 +40,7 @@ export interface ICommonStateProps {
 
 const initialState: ICommonStateProps = {
     appState: 'active',
+    maintenanceState: true,
     currentAppVer: '',
     chainVer: '',
     sdkVer: '',
@@ -56,6 +59,7 @@ const initialState: ICommonStateProps = {
 
 export const ACTION_CREATORS = {
     APP_STATE: createAction<string>(APP_STATE),
+    MAINTENANCE_STATE: createAction<boolean>(MAINTENANCE_STATE),
     CURRENT_APP_VERSION: createAction<string>(CURRENT_APP_VERSION),
     CHAIN_VERSION: createAction<string>(CHAIN_VERSION),
     SDK_VERSION: createAction<string>(SDK_VERSION),
@@ -75,6 +79,7 @@ export const ACTION_CREATORS = {
 
 export const ACTIONS = {
     handleAppState: ACTION_CREATORS.APP_STATE,
+    handleMaintenanceState: ACTION_CREATORS.MAINTENANCE_STATE,
     handleCurrentAppVer: ACTION_CREATORS.CURRENT_APP_VERSION,
     handleChainVer: ACTION_CREATORS.CHAIN_VERSION,
     handleSDKVer: ACTION_CREATORS.SDK_VERSION,
@@ -95,6 +100,9 @@ export const ACTIONS = {
 const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ACTION_CREATORS.APP_STATE, (state, { payload }) => {
         state.appState = payload;
+    });
+    builder.addCase(ACTION_CREATORS.MAINTENANCE_STATE, (state, { payload }) => {
+        state.maintenanceState = payload;
     });
     builder.addCase(ACTION_CREATORS.CURRENT_APP_VERSION, (state, { payload }) => {
         state.currentAppVer = payload;

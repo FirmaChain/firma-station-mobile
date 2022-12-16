@@ -35,6 +35,7 @@ const Home = ({ title }: IProps) => {
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime('');
         CommonActions.handleLoggedIn(true);
+        CommonActions.handleLoadingProgress(false);
     }, []);
 
     return (

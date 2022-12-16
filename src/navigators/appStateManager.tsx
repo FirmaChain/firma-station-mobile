@@ -1,15 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AppState, Platform, StyleSheet, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions, StorageActions } from '@/redux/actions';
 import { convertNumber, getTimeStamp, wait } from '@/util/common';
 import { Detect } from '@/util/detect';
 import { BgColor } from '@/constants/theme';
-import { JAILBREAK_ALERT, setExplorerUrl } from '@/constants/common';
-import { QRCodeScannerModal } from '@/components/modal';
+import { JAILBREAK_ALERT, MAINTENANCE_ERROR, setNetworkData } from '@/constants/common';
+import { MaintenanceModal, QRCodeScannerModal, UpdateModal } from '@/components/modal';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { setClient } from '@/apollo';
 import { setFirmaSDK } from '@/util/firma';
+import { setApiAddress } from '@/api';
+import { getValidatorsProfile } from '@/api/validator.api';
+import { IValidatorsProfileState } from '@/redux/reducers/storageReducer';
+import { useServerMessage } from '@/hooks/common/hooks';
+import { VersionCheck } from '@/util/validationCheck';
+import { VERSION } from '@/../config';
 import SplashScreen from 'react-native-splash-screen';
 import Progress from '@/components/parts/progress';
 import AlertModal from '@/components/modal/alertModal';
@@ -17,10 +23,61 @@ import ValidationModal from '@/components/modal/validationModal';
 import DeepLinkManager from './deepLinkManager';
 
 const AppStateManager = () => {
-    const { wallet, storage, common, modal } = useAppSelector((state) => state);
     const netInfo = useNetInfo();
+    const { wallet, storage, common, modal } = useAppSelector((state) => state);
+    const { minAppVer, maintenanceState, getMaintenanceData } = useServerMessage();
 
+    const [maintenanceHealthCheck, setMaintenanceHealthCheck] = useState<boolean>(true);
+    const [update, setUpdate] = useState<boolean | null>(null);
+    const [maintenance, setMaintenance] = useState<boolean | null>(null);
+    const [maintenanceData, setMaintenanceData] = useState({});
     const [openAlertModal, setOpenAlertModal] = useState(false);
+
+    const handleValidatorsProfile = useCallback(async () => {
+        try {
+            const result: IValidatorsProfileState = (await getValidatorsProfile()).data;
+            const lastUpdatedTime = result.lastUpdatedTime;
+            const storageInfoExist = storage.validatorsProfile !== undefined;
+
+            if (storageInfoExist === false || (storage.validatorsProfile.lastUpdatedTime !== lastUpdatedTime && lastUpdatedTime !== 0)) {
+                StorageActions.handleValidatorsProfile(result);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
+    const handleInitialize = useCallback(() => {
+        CommonActions.handleLoggedIn(false);
+        CommonActions.handleIsConnection(true);
+        setClient(storage.network);
+        setFirmaSDK(storage.network);
+        setApiAddress(storage.network);
+        setNetworkData(storage.network);
+
+        CommonActions.handleAppPausedTime('');
+        CommonActions.handleAppState('active');
+        CommonActions.handleLockStation(false);
+        if (storage.currency === undefined) {
+            StorageActions.handleCurrency('USD');
+        }
+        handleValidatorsProfile();
+    }, []);
+
+    const handleMaintenanceData = useCallback(async () => {
+        try {
+            await getMaintenanceData();
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
+    const handleUnlock = (result: string) => {
+        if (result === '') return;
+        CommonActions.handleLoggedIn(true);
+        CommonActions.handleLockStation(false);
+        CommonActions.handleAppPausedTime('');
+    };
 
     const handleAlertModalOpen = (open: boolean) => {
         if (open) {
@@ -30,28 +87,7 @@ const AppStateManager = () => {
         }
     };
 
-    const handleUnlock = (result: string) => {
-        if (result === '') return;
-        CommonActions.handleLoggedIn(true);
-        CommonActions.handleLockStation(false);
-        CommonActions.handleAppPausedTime('');
-    };
-
-    useEffect(() => {
-        const appStateListener = AppState.addEventListener('change', (nextAppState) => {
-            CommonActions.handleAppState(nextAppState);
-
-            const key = Platform.OS === 'ios' ? 'inactive' : 'background';
-            if (nextAppState === key) {
-                CommonActions.handleAppPausedTime(getTimeStamp());
-            }
-        });
-        return () => {
-            appStateListener?.remove();
-        };
-    }, [wallet.name]);
-
-    useEffect(() => {
+    const handleJailbreakDetect = useCallback(() => {
         if (Detect() === false) {
             setOpenAlertModal(false);
             if (wallet.name === '') {
@@ -66,9 +102,83 @@ const AppStateManager = () => {
                 }
             }
         } else {
-            return setOpenAlertModal(true);
+            return handleAlertModalOpen(true);
         }
     }, [common.appState, common.appPausedTime]);
+
+    const handleLoadingProgress = useCallback(() => {
+        if (common.lockStation === false && (common.connect === false || common.isNetworkChanged)) {
+            CommonActions.handleLoadingProgress(true);
+        }
+    }, [common.lockStation, common.connect, common.isNetworkChanged]);
+
+    const handleLoadingProgressWithNetworkChange = useCallback(() => {
+        if (common.loggedIn) {
+            wait(3000).then(() => {
+                CommonActions.handleIsNetworkChange(false);
+                CommonActions.handleLoadingProgress(false);
+            });
+        }
+    }, [common.loggedIn]);
+
+    useEffect(() => {
+        handleInitialize();
+    }, []);
+
+    useEffect(() => {
+        handleJailbreakDetect();
+    }, [common.appState, common.appPausedTime]);
+
+    useEffect(() => {
+        if (minAppVer !== undefined) {
+            setMaintenanceHealthCheck(true);
+            if (minAppVer !== null) {
+                CommonActions.handleCurrentAppVer(VERSION);
+                const result = VersionCheck(minAppVer, VERSION);
+                if (result) {
+                    setUpdate(false);
+                } else {
+                    setUpdate(true);
+                }
+            }
+        } else {
+            setMaintenanceHealthCheck(false);
+        }
+    }, [minAppVer, VERSION]);
+
+    useEffect(() => {
+        if (update !== null && update === false) {
+            if (maintenanceState !== undefined) {
+                if (maintenanceState !== null) {
+                    const isMaintenance = maintenanceState?.isShow;
+                    if (isMaintenance) {
+                        setMaintenance(true);
+                        setMaintenanceData(maintenanceState);
+                    } else {
+                        setMaintenance(false);
+                        CommonActions.handleMaintenanceState(false);
+                    }
+                }
+            } else {
+                setMaintenanceHealthCheck(false);
+            }
+        }
+    }, [update, maintenanceState]);
+
+    useEffect(() => {
+        if (wallet.name === '') return;
+        let appStateListener = AppState.addEventListener('change', (nextAppState) => {
+            CommonActions.handleAppState(nextAppState);
+
+            const key = Platform.OS === 'ios' ? 'inactive' : 'background';
+            if (nextAppState === key) {
+                CommonActions.handleAppPausedTime(getTimeStamp());
+            }
+        });
+        return () => {
+            appStateListener.remove();
+        };
+    }, [wallet.name]);
 
     useEffect(() => {
         const connect = netInfo.isConnected === null ? false : netInfo.isConnected;
@@ -81,42 +191,21 @@ const AppStateManager = () => {
     }, [netInfo]);
 
     useEffect(() => {
-        if (common.lockStation === false && (common.connect === false || common.isNetworkChanged)) {
-            CommonActions.handleLoadingProgress(true);
-        }
-    }, [common.connect, common.isNetworkChanged, common.loading]);
+        handleLoadingProgress();
+    }, [common.connect, common.isNetworkChanged, common.lockStation]);
 
     useEffect(() => {
-        if (common.loggedIn) {
-            wait(3000).then(() => {
-                CommonActions.handleIsNetworkChange(false);
-                CommonActions.handleLoadingProgress(false);
-            });
-        }
+        handleLoadingProgressWithNetworkChange();
     }, [storage.network]);
-
-    useEffect(() => {
-        CommonActions.handleLoggedIn(false);
-        CommonActions.handleIsConnection(true);
-        setClient(storage.network);
-        setFirmaSDK(storage.network);
-        setExplorerUrl(storage.network);
-
-        CommonActions.handleAppPausedTime('');
-        CommonActions.handleAppState('active');
-        CommonActions.handleLockStation(false);
-        if (storage.currency === undefined) {
-            StorageActions.handleCurrency('USD');
-        }
-    }, []);
 
     return (
         <React.Fragment>
             {common.loading && <Progress />}
             {wallet.name !== '' && common.loggedIn && (
                 <React.Fragment>
-                    {common.isBioAuthInProgress === false && common.appState !== 'active' && <View style={styles.dim} />}
-                    {common.isBioAuthInProgress === false && common.appPausedTime !== '' && <View style={styles.dim} />}
+                    {common.isBioAuthInProgress === false && (common.appState !== 'active' || common.appPausedTime !== '') && (
+                        <View style={styles.dim} />
+                    )}
                     <DeepLinkManager />
                     <ValidationModal type={'lock'} open={common.lockStation} setOpenModal={handleUnlock} validationHandler={handleUnlock} />
                 </React.Fragment>
@@ -135,6 +224,19 @@ const AppStateManager = () => {
                     />
                 </React.Fragment>
             )}
+            {maintenanceHealthCheck === false && (
+                <AlertModal
+                    visible={maintenanceHealthCheck === false}
+                    handleOpen={handleMaintenanceData}
+                    forcedActive={true}
+                    title={'Notice'}
+                    desc={MAINTENANCE_ERROR}
+                    confirmTitle={'OK'}
+                    type={'CONFIRM'}
+                />
+            )}
+            {update !== null && update && <UpdateModal />}
+            {maintenance != null && maintenance && <MaintenanceModal data={maintenanceData} refreshData={handleMaintenanceData} />}
         </React.Fragment>
     );
 };
