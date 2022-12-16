@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
-import { useNFTTransactionQuery, useNFTTransactionQueryForTestNet } from '@/apollo/gqls';
 import { getNFTIdListOfOwner, getNFTItemFromId, INftItemType } from '@/util/firma';
 
 export interface INFTTransctionState {
@@ -140,55 +139,4 @@ const getMyNFTList = async (nfts: Array<INftItemType>, identity: string) => {
         console.log(error);
         return [];
     }
-};
-
-export const useNFTTransaction = () => {
-    const { storage, wallet } = useAppSelector((state) => state);
-
-    const [NFTList, setNFTList] = useState<Array<INFTTransctionState>>([]);
-    const [NFTTransaction, setNFTTransaction] = useState<INFTTransctionState>();
-    const [NFTId, setNFTId] = useState('');
-
-    const handleNFTId = (id: string | number) => {
-        setNFTId(id.toString());
-    };
-
-    const { loading, data } =
-        storage.network === 'MainNet'
-            ? useNFTTransactionQuery({ address: `{${wallet.address}}` })
-            : useNFTTransactionQueryForTestNet({ address: `{${wallet.address}}` });
-
-    useEffect(() => {
-        if (loading === false) {
-            if (data?.messagesByAddress !== undefined) {
-                const list = data.messagesByAddress.map((value: any) => {
-                    let height = value.height;
-                    let hash = value.transaction_hash;
-                    let nftId = value.value.nftId;
-                    let from = value.value.owner;
-                    let to = value.value.toAddress;
-                    let timestamp = value.transaction.block.timestamp;
-
-                    return {
-                        height: height,
-                        hash: hash,
-                        nftId: nftId,
-                        from: from,
-                        to: to,
-                        timestamp: timestamp
-                    };
-                });
-                setNFTList(list);
-            }
-        }
-    }, [loading, data]);
-
-    useEffect(() => {
-        if (NFTList.length > 0 && NFTId !== '') {
-            let transaction = NFTList.find((value: any) => wallet.address === value.to && NFTId === value.nftId);
-            setNFTTransaction(transaction);
-        }
-    }, [NFTId, NFTList]);
-
-    return { NFTTransaction, handleNFTId };
 };

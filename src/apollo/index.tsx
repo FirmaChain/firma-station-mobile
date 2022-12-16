@@ -1,36 +1,36 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { ApolloLink, concat } from "@apollo/client/link/core";
-import { HttpLink } from "@apollo/client/link/http";
-import { CHAIN_NETWORK } from "@/../config";
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloLink, concat } from '@apollo/client/link/core';
+import { HttpLink } from '@apollo/client/link/http';
+import { CHAIN_NETWORK } from '@/../config';
 
-let httpLink = new HttpLink({ uri: CHAIN_NETWORK["MainNet"].GRAPHQL + '/v1/graphql'});
+let httpLink = new HttpLink({ uri: CHAIN_NETWORK['MainNet'].GRAPHQL + '/v1/graphql' });
 const authMiddleware = new ApolloLink((operation, forward) => {
-  operation.setContext(({ headers = {} }) => ({
-    headers: {
-      ...headers,
-    },
-  }));
+    operation.setContext(({ headers = {} }) => ({
+        headers: {
+            ...headers
+        }
+    }));
 
-  return forward(operation);
+    return forward(operation);
 });
 
 let client = new ApolloClient({
-  uri: CHAIN_NETWORK["MainNet"].GRAPHQL + "/v1/graphql",
-  link: concat(authMiddleware, httpLink),
-  cache: new InMemoryCache({}),
+    uri: CHAIN_NETWORK['MainNet'].GRAPHQL + '/v1/graphql',
+    link: concat(authMiddleware, httpLink),
+    cache: new InMemoryCache({})
 });
 
-export const setClient = (network:string) => {
-  let httpLink = new HttpLink({ uri: CHAIN_NETWORK[network].GRAPHQL + '/v1/graphql'});
-  client = new ApolloClient({
-    uri: CHAIN_NETWORK[network].GRAPHQL + "/v1/graphql",
-    link: concat(authMiddleware, httpLink),
-    cache: new InMemoryCache({}),
-  })
-}
+export const setClient = (network: string) => {
+    let httpLink = new HttpLink({ uri: CHAIN_NETWORK[network].GRAPHQL + '/v1/graphql' });
+    client = new ApolloClient({
+        uri: CHAIN_NETWORK[network].GRAPHQL + '/v1/graphql',
+        link: concat(authMiddleware, httpLink),
+        cache: new InMemoryCache({})
+    });
+};
 
-const getClient = ():ApolloClient<any> => {
-  return client;
-}
+const getClient = (): ApolloClient<any> => {
+    return client;
+};
 
 export { ApolloProvider, getClient };

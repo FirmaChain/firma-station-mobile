@@ -4,6 +4,7 @@ export type Action = {
 };
 // common
 export const APP_STATE = 'APP_STATE';
+export const MAINTENANCE_STATE = 'MAINTENANCE_STATE';
 export const CURRENT_APP_VERSION = 'CURRENT_APP_VERSION';
 export const CHAIN_VERSION = 'CHAIN_VERSION';
 export const SDK_VERSION = 'SDK_VERSION';

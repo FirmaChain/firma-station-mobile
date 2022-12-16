@@ -1,9 +1,10 @@
-import { FirmaMobileSDK, FirmaUtil } from '@firmachain/firma-js';
+import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
 import { convertNumber, convertToFctNumber } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
+import { TOKEN_DENOM } from '@/constants/common';
 
 export interface IWallet {
     name?: string;
@@ -24,14 +25,14 @@ export interface INftItemType {
     tokenURI: string;
 }
 
-let firmaSDK: FirmaMobileSDK;
+let firmaSDK: FirmaSDK;
 let restakeAddress: string;
 
 export const setFirmaSDK = (network: string) => {
     if (network === 'MainNet') {
-        firmaSDK = new FirmaMobileSDK(FIRMACHAIN_DEFAULT_CONFIG);
+        firmaSDK = new FirmaSDK(FIRMACHAIN_DEFAULT_CONFIG);
     } else {
-        firmaSDK = new FirmaMobileSDK(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG);
+        firmaSDK = new FirmaSDK(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG);
     }
     restakeAddress = CHAIN_NETWORK[network].RESTAKE_ADDRESS;
 };
@@ -42,6 +43,15 @@ export const getFirmaSDK = () => {
 
 export const getRestakeAddress = () => {
     return restakeAddress;
+};
+
+export const getChainInfo = async () => {
+    try {
+        const result = await getFirmaSDK().BlockChain.getChainInfo();
+        return result;
+    } catch (error) {
+        throw error;
+    }
 };
 
 // Wallet
@@ -144,6 +154,7 @@ const organizeWallet = async (wallet: FirmaWalletService) => {
         let _mnemonic = wallet.getMnemonic();
         let _privateKey = wallet.getPrivateKey();
         let _address = await wallet.getAddress();
+
         let _balance = await getBalanceFromAdr(_address);
 
         const result = {
@@ -335,6 +346,107 @@ export const getUndelegateList = async (address: string) => {
 export const getTotalReward = async (address: string) => {
     try {
         return await getFirmaSDK().Distribution.getTotalRewardInfo(address);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getStakingPoolState = async () => {
+    try {
+        const pool = await getFirmaSDK().Staking.getPool();
+        return pool;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getSlashingState = async () => {
+    try {
+        const slashing = await getFirmaSDK().Slashing.getSlashingParam();
+        return slashing;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getBankSupply = async () => {
+    try {
+        const denom = TOKEN_DENOM();
+        const supply = await getFirmaSDK().Bank.getTokenSupply(denom);
+        return convertNumber(supply);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getMintInflation = async () => {
+    try {
+        const inflation = await getFirmaSDK().Mint.getInflation();
+        return convertNumber(inflation);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getValidators = async () => {
+    try {
+        const validatorList = await getFirmaSDK().Staking.getValidatorList();
+
+        let dataList: ValidatorDataType[] = validatorList.dataList;
+        let nextKey: string = validatorList.pagination.next_key;
+
+        while (nextKey !== null) {
+            const nextValidatorList = await getFirmaSDK().Staking.getValidatorList(nextKey);
+            const nextDataList = nextValidatorList.dataList;
+            nextKey = nextValidatorList.pagination.next_key;
+
+            dataList.push(...nextDataList);
+        }
+
+        return dataList;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getSigningInfos = async () => {
+    try {
+        const result = await getFirmaSDK().Slashing.getSigningInfos();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getSigningInfo = async (address: string) => {
+    try {
+        const result = await getFirmaSDK().Slashing.getSigningInfo(address);
+        return result;
+    } catch (error) {}
+};
+
+export const getValidatorFromAddress = async (address: string) => {
+    try {
+        const validator = await getFirmaSDK().Staking.getValidator(address);
+        return validator;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getDelegationListFromValidator = async (address: string) => {
+    try {
+        const delegation = (await getFirmaSDK().Staking.getDelegationListFromValidator(address)).dataList;
+        return delegation;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getSelfDelegateAddressFromValOperAddress = async (address: string) => {
+    try {
+        const selfDelegateAddress = FirmaUtil.getAccAddressFromValOperAddress(address);
+        return selfDelegateAddress;
     } catch (error) {
         throw error;
     }
@@ -644,5 +756,41 @@ export const getNFTItemFromId = async (id: string) => {
     } catch (error) {
         console.log('error');
         return null;
+    }
+};
+
+export const getProposals = async () => {
+    try {
+        let result = await getFirmaSDK().Gov.getProposalList();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getProposalParams = async () => {
+    try {
+        let result = await getFirmaSDK().Gov.getParam();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getProposalByProposalId = async (proposalId: string) => {
+    try {
+        let result = await getFirmaSDK().Gov.getProposal(proposalId);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getProposalTally = async (proposalId: string) => {
+    try {
+        let result = await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId);
+        return result;
+    } catch (error) {
+        throw error;
     }
 };

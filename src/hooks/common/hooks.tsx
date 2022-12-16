@@ -1,6 +1,6 @@
 import { MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
-import { useVersion } from '@/apollo/gqls';
 import { useAppSelector } from '@/redux/hooks';
+import { getChainInfo } from '@/util/firma';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface IMaintenanceState {
@@ -13,22 +13,22 @@ export const useChainVersion = () => {
     const [chainVer, setChainVer] = useState('');
     const [sdkVer, setSdkVer] = useState('');
 
-    const { loading, data, refetch } = useVersion();
+    const handleChainInfo = useCallback(async () => {
+        try {
+            const info = await getChainInfo();
+            setChainVer(info.appVersion);
+            setSdkVer(info.cosmosVersion);
+        } catch (error) {
+            throw error;
+        }
+    }, []);
 
     useEffect(() => {
-        if (loading === false) {
-            if (data !== undefined) {
-                setChainVer(data.version[0].chainVer);
-                setSdkVer(data.version[0].sdkVer);
-            } else {
-                setChainVer('');
-                setSdkVer('');
-            }
-        }
-    }, [loading]);
+        handleChainInfo();
+    }, []);
 
     return {
-        refetch,
+        handleChainInfo,
         chainVer,
         sdkVer
     };
@@ -67,7 +67,8 @@ export const useServerMessage = () => {
     return {
         minAppVer,
         currentAppVer,
-        maintenanceState
+        maintenanceState,
+        getMaintenanceData
     };
 };
 
@@ -77,4 +78,31 @@ export const usePrevious = (value: any) => {
         ref.current = value;
     });
     return ref.current;
+};
+
+export const useInterval = (callback: () => void, delay: number | null, startAfterDelayed: boolean = false) => {
+    const savedCallback = useRef<() => void>();
+
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    useEffect(() => {
+        let delayed = startAfterDelayed ? 0 : 1;
+        function tick() {
+            if (delayed >= 1) {
+                if (savedCallback.current) savedCallback.current();
+            }
+            delayed = delayed + 1;
+        }
+
+        if (delay !== null) {
+            tick();
+            let id = setInterval(tick, delay);
+            return () => {
+                delayed = 0;
+                clearInterval(id);
+            };
+        }
+    }, [delay]);
 };

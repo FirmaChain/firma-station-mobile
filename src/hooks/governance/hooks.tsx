@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
-import { useGovernmentQuery, useProposalQuery } from '@/apollo/gqls';
+import { getProposalData } from '@/apollo/gqls';
 import { convertNumber, convertTime } from '@/util/common';
 import { StorageActions } from '@/redux/actions';
+import { getProposalByProposalId, getProposalParams, getProposals, getProposalTally } from '@/util/firma';
+import { ProposalInfo } from '@firmachain/firma-js';
+import { PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
 
 export interface IGovernanceState {
     list: Array<IProposalItemState>;
@@ -26,7 +29,7 @@ export interface IProposalState {
 }
 
 export interface IProposalTitleState {
-    proposalId: number;
+    proposalId: string;
     title: string;
     status: string;
 }
@@ -40,49 +43,76 @@ export interface IProposalDescriptionState {
     votingStartTime: string;
     votingEndTime: string;
     depositPeriod: string;
-    minDeposit: number;
-    proposalDeposit: Array<any>;
+    minDeposit: string;
+    proposalDeposit: string;
+}
+
+export interface IProposalTallyState {
+    yes: string;
+    abstain: string;
+    no: string;
+    no_with_veto: string;
 }
 
 export interface IProposalVoteState {
     votingStartTime: string;
     votingEndTime: string;
     quorum: number;
-    currentTurnout: number;
-    stakingPool: Array<any>;
-    totalVotingPower: number;
-    proposalTally: Array<any>;
+    currentTurnout: number | null;
+    totalVotingPower: number | null;
+    proposalTally: IProposalTallyState;
     voters: Array<any>;
 }
 
 export const useGovernanceList = () => {
-    const { common, storage } = useAppSelector((state) => state);
+    const { storage } = useAppSelector((state) => state);
     const [governanceState, setGovernanceList] = useState<IGovernanceState>({
         list: []
     });
 
-    const { refetch, loading, data } = useGovernmentQuery();
+    const handleProposalList = useCallback(async () => {
+        try {
+            let proposals = await getProposals();
+            StorageActions.handleContentVolume({
+                ...storage.contentVolume,
+                proposals: proposals.length
+            });
+            if (proposals.length > 0) {
+                const list = proposals.map((proposal: ProposalInfo) => {
+                    let proposalId = proposal.proposal_id;
+                    let proposalType = PROPOSAL_MESSAGE_TYPE[proposal.content['@type']];
+                    let status = proposal.status;
+                    let title = proposal.content.title;
+                    let description = proposal.content.description;
+                    let depositEndTime = proposal.deposit_end_time;
+                    let votingStartTime = proposal.voting_start_time;
+                    let votingEndTime = proposal.voting_end_time;
 
-    useEffect(() => {
-        if (loading === false) {
-            if (data !== undefined) {
-                StorageActions.handleContentVolume({
-                    ...storage.contentVolume,
-                    proposals: data.proposals.length
+                    return {
+                        proposalId,
+                        proposalType,
+                        status,
+                        title,
+                        description,
+                        depositEndTime,
+                        votingStartTime,
+                        votingEndTime
+                    };
                 });
-                const list = data.proposals.map((proposal: any) => {
-                    return proposal;
-                });
+
+                const sortList = list.sort((a: IProposalItemState, b: IProposalItemState) => Number(b.proposalId) - Number(a.proposalId));
                 setGovernanceList((prevState) => ({
                     ...prevState,
-                    list
+                    list: sortList
                 }));
             }
+        } catch (error) {
+            throw error;
         }
-    }, [loading, data]);
+    }, []);
 
     const handleGovernanceListPolling = async () => {
-        return await refetch();
+        await handleProposalList();
     };
 
     useEffect(() => {
@@ -95,106 +125,141 @@ export const useGovernanceList = () => {
     };
 };
 
-export const useProposalData = (id: number) => {
+export const useProposalData = () => {
     const [proposalState, setProposalState] = useState<IProposalState | null>(null);
 
-    const { refetch, loading, data } = useProposalQuery({ proposalId: id.toString() });
+    const handleProposal = useCallback(async (id: number) => {
+        try {
+            const _id = String(id);
+            const [proposal, param, proposalTally] = await Promise.all([
+                getProposalByProposalId(_id),
+                getProposalParams(),
+                getProposalTally(_id)
+            ]);
 
-    useEffect(() => {
-        if (loading === false) {
-            if (data !== undefined) {
-                if (data.proposal.length > 0) {
-                    const classifiedData = () => {
-                        if (data.proposal[0].content.changes) {
-                            return {
-                                changes: data.proposal[0].content.changes
-                            };
-                        }
+            let bondedTokens: number | null = null;
+            let votingList: Array<any> = [];
+            try {
+                const proposalData = await getProposalData({ proposalId: _id });
+                if (proposalData.data.proposal[0] !== undefined) {
+                    if (proposalData.data.proposal[0].staking_pool_snapshot !== (undefined || null)) {
+                        let _bondedTokens = proposalData.data.proposal[0].staking_pool_snapshot.bonded_tokens;
+                        bondedTokens = _bondedTokens;
+                    }
 
-                        if (data.proposal[0].content.plan) {
-                            return {
-                                height: data.proposal[0].content.plan.height,
-                                version: data.proposal[0].content.plan.name,
-                                info: data.proposal[0].content.info
-                            };
-                        }
-
-                        if (data.proposal[0].content.recipient) {
-                            return {
-                                recipient: data.proposal[0].content.recipient,
-                                amount: data.proposal[0].content.amount[0].amount
-                            };
-                        }
-                    };
-
-                    const calculateCurrentTurnout = () => {
-                        const totalVotingPower = convertNumber(
-                            data.proposal[0].staking_pool_snapshot ? data.proposal[0].staking_pool_snapshot.bonded_tokens : 0
-                        );
-                        const votes = data.proposalTallyResult[0];
-
-                        if (votes === undefined) return 0;
-
-                        const totalVote = convertNumber(votes.yes) + convertNumber(votes.no) + convertNumber(votes.noWithVeto);
-
-                        return totalVote / totalVotingPower;
-                    };
-
-                    const convertDepositPeriod = (period: number, submitTime: string) => {
-                        const periodToDay = period / 1000000000;
-                        const date = new Date(submitTime);
-                        date.setSeconds(date.getSeconds() + periodToDay);
-
-                        return convertTime(date.toString(), true);
-                    };
-
-                    const titleState: IProposalTitleState = {
-                        proposalId: data.proposal[0].proposalId,
-                        title: data.proposal[0].title,
-                        status: data.proposal[0].status
-                    };
-
-                    const descState: IProposalDescriptionState = {
-                        status: data.proposal[0].status,
-                        proposalType: data.proposal[0].content['@type'],
-                        submitTime: data.proposal[0].submitTime,
-                        description: data.proposal[0].description,
-                        classified: classifiedData(),
-                        votingStartTime: data.proposal[0].votingStartTime,
-                        votingEndTime: data.proposal[0].votingEndTime,
-                        depositPeriod: convertDepositPeriod(
-                            data.govParams[0].depositParams.max_deposit_period,
-                            data.proposal[0].submitTime
-                        ),
-                        minDeposit: data.govParams[0].depositParams.min_deposit[0].amount,
-                        proposalDeposit: data.proposal[0].proposalDeposits[0].amount
-                    };
-
-                    const voteState: IProposalVoteState = {
-                        votingStartTime: data.proposal[0].votingStartTime,
-                        votingEndTime: data.proposal[0].votingEndTime,
-                        quorum: convertNumber(data.govParams[0].tallyParams.quorum),
-                        currentTurnout: calculateCurrentTurnout(),
-                        stakingPool: data.stakingPool[0],
-                        totalVotingPower: convertNumber(
-                            data.proposal[0].staking_pool_snapshot ? data.proposal[0].staking_pool_snapshot.bonded_tokens : 0
-                        ),
-                        proposalTally: data.proposalTallyResult[0],
-                        voters: data.proposalVote
-                    };
-
-                    setProposalState({
-                        titleState,
-                        descState,
-                        voteState
-                    });
+                    if (proposalData.data.proposalVote !== undefined) {
+                        let _votingList = proposalData.data.proposalVote;
+                        votingList = _votingList;
+                    }
                 }
+            } catch (error) {
+                console.log(error);
             }
-        }
-    }, [loading, data]);
 
-    const handleProposalPolling = async () => {
-        return await refetch();
+            let proposalId = proposal.proposal_id;
+            let title = proposal.content.title;
+            let status = proposal.status;
+            let proposalType = PROPOSAL_MESSAGE_TYPE[proposal.content['@type']];
+            let submitTime = proposal.submit_time;
+            let description = proposal.content.description;
+            let classified = classifiedData(proposal.content);
+            let votingStartTime = proposal.voting_start_time;
+            let votingEndTime = proposal.voting_end_time;
+            let quorum = param.tally_params.quorum;
+            let maxDepositPeriod = param.deposit_params.max_deposit_period;
+            let depositPeriod = convertDepositPeriod(maxDepositPeriod, submitTime);
+            let minDeposit = param.deposit_params.min_deposit[0].amount;
+            let proposalDeposit = proposal.total_deposit[0].amount;
+            let tallyResult = proposalTally;
+            let currentTurnout = calculateCurrentTurnout(bondedTokens, tallyResult);
+
+            const titleState: IProposalTitleState = {
+                proposalId: proposalId,
+                title: title,
+                status: status
+            };
+
+            const descState: IProposalDescriptionState = {
+                status: status,
+                proposalType: proposalType,
+                submitTime: submitTime,
+                description: description,
+                classified: classified,
+                votingStartTime: votingStartTime,
+                votingEndTime: votingEndTime,
+                depositPeriod: depositPeriod,
+                minDeposit: minDeposit,
+                proposalDeposit: proposalDeposit
+            };
+
+            const voteState: IProposalVoteState = {
+                votingStartTime: votingStartTime,
+                votingEndTime: votingEndTime,
+                quorum: convertNumber(quorum),
+                currentTurnout: currentTurnout,
+                totalVotingPower: bondedTokens,
+                proposalTally: tallyResult,
+                voters: votingList
+            };
+
+            setProposalState({
+                titleState,
+                descState,
+                voteState
+            });
+        } catch (error) {
+            throw error;
+        }
+    }, []);
+
+    const convertDepositPeriod = (period: string, submitTime: string) => {
+        const periodToDay = convertNumber(period.split('s')[0]);
+        const date = new Date(submitTime);
+        date.setSeconds(date.getSeconds() + periodToDay);
+
+        return convertTime(date.toString(), true);
+    };
+
+    const classifiedData = (content: any) => {
+        if (content.changes !== undefined) {
+            return {
+                changes: content.changes
+            };
+        }
+
+        if (content.plan !== undefined) {
+            return {
+                height: content.plan.height,
+                version: content.plan.name,
+                info: content.info
+            };
+        }
+
+        if (content.recipient !== undefined) {
+            return {
+                recipient: content.recipient,
+                amount: content.amount[0].amount
+            };
+        }
+    };
+
+    const calculateCurrentTurnout = (bondedTokens: number | null, tallyResult: IProposalTallyState) => {
+        if (bondedTokens === null) return null;
+        const totalVotingPower = convertNumber(bondedTokens);
+        const votes = tallyResult;
+
+        if (votes === undefined) return 0;
+        const totalVote = convertNumber(votes.yes) + convertNumber(votes.no) + convertNumber(votes.no_with_veto);
+
+        return totalVote / totalVotingPower;
+    };
+
+    const handleProposalPolling = async (id: number) => {
+        try {
+            await handleProposal(id);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return {
