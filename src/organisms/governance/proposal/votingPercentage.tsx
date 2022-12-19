@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import {
     AbstainColor,
@@ -18,6 +18,7 @@ import { ScreenWidth } from '@/util/getScreenSize';
 import { useAppSelector } from '@/redux/hooks';
 import { ICON_VOTE_CHECK } from '@/constants/images';
 import { FirmaUtil } from '@firmachain/firma-js';
+import { IProposalTallyState } from '@/hooks/governance/hooks';
 
 interface IProps {
     data: any;
@@ -27,12 +28,13 @@ const VotingPercentage = ({ data }: IProps) => {
     const { wallet } = useAppSelector((state) => state);
 
     const tally = useMemo(() => {
-        if (data.proposalTally)
+        let tallyResult: IProposalTallyState = data.proposalTally;
+        if (tallyResult !== undefined)
             return [
-                { title: 'YES', vote: data.proposalTally.yes, option: 'VOTE_OPTION_YES' },
-                { title: 'NO', vote: data.proposalTally.no, option: 'VOTE_OPTION_NO' },
-                { title: 'NoWithVeto', vote: data.proposalTally.noWithVeto, option: 'VOTE_OPTION_NO_WITH_VETO' },
-                { title: 'Abstain', vote: data.proposalTally.abstain, option: 'VOTE_OPTION_ABSTAIN' }
+                { title: 'YES', vote: convertNumber(tallyResult.yes), option: 'VOTE_OPTION_YES' },
+                { title: 'NO', vote: convertNumber(tallyResult.no), option: 'VOTE_OPTION_NO' },
+                { title: 'NoWithVeto', vote: convertNumber(tallyResult.no_with_veto), option: 'VOTE_OPTION_NO_WITH_VETO' },
+                { title: 'Abstain', vote: convertNumber(tallyResult.abstain), option: 'VOTE_OPTION_ABSTAIN' }
             ];
 
         return [
@@ -96,8 +98,8 @@ const VotingPercentage = ({ data }: IProps) => {
         }
     };
 
-    return (
-        <View style={styles.wrapper}>
+    const RenderTally = useCallback(() => {
+        return (
             <View style={styles.background}>
                 {tally.map((item, index) => {
                     if (item.title !== 'Abstain') {
@@ -121,13 +123,18 @@ const VotingPercentage = ({ data }: IProps) => {
                     }
                 })}
             </View>
+        );
+    }, [tally]);
+
+    return (
+        <View style={styles.wrapper}>
+            <RenderTally />
             <View style={styles.quorumWrapper}>
                 <View style={[styles.quorumLine, { left: convertNumber(data.quorum) + '%' }]} />
                 <View style={[styles.quorum, { left: convertNumber(data.quorum) + '%', marginLeft: -9 }]}>
                     <UpArrow size={20} color={WhiteColor} />
                 </View>
             </View>
-
             <View style={[styles.box]}>
                 {tally.map((item, index) => {
                     const odd = (index + 1) % 2;

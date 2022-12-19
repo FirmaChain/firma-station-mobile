@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { VERSION } from '@/../config';
 import { setClient } from '@/apollo';
-import { setExplorerUrl } from '@/constants/common';
+import { setNetworkData } from '@/constants/common';
 import { BgColor, Lato, TextGrayColor } from '@/constants/theme';
 import { useChainVersion } from '@/hooks/common/hooks';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
@@ -10,7 +11,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { setFirmaSDK } from '@/util/firma';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { setApiAddress } from '@/api';
 import CustomModal from '@/components/modal/customModal';
 import ModalItems from '@/components/modal/modalItems';
 import Container from '@/components/parts/containers/conatainer';
@@ -22,7 +23,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Version>
 const Version = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { chainVer, sdkVer, refetch } = useChainVersion();
+    const { chainVer, sdkVer, handleChainInfo } = useChainVersion();
     const { storage, common } = useAppSelector((state) => state);
 
     // const networkList = ["MainNet", "TestNet"];
@@ -53,14 +54,15 @@ const Version = () => {
         CommonActions.handleIsNetworkChange(true);
         CommonActions.handleLoadingProgress(true);
         setFirmaSDK(networkList[index]);
+        setApiAddress(networkList[index]);
         setClient(networkList[index]);
-        setExplorerUrl(networkList[index]);
+        setNetworkData(networkList[index]);
         ModalActions.handleDAppData(null);
         ModalActions.handleModalData(null);
         StorageActions.handleNetwork(networkList[index]);
         setSelectedNetworkIndex(index);
         setOpenNetworkSelectModal(false);
-        refetch();
+        handleChainInfo();
     };
 
     const handleBack = () => {

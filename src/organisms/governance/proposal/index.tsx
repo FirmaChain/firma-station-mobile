@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions } from '@/redux/actions';
@@ -6,7 +6,7 @@ import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useProposalData } from '@/hooks/governance/hooks';
-import { EXPLORER_URL, PROPOSAL_STATUS_VOTING_PERIOD, TRANSACTION_TYPE } from '@/constants/common';
+import { DATA_RELOAD_INTERVAL, EXPLORER_URL, PROPOSAL_STATUS_VOTING_PERIOD, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
@@ -16,6 +16,7 @@ import DescriptionSection from './descriptionSection';
 import TitleSection from './titleSection';
 import VotingSection from './votingSection';
 import Voting from './voting';
+import { useInterval } from '@/hooks/common/hooks';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Proposal>;
 
@@ -28,7 +29,7 @@ const Proposal = ({ proposalId }: IProps) => {
     const isFocused = useIsFocused();
 
     const { wallet, common } = useAppSelector((state) => state);
-    const { proposalState, handleProposalPolling } = useProposalData(proposalId);
+    const { proposalState, handleProposalPolling } = useProposalData();
 
     const proposalStates = useMemo(() => {
         return proposalState;
@@ -68,7 +69,7 @@ const Proposal = ({ proposalId }: IProps) => {
 
     const refreshStates = async () => {
         try {
-            await handleProposalPolling();
+            await handleProposalPolling(proposalId);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
@@ -76,44 +77,35 @@ const Proposal = ({ proposalId }: IProps) => {
         }
     };
 
-    useEffect(() => {
-        if (isFocused && common.dataLoadStatus > 0) {
-            let count = 0;
-            let intervalId = setInterval(() => {
-                if (common.dataLoadStatus > 0 && common.dataLoadStatus < 2) {
-                    count = count + 1;
-                } else {
-                    clearInterval(intervalId);
-                }
-                if (count >= 6) {
-                    count = 0;
-                    refreshStates();
-                }
-            }, 1000);
+    useInterval(
+        () => {
+            refreshStates();
+        },
+        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        true
+    );
 
-            return () => clearInterval(intervalId);
+    useEffect(() => {
+        if (isFocused) {
+            refreshStates();
         }
-    }, [common.dataLoadStatus]);
-
-    useEffect(() => {
-        refreshStates();
     }, [isFocused]);
 
     return (
         <Container title="Proposal" handleGuide={handleMoveToWeb} backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <>
+                <Fragment>
                     <RefreshScrollView refreshFunc={refreshStates}>
-                        <>
+                        <Fragment>
                             {proposalStates && <TitleSection data={proposalStates.titleState} />}
                             {proposalStates && (
                                 <DescriptionSection data={proposalStates.descState} handleMoveToExplorer={handleMoveToExplorer} />
                             )}
                             {proposalStates && <VotingSection data={proposalStates.voteState} isVotingPeriod={isVotingPeriod} />}
-                        </>
+                        </Fragment>
                     </RefreshScrollView>
                     {proposalStates && <Voting isVotingPeriod={isVotingPeriod} proposalId={proposalId} transactionHandler={handleVoting} />}
-                </>
+                </Fragment>
             </ViewContainer>
         </Container>
     );

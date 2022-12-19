@@ -10,6 +10,8 @@ import { BgColor } from '@/constants/theme';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
 import ProposalList from './proposalList';
 import { wait } from '@/util/common';
+import { useInterval } from '@/hooks/common/hooks';
+import { DATA_RELOAD_INTERVAL } from '@/constants/common';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governance>;
 
@@ -51,24 +53,13 @@ const Governance = () => {
         }
     }, [proposalVolumes, governanceState]);
 
-    useEffect(() => {
-        if (common.dataLoadStatus > 0) {
-            let count = 0;
-            let intervalId = setInterval(() => {
-                if (common.dataLoadStatus > 0 && common.dataLoadStatus < 2) {
-                    count = count + 1;
-                } else {
-                    clearInterval(intervalId);
-                }
-                if (count >= 6) {
-                    count = 0;
-                    refreshStates();
-                }
-            }, 1000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, [common.dataLoadStatus]);
+    useInterval(
+        () => {
+            refreshStates();
+        },
+        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        true
+    );
 
     useEffect(() => {
         if (isFocused && common.isNetworkChanged === false) {

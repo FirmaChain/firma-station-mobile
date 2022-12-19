@@ -8,7 +8,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { useDelegationData } from '@/hooks/staking/hooks';
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from '@/util/firma';
 import { convertNumber } from '@/util/common';
-import { TRANSACTION_TYPE } from '@/constants/common';
+import { DATA_RELOAD_INTERVAL, TRANSACTION_TYPE } from '@/constants/common';
 import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -16,6 +16,7 @@ import Button from '@/components/button/button';
 import AlertModal from '@/components/modal/alertModal';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import InputBox from './inputBox';
+import { useInterval } from '@/hooks/common/hooks';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
@@ -125,14 +126,10 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     };
 
     const refreshStates = async () => {
-        if (isFocused) {
-            CommonActions.handleLoadingProgress(true);
-        }
         try {
             await handleDelegationState();
             setResetRedelegateValues(false);
             setInputResetValues(false);
-            CommonActions.handleLoadingProgress(false);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
@@ -154,24 +151,13 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         setIsSignModalOpen(status > 0);
     }, [status]);
 
-    useEffect(() => {
-        if (isFocused && common.dataLoadStatus > 0) {
-            let count = 0;
-            let intervalId = setInterval(() => {
-                if (common.dataLoadStatus > 0 && common.dataLoadStatus < 2) {
-                    count = count + 1;
-                } else {
-                    clearInterval(intervalId);
-                }
-                if (count >= 6) {
-                    count = 0;
-                    refreshStates();
-                }
-            }, 1000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, [common.dataLoadStatus]);
+    useInterval(
+        () => {
+            refreshStates();
+        },
+        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        true
+    );
 
     useEffect(() => {
         if (isFocused) {

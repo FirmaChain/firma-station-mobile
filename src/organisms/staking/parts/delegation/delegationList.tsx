@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { CommonActions, StakingActions } from '@/redux/actions';
+import { StakingActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { IRedelegationInfo, IStakeInfo, IUndelegationInfo, useDelegationData } from '@/hooks/staking/hooks';
 import { convertToFctNumber, wait } from '@/util/common';
@@ -16,7 +16,6 @@ import NoticeItem from './noticeItem';
 
 interface IProps {
     visible: boolean;
-    isRefresh: boolean;
     delegationState: Array<IStakeInfo>;
     redelegationState: Array<IRedelegationInfo>;
     undelegationState: Array<IUndelegationInfo>;
@@ -24,8 +23,6 @@ interface IProps {
 }
 
 const DelegationList = ({ visible, delegationState, redelegationState, undelegationState, navigateValidator }: IProps) => {
-    const { common } = useAppSelector((state) => state);
-
     const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
@@ -65,28 +62,6 @@ const DelegationList = ({ visible, delegationState, redelegationState, undelegat
         handleOpenModal(false);
     };
 
-    // const refreshStakings = useCallback(async () => {
-    //     if (visible === false) return;
-    //     try {
-    //         switch (selected) {
-    //             case 1:
-    //                 await handleRedelegationState();
-    //             case 2:
-    //                 await handleUndelegationState();
-    //             default:
-    //                 break;
-    //         }
-    //         CommonActions.handleLoadingProgress(false);
-    //         handleIsRefresh(false);
-    //         wait(800).then(() => {
-    //             handleDelegationLoading(false);
-    //         });
-    //     } catch (error) {
-    //         CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
-    //         console.log(error);
-    //     }
-    // }, [selected, visible]);
-
     const listLength = useMemo(() => {
         switch (selected) {
             case 0:
@@ -112,10 +87,6 @@ const DelegationList = ({ visible, delegationState, redelegationState, undelegat
             }
         }
     };
-
-    // useEffect(() => {
-    //     refreshStakings();
-    // }, [selected, isRefresh]);
 
     const delegate = useCallback(() => {
         return (
