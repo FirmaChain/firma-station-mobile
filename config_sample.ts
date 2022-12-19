@@ -1,60 +1,69 @@
-export const FIRMACHAIN_DEFAULT_CONFIG = {
-    chainID: '',
-    rpcAddress: '',
-    restApiAddress: '',
-    ipfsNodeAddress: '',
-    ipfsNodePort: 0,
-    ipfsWebApiAddress: '',
-    hdPath: '',
-    prefix: '',
-    denom: '',
-    defaultFee: 0,
-    defaultGas: 0,
-    isShowLog: false
+import { IKeyValue } from '@/constants/common';
+
+export const VERSION = '';
+export const MAINTENANCE_API = '';
+export const VALIDATORS_PROFILE_API = '';
+export const MAINTENANCE_PATH: IKeyValue = {
+    MainNet: '',
+    TestNet: '',
+    DevNet: ''
 };
 
-export const BLOCKS_PER_YEAR = 0;
-
-export const CHAIN_NETWORK = {
+export const CHAIN_NETWORK: IKeyValue = {
     MainNet: {
         FIRMACHAIN_CONFIG: '',
+        AVERAGE_BLOCK_TIME: 0,
         EXPLORER: '',
         GRAPHQL: '',
         RELAY_HOST: '',
         RESTAKE_API: '',
         RESTAKE_REWARD_API: '',
         RESTAKE_ADDRESS: '',
-        RESTAKE_URL: ''
+        RESTAKE_URL: '',
+        CHAIN_SYMBOL: '',
+        BLOCKS_PER_YEAR: 0,
+        DEFAULT_MINT_INFLATION: 0
     },
     TestNet: {
         FIRMACHAIN_CONFIG: '',
+        AVERAGE_BLOCK_TIME: 0,
         EXPLORER: '',
         GRAPHQL: '',
         RELAY_HOST: '',
         RESTAKE_API: '',
         RESTAKE_REWARD_API: '',
         RESTAKE_ADDRESS: '',
-        RESTAKE_URL: ''
+        RESTAKE_URL: '',
+        CHAIN_SYMBOL: '',
+        BLOCKS_PER_YEAR: 0,
+        DEFAULT_MINT_INFLATION: 0
     },
     DevNet: {
         FIRMACHAIN_CONFIG: '',
+        AVERAGE_BLOCK_TIME: 0,
         EXPLORER: '',
         GRAPHQL: '',
         RELAY_HOST: '',
         RESTAKE_API: '',
         RESTAKE_REWARD_API: '',
         RESTAKE_ADDRESS: '',
-        RESTAKE_URL: ''
+        RESTAKE_URL: '',
+        CHAIN_SYMBOL: '',
+        BLOCKS_PER_YEAR: 0,
+        DEFAULT_MINT_INFLATION: 0
     }
 };
+
 export const COINGECKO = '';
 
 export const WALLET_LIST = '';
 export const USE_BIO_AUTH = '';
 export const USE_APP_LOCK = '';
 export const CONNECT_SESSION = '';
+export const CONNECT_ID_LIST = '';
+export const DAPPS_SERVICE_IDENTITY = '';
 
-export const GUIDE_URI = {
+export const GUIDE_URI: IKeyValue = {
     newWallet: '',
     selectWallet: '',
     recoverWallet: '',
@@ -73,14 +82,19 @@ export const GUIDE_URI = {
     delegate: '',
     redelegate: '',
     undelegate: '',
+    restake: '',
 
     governance: '',
 
     useBioAuth: '',
     deleteWallet: '',
     withdraw: '',
-    withdrawAll: ''
+    withdrawAll: '',
+
+    dapps: ''
 };
+
+export const NOTARY_URI = '';
 
 export const RELEASE_STORE_PASSWORD = '';
 export const RELEASE_KEY_PASSWORD = '';
