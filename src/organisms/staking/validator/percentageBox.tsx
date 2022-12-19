@@ -1,138 +1,193 @@
-import React, { useMemo } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { useSelfDelegationData, IValidatorData } from "@/hooks/staking/hooks";
-import { useAppSelector } from "@/redux/hooks";
-import { convertAmount } from "@/util/common";
-import { BoxColor, DividerColor, Lato, PointLightColor, TextColor, TextDarkGrayColor, TextGrayColor } from "@/constants/theme";
+import React, { useCallback, useMemo } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { IValidatorData } from '@/hooks/staking/hooks';
+import { useAppSelector } from '@/redux/hooks';
+import { convertAmount } from '@/util/common';
+import {
+    BoxColor,
+    DividerColor,
+    Lato,
+    PointLightColor,
+    TextColor,
+    TextDarkGrayColor,
+    TextDisableColor,
+    TextGrayColor
+} from '@/constants/theme';
+import { CHAIN_SYMBOL } from '@/constants/common';
 
 interface IProps {
-    data: IValidatorData;
+    data: IValidatorData | undefined;
 }
 
 const cols = 2;
 const marginHorizontal = 0;
 const marginVertical = 4;
-const width = (Dimensions.get('window').width / cols) - (marginHorizontal * (cols + 1));
+const width = Dimensions.get('window').width / cols - marginHorizontal * (cols + 1);
 
-const PercentageBox = ({data}:IProps) => {
+const PercentageBox = ({ data }: IProps) => {
+    const { storage } = useAppSelector((state) => state);
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
-    const {storage} = useAppSelector(state => state);
+    const DataExist = useMemo(() => {
+        return data !== undefined;
+    }, [data]);
 
-    // chain upgrade response
-    const {selfDelegation} = useSelfDelegationData(data.address.operatorAddress, data.address.accountAddress);
-
-    const percentageData = useMemo(() => {
-        if(storage.network === "TestNet" && selfDelegation){
+    const PercentageData = useMemo(() => {
+        if (data === undefined)
             return [
-                {row: [{
-                    title: "Voting Power",
-                    data: data.votingPower?.data,
-                    amount: data.votingPower?.amount,
-                },{
-                    title: "Self-Delegation",
-                    data: selfDelegation?.data,
-                    amount: selfDelegation?.amount,
-                }]},
-                {row: [{
-                    title: "Commission",
-                    data: data.commission?.data,
-                },{
-                    title: "Uptime",
-                    data: data.uptime?.data,
-                }]}
-            ]
-        }
+                {
+                    row: [
+                        {
+                            title: 'Voting Power',
+                            data: 0,
+                            amount: 0
+                        },
+                        {
+                            title: 'Self-Delegation',
+                            data: 0,
+                            amount: 0
+                        }
+                    ]
+                },
+                {
+                    row: [
+                        {
+                            title: 'Commission',
+                            data: 0
+                        },
+                        {
+                            title: 'Uptime',
+                            data: 0
+                        }
+                    ]
+                }
+            ];
         return data.state;
-    }, [storage.network, selfDelegation])
+    }, [storage.network, data]);
+
+    const APR = useMemo(() => {
+        if (data === undefined) return 0;
+        return data.APR;
+    }, [data]);
+
+    const APY = useMemo(() => {
+        if (data === undefined) return 0;
+        return data.APY;
+    }, [data]);
+
+    const handlePercentage = useCallback(
+        (data: string | number) => {
+            if (data === '-') return '-';
+            return `${data}%`;
+        },
+        [PercentageData]
+    );
+
+    const handleAmount = useCallback(
+        (amount: string | number) => {
+            return `${convertAmount(amount, false)} ${_CHAIN_SYMBOL}`;
+        },
+        [PercentageData]
+    );
 
     return (
         <View style={[styles.container]}>
-            <View style={[styles.box, {paddingHorizontal: 20, paddingVertical: 18, marginBottom: 16}]}>
-                <View style={[styles.wrapperH, {flex: 1, justifyContent: "space-around"}]}>
+            <View style={[styles.box, { paddingHorizontal: 20, paddingVertical: 18, marginBottom: 16 }]}>
+                <View style={[styles.wrapperH, { flex: 1, justifyContent: 'space-around' }]}>
                     <Text style={styles.title}>APR</Text>
-                    <Text style={styles.data}>{data.APR} %</Text>
+                    <Text style={[styles.data, { color: DataExist ? TextColor : TextDisableColor }]}>{APR} %</Text>
                 </View>
                 <View style={styles.divider} />
-                <View style={[styles.wrapperH, {flex: 1, justifyContent: "space-around"}]}>
+                <View style={[styles.wrapperH, { flex: 1, justifyContent: 'space-around' }]}>
                     <Text style={styles.title}>APY</Text>
-                    <Text style={styles.data}>{data.APY} %</Text>
+                    <Text style={[styles.data, { color: DataExist ? TextColor : TextDisableColor }]}>{APY} %</Text>
                 </View>
             </View>
 
-            <View style={[styles.box, {paddingVertical: 24}]}>
+            <View style={[styles.box, { paddingVertical: 24 }]}>
                 <View style={styles.wrapBox}>
-                    
-                    {/* // chain upgrade response */}
-                    {percentageData && percentageData.map((grid, index) => {
+                    {PercentageData.map((grid, index) => {
                         return (
-                        // chain upgrade response
-                        <View key={index} style={[styles.wrapperH, index < percentageData.length - 1 && {paddingBottom: 34}]}>
-                            {grid.row.map((item:any, index:number) => {
-                                return (
-                                <View key={index} style={[styles.wrapperH, {flex: 1, alignItems: "center"}]}>
-                                    <View style={[styles.wrapperV, {alignItems:"center", flex: 1}]}>
-                                        <Text style={[styles.title, {fontSize: 14, paddingBottom: 10, color: TextDarkGrayColor}]}>{item.title}</Text>
-                                        <Text style={[styles.data, {fontSize: 22, paddingBottom: 6}]}>{item.data}%</Text>
-                                        {item.amount === undefined? null:<Text style={styles.desc}>{convertAmount(item.amount, false)} FCT</Text>}
-                                    </View>
-                                    {(index < grid.row.length - 1) && <View style={[styles.divider, {height: 54}]}/>}
-                                </View>
-                                )
-                            })}
-                        </View>
-                        )
+                            <View key={index} style={[styles.wrapperH, index < PercentageData.length - 1 && { paddingBottom: 34 }]}>
+                                {grid.row.map((item: any, index: number) => {
+                                    return (
+                                        <View key={index} style={[styles.wrapperH, { flex: 1, alignItems: 'center' }]}>
+                                            <View style={[styles.wrapperV, { alignItems: 'center', flex: 1 }]}>
+                                                <Text style={[styles.title, { fontSize: 14, paddingBottom: 10, color: TextDarkGrayColor }]}>
+                                                    {item.title}
+                                                </Text>
+                                                <Text
+                                                    style={[
+                                                        styles.data,
+                                                        { fontSize: 22, paddingBottom: 6, color: DataExist ? TextColor : TextDisableColor }
+                                                    ]}
+                                                >
+                                                    {handlePercentage(item.data)}
+                                                </Text>
+                                                {item.amount === undefined ? null : (
+                                                    <Text style={[styles.desc, { color: DataExist ? TextGrayColor : TextDisableColor }]}>
+                                                        {handleAmount(item.amount)}
+                                                    </Text>
+                                                )}
+                                            </View>
+                                            {index < grid.row.length - 1 && <View style={[styles.divider, { height: 54 }]} />}
+                                        </View>
+                                    );
+                                })}
+                            </View>
+                        );
                     })}
                 </View>
             </View>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-        marginBottom: 16,
+        marginBottom: 16
     },
     box: {
-        flexDirection: "row",
+        flexDirection: 'row',
         backgroundColor: BoxColor,
-        borderRadius: 8,
+        borderRadius: 8
     },
     wrapBox: {
         flex: 1,
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        alignItems: "center",
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     wrapperH: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     wrapperV: {
-        alignItems: "flex-start",
+        alignItems: 'flex-start'
     },
     divider: {
         width: 1,
-        backgroundColor: DividerColor,
+        backgroundColor: DividerColor
     },
     title: {
         fontFamily: Lato,
-        fontWeight: "600",
+        fontWeight: '600',
         fontSize: 16,
-        color: PointLightColor,
+        color: PointLightColor
     },
     data: {
         fontFamily: Lato,
-        fontWeight: "600",
+        fontWeight: '600',
         fontSize: 18,
-        color: TextColor,
+        color: TextColor
     },
     desc: {
         fontFamily: Lato,
-        fontWeight: "normal",
+        fontWeight: 'normal',
         fontSize: 13,
-        color: TextGrayColor,
+        color: TextGrayColor
     },
     borderBox: {
         width: width,
@@ -140,8 +195,8 @@ const styles = StyleSheet.create({
         marginBottom: marginVertical,
         marginLeft: marginHorizontal,
         marginRight: marginHorizontal,
-        alignItems: "center",
-    },
-})
+        alignItems: 'center'
+    }
+});
 
 export default PercentageBox;

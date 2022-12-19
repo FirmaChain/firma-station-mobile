@@ -6,7 +6,7 @@ import { IStakingState } from '@/hooks/staking/hooks';
 import { FirmaUtil } from '@firmachain/firma-js';
 import { convertAmount, convertCurrent, convertNumber, convertToFctNumber, makeDecimalPoint, resizeFontSize } from '@/util/common';
 import { FIRMA_LOGO } from '@/constants/images';
-import { CHAIN_CURRENCY, CURRENCY_LIST, CURRENCY_SYMBOL } from '@/constants/common';
+import { CHAIN_CURRENCY, CHAIN_SYMBOL, CURRENCY_LIST, CURRENCY_SYMBOL } from '@/constants/common';
 import { BgColor, BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { DownArrow, ForwardArrow } from '@/components/icon/icon';
 import SmallButton from '@/components/button/smallButton';
@@ -22,6 +22,7 @@ interface IProps {
 
 const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IProps) => {
     const { storage, staking } = useAppSelector((state) => state);
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [currencyIndex, setCurrencyIndex] = useState(0);
     const [openCurrencySelectModal, setOpenCurrencySelectModal] = useState(false);
@@ -147,7 +148,7 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
                         <Image style={styles.logo} source={FIRMA_LOGO} />
                         <Text style={[styles.balance, { fontSize: balanceTextSize, paddingLeft: 5 }]}>
                             {convertAmount(available)}
-                            <Text style={[styles.chainName, { paddingLeft: 2 }]}> FCT</Text>
+                            <Text style={[styles.chainName, { paddingLeft: 2 }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </View>
                     <SmallButton title="Send" active={available > 0} size={90} onPressEvent={handleSend} />
@@ -176,7 +177,7 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
                     </View>
                     <View style={[styles.wrapperH, { justifyContent: 'flex-end', paddingTop: 5 }]}>
                         <Text style={[styles.balance, { fontSize: 12, fontWeight: 'normal', color: TextDarkGrayColor }]}>
-                            {'(1 FCT = $ ' + currentExchange + ')'}
+                            {`(1 ${_CHAIN_SYMBOL} = $ ${currentExchange} )`}
                         </Text>
                     </View>
                 </View>

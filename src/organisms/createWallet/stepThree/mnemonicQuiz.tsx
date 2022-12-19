@@ -85,10 +85,6 @@ const MnemonicQuiz = ({ mnemonic, handleConfirm }: IProps) => {
         compareAnswer();
     }, [selectAnswer]);
 
-    // useEffect(() => {
-    //     console.log(Platform.OS + ' answer -', answer);
-    // }, [answer]);
-
     return (
         <View style={styles.conatainer}>
             <View style={styles.quizContainer}>

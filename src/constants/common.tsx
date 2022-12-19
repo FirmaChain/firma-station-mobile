@@ -8,15 +8,45 @@ export interface IKeyValue {
 
 const LABELS: IKeyValue = TRANSACTION_LABELS;
 let EXPLORER = CHAIN_NETWORK['MainNet'].EXPLORER;
+let DENOM = CHAIN_NETWORK['MainNet'].FIRMACHAIN_CONFIG.denom;
+let _CHAIN_PREFIX = CHAIN_NETWORK['MainNet'].FIRMACHAIN_CONFIG.prefix;
+let _CHAIN_SYMBOL = CHAIN_NETWORK['MainNet'].CHAIN_SYMBOL;
+let _BLOCKS_PER_YEAR = CHAIN_NETWORK['MainNet'].BLOCKS_PER_YEAR;
+let _DEFAULT_MINT_INFLATION = CHAIN_NETWORK['MainNet'].DEFAULT_MINT_INFLATION;
 
-export const setExplorerUrl = (network: string) => {
+export const setNetworkData = (network: string) => {
     EXPLORER = CHAIN_NETWORK[network].EXPLORER;
+    _CHAIN_PREFIX = CHAIN_NETWORK[network].FIRMACHAIN_CONFIG.prefix;
+    DENOM = CHAIN_NETWORK[network].FIRMACHAIN_CONFIG.denom;
+    _CHAIN_SYMBOL = CHAIN_NETWORK[network].CHAIN_SYMBOL;
+    _BLOCKS_PER_YEAR = CHAIN_NETWORK[network].BLOCKS_PER_YEAR;
+    _DEFAULT_MINT_INFLATION = CHAIN_NETWORK[network].DEFAULT_MINT_INFLATION;
 };
 
 export const EXPLORER_URL = () => {
     return EXPLORER;
 };
 
+export const TOKEN_DENOM = () => {
+    return DENOM;
+};
+export const CHAIN_PREFIX = () => {
+    return _CHAIN_PREFIX;
+};
+
+export const CHAIN_SYMBOL = () => {
+    return _CHAIN_SYMBOL;
+};
+
+export const BLOCKS_PER_YEAR = () => {
+    return _BLOCKS_PER_YEAR;
+};
+
+export const DEFAULT_MINT_INFLATION = () => {
+    return _DEFAULT_MINT_INFLATION;
+};
+
+export const MAINTENANCE_ERROR = 'Could not verify version information.';
 export const UPDATE_NOTIFICATION = 'Update is required to the latest version.';
 
 export const APPLE_APP_STORE = 'itms-apps://apps.apple.com/tr/app/firma-station/id1611660902?l=tr';
@@ -30,6 +60,7 @@ export const JAILBREAK_ALERT =
     'Firma Station is not supported on jailbroken devices.\nPlease restore your device to a non-jailbroken state.';
 
 export const DATA_LOAD_DELAYED_NOTICE = 'Data loading is being delayed.';
+export const DATA_RELOAD_INTERVAL = 30000;
 
 export const MNEMONIC_WARN_MESSAGE = "If you lose your seed phrase it's gone forever. Station doesn't store any data.";
 export const RECOVER_INFO_MESSAGE = 'Generate QR code from setting menu of\nFirma Station desktop or extionsion';
@@ -115,8 +146,7 @@ export const REDELEGATE_NOT_EXIST = 'There are no redelegation\ncurrently in pro
 export const UNDELEGATE_NOT_EXIST = 'There are no undelegation\ncurrently in progress.';
 export const RESTAKE_NOT_EXIST = 'Restake is inactive';
 
-export const AUTO_ENTERED_AMOUNT_TEXT =
-    'The entire amount is automatically entered except 0.1FCT, which will be used as a transaction fee.';
+export const AUTO_ENTERED_AMOUNT_TEXT = `The entire amount is automatically entered except 0.${_CHAIN_SYMBOL}, which will be used as a transaction fee.`;
 export const WARNING_FOR_MAX_AMOUNT_TEST = 'If the maximum value is transmitted, the subsequent transaction cannot be guaranteed.';
 export const UNDELEGATE_NOTICE_TEXT = [
     "A 21 day period is required when undelegating your tokens. During the 21 day period, you will not receive any rewards. And you can't send and delegate that amount during 21 days.",

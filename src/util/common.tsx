@@ -83,7 +83,7 @@ export const isValid = (data: any) => {
     return true;
 };
 
-export const convertTime = (time: string, fulltime: boolean, addTime?: boolean) => {
+export const convertTime = (time: string | number, fulltime: boolean, addTime?: boolean) => {
     if (time === undefined) return '';
 
     const GMT = getGMT();

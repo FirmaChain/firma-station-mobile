@@ -15,6 +15,7 @@ import Button from '../button/button';
 import CustomModal from './customModal';
 import ValidationModal from './validationModal';
 import { useAppSelector } from '@/redux/hooks';
+import { CHAIN_SYMBOL } from '@/constants/common';
 
 interface IProps {
     title: string;
@@ -44,6 +45,7 @@ const TransactionConfirmModal = ({
         confirmTitle: 'Confirm'
     };
 
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
     const [openValidationModal, setOpenValidationModal] = useState(false);
     const [transactionStart, setTransactionStart] = useState(false);
     const [extraKey, setExtraKey] = useState([]);
@@ -115,7 +117,7 @@ const TransactionConfirmModal = ({
                                 <Text style={styles.itemTitle}>Amount</Text>
                                 <Text style={styles.itemBalance}>
                                     {convertAmount(amount, false, 6)}
-                                    <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}> FCT</Text>
+                                    <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                                 </Text>
                             </View>
                         )}
@@ -142,7 +144,7 @@ const TransactionConfirmModal = ({
                             <Text style={styles.itemTitle}>Fee</Text>
                             <Text style={[styles.itemBalance, { color: TextCatTitleColor }]}>
                                 {convertNumber(convertAmount(fee / 1000000, false, 6))}
-                                <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}> FCT</Text>
+                                <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                             </Text>
                         </View>
                     </View>

@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-import { v4 } from 'uuid';
 import { CommonActions } from '@/redux/actions';
 import { getRandomKey } from './keystore';
 

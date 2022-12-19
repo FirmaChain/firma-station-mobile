@@ -15,7 +15,7 @@ import {
     TextDisableColor,
     WhiteColor
 } from '@/constants/theme';
-import { DAPP_NOT_ENOUGHT_BALANCE, TRANSACTION_TYPE } from '@/constants/common';
+import { CHAIN_SYMBOL, DAPP_NOT_ENOUGHT_BALANCE, TRANSACTION_TYPE } from '@/constants/common';
 import { CHAIN_NETWORK } from '@/../config';
 import { URLLockIcon } from '../icon/icon';
 import { convertAmount, convertCurrent, convertNumber, convertToFctNumber, makeDecimalPoint } from '@/util/common';
@@ -30,6 +30,7 @@ const DappDirectSignModal = () => {
     const { common, wallet, storage, modal } = useAppSelector((state) => state);
 
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [openValidationModal, setOpenValidationModal] = useState(false);
     const [url, setUrl] = useState('');
@@ -42,7 +43,7 @@ const DappDirectSignModal = () => {
     const [balance, setBalance] = useState(0);
     const [tokenBalance, setTokenBalance] = useState(0);
     const [productPrice, setProductPrice] = useState(0);
-    const [productPriceSymbol, setProductPriceSymbol] = useState('FCT');
+    const [productPriceSymbol, setProductPriceSymbol] = useState(_CHAIN_SYMBOL);
 
     const [chainID, setChainId] = useState('');
     const [userSession, setUserSession] = useState(null);
@@ -52,7 +53,7 @@ const DappDirectSignModal = () => {
         setBalance(0);
         setTokenBalance(0);
         setProductPrice(0);
-        setProductPriceSymbol('FCT');
+        setProductPriceSymbol(_CHAIN_SYMBOL);
         setIsGetBalanceData(false);
         setIsGetTokenBalanceData(false);
     };
@@ -294,7 +295,7 @@ const DappDirectSignModal = () => {
                                 <Text style={styles.productTitle}>{productName}</Text>
                                 <View style={[styles.boxH, { alignItems: 'baseline' }]}>
                                     <Text style={styles.productPrice}>{productPrice}</Text>
-                                    <Text style={[styles.productTitle, { color: TextDisableColor }]}>{'FCT'}</Text>
+                                    <Text style={[styles.productTitle, { color: TextDisableColor }]}>{_CHAIN_SYMBOL}</Text>
                                 </View>
                             </View>
                         )}
@@ -308,7 +309,7 @@ const DappDirectSignModal = () => {
                             </View>
                             <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between' }]}>
                                 <Text style={styles.title}>{'My Balance'}</Text>
-                                <Text style={[styles.value, { color: AddressTextColor }]}>{`${availableBalance} FCT`}</Text>
+                                <Text style={[styles.value, { color: AddressTextColor }]}>{`${availableBalance} ${_CHAIN_SYMBOL}`}</Text>
                             </View>
                         </View>
                         <View style={{ width: '100%', height: 1, backgroundColor: WhiteColor + '10' }} />
@@ -327,7 +328,9 @@ const DappDirectSignModal = () => {
                             )}
                             <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
                                 <Text style={styles.title}>{'Fee'}</Text>
-                                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${defaultFee} FCT`}</Text>
+                                <Text
+                                    style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}
+                                >{`${defaultFee} ${_CHAIN_SYMBOL}`}</Text>
                             </View>
                             {productName === '' && (
                                 <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>

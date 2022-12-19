@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { RESTAKE_STATUS } from '@/constants/common';
+import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
 import { IStakeInfo, IStakingGrantState } from '@/hooks/staking/hooks';
 import { BorderColor, Lato, TextGrayColor } from '@/constants/theme';
 import { convertTime } from '@/util/common';
@@ -12,6 +12,8 @@ interface IProps {
 }
 
 const StatusBox = ({ grantState, delegationState, minimumRewards }: IProps) => {
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
+
     const grantExist = useMemo(() => {
         if (grantState.list.length > 0) {
             let activation = grantState.list.filter((value) => value.isActive);
@@ -37,7 +39,7 @@ const StatusBox = ({ grantState, delegationState, minimumRewards }: IProps) => {
     }, [grantExist, delegationExist]);
 
     const conditions = useMemo(() => {
-        return minimumRewards + ' FCT (per validator)';
+        return `${minimumRewards} ${_CHAIN_SYMBOL} (per validator)`;
     }, [minimumRewards]);
 
     return (

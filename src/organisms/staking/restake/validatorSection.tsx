@@ -1,18 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import {
-    BgColor,
-    BorderColor,
-    FailedColor,
-    Lato,
-    RestakeActiveColor,
-    RestakeNoDelegationColor,
-    TextColor,
-    TextDisableColor
-} from '@/constants/theme';
+import { BgColor, Lato, RestakeActiveColor, RestakeNoDelegationColor, TextColor, TextDisableColor } from '@/constants/theme';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { VALIDATOR_PROFILE } from '@/constants/images';
 import { convertAmount, convertNumber } from '@/util/common';
-import { RESTAKE_STATUS } from '@/constants/common';
+import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
 import { FirmaUtil } from '@firmachain/firma-js';
 
 interface IProps {
@@ -21,6 +12,8 @@ interface IProps {
 }
 
 const ValidatorSection = ({ data, minimumRewards }: IProps) => {
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
+
     const [avatarError, setAvatarError] = useState(false);
 
     const state = useMemo(() => {
@@ -84,7 +77,7 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
                             {convertAmount(state.reward, true, 2)}
                             <Text
                                 style={{ fontSize: 12, fontWeight: 'normal', color: RestakeNoDelegationColor }}
-                            >{` / ${minimumRewards} FCT`}</Text>
+                            >{` / ${minimumRewards} ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </React.Fragment>
                 ) : (

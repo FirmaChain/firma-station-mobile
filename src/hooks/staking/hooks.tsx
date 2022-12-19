@@ -769,7 +769,8 @@ export const useRestakeInfoData = () => {
     const nextYear = useMemo(() => {
         const date = new Date();
         date.setFullYear(date.getFullYear() + 1);
-        return convertTime(date.toString(), false);
+
+        return convertTime(date.getTime(), false);
     }, []);
 
     useEffect(() => {

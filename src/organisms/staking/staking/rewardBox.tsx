@@ -18,6 +18,7 @@ import { FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import SmallButton from '@/components/button/smallButton';
 import AlertModal from '@/components/modal/alertModal';
+import { CHAIN_SYMBOL } from '@/constants/common';
 // import AnimatedNumber from "react-native-animated-number";
 
 interface IProps {
@@ -27,6 +28,8 @@ interface IProps {
 }
 
 const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
+
     const [openModal, setOpenModal] = useState(false);
     const [rewardTextSize, setRewardTextSize] = useState(28);
 
@@ -94,7 +97,7 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-end' }}>
                     <Text style={[styles.desc, { fontSize: rewardTextSize }]}>
                         {stakingReward}
-                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}> FCT</Text>
+                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                     </Text>
                     {/* <AnimatedNumber 
                         style={[styles.desc, {fontSize: rewardTextSize, width: "auto", padding: 0}, Platform.OS === "android" && {height: rewardTextSize, textAlign: "right"}]} 

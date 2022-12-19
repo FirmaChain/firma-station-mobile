@@ -8,7 +8,6 @@ import {
     delegate,
     grant,
     mnemonicCheck,
-    privateKeyCheck,
     recoverWallet,
     redelegate,
     revoke,

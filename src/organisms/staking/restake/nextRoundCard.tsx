@@ -4,7 +4,7 @@ import { FirmaUtil } from '@firmachain/firma-js';
 import { DownArrow, ForwardArrow } from '@/components/icon/icon';
 import { IStakingGrantState } from '@/hooks/staking/hooks';
 import { convertAmount, convertNumber, convertTimerText, createOrdinal } from '@/util/common';
-import { RESTAKE_STATUS } from '@/constants/common';
+import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
 import { BoxColor, GrayColor, Lato, RestakeActiveColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
 import { CHAIN_NETWORK } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
@@ -21,6 +21,7 @@ interface IProps {
 const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, handleOpenListModal, handleRefresh }: IProps) => {
     const defaultColor = RESTAKE_STATUS['NO_DELEGATION'].color;
     const { storage } = useAppSelector((state) => state);
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [nextRoundDateTime, setNextRoundTime] = useState('00:00:00');
 
@@ -36,12 +37,6 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
                     refreshTimer = 0;
                     handleRefresh(true);
                 }
-
-                // auto refresh
-                // if (refreshTimer >= 10) {
-                //     refreshTimer = 0;
-                //     handleRefresh(false);
-                // }
             };
             handleProgress();
             timerId = setTimeout(function progress() {
@@ -72,7 +67,7 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
                 });
         }
 
-        return convertAmount(amount, true, 2) + ' FCT';
+        return `${convertAmount(amount, true, 2)} ${_CHAIN_SYMBOL}`;
     }, [grantState]);
 
     const totalCount = useMemo(() => {

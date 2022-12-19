@@ -9,7 +9,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { useDelegationData, useRestakeInfoData, useStakingData } from '@/hooks/staking/hooks';
 import { convertAmount } from '@/util/common';
 import { getEstimateGasGrantStakeAuthorization, getEstimateGasRevokeStakeAuthorization, getFeesFromGas } from '@/util/firma';
-import { RESTAKE_NOTICE_TEXT, RESTAKE_TYPE, TRANSACTION_TYPE } from '@/constants/common';
+import { CHAIN_SYMBOL, RESTAKE_NOTICE_TEXT, RESTAKE_TYPE, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor, TextCatTitleColor } from '@/constants/theme';
 import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
 import Button from '@/components/button/button';
@@ -31,6 +31,7 @@ const Restake = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const { wallet } = useAppSelector((state) => state);
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
@@ -81,7 +82,7 @@ const Restake = () => {
             const { nextRoundDateTime, round, ...other } = restakeInfo;
             json = {
                 ...other,
-                minimum_Rewards: convertAmount(restakeInfo.minimum_Rewards, false, 2) + ' FCT'
+                minimum_Rewards: `${convertAmount(restakeInfo.minimum_Rewards, false, 2)} ${_CHAIN_SYMBOL}`
             };
         }
         return json;

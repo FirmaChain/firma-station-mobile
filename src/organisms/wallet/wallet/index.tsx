@@ -14,6 +14,8 @@ import AddressBox from './addressBox';
 import BalanceBox from './balanceBox';
 import HistoryBox from './historyBox';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { useInterval } from '@/hooks/common/hooks';
+import { CHAIN_PREFIX, DATA_RELOAD_INTERVAL } from '@/constants/common';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
@@ -22,7 +24,7 @@ const Wallet = () => {
     const isFocused = useIsFocused();
     const { storage, wallet, common } = useAppSelector((state) => state);
 
-    const { recentHistory, currentHistoryPolling } = useHistoryData();
+    const { recentHistory, handleHisotyPolling } = useHistoryData();
     const { stakingState, getStakingState } = useStakingData();
 
     const [isInit, setIsInit] = useState(false);
@@ -44,17 +46,13 @@ const Wallet = () => {
         navigation.navigate(Screens.History);
     };
 
-    const handleCurrentHistoryPolling = async (polling: boolean) => {
-        await currentHistoryPolling(polling);
-    };
-
     const handleMoveToWeb = (uri: string) => {
         navigation.navigate(Screens.WebScreen, { uri: uri });
     };
 
     const getChainInfo = async () => {
         try {
-            const result = await fetch(COINGECKO);
+            const result = await fetch(`${COINGECKO}/${CHAIN_PREFIX()}`);
             const json = await result.json();
 
             LayoutAnim();
@@ -68,60 +66,29 @@ const Wallet = () => {
     const refreshStates = async () => {
         try {
             await getChainInfo();
-            refreshAtFocus();
+            await Promise.all([getStakingState(), handleHisotyPolling()]);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
+            throw error;
         }
     };
 
-    const refreshAtFocus = async () => {
-        try {
-            await getStakingState();
-            handleCurrentHistoryPolling(true);
-        } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
-            console.log(error);
-        }
-    };
-
-    useEffect(() => {
-        if (isFocused && common.dataLoadStatus > 0) {
-            let count = 0;
-            let intervalId = setInterval(() => {
-                if (common.dataLoadStatus > 0 && common.dataLoadStatus < 2) {
-                    count = count + 1;
-                } else {
-                    clearInterval(intervalId);
-                }
-                if (count >= 6) {
-                    count = 0;
-                    refreshStates();
-                }
-            }, 1000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, [common.dataLoadStatus]);
-
-    useEffect(() => {
-        if (isInit) {
-            if (recentHistory !== undefined && common.isNetworkChanged === false) {
-                refreshStates();
-            }
-        }
-    }, [recentHistory]);
+    useInterval(
+        () => {
+            refreshStates();
+        },
+        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        true
+    );
 
     useEffect(() => {
         if (isFocused) {
-            if (isInit) {
-                refreshAtFocus();
-            } else {
+            refreshStates();
+            if (isInit === false) {
                 setIsInit(true);
             }
-        } else {
-            handleCurrentHistoryPolling(false);
         }
     }, [isFocused]);
 

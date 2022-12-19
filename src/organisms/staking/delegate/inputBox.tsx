@@ -16,6 +16,7 @@ import {
 } from '@/constants/theme';
 import {
     AUTO_ENTERED_AMOUNT_TEXT,
+    CHAIN_SYMBOL,
     FEE_INSUFFICIENT_NOTICE,
     REDELEGATE_NOTICE_TEXT,
     UNDELEGATE_NOTICE_TEXT,
@@ -47,6 +48,7 @@ const InputBox = ({
     handleDelegateState
 }: IProps) => {
     const { balance, getBalance } = useBalanceData();
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [openSelectModal, setOpenSelectModal] = useState(false);
 
@@ -177,7 +179,7 @@ const InputBox = ({
             <View style={styles.conatainer}>
                 <InputSetVerticalForAmount
                     title="Amount"
-                    placeholder="0 FCT"
+                    placeholder={`0 ${_CHAIN_SYMBOL}`}
                     accent={type === 'Delegate' ? safetyActive : maxActive}
                     limitValue={type === 'Delegate' ? limitAvailable : convertNumber(selectDelegationAmount)}
                     resetValues={resetInputValues}

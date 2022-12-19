@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';

@@ -5,6 +5,7 @@ import { IStakeInfo } from '@/hooks/staking/hooks';
 import { BgColor } from '@/constants/theme';
 import DataSection from '../list/dataSection';
 import MonikerSection from '../list/monikerSection';
+import { CHAIN_SYMBOL } from '@/constants/common';
 
 interface IProps {
     data: IStakeInfo;
@@ -12,12 +13,13 @@ interface IProps {
 }
 
 const DelegateItem = ({ data, navigate }: IProps) => {
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
     return (
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
             <View style={[styles.item]}>
                 <MonikerSection validator={data} />
-                <DataSection title="Delegated" data={convertDelegateAmount(data.amount) + ' FCT'} />
-                <DataSection title="Reward" data={convertAmount(data.reward, true, 6) + ' FCT'} />
+                <DataSection title="Delegated" data={`${convertDelegateAmount(data.amount)} ${_CHAIN_SYMBOL}`} />
+                <DataSection title="Reward" data={`${convertAmount(data.reward, true, 6)} ${_CHAIN_SYMBOL}`} />
                 <View style={{ paddingBottom: 22 }} />
             </View>
         </TouchableOpacity>
