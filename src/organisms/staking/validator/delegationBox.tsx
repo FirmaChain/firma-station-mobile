@@ -1,20 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { CommonActions } from '@/redux/actions';
 import { degree, LayoutAnim, easeInAndOutCustomAnim, TurnToOpposite, TurnToOriginal } from '@/util/animation';
 import { getEstimateGasFromDelegation, getFeesFromGas } from '@/util/firma';
-import { convertAmount, resizeFontSize } from '@/util/common';
+import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
 import { ARROW_ACCORDION } from '@/constants/images';
 import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from '@/constants/theme';
 import { FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
+import { IStakingState } from '@/hooks/staking/hooks';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import SmallButton from '@/components/button/smallButton';
 import AlertModal from '@/components/modal/alertModal';
+import { CHAIN_SYMBOL } from '@/constants/common';
+import { CommonActions } from '@/redux/actions';
 
 interface IProps {
     walletName: string;
     validatorAddress: string;
-    stakingState: any;
+    stakingState: IStakingState | null;
     delegations: number;
     handleDelegate: Function;
     transactionHandler: (password: string, gas: number) => void;
@@ -22,10 +24,10 @@ interface IProps {
 
 const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations, handleDelegate, transactionHandler }: IProps) => {
     const arrowDeg = useRef(new Animated.Value(0)).current;
+    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [openModal, setOpenModal] = useState(false);
     const [openAccordion, setOpenAccordion] = useState(false);
-    const [rewardTextSize, setRewardTextSize] = useState(20);
     const [accordionHeight, setAccordionHeight] = useState(0);
 
     const [withdrawGas, setWithdrawGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
@@ -36,6 +38,25 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
     const [rewardButtonActive, setRewardButtonActive] = useState(false);
     const [redelegateButtonActive, setRedelegateButtonActive] = useState(false);
     const [undelegateButtonActive, setUndelegateButtonActive] = useState(false);
+
+    const StakingStateExist = useMemo(() => {
+        return stakingState !== null;
+    }, [stakingState]);
+
+    const Available = useMemo(() => {
+        if (stakingState === null) return 0;
+        return convertAmount(stakingState.available, false);
+    }, [stakingState]);
+
+    const Delegate = useMemo(() => {
+        if (stakingState === null) return 0;
+        return convertAmount(stakingState.delegated, false);
+    }, [stakingState]);
+
+    const Reward = useMemo(() => {
+        if (stakingState === null) return 0;
+        return stakingState.stakingReward;
+    }, [stakingState]);
 
     const onPressEvent = (type: string) => {
         handleDelegate(type);
@@ -53,9 +74,10 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
     };
 
     const getGasFromDelegation = async () => {
-        CommonActions.handleLoadingProgress(true);
         try {
+            CommonActions.handleLoadingProgress(true);
             let gas = await getEstimateGasFromDelegation(walletName, validatorAddress);
+            CommonActions.handleLoadingProgress(false);
             setWithdrawGas(gas);
             setAlertDescription('');
         } catch (error) {
@@ -64,7 +86,6 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
             handleModalOpen(true);
             throw error;
         }
-        CommonActions.handleLoadingProgress(false);
     };
 
     const handleTransaction = (password: string) => {
@@ -101,19 +122,23 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
         }
     }, [stakingState, delegations]);
 
-    useEffect(() => {
-        setRewardTextSize(resizeFontSize(0, 100000, 20));
-    }, []);
-
     return (
         <View style={styles.container}>
             <View style={[styles.delegationBox, { paddingBottom: 24 }]}>
                 <View style={styles.boxH}>
                     <View style={styles.boxV}>
                         <Text style={styles.title}>Available</Text>
-                        <Text style={[styles.balance, { fontSize: rewardTextSize }]}>
-                            {convertAmount(stakingState.available, false)}
-                            <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}> FCT</Text>
+                        <Text
+                            style={[
+                                styles.balance,
+                                {
+                                    fontSize: resizeFontSize(convertNumber(Available), 100000, 20),
+                                    color: StakingStateExist ? TextColor : TextDisableColor
+                                }
+                            ]}
+                        >
+                            {Available}
+                            <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </View>
                     <SmallButton
@@ -127,9 +152,17 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
                 <View style={styles.boxH}>
                     <View style={styles.boxV}>
                         <Text style={styles.title}>Staking Reward</Text>
-                        <Text style={[styles.balance, { fontSize: rewardTextSize }]}>
-                            {convertAmount(stakingState.stakingReward, false)}
-                            <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}> FCT</Text>
+                        <Text
+                            style={[
+                                styles.balance,
+                                {
+                                    fontSize: resizeFontSize(convertNumber(convertAmount(Reward, false)), 100000, 20),
+                                    color: StakingStateExist ? TextColor : TextDisableColor
+                                }
+                            ]}
+                        >
+                            {convertAmount(Reward, false)}
+                            <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </View>
                     <SmallButton title={'Withdraw'} size={122} active={rewardButtonActive} onPressEvent={() => handleWithdraw(true)} />
@@ -138,9 +171,17 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
             <View style={[styles.delegationBox, { marginTop: 12, paddingTop: 22, paddingBottom: 12 }]}>
                 <View style={styles.boxH}>
                     <Text style={styles.title}>My Delegations</Text>
-                    <Text style={[styles.balance, { fontSize: rewardTextSize }]}>
-                        {convertAmount(stakingState.delegated, false)}
-                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}> FCT</Text>
+                    <Text
+                        style={[
+                            styles.balance,
+                            {
+                                fontSize: resizeFontSize(convertNumber(Delegate), 100000, 20),
+                                color: StakingStateExist ? TextColor : TextDisableColor
+                            }
+                        ]}
+                    >
+                        {Delegate}
+                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                     </Text>
                 </View>
                 <View style={{ width: '100%', height: accordionHeight }}>
@@ -177,7 +218,7 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
             <TransactionConfirmModal
                 transactionHandler={handleTransaction}
                 title={'Withdraw'}
-                amount={stakingState.stakingReward}
+                amount={Reward}
                 fee={getFeesFromGas(withdrawGas)}
                 open={openModal}
                 setOpenModal={handleWithdraw}

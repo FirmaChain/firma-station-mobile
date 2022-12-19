@@ -20,16 +20,7 @@ interface IProps {
 const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps) => {
     const isFocused = useIsFocused();
     const { common } = useAppSelector((state) => state);
-    const {
-        delegationState,
-        redelegationState,
-        undelegationState,
-        stakingGrantState,
-        handleDelegationState,
-        handleStakingGrantState,
-        handleRedelegationState,
-        handleUndelegationState
-    } = useDelegationData();
+    const { delegationState, redelegationState, undelegationState, stakingGrantState, handleDelegationState } = useDelegationData();
 
     const [tab, setTab] = useState(0);
     const [dataLoading, setDataLoading] = useState(true);
@@ -55,31 +46,43 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
         }
     }, [delegationExist]);
 
-    const loadDelegationState = useCallback(async () => {
-        if (isFocused === false) return;
-        if (delegationExist && tab >= 2) return;
+    const loadDelegationState = useCallback(
+        async (selectedTab: number) => {
+            if (isFocused === false) return;
+            if (delegationExist && selectedTab >= 2) return;
+            try {
+                await handleDelegationState();
+                if (selectedTab === 0) handleIsRefresh(false);
+                wait(800).then(() => {
+                    handleDelegationLoading(false);
+                });
+            } catch (error) {
+                console.log(error);
+                CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            }
+        },
+        [tab, isFocused, delegationExist]
+    );
+
+    const handleTab = async (index: number) => {
         try {
-            await handleDelegationState();
-            wait(800).then(() => {
-                handleDelegationLoading(false);
-            });
+            if (index === tab) return;
+            setTab(index);
+            await loadDelegationState(index);
         } catch (error) {
             console.log(error);
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
         }
-    }, [tab, isFocused]);
+    };
 
     useEffect(() => {
         handleTabFromDelegationData();
     }, [delegationExist]);
 
     useEffect(() => {
-        loadDelegationState();
-    }, [isFocused, tab]);
-
-    useEffect(() => {
-        loadDelegationState();
-    }, [isRefresh]);
+        if (isFocused && isRefresh) {
+            loadDelegationState(tab);
+        }
+    }, [isFocused, isRefresh, tab]);
 
     useEffect(() => {
         let exist = delegationState.length > 0 || redelegationState.length > 0 || undelegationState.length > 0;
@@ -93,13 +96,13 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
                     <React.Fragment>
                         <TouchableOpacity
                             style={[styles.tab, { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' }]}
-                            onPress={() => setTab(0)}
+                            onPress={() => handleTab(0)}
                         >
                             <Text style={tab === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>My Stake</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.tab, { borderBottomColor: tab === 1 ? WhiteColor : 'transparent' }]}
-                            onPress={() => setTab(1)}
+                            onPress={() => handleTab(1)}
                         >
                             <Text style={tab === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>Restake</Text>
                         </TouchableOpacity>
@@ -107,7 +110,7 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
                 )}
                 <TouchableOpacity
                     style={[styles.tab, { borderBottomColor: tab === 2 ? WhiteColor : 'transparent' }]}
-                    onPress={() => setTab(2)}
+                    onPress={() => handleTab(2)}
                 >
                     <Text style={tab === 2 ? styles.tabTitleActive : styles.tabTitleInactive}>Validator</Text>
                 </TouchableOpacity>
@@ -116,7 +119,6 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
             <View style={{ display: VisibleLoading ? 'none' : 'flex' }}>
                 <DelegationList
                     visible={tab === 0}
-                    isRefresh={isRefresh}
                     delegationState={delegationState}
                     redelegationState={redelegationState}
                     undelegationState={undelegationState}

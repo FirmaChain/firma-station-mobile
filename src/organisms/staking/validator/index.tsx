@@ -1,14 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, StakingActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { IStakingState, useDelegationData, useValidatorDataFromAddress } from '@/hooks/staking/hooks';
+import {
+    IStakingState,
+    IValidatorData,
+    IValidatorDescription,
+    useDelegationData,
+    useValidatorDataFromAddress
+} from '@/hooks/staking/hooks';
 import { getStakingFromvalidator } from '@/util/firma';
 import { BgColor, BoxColor, FailedColor, Lato } from '@/constants/theme';
-import { IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from '@/constants/common';
+import { DATA_RELOAD_INTERVAL, IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from '@/constants/common';
+import { useInterval } from '@/hooks/common/hooks';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -16,6 +23,7 @@ import DescriptionBox from './descriptionBox';
 import DelegationBox from './delegationBox';
 import PercentageBox from './percentageBox';
 import AddressBox from './addressBox';
+import Progress from '@/components/parts/progress';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -30,27 +38,50 @@ const Validator = ({ validatorAddress }: IProps) => {
     const { validatorState, handleValidatorPolling } = useValidatorDataFromAddress(validatorAddress);
     const { delegationState, handleTotalDelegationPolling } = useDelegationData();
 
-    const [stakingState, setStakingState] = useState<IStakingState>({
-        available: 0,
-        delegated: 0,
-        undelegate: 0,
-        stakingReward: 0
-    });
+    const [stakingState, setStakingState] = useState<IStakingState | null>(null);
 
     const delegationLength = useMemo(() => {
         return delegationState.length;
     }, [delegationState]);
 
+    const Validator = useMemo(() => {
+        return validatorState;
+    }, [validatorState]);
+
+    const ValidatorDescription: IValidatorDescription | undefined = useMemo(() => {
+        if (Validator === undefined) return undefined;
+        return Validator.description;
+    }, [Validator]);
+
+    const ValidatorPercentageData: IValidatorData | undefined = useMemo(() => {
+        if (Validator === undefined) return undefined;
+        return Validator.percentageData;
+    }, [Validator]);
+
+    const ValidatorOperatorAddress = useMemo(() => {
+        if (Validator === undefined) return '';
+        return Validator.address.operatorAddress;
+    }, [Validator]);
+
+    const ValidatorAccountAddress = useMemo(() => {
+        if (Validator === undefined) return '';
+        return Validator.address.accountAddress;
+    }, [Validator]);
+
+    const openLoadingProgress = useMemo(() => {
+        return stakingState === null || Validator === undefined;
+    }, [stakingState, Validator]);
+
     const AlertText = useMemo(() => {
-        if (validatorState) {
-            if (validatorState.tombstoned === true) return 'TOMBSTONED';
-            if (validatorState.status === 0) return 'UNKNOWN';
-            if (validatorState.status === 1) return 'UNBONDED';
-            if (validatorState.status === 2 && validatorState.jailed === false) return 'UNBONDING';
-            if (validatorState.status === 2 && validatorState.jailed === true) return 'JAILED';
+        if (Validator !== undefined) {
+            if (Validator.tombstoned === true) return 'TOMBSTONED';
+            if (Validator.status === 0) return 'UNKNOWN';
+            if (Validator.status === 1) return 'UNBONDED';
+            if (Validator.status === 2 && Validator.jailed === false) return 'UNBONDING';
+            if (Validator.status === 2 && Validator.jailed === true) return 'JAILED';
         }
         return '';
-    }, [validatorState]);
+    }, [Validator]);
 
     const AlertColor = useMemo(() => {
         switch (AlertText) {
@@ -102,35 +133,20 @@ const Validator = ({ validatorAddress }: IProps) => {
 
     const refreshStates = async () => {
         try {
-            CommonActions.handleLoadingProgress(true);
-            await handleDelegateState();
-            await handleValidatorPolling();
-            await handleTotalDelegationPolling();
-            CommonActions.handleLoadingProgress(false);
+            await Promise.all([handleDelegateState(), handleTotalDelegationPolling(), handleValidatorPolling()]);
         } catch (error) {
             CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
             console.log(error);
         }
     };
 
-    useEffect(() => {
-        if (common.dataLoadStatus > 0) {
-            let count = 0;
-            let intervalId = setInterval(() => {
-                if (common.dataLoadStatus > 0 && common.dataLoadStatus < 2) {
-                    count = count + 1;
-                } else {
-                    clearInterval(intervalId);
-                }
-                if (count >= 6) {
-                    count = 0;
-                    refreshStates();
-                }
-            }, 1000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, [common.dataLoadStatus]);
+    useInterval(
+        () => {
+            refreshStates();
+        },
+        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        true
+    );
 
     const handleMoveToWeb = (uri: string) => {
         navigation.navigate(Screens.WebScreen, { uri: uri });
@@ -141,13 +157,13 @@ const Validator = ({ validatorAddress }: IProps) => {
     };
 
     useEffect(() => {
-        if (validatorState) {
-            StakingActions.updateValidatorState(validatorState);
+        if (Validator) {
+            StakingActions.updateValidatorState(Validator);
         }
-    }, [validatorState]);
+    }, [Validator]);
 
     useEffect(() => {
-        if (stakingState) {
+        if (stakingState !== null) {
             if (stakingState.stakingReward > 0) {
                 StakingActions.updateDelegateState({
                     address: validatorAddress,
@@ -164,12 +180,12 @@ const Validator = ({ validatorAddress }: IProps) => {
     );
 
     return (
-        <Container titleOn={false} bgColor={BoxColor} backEvent={handleBack}>
-            <ViewContainer bgColor={BgColor}>
-                <RefreshScrollView refreshFunc={refreshStates} background={BoxColor}>
-                    <View style={{ backgroundColor: BoxColor }}>
-                        {validatorState && (
-                            <>
+        <Fragment>
+            <Container titleOn={false} bgColor={BoxColor} backEvent={handleBack}>
+                <ViewContainer bgColor={BgColor}>
+                    <RefreshScrollView refreshFunc={refreshStates} background={BoxColor}>
+                        <View style={{ backgroundColor: BoxColor }}>
+                            <Fragment>
                                 <View style={styles.jailedBox}>
                                     <Text
                                         style={[
@@ -180,7 +196,7 @@ const Validator = ({ validatorAddress }: IProps) => {
                                         {AlertText}
                                     </Text>
                                 </View>
-                                <DescriptionBox validator={validatorState.description} />
+                                <DescriptionBox validator={ValidatorDescription} />
                                 <DelegationBox
                                     walletName={wallet.name}
                                     validatorAddress={validatorAddress}
@@ -190,26 +206,27 @@ const Validator = ({ validatorAddress }: IProps) => {
                                     transactionHandler={handleWithdraw}
                                 />
                                 <View style={styles.infoBox}>
-                                    <PercentageBox data={validatorState.percentageData} />
+                                    <PercentageBox data={ValidatorPercentageData} />
                                     <AddressBox
                                         title={'Operator address'}
                                         path={'validators'}
-                                        address={validatorState.address.operatorAddress}
+                                        address={ValidatorOperatorAddress}
                                         handleExplorer={handleMoveToWeb}
                                     />
                                     <AddressBox
                                         title={'Account address'}
                                         path={'accounts'}
-                                        address={validatorState.address.accountAddress}
+                                        address={ValidatorAccountAddress}
                                         handleExplorer={handleMoveToWeb}
                                     />
                                 </View>
-                            </>
-                        )}
-                    </View>
-                </RefreshScrollView>
-            </ViewContainer>
-        </Container>
+                            </Fragment>
+                        </View>
+                    </RefreshScrollView>
+                </ViewContainer>
+            </Container>
+            {openLoadingProgress && <Progress />}
+        </Fragment>
     );
 };
 

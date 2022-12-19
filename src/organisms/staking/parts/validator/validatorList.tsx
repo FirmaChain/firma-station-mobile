@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { useValidatorData } from '@/hooks/staking/hooks';
+import { IValidatorState, useValidatorData } from '@/hooks/staking/hooks';
 import {
     BgColor,
     DisableColor,
@@ -35,9 +35,18 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
     const [sortWithDesc, setSortWithDesc] = useState(true);
     const [openModal, setOpenModal] = useState(false);
 
-    const validatorList = useMemo(() => {
-        return validators;
-    }, [validators]);
+    const validatorList: Array<IValidatorState> | [] = useMemo(() => {
+        if (validators.length === 0) return [];
+        switch (selected) {
+            case 1:
+                return validators.sort((a: any, b: any) => (sortWithDesc ? a.commission - b.commission : b.commission - a.commission));
+            case 2:
+                return validators.sort((a: any, b: any) => (sortWithDesc ? b.condition - a.condition : a.condition - b.condition));
+            case 0:
+            default:
+                return validators.sort((a: any, b: any) => (sortWithDesc ? b.votingPower - a.votingPower : a.votingPower - b.votingPower));
+        }
+    }, [validators, selected, sortWithDesc]);
 
     const handleOpenModal = (open: boolean) => {
         setOpenModal(open);
@@ -48,23 +57,12 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
         handleOpenModal(false);
     };
 
-    const handleSortingList = useCallback(() => {
-        if (validatorList.length === 0) return;
-        switch (selected) {
-            case 0:
-                return validatorList.sort((a: any, b: any) =>
-                    sortWithDesc ? b.votingPower - a.votingPower : a.votingPower - b.votingPower
-                );
-            case 1:
-                return validatorList.sort((a: any, b: any) => (sortWithDesc ? a.commission - b.commission : b.commission - a.commission));
-            case 2:
-                return validatorList.sort((a: any, b: any) => (sortWithDesc ? b.condition - a.condition : a.condition - b.condition));
-        }
-    }, [selected, validatorList, sortWithDesc]);
-
-    useEffect(() => {
-        handleSortingList();
-    }, [selected, validatorList, sortWithDesc]);
+    const handleSort = useCallback(
+        (sort: boolean) => {
+            setSortWithDesc(sort);
+        },
+        [sortWithDesc]
+    );
 
     const refreshValidators = useCallback(async () => {
         if (visible === false) return;
@@ -91,10 +89,12 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
     };
 
     useEffect(() => {
-        if (common.appState === 'active' && validatorList.length === 0) {
-            refreshValidators();
+        if (visible) {
+            if (common.appState === 'active' && (validatorList.length === 0 || isRefresh)) {
+                refreshValidators();
+            }
         }
-    }, [visible]);
+    }, [visible, isRefresh]);
 
     const renderValidators = useCallback(() => {
         return (
@@ -119,7 +119,7 @@ const ValidatorList = ({ visible, isRefresh, handleIsRefresh, navigateValidator 
                         <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
                         <DownArrow size={12} color={GrayColor} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ paddingLeft: 10, paddingVertical: 10 }} onPress={() => setSortWithDesc(!sortWithDesc)}>
+                    <TouchableOpacity style={{ paddingLeft: 10, paddingVertical: 10 }} onPress={() => handleSort(!sortWithDesc)}>
                         {renderSortIcon()}
                     </TouchableOpacity>
                 </View>

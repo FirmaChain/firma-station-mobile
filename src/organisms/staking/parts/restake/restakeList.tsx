@@ -73,8 +73,10 @@ const RestakeList = ({ visible, isRefresh, delegationState, restakeState, handle
     }, [visible]);
 
     useEffect(() => {
-        refreshStakings();
-    }, [isRefresh]);
+        if (visible || (visible && isRefresh)) {
+            refreshStakings();
+        }
+    }, [visible, isRefresh]);
 
     const restake = useCallback(() => {
         return (

@@ -78,7 +78,7 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
         let count = 0;
         if (totalCount > 0) {
             count = grantState.list.filter(
-                (value) => convertNumber(FirmaUtil.getFCTStringFromUFCT(value.stakingReward)) > minimumRewards
+                (value) => convertNumber(FirmaUtil.getFCTStringFromUFCT(value.stakingReward)) > minimumRewards && value.isActive === true
             ).length;
         }
         return count;

@@ -3,6 +3,7 @@ import { ForwardArrow } from '@/components/icon/icon';
 import { DarkGrayColor, Lato, TextColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { VALIDATOR_PROFILE } from '@/constants/images';
+import FastImage from 'react-native-fast-image';
 
 interface IProps {
     validator: {
@@ -17,7 +18,7 @@ const MonikerSection = ({ validator }: IProps) => {
     return (
         <View style={[styles.vdWrapperH, { alignItems: 'center' }]}>
             <View style={styles.monikerWrapperH}>
-                <Image
+                <FastImage
                     style={styles.avatar}
                     onError={() => {
                         setAvatarError(true);
@@ -25,7 +26,7 @@ const MonikerSection = ({ validator }: IProps) => {
                     source={
                         avatarError || validator.avatarURL === null || validator.avatarURL === ''
                             ? VALIDATOR_PROFILE
-                            : { uri: validator.avatarURL }
+                            : { uri: validator.avatarURL, priority: FastImage.priority.low }
                     }
                 />
                 <Text numberOfLines={1} ellipsizeMode="middle" style={styles.moniker}>
