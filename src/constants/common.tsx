@@ -47,7 +47,8 @@ export const DEFAULT_MINT_INFLATION = () => {
 };
 
 export const MAINTENANCE_ERROR = 'Could not verify version information.';
-export const UPDATE_NOTIFICATION = 'Update is required to the latest version.';
+export const UPDATE_NOTIFICATION =
+    'The latest version of Firma Station has been released.\nPress the OK button to go to the store for updates.';
 
 export const APPLE_APP_STORE = 'itms-apps://apps.apple.com/tr/app/firma-station/id1611660902?l=tr';
 export const APPLE_APP_STORE_WEB = 'https://apps.apple.com/us/app/firma-station/idid1611660902';

@@ -44,7 +44,10 @@ export const useServerMessage = () => {
         try {
             const response = await fetch(`${MAINTENANCE_API}/${MAINTENANCE_PATH[storage.network]}`, {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-store',
+                    Pragma: 'no-store',
+                    Expires: '0'
                 }
             });
             const data: any = await response.json();
