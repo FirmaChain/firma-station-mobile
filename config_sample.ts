@@ -21,6 +21,7 @@ export const CHAIN_NETWORK: IKeyValue = {
         RESTAKE_ADDRESS: '',
         RESTAKE_URL: '',
         CHAIN_SYMBOL: '',
+        CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
         DEFAULT_MINT_INFLATION: 0
     },
@@ -35,6 +36,7 @@ export const CHAIN_NETWORK: IKeyValue = {
         RESTAKE_ADDRESS: '',
         RESTAKE_URL: '',
         CHAIN_SYMBOL: '',
+        CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
         DEFAULT_MINT_INFLATION: 0
     },
@@ -49,6 +51,7 @@ export const CHAIN_NETWORK: IKeyValue = {
         RESTAKE_ADDRESS: '',
         RESTAKE_URL: '',
         CHAIN_SYMBOL: '',
+        CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
         DEFAULT_MINT_INFLATION: 0
     }

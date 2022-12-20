@@ -691,12 +691,16 @@ export const getStakingGrant = async (address: string) => {
 
 export const getStaking = async (address: string) => {
     try {
-        const balance = await getBalanceFromAdr(address);
+        const [balance, totalReward, delegateListOrigin, undelegateListOrigin] = await Promise.all([
+            getBalanceFromAdr(address),
+            getTotalReward(address),
+            getDelegateList(address),
+            getUndelegateList(address)
+        ]);
+
         const available = convertNumber(balance);
-        const totalReward = await getTotalReward(address);
         const stakingReward = convertToFctNumber(totalReward.total);
 
-        const delegateListOrigin = await getDelegateList(address);
         const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
         const delegationBalanceList = delegateListSort.map((value) => {
             return value.balance.amount;
@@ -709,7 +713,6 @@ export const getStaking = async (address: string) => {
                 : 0
         );
 
-        const undelegateListOrigin = await getUndelegateList(address);
         const undelegationBalanceList = undelegateListOrigin.map((value) => {
             return value.entries
                 .map((value) => {
