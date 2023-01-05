@@ -72,6 +72,7 @@ export const setNewWallet = async (name: string, password: string, recoverValue:
 export const setWalletList = async (list: string) => {
     try {
         if (list === '') {
+            StorageActions.handleLastSelectedWalletIndex(-1);
             await removeChain(WALLET_LIST);
         } else {
             await setChain(WALLET_LIST, list);

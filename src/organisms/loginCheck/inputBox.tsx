@@ -10,6 +10,8 @@ import InputSetVertical from '@/components/input/inputSetVertical';
 import CustomModal from '@/components/modal/customModal';
 import ModalWalletList from '@/components/modal/modalWalletList';
 import WalletSelector from '../welcome/selectWallet/walletSelector';
+import { StorageActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
 
 interface IProps {
     walletName: string;
@@ -19,6 +21,8 @@ interface IProps {
 }
 
 const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
+    const { storage } = useAppSelector((state) => state);
+
     const passwordText = {
         title: 'Password',
         placeholder: PLACEHOLDER_FOR_PASSWORD
@@ -51,6 +55,7 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
         if (index === selected) {
             return handleOpenSelectModal(false);
         }
+        StorageActions.handleLastSelectedWalletIndex(index);
         setSelected(index);
         setResetValues(true);
         handleOpenSelectModal(false);
@@ -60,6 +65,7 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
         try {
             await setWalletList(list);
             await WalletList();
+            StorageActions.handleLastSelectedWalletIndex(newIndex);
             setSelected(newIndex);
         } catch (error) {
             Toast.show({
@@ -93,10 +99,20 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
 
     useEffect(() => {
         if (items.length > 0) {
-            setSelectedWallet(items[items.indexOf(walletName)]);
-            setSelected(items.indexOf(walletName));
+            let index = 0;
+            if (storage.lastSelectedWalletIndex < 0) {
+                index = items.indexOf(walletName);
+            } else {
+                if (storage.lastSelectedWalletIndex === items.indexOf(walletName)) {
+                    index = items.indexOf(walletName);
+                } else {
+                    index = storage.lastSelectedWalletIndex;
+                }
+            }
+            setSelectedWallet(items[index]);
+            setSelected(index);
         }
-    }, [items]);
+    }, [items, storage.lastSelectedWalletIndex]);
 
     useEffect(() => {
         if (selected >= 0 && selectedWallet !== items[selected]) {
@@ -110,6 +126,7 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
         const initStatus = async () => {
             try {
                 await WalletList();
+                StorageActions.handleLastSelectedWalletIndex(-1);
                 setPwValidation(false);
             } catch (error) {
                 Toast.show({

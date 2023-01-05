@@ -7,7 +7,8 @@ import {
     HANDLE_HISTORY_VOLUME,
     HANDLE_DAPP_SERVICES_VOLUME,
     HANDLE_RECOVER_TYPE,
-    HANDLE_VALIDATORS_PROFILE_INFO
+    HANDLE_VALIDATORS_PROFILE_INFO,
+    HANDLE_LAST_SELECTED_WALLET_INDEX
 } from '../types';
 
 export interface IContentVolume {
@@ -33,6 +34,7 @@ export interface IStorageStateProps {
     dappServicesVolume: IKeyValue;
     recoverType: IKeyValue;
     validatorsProfile: IValidatorsProfileState;
+    lastSelectedWalletIndex: number;
 }
 
 const initialState: IStorageStateProps = {
@@ -48,7 +50,8 @@ const initialState: IStorageStateProps = {
     validatorsProfile: {
         profileInfos: [],
         lastUpdatedTime: 0
-    }
+    },
+    lastSelectedWalletIndex: -1
 };
 
 export const ACTION_CREATORS = {
@@ -58,7 +61,8 @@ export const ACTION_CREATORS = {
     HANDLE_HISTORY_VOLUME: createAction<IKeyValue>(HANDLE_HISTORY_VOLUME),
     HANDLE_DAPP_SERVICES_VOLUME: createAction<IKeyValue>(HANDLE_DAPP_SERVICES_VOLUME),
     HANDLE_RECOVER_TYPE: createAction<IKeyValue>(HANDLE_RECOVER_TYPE),
-    HANDLE_VALIDATORS_PROFILE_INFO: createAction<IValidatorsProfileState>(HANDLE_VALIDATORS_PROFILE_INFO)
+    HANDLE_VALIDATORS_PROFILE_INFO: createAction<IValidatorsProfileState>(HANDLE_VALIDATORS_PROFILE_INFO),
+    HANDLE_LAST_SELECTED_WALLET_INDEX: createAction<number>(HANDLE_LAST_SELECTED_WALLET_INDEX)
 };
 
 export const ACTIONS = {
@@ -68,7 +72,8 @@ export const ACTIONS = {
     handleHistoryVolume: ACTION_CREATORS.HANDLE_HISTORY_VOLUME,
     handleDappServicesVolume: ACTION_CREATORS.HANDLE_DAPP_SERVICES_VOLUME,
     handleRecoverType: ACTION_CREATORS.HANDLE_RECOVER_TYPE,
-    handleValidatorsProfile: ACTION_CREATORS.HANDLE_VALIDATORS_PROFILE_INFO
+    handleValidatorsProfile: ACTION_CREATORS.HANDLE_VALIDATORS_PROFILE_INFO,
+    handleLastSelectedWalletIndex: ACTION_CREATORS.HANDLE_LAST_SELECTED_WALLET_INDEX
 };
 
 const reducer = createReducer(initialState, (builder) => {
@@ -92,6 +97,9 @@ const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(ACTION_CREATORS.HANDLE_VALIDATORS_PROFILE_INFO, (state, { payload }) => {
         state.validatorsProfile = payload;
+    });
+    builder.addCase(ACTION_CREATORS.HANDLE_LAST_SELECTED_WALLET_INDEX, (state, { payload }) => {
+        state.lastSelectedWalletIndex = payload;
     });
 });
 

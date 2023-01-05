@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -7,7 +7,7 @@ import { MenuIcon, Radio } from '../icon/icon';
 
 interface IProps {
     initVal: number;
-    data: any[];
+    data: any[] | null;
     handleEditWalletList: (list: string, newIndex: number) => void;
     onPressEvent: (index: number) => void;
 }
@@ -18,7 +18,9 @@ type Item = {
 };
 
 const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: IProps) => {
+    const flatListRef = useRef<any>(null);
     const initialData = useMemo(() => {
+        if (data === null) return [];
         return data.map((item, index) => {
             return {
                 key: index,
@@ -28,12 +30,14 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
     }, [data]);
 
     const initValLabel = useMemo(() => {
+        if (data === null) return '';
         return data[initVal];
     }, [initVal]);
 
     const [selected, setSelected] = useState(initVal);
     const [isEdit, setIsEdit] = useState(false);
     const [listData, setListData] = useState(initialData);
+    const [containerSize, setContainerSize] = useState(0);
 
     const handleSelect = (index: number) => {
         onPressEvent(index);
@@ -62,28 +66,43 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
         recreateList();
     }, [listData]);
 
-    const renderItem = ({ item, index = 0, drag }: RenderItemParams<Item>) => {
-        return (
-            <TouchableOpacity
-                key={index}
-                style={styles.modalContentBox}
-                onPress={() => {
-                    isEdit === false && handleSelect(index);
-                }}
-            >
-                <Text style={styles.itemTitle}>{item.label}</Text>
-                {isEdit ? (
-                    <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onPressIn={drag}>
-                        <MenuIcon size={20} color={WhiteColor} />
-                    </TouchableOpacity>
-                ) : (
-                    <View style={{ paddingHorizontal: 20 }}>
-                        <Radio size={20} color={WhiteColor} active={index === selected} />
-                    </View>
-                )}
-            </TouchableOpacity>
-        );
-    };
+    const handleScrollInitValue = useCallback(() => {
+        if (flatListRef !== null && listData.length > 0 && initVal >= 0) {
+            let scrollPosition = containerSize * initVal;
+            flatListRef.current._listRef._scrollRef.scrollTo({ y: scrollPosition, animated: true });
+        }
+    }, [flatListRef, containerSize, initVal, isEdit]);
+
+    useEffect(() => {
+        handleScrollInitValue();
+    }, [flatListRef, containerSize, initVal]);
+
+    const RenderListItem = useCallback(
+        ({ item, index = 0, drag }: RenderItemParams<Item>) => {
+            return (
+                <TouchableOpacity
+                    key={index}
+                    style={styles.modalContentBox}
+                    onLayout={(e) => setContainerSize(e.nativeEvent.layout.height)}
+                    onPress={() => {
+                        isEdit === false && handleSelect(index);
+                    }}
+                >
+                    <Text style={styles.itemTitle}>{item.label}</Text>
+                    {isEdit ? (
+                        <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onPressIn={drag}>
+                            <MenuIcon size={20} color={WhiteColor} />
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={{ paddingHorizontal: 20 }}>
+                            <Radio size={20} color={WhiteColor} active={index === selected} />
+                        </View>
+                    )}
+                </TouchableOpacity>
+            );
+        },
+        [isEdit, selected]
+    );
 
     return (
         <View style={styles.modalContainer}>
@@ -95,10 +114,13 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
             </View>
             <GestureHandlerRootView>
                 <DraggableFlatList
+                    ref={flatListRef}
                     data={listData}
                     style={{ maxHeight: 450 }}
-                    renderItem={renderItem}
+                    renderItem={RenderListItem}
+                    scrollEnabled={true}
                     keyExtractor={(item, index) => index.toString()}
+                    onScrollToIndexFailed={() => {}}
                     onDragEnd={({ data }) => setListData(data)}
                 />
             </GestureHandlerRootView>

@@ -4,5 +4,6 @@ import DappSignModal from './dappSignModal';
 import DappDirectSignModal from './dappDirectSignModal';
 import UpdateModal from './updateModal';
 import MaintenanceModal from './maintenanceModal';
+import ModalWalletList from './modalWalletList';
 
-export { QRCodeScannerModal, DappConnectModal, DappDirectSignModal, DappSignModal, UpdateModal, MaintenanceModal };
+export { QRCodeScannerModal, DappConnectModal, DappDirectSignModal, DappSignModal, UpdateModal, MaintenanceModal, ModalWalletList };

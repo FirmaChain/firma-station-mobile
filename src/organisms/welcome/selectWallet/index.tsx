@@ -3,13 +3,15 @@ import { StyleSheet, View, Pressable, Keyboard, Linking } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
-import { WalletActions } from '@/redux/actions';
+import { StorageActions, WalletActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from '@/util/wallet';
 import { PasswordCheck } from '@/util/validationCheck';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import { GUIDE_URI } from '@/../config';
+import { ModalWalletList } from '@/components/modal';
 import Toast from 'react-native-toast-message';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -17,15 +19,16 @@ import InputSetVertical from '@/components/input/inputSetVertical';
 import Button from '@/components/button/button';
 import CustomModal from '@/components/modal/customModal';
 import WalletSelector from './walletSelector';
-import ModalWalletList from '@/components/modal/modalWalletList';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
 const SelectWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const [items, setItems]: Array<any> = useState([]);
-    const [selected, setSelected] = useState(-1);
+    const { storage } = useAppSelector((state) => state);
+
+    const [items, setItems] = useState<Array<any> | null>(null);
+    const [selected, setSelected] = useState<number>(-1);
     const [selectedWallet, setSelectedWallet] = useState('');
     const [resetValues, setResetValues] = useState(false);
 
@@ -48,6 +51,7 @@ const SelectWallet = () => {
         if (index === selected) {
             return handleOpenSelectModal(false);
         }
+        StorageActions.handleLastSelectedWalletIndex(index);
         setSelected(index);
         setResetValues(true);
         handleOpenSelectModal(false);
@@ -57,6 +61,7 @@ const SelectWallet = () => {
         try {
             await setWalletList(list);
             await WalletList();
+            StorageActions.handleLastSelectedWalletIndex(newIndex);
             setSelected(newIndex);
         } catch (error) {
             Toast.show({
@@ -67,12 +72,14 @@ const SelectWallet = () => {
     };
 
     useEffect(() => {
-        if (selected >= 0 && selectedWallet !== items[selected]) {
-            setSelectedWallet(items[selected]);
-            setMnemonic('');
-            setResetValues(false);
+        if (items !== null) {
+            if (selected >= 0 && selectedWallet !== items[selected]) {
+                setSelectedWallet(items[selected]);
+                setMnemonic('');
+                setResetValues(false);
+            }
         }
-    }, [selected]);
+    }, [selected, items]);
 
     const WalletList = async () => {
         try {
@@ -135,6 +142,11 @@ const SelectWallet = () => {
         const initStatus = async () => {
             try {
                 await WalletList();
+                let initIndex = storage.lastSelectedWalletIndex === undefined ? -1 : storage.lastSelectedWalletIndex;
+                setSelected(initIndex);
+                if (initIndex >= 0 && items !== null) {
+                    setSelectedWallet(items[initIndex]);
+                }
                 setPwValidation(false);
             } catch (error) {
                 Toast.show({
