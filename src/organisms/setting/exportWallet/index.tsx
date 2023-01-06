@@ -3,6 +3,7 @@ import { Linking, StyleSheet, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
+import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { PasswordValidationCheck } from '@/util/validationCheck';
 import { getPrivateKeyFromMnemonic, mnemonicCheck } from '@/util/firma';
@@ -69,6 +70,7 @@ const ExportWallet = ({ type }: IProps) => {
 
     const getMnemonicFromChain = async (password: string) => {
         try {
+            CommonActions.handleLoadingProgress(true);
             let result = await getRecoverValue(wallet.name, password);
             if (result !== null) {
                 handleModalOpen(false);
@@ -93,7 +95,9 @@ const ExportWallet = ({ type }: IProps) => {
             } else {
                 handleModalOpen(true);
             }
+            CommonActions.handleLoadingProgress(false);
         } catch (error) {
+            CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
                 text1: String(error)
