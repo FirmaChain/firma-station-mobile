@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 
 interface IProps {
     size: number;
@@ -178,4 +179,8 @@ export const ValidateIcon = ({ size, color }: IProps) => {
 
 export const SquareIcon = ({ size, color }: IProps) => {
     return <Ionicons name="ios-square" size={size} color={color} />;
+};
+
+export const StarIcon = ({ size, color }: IProps) => {
+    return <Fontisto name="asterisk" size={size} color={color} />;
 };

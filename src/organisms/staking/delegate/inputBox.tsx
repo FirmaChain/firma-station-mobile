@@ -10,8 +10,10 @@ import {
     InputPlaceholderColor,
     Lato,
     PointColor,
+    PointLightColor,
     TextCatTitleColor,
     TextColor,
+    TextGrayColor,
     WhiteColor
 } from '@/constants/theme';
 import {
@@ -22,7 +24,7 @@ import {
     UNDELEGATE_NOTICE_TEXT,
     WARNING_FOR_MAX_AMOUNT_TEST
 } from '@/constants/common';
-import { DownArrow } from '@/components/icon/icon';
+import { DownArrow, StarIcon } from '@/components/icon/icon';
 import WarnContainer from '@/components/parts/containers/warnContainer';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
 import BalanceInfo from '@/components/parts/balanceInfo';
@@ -32,6 +34,7 @@ interface IProps {
     type: string;
     operatorAddress: string;
     delegationState: Array<IStakeInfo>;
+    undelegateCount: number;
     resetRedelegateValues: boolean;
     resetInputValues: boolean;
     handleStandardAvailable: (balance: number) => void;
@@ -42,6 +45,7 @@ const InputBox = ({
     type,
     operatorAddress,
     delegationState,
+    undelegateCount,
     resetRedelegateValues,
     resetInputValues,
     handleStandardAvailable,
@@ -223,6 +227,19 @@ const InputBox = ({
                     </>
                 )}
 
+                {type === 'Undelegate' && (
+                    <View style={styles.undelegationCountBox}>
+                        <View style={{ paddingHorizontal: 5 }}>
+                            <StarIcon size={8} color={TextGrayColor} />
+                        </View>
+                        <Text style={styles.undelegateCount}>
+                            {`Current undelegations : `}
+                            <Text style={{ color: PointLightColor }}>{undelegateCount}</Text>
+                            {`/7`}
+                        </Text>
+                    </View>
+                )}
+
                 {(type === 'Undelegate' || type === 'Redelegate') &&
                     noticeText.map((value, index) => {
                         return (
@@ -315,6 +332,19 @@ const styles = StyleSheet.create({
         height: 18,
         borderRadius: 50,
         backgroundColor: WhiteColor
+    },
+    undelegationCountBox: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginBottom: 20,
+        marginTop: -8
+    },
+    undelegateCount: {
+        fontFamily: Lato,
+        fontSize: 14,
+        color: TextGrayColor
     }
 });
 

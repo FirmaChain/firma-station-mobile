@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,7 +8,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { useDelegationData } from '@/hooks/staking/hooks';
 import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from '@/util/firma';
 import { convertNumber } from '@/util/common';
-import { DATA_RELOAD_INTERVAL, TRANSACTION_TYPE } from '@/constants/common';
+import { DATA_RELOAD_INTERVAL, MAXIMUM_UNDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE } from '@/constants/common';
 import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -33,18 +33,25 @@ interface IDelegateState {
     gas: number;
 }
 
+interface IAlertState {
+    title: string;
+    desc: string;
+    button: string;
+    type: 'ERROR' | 'CONFIRM';
+}
+
 const Delegate = ({ type, operatorAddress }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
     const { wallet, common } = useAppSelector((state) => state);
-    const { delegationState, handleDelegationState } = useDelegationData();
+    const { delegationState, undelegationState, handleDelegationState, handleUndelegationState } = useDelegationData();
 
     const [resetInputValues, setInputResetValues] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [isSignModalOpen, setIsSignModalOpen] = useState(false);
-    const [alertDescription, setAlertDescription] = useState('');
+    const [alertState, setAlertState] = useState<IAlertState | null>(null);
 
     const [status, setStatus] = useState(0);
     const [standardAvailable, setStandardAvailable] = useState(0);
@@ -58,6 +65,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
 
     const handleModalOpen = (open: boolean) => {
         setIsAlertModalOpen(open);
+        if (open === false) setAlertState(null);
     };
 
     const handleSignModal = (open: boolean) => {
@@ -75,6 +83,34 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
             [type]: value
         }));
     };
+
+    const UndelegateCount = useMemo(() => {
+        let count = 0;
+        undelegationState.find((val) => {
+            if (val.validatorAddress === operatorAddress) count++;
+        });
+
+        return count;
+    }, [undelegationState, operatorAddress]);
+
+    const ActivateButton = useMemo(() => {
+        const enteredAmount = convertNumber(delegateState.amount) > 0;
+        if (type === 'Undelegate') {
+            const enableUndelegate = UndelegateCount < 7;
+            if (enableUndelegate === false) {
+                setAlertState({
+                    title: 'Notice',
+                    desc: MAXIMUM_UNDELEGATE_NOTICE_TEXT,
+                    button: 'OK',
+                    type: 'CONFIRM'
+                });
+                handleModalOpen(true);
+            }
+            return enableUndelegate && enteredAmount;
+        }
+
+        return enteredAmount;
+    }, [type, delegateState, UndelegateCount]);
 
     const handleNext = async () => {
         if (status > 0) return;
@@ -100,12 +136,17 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
                     break;
             }
             handleDelegateState('gas', gas);
-            setAlertDescription('');
+            setAlertState(null);
             setStatus(1);
         } catch (error) {
             console.log(error);
             CommonActions.handleLoadingProgress(false);
-            setAlertDescription(String(error));
+            setAlertState({
+                title: 'Failed',
+                desc: String(error),
+                button: 'OK',
+                type: 'ERROR'
+            });
             handleModalOpen(true);
             return;
         }
@@ -128,6 +169,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     const refreshStates = async () => {
         try {
             await handleDelegationState();
+            await handleUndelegationState();
             setResetRedelegateValues(false);
             setInputResetValues(false);
             CommonActions.handleDataLoadStatus(0);
@@ -176,6 +218,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
                                     type={type}
                                     operatorAddress={delegateState.operatorAddressDst}
                                     delegationState={delegationState}
+                                    undelegateCount={UndelegateCount}
                                     handleStandardAvailable={handleStandardAvailable}
                                     handleDelegateState={handleDelegateState}
                                     resetRedelegateValues={resetRedelegateValues}
@@ -192,18 +235,20 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
                             </ScrollView>
                         </View>
                         <View style={[styles.buttonBox, { flex: 1 }]}>
-                            <Button title={'Next'} active={convertNumber(delegateState.amount) > 0} onPressEvent={handleNext} />
+                            <Button title={'Next'} active={ActivateButton} onPressEvent={handleNext} />
                         </View>
                     </View>
 
-                    <AlertModal
-                        visible={isAlertModalOpen}
-                        handleOpen={handleModalOpen}
-                        title={'Failed'}
-                        desc={alertDescription}
-                        confirmTitle={'OK'}
-                        type={'ERROR'}
-                    />
+                    {alertState !== null && (
+                        <AlertModal
+                            visible={isAlertModalOpen}
+                            handleOpen={handleModalOpen}
+                            title={alertState.title}
+                            desc={alertState.desc}
+                            confirmTitle={alertState.button}
+                            type={alertState.type}
+                        />
+                    )}
                 </>
             </ViewContainer>
         </Container>
