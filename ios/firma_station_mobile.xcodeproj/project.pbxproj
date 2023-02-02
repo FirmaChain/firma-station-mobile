@@ -14,15 +14,15 @@
 		26C6A35C955A4D588431DA59 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA226B5DCA5F409BB5E06370 /* Lato-Regular.ttf */; };
 		2CC2BD44BBD9487B803684FC /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4104406F68454583824A0A08 /* Lato-Bold.ttf */; };
 		3776E86E18AD4D0CA091AD20 /* ChakraPetch-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2DEB83C090514C7281DE5D68 /* ChakraPetch-Medium.ttf */; };
-		6172F2D35A4C3AA820D92908 /* libPods-firma_station_mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6423831EA8574132BED9D8CC /* libPods-firma_station_mobile.a */; };
 		6FC417FCAD754058A245F69A /* ChakraPetch-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 29B20F7CD7EE45068DF76EE4 /* ChakraPetch-Bold.ttf */; };
 		76EC2383944C4EA9880D69C6 /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74BB4AC05EC949C6826DBBC6 /* Lato-Black.ttf */; };
 		78B461AEFA814B51BA013550 /* ChakraPetch-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6EFA0F015B95418EB5B09927 /* ChakraPetch-SemiBold.ttf */; };
 		7A758D4C55A64C16A8095C46 /* ChakraPetch-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C257E0CBAAE04D45BCAA84C4 /* ChakraPetch-Regular.ttf */; };
-		7EF68E3733C33B6898317E18 /* libPods-firma_station_mobile-firma_station_mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABFE59519B596E51CEFDCCC0 /* libPods-firma_station_mobile-firma_station_mobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		896F2EFDEFDD4E8A9950EB3A /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F66D5CEC48C54D85A1C00CD0 /* Lato-Thin.ttf */; };
+		AFF4B8A85F585F9F08E84AB8 /* libPods-firma_station_mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6423831EA8574132BED9D8CC /* libPods-firma_station_mobile.a */; };
 		C41DB2B91AC34402AC1E9A9B /* ChakraPetch-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B997A45200B9407D9CA1B3B1 /* ChakraPetch-Light.ttf */; };
+		CD90D9C1D4BEABD8A885F0C3 /* libPods-firma_station_mobile-firma_station_mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABFE59519B596E51CEFDCCC0 /* libPods-firma_station_mobile-firma_station_mobileTests.a */; };
 		F952564CCF114679B76CB388 /* Lato-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6323875A746F4B7BBC1E6F3A /* Lato-Light.ttf */; };
 /* End PBXBuildFile section */
 
@@ -87,7 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7EF68E3733C33B6898317E18 /* libPods-firma_station_mobile-firma_station_mobileTests.a in Frameworks */,
+				CD90D9C1D4BEABD8A885F0C3 /* libPods-firma_station_mobile-firma_station_mobileTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,7 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6172F2D35A4C3AA820D92908 /* libPods-firma_station_mobile.a in Frameworks */,
+				AFF4B8A85F585F9F08E84AB8 /* libPods-firma_station_mobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,7 +575,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.19;
+				MARKETING_VERSION = 1.0.20;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -603,7 +603,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.19;
+				MARKETING_VERSION = 1.0.20;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
