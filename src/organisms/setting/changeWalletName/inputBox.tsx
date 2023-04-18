@@ -72,6 +72,7 @@ const InputBox = ({ wallet, validate, newWalletName, password, recoverValue }: I
             </View>
             <InputSetVertical
                 title={walletNameText.title}
+                value={''}
                 message={nameMessage}
                 validation={nameValidation}
                 placeholder={walletNameText.placeholder}
@@ -79,6 +80,7 @@ const InputBox = ({ wallet, validate, newWalletName, password, recoverValue }: I
             />
             <InputSetVertical
                 title={passwordTextObj.title}
+                value={''}
                 placeholder={passwordTextObj.placeholder}
                 validation={true}
                 secure={true}

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
-import { QRCodeScannerIcon } from '../icon/icon';
-import { useAppSelector } from '@/redux/hooks';
-import { addressCheck } from '@/util/firma';
-import { WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
 import { useIsFocused } from '@react-navigation/native';
 import { ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { addressCheck } from '@/util/firma';
+import { FavoriteIcon, QRCodeScannerIcon } from '../icon/icon';
+import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
+import { WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TextButton from '../button/textButton';
 import Toast from 'react-native-toast-message';
@@ -18,6 +18,8 @@ interface IProps {
     placeholder: string;
     secure?: boolean;
     resetValues?: boolean;
+    enableFavorite?: boolean;
+    enableQrScanner?: boolean;
     onChangeEvent: Function;
 }
 
@@ -28,24 +30,27 @@ const InputSetVerticalForAddress = ({
     placeholder,
     secure = false,
     resetValues = false,
+    enableFavorite: enableFavorite = true,
+    enableQrScanner = true,
     onChangeEvent
 }: IProps) => {
     const isFocused = useIsFocused();
     const { common, modal } = useAppSelector((state) => state);
 
-    const [val, setVal] = useState('');
     const [focus, setFocus] = useState(false);
+    const [val, setVal] = useState(value);
 
-    const handleModal = (active: boolean) => {
+    const setOpenFavoritekModal = (active: boolean) => {
+        ModalActions.handleFavoriteModal(active);
+    };
+
+    const handleQRModal = (active: boolean) => {
         ModalActions.handleQRScannerModal(active);
-        if (active === false) {
-            ModalActions.handleResetModal({});
-        }
     };
 
     const handleInputChange = (value: string) => {
         setVal(value);
-        onChangeEvent && onChangeEvent(value);
+        onChangeEvent(value);
     };
 
     const handlePaste = async () => {
@@ -71,14 +76,12 @@ const InputSetVerticalForAddress = ({
     }, [isFocused, modal.modalData]);
 
     useEffect(() => {
-        if (value !== '') {
-            handleInputChange(value);
-        }
+        handleInputChange(value);
     }, [value]);
 
     useEffect(() => {
         if (common.appState !== 'active') {
-            handleModal(false);
+            handleQRModal(false);
         }
     }, [common.appState]);
 
@@ -87,28 +90,39 @@ const InputSetVerticalForAddress = ({
     }, [resetValues]);
 
     return (
-        <View style={styles.viewContainer}>
-            <View style={styles.textContainer}>
-                <Text style={styles.text}>{title}</Text>
-                <TouchableOpacity style={{ marginRight: 15 }} onPress={() => handleModal(true)}>
-                    <QRCodeScannerIcon size={25} color={WhiteColor} />
-                </TouchableOpacity>
-                <TextButton title={'Paste'} onPressEvent={handlePaste} />
+        <Fragment>
+            <View style={styles.viewContainer}>
+                <View style={styles.textContainer}>
+                    <Text style={styles.text}>{title}</Text>
+                    <TouchableOpacity
+                        style={{ marginRight: 15, display: enableFavorite ? 'flex' : 'none' }}
+                        onPress={() => setOpenFavoritekModal(true)}
+                    >
+                        <FavoriteIcon size={28} color={WhiteColor} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{ marginRight: 15, display: enableQrScanner ? 'flex' : 'none' }}
+                        onPress={() => handleQRModal(true)}
+                    >
+                        <QRCodeScannerIcon size={25} color={WhiteColor} />
+                    </TouchableOpacity>
+                    <TextButton title={'Paste'} onPressEvent={handlePaste} />
+                </View>
+                <TextInput
+                    style={[styles.input, { borderColor: focus ? WhiteColor : 'transparent', color: TextColor }]}
+                    placeholder={placeholder}
+                    placeholderTextColor={InputPlaceholderColor}
+                    secureTextEntry={secure}
+                    keyboardType={numberOnly ? 'numeric' : 'default'}
+                    autoCapitalize="none"
+                    value={val}
+                    selectionColor={WhiteColor}
+                    onFocus={() => setFocus(true)}
+                    onBlur={() => setFocus(false)}
+                    onChangeText={(text) => handleInputChange(text)}
+                />
             </View>
-            <TextInput
-                style={[styles.input, { borderColor: focus ? WhiteColor : 'transparent' }]}
-                placeholder={placeholder}
-                placeholderTextColor={InputPlaceholderColor}
-                secureTextEntry={secure}
-                keyboardType={numberOnly ? 'numeric' : 'default'}
-                autoCapitalize="none"
-                value={val}
-                selectionColor={WhiteColor}
-                onFocus={() => setFocus(true)}
-                onBlur={() => setFocus(false)}
-                onChangeText={(text) => handleInputChange(text)}
-            />
-        </View>
+        </Fragment>
     );
 };
 
@@ -145,7 +159,10 @@ const styles = StyleSheet.create({
         padding: 12,
         borderWidth: 1,
         backgroundColor: InputBgColor,
-        marginBottom: 5
+        marginBottom: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     modalTextContents: {
         width: '100%',

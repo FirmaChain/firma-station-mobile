@@ -147,7 +147,7 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
                 <WalletSelector selectedWallet={selectedWallet} handleOpenModal={handleOpenSelectModal} />
                 <InputSetVertical
                     title={passwordText.title}
-                    message={''}
+                    value={''}
                     validation={true}
                     placeholder={passwordText.placeholder}
                     secure={true}

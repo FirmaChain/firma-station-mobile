@@ -50,6 +50,8 @@ export const MAINTENANCE_ERROR = 'Could not verify version information.';
 export const UPDATE_NOTIFICATION =
     'The latest version of Firma Station has been released.\nPress the OK button to go to the store for updates.';
 
+export const UNABLE_TO_RETRIEVE_WALLET = 'Unable to retrieve wallet information. If the problem repeats, please contact us.';
+
 export const APPLE_APP_STORE = 'itms-apps://apps.apple.com/tr/app/firma-station/id1611660902?l=tr';
 export const APPLE_APP_STORE_WEB = 'https://apps.apple.com/us/app/firma-station/idid1611660902';
 export const GOOGLE_PLAY_STORE = 'market://details?id=com.firma_station_mobile';
@@ -84,6 +86,13 @@ export const TRANSACTION_PROCESS_DESCRIPTION_TEXT = 'It can take up from 5 to 15
 export const TRANSACTION_PROCESS_NOTICE_TEXT = 'Depending on the condition of the network,\nit can take up to more than 15 seconds.';
 
 export const WRONG_TARGET_ADDRESS_WARN_TEXT = 'Invalid address. Please check again.';
+export const EXIST_ADDRESS_IN_FAVORITE_WARN_TEXT = 'This address already exists in the favorite.';
+export const EXIST_NAME_IN_FAVORITE_WARN_TEXT = 'This name already exists in the favorite.';
+export const FAVORITE_REMOVE_WARN_TEXT = 'Press the delete button,\nthe favorite will be deleted immediately.';
+export const NO_FAVORITE = 'Favotite does not exist.';
+export const FAVORITE_ADD_SUCCESS = 'Successfully added favorite.';
+export const FAVORITE_ADJUST_SUCCESS = 'Successfully changed favorite data.';
+export const FAVORITE_REMOVE_SUCCESS = 'Successfully removed favorite.';
 
 export const BIOMETRICS_PERMISSION_ALERT = {
     title: 'Biometrics not authorized',
@@ -147,7 +156,7 @@ export const REDELEGATE_NOT_EXIST = 'There are no redelegation\ncurrently in pro
 export const UNDELEGATE_NOT_EXIST = 'There are no undelegation\ncurrently in progress.';
 export const RESTAKE_NOT_EXIST = 'Restake is inactive';
 
-export const AUTO_ENTERED_AMOUNT_TEXT = `The entire amount is automatically entered except 0.${_CHAIN_SYMBOL}, which will be used as a transaction fee.`;
+export const AUTO_ENTERED_AMOUNT_TEXT = `The entire amount is automatically entered except 0.1 ${_CHAIN_SYMBOL}, which will be used as a transaction fee.`;
 export const WARNING_FOR_MAX_AMOUNT_TEST = 'If the maximum value is transmitted, the subsequent transaction cannot be guaranteed.';
 export const MAXIMUM_UNDELEGATE_NOTICE_TEXT = 'A maximum of 7 undelegations are allowed per validator during the 21 day link period.';
 export const UNDELEGATE_NOTICE_TEXT = [
@@ -167,6 +176,12 @@ export const RESTAKE_NOTICE_TEXT = [
     'If you delegate to a new Validator after activating Restake, you must update Restake.'
 ];
 
+export const DAPP_SERVICE_CONNECTION = 'SERVICE CONNECTION REQUEST';
+export const DAPP_SERVICE_CONNECTION_DESCRIPTION_1 = 'The service request the use of ';
+export const DAPP_SERVICE_CONNECTION_DESCRIPTION_2 = 'The signature does not incur any costs.';
+export const DAPP_SIGNATURE_REQUEST = 'SIGNATURE REQUEST';
+export const DAPP_SIGNATURE_REQUEST_DESCRIPTION =
+    'The signature requested by the service. Please proceed with the signature if you can trust it. There is no charge for these signatures.';
 export const DAPP_INVALID_QR = 'Invalid wallet. Please check your wallet.';
 export const DAPP_NO_SERVICE = 'There are no services available.';
 export const DAPP_LOADING_NFT = 'Loading NFT list.';

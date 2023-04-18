@@ -126,7 +126,9 @@ const AppStateManager = () => {
     }, []);
 
     useEffect(() => {
-        handleJailbreakDetect();
+        wait(300).then(() => {
+            handleJailbreakDetect();
+        });
     }, [common.appState, common.appPausedTime]);
 
     useEffect(() => {
@@ -203,9 +205,8 @@ const AppStateManager = () => {
             {common.loading && <Progress />}
             {wallet.name !== '' && common.loggedIn && (
                 <React.Fragment>
-                    {common.isBioAuthInProgress === false && (common.appState !== 'active' || common.appPausedTime !== '') && (
-                        <View style={styles.dim} />
-                    )}
+                    {common.isBioAuthInProgress === false && common.appState !== 'active' && <View style={styles.dim} />}
+                    {common.isBioAuthInProgress === false && common.appPausedTime !== '' && <View style={styles.dim} />}
                     <DeepLinkManager />
                     <ValidationModal type={'lock'} open={common.lockStation} setOpenModal={handleUnlock} validationHandler={handleUnlock} />
                 </React.Fragment>

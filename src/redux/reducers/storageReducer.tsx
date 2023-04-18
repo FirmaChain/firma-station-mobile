@@ -8,7 +8,9 @@ import {
     HANDLE_DAPP_SERVICES_VOLUME,
     HANDLE_RECOVER_TYPE,
     HANDLE_VALIDATORS_PROFILE_INFO,
-    HANDLE_LAST_SELECTED_WALLET_INDEX
+    HANDLE_LAST_SELECTED_WALLET_INDEX,
+    IFavoriteState,
+    HANDLE_FAVORITE
 } from '../types';
 
 export interface IContentVolume {
@@ -35,6 +37,7 @@ export interface IStorageStateProps {
     recoverType: IKeyValue;
     validatorsProfile: IValidatorsProfileState;
     lastSelectedWalletIndex: number;
+    favorite: IFavoriteState[];
 }
 
 const initialState: IStorageStateProps = {
@@ -51,7 +54,8 @@ const initialState: IStorageStateProps = {
         profileInfos: [],
         lastUpdatedTime: 0
     },
-    lastSelectedWalletIndex: -1
+    lastSelectedWalletIndex: -1,
+    favorite: []
 };
 
 export const ACTION_CREATORS = {
@@ -62,7 +66,8 @@ export const ACTION_CREATORS = {
     HANDLE_DAPP_SERVICES_VOLUME: createAction<IKeyValue>(HANDLE_DAPP_SERVICES_VOLUME),
     HANDLE_RECOVER_TYPE: createAction<IKeyValue>(HANDLE_RECOVER_TYPE),
     HANDLE_VALIDATORS_PROFILE_INFO: createAction<IValidatorsProfileState>(HANDLE_VALIDATORS_PROFILE_INFO),
-    HANDLE_LAST_SELECTED_WALLET_INDEX: createAction<number>(HANDLE_LAST_SELECTED_WALLET_INDEX)
+    HANDLE_LAST_SELECTED_WALLET_INDEX: createAction<number>(HANDLE_LAST_SELECTED_WALLET_INDEX),
+    HANDLE_FAVORITE: createAction<IFavoriteState[]>(HANDLE_FAVORITE)
 };
 
 export const ACTIONS = {
@@ -73,7 +78,8 @@ export const ACTIONS = {
     handleDappServicesVolume: ACTION_CREATORS.HANDLE_DAPP_SERVICES_VOLUME,
     handleRecoverType: ACTION_CREATORS.HANDLE_RECOVER_TYPE,
     handleValidatorsProfile: ACTION_CREATORS.HANDLE_VALIDATORS_PROFILE_INFO,
-    handleLastSelectedWalletIndex: ACTION_CREATORS.HANDLE_LAST_SELECTED_WALLET_INDEX
+    handleLastSelectedWalletIndex: ACTION_CREATORS.HANDLE_LAST_SELECTED_WALLET_INDEX,
+    handleFavorite: ACTION_CREATORS.HANDLE_FAVORITE
 };
 
 const reducer = createReducer(initialState, (builder) => {
@@ -100,6 +106,9 @@ const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(ACTION_CREATORS.HANDLE_LAST_SELECTED_WALLET_INDEX, (state, { payload }) => {
         state.lastSelectedWalletIndex = payload;
+    });
+    builder.addCase(ACTION_CREATORS.HANDLE_FAVORITE, (state, { payload }) => {
+        state.favorite = payload;
     });
 });
 

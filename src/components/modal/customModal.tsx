@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Keyboard, Platform, Pressable, StyleSheet, Modal as FadeModal, KeyboardAvoidingView } from 'react-native';
+import { Keyboard, Platform, Pressable, StyleSheet, Modal as FadeModal, KeyboardAvoidingView, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { BgColor, BoxColor } from '@/constants/theme';
+import { useInterval } from '@/hooks/common/hooks';
 import CustomToast from '../toast/customToast';
 import Modal from 'react-native-modal';
 
@@ -10,6 +11,7 @@ interface IProps {
     fade?: boolean;
     keyboardAvoiing?: boolean;
     lockBackButton?: boolean;
+    forceActive?: boolean;
     bgColor?: string;
     handleOpen: (open: boolean) => void;
     children: JSX.Element;
@@ -21,6 +23,7 @@ const CustomModal = ({
     fade = false,
     keyboardAvoiing = true,
     lockBackButton = false,
+    forceActive = false,
     bgColor = BoxColor,
     handleOpen,
     toastInModal = true,
@@ -64,33 +67,40 @@ const CustomModal = ({
                     style={{ marginHorizontal: 0, marginVertical: 0 }}
                 >
                     <Pressable style={styles.modalContainer} onPress={() => closeModal()} />
+                    {toastInModal && <CustomToast />}
                     <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
                         {children}
                     </Pressable>
-                    {toastInModal && <CustomToast />}
                 </Modal>
             );
         }
     };
 
+    useInterval(
+        () => {
+            if (forceActive) {
+                closeModal();
+            }
+        },
+        common.appState !== 'active' && common.isBioAuthInProgress === false ? 50000 : null,
+        true
+    );
+
     useEffect(() => {
-        if (common.appState !== 'active' && common.isBioAuthInProgress === false) closeModal();
-    }, [common.appState]);
+        if (forceActive === false) {
+            if (common.appState !== 'active' && common.isBioAuthInProgress === false) closeModal();
+        }
+    }, [common.appPausedTime, common.appState, forceActive]);
 
     return modalSwitcher();
 };
 
 const styles = StyleSheet.create({
-    container: {
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
-    },
     modalContainer: {
         flex: 1,
         justifyContent: 'flex-end',
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 9999
     },
     modalBox: {
         width: '100%',

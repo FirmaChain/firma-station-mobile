@@ -131,14 +131,16 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
                 open={openModal}
                 setOpenModal={handleWithdraw}
             />
-            <AlertModal
-                visible={isAlertModalOpen}
-                handleOpen={handleModalOpen}
-                title={'Failed'}
-                desc={alertDescription}
-                confirmTitle={'OK'}
-                type={'ERROR'}
-            />
+            {isAlertModalOpen && (
+                <AlertModal
+                    visible={isAlertModalOpen}
+                    handleOpen={handleModalOpen}
+                    title={'Failed'}
+                    desc={alertDescription}
+                    confirmTitle={'OK'}
+                    type={'ERROR'}
+                />
+            )}
         </View>
     );
 };

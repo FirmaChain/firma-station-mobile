@@ -207,14 +207,16 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
                     <Animated.Image style={[styles.icon_arrow, { transform: [{ rotate: degree(arrowDeg) }] }]} source={ARROW_ACCORDION} />
                 </TouchableOpacity>
             </View>
-            <AlertModal
-                visible={isAlertModalOpen}
-                handleOpen={handleModalOpen}
-                title={'Failed'}
-                desc={alertDescription}
-                confirmTitle={'OK'}
-                type={'ERROR'}
-            />
+            {isAlertModalOpen && (
+                <AlertModal
+                    visible={isAlertModalOpen}
+                    handleOpen={handleModalOpen}
+                    title={'Failed'}
+                    desc={alertDescription}
+                    confirmTitle={'OK'}
+                    type={'ERROR'}
+                />
+            )}
             <TransactionConfirmModal
                 transactionHandler={handleTransaction}
                 title={'Withdraw'}

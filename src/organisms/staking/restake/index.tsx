@@ -285,14 +285,16 @@ const Restake = () => {
                         open={openTransactionModal}
                         setOpenModal={handleGrantOrRevokeConfirm}
                     />
-                    <AlertModal
-                        visible={isAlertModalOpen}
-                        handleOpen={handleAlertModalOpen}
-                        title={'Failed'}
-                        desc={alertDescription}
-                        confirmTitle={'OK'}
-                        type={'ERROR'}
-                    />
+                    {isAlertModalOpen && (
+                        <AlertModal
+                            visible={isAlertModalOpen}
+                            handleOpen={handleAlertModalOpen}
+                            title={'Failed'}
+                            desc={alertDescription}
+                            confirmTitle={'OK'}
+                            type={'ERROR'}
+                        />
+                    )}
                 </View>
             </ViewContainer>
         </Container>

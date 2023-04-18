@@ -2,6 +2,18 @@ export type Action = {
     type: string;
     payload?: any;
 };
+
+export interface IFavoriteState {
+    ownerAddress: string;
+    favorite: IFavoriteProps[];
+}
+
+export interface IFavoriteProps {
+    name: string;
+    address: string;
+    memo?: string;
+}
+
 // common
 export const APP_STATE = 'APP_STATE';
 export const MAINTENANCE_STATE = 'MAINTENANCE_STATE';
@@ -25,7 +37,10 @@ export const DATA_LOAD_STATUS = 'DATA_LOAD_STATUS';
 export const HANDLE_RESET_MODAL = 'RESET_MODAL';
 export const HANDLE_MODAL_DATA = 'MODAL_DATA';
 export const HANDLE_DAPP_DATA = 'HANDLE_DAPP_DATA';
+export const HANDLE_FAVORITE_DATA = 'HANDLE_FAVORITE_DATA';
 export const VALIDATION_MODAL = 'VALIDATION_MODAL';
+export const FAVORITE_MODAL = 'FAVORITE_MODAL';
+export const FAVORITE_CREATE_MODAL = 'FAVORITE_CREATE_MODAL';
 export const QR_SCANNER_MODAL = 'QR_SCANNER_MODAL';
 export const DAPP_CONNECT_MODAL = 'DAPP_CONNECT_MODAL';
 export const DAPP_SIGN_MODAL = 'DAPP_SIGN_MODAL';
@@ -51,3 +66,4 @@ export const HANDLE_DAPP_SERVICES_VOLUME = 'HANDLE_DAPP_SERVICES_VOLUME';
 export const HANDLE_RECOVER_TYPE = 'HANDLE_RECOVER_TYPE';
 export const HANDLE_VALIDATORS_PROFILE_INFO = 'HANDLE_VALIDATORS_PROFILE_INFO';
 export const HANDLE_LAST_SELECTED_WALLET_INDEX = 'HANDLE_LAST_SELECTED_WALLET_INDEX';
+export const HANDLE_FAVORITE = 'HANDLE_FAVORITE';

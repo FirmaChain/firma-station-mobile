@@ -3,6 +3,8 @@ import { IKeyValue } from '@/constants/common';
 export const VERSION = '';
 export const MAINTENANCE_API = '';
 export const VALIDATORS_PROFILE_API = '';
+export const CONTACT = '';
+
 export const MAINTENANCE_PATH: IKeyValue = {
     MainNet: '',
     TestNet: '',
@@ -23,7 +25,9 @@ export const CHAIN_NETWORK: IKeyValue = {
         CHAIN_SYMBOL: '',
         CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
-        DEFAULT_MINT_INFLATION: 0
+        DEFAULT_MINT_INFLATION: 0,
+        PROPOSAL_JSON: '',
+        WALLET_JSON: ''
     },
     TestNet: {
         FIRMACHAIN_CONFIG: '',
@@ -38,7 +42,9 @@ export const CHAIN_NETWORK: IKeyValue = {
         CHAIN_SYMBOL: '',
         CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
-        DEFAULT_MINT_INFLATION: 0
+        DEFAULT_MINT_INFLATION: 0,
+        PROPOSAL_JSON: '',
+        WALLET_JSON: ''
     },
     DevNet: {
         FIRMACHAIN_CONFIG: '',
@@ -53,7 +59,9 @@ export const CHAIN_NETWORK: IKeyValue = {
         CHAIN_SYMBOL: '',
         CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
-        DEFAULT_MINT_INFLATION: 0
+        DEFAULT_MINT_INFLATION: 0,
+        PROPOSAL_JSON: '',
+        WALLET_JSON: ''
     }
 };
 

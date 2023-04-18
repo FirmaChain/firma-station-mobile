@@ -109,15 +109,16 @@ const ChangePassword = () => {
                     <View style={styles.buttonBox}>
                         <Button title="Change" active={activeButton} onPressEvent={changeNewPassword} />
                     </View>
-
-                    <AlertModal
-                        visible={isModalOpen}
-                        handleOpen={handleModalOpen}
-                        title={status === 0 ? 'Wrong password' : 'Change password'}
-                        desc={status === 0 ? PASSWORD_CHANGE_FAIL : PASSWORD_CHANGE_SUCCESS}
-                        confirmTitle={'OK'}
-                        type={status === 0 ? 'ERROR' : 'CONFIRM'}
-                    />
+                    {isModalOpen && (
+                        <AlertModal
+                            visible={isModalOpen}
+                            handleOpen={handleModalOpen}
+                            title={status === 0 ? 'Wrong password' : 'Change password'}
+                            desc={status === 0 ? PASSWORD_CHANGE_FAIL : PASSWORD_CHANGE_SUCCESS}
+                            confirmTitle={'OK'}
+                            type={status === 0 ? 'ERROR' : 'CONFIRM'}
+                        />
+                    )}
                 </View>
             </ViewContainer>
         </Container>

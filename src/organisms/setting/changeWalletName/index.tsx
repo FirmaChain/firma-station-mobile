@@ -39,7 +39,6 @@ const ChangeWalletName = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeButton, setActiveButton] = useState(false);
-    const [alertContent, setAlertContent] = useState(WALLETNAME_CHANGE_SUCCESS);
 
     const [newWalletName, setNewWalletName] = useState('');
     const [password, setPassword] = useState('');
@@ -151,15 +150,16 @@ const ChangeWalletName = () => {
                     <View style={styles.buttonBox}>
                         <Button title="Change" active={activeButton} onPressEvent={changeNewWalletName} />
                     </View>
-
-                    <AlertModal
-                        visible={isModalOpen}
-                        handleOpen={handleModalOpen}
-                        title={'Change wallet name'}
-                        desc={WALLETNAME_CHANGE_SUCCESS}
-                        confirmTitle={'OK'}
-                        type={'CONFIRM'}
-                    />
+                    {isModalOpen && (
+                        <AlertModal
+                            visible={isModalOpen}
+                            handleOpen={handleModalOpen}
+                            title={'Change wallet name'}
+                            desc={WALLETNAME_CHANGE_SUCCESS}
+                            confirmTitle={'OK'}
+                            type={'CONFIRM'}
+                        />
+                    )}
                 </View>
             </ViewContainer>
         </Container>

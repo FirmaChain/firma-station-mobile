@@ -1,40 +1,39 @@
-import { Alert, Linking, Platform } from "react-native";
-import ReactNativeBiometrics from "react-native-biometrics";
-import { BIOMETRICS_PERMISSION_ALERT } from "@/constants/common";
-import { CommonActions } from "@/redux/actions";
-import { wait } from "./common";
+import { Alert, Linking, Platform } from 'react-native';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { BIOMETRICS_PERMISSION_ALERT } from '@/constants/common';
+import { CommonActions } from '@/redux/actions';
+import { wait } from './common';
 
-export const confirmViaBioAuth = async() => {
+export const confirmViaBioAuth = async () => {
     CommonActions.handleBioAuthInProgress(true);
-    let authResult:boolean = false;
+    let authResult: boolean = false;
     const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
 
     try {
-        const result = await ReactNativeBiometrics.simplePrompt({ promptMessage: "Confirm " + biometryType });
-        wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
+        const result = await ReactNativeBiometrics.simplePrompt({ promptMessage: 'Confirm ' + biometryType });
+        wait(Platform.OS === 'ios' ? 2300 : 800).then(() => CommonActions.handleBioAuthInProgress(false));
         authResult = result.success;
     } catch (error) {
         console.log(error);
-        wait(Platform.OS === "ios"? 1550 : 500).then(() => CommonActions.handleBioAuthInProgress(false));
-        if(available === false){
+        wait(Platform.OS === 'ios' ? 2300 : 800).then(() => CommonActions.handleBioAuthInProgress(false));
+        if (available === false) {
             Alert.alert(BIOMETRICS_PERMISSION_ALERT.title, BIOMETRICS_PERMISSION_ALERT.desc, [
                 {
-                    text: "Cancel",
-                    style: "cancel"
+                    text: 'Cancel',
+                    style: 'cancel'
                 },
-                { text: "OK", onPress: () => Linking.openSettings() }
-            ])
+                { text: 'OK', onPress: () => Linking.openSettings() }
+            ]);
         }
         authResult = false;
     }
 
     return authResult;
-}
+};
 
-export const checkBioMetrics = async() => {
-    let result = ReactNativeBiometrics.isSensorAvailable()
-    .then((resultObject) => {
-        const { available, biometryType } = resultObject
+export const checkBioMetrics = async () => {
+    let result = ReactNativeBiometrics.isSensorAvailable().then((resultObject) => {
+        const { available, biometryType } = resultObject;
         if (available && biometryType === ReactNativeBiometrics.TouchID) {
             return true;
         } else if (available && biometryType === ReactNativeBiometrics.FaceID) {
@@ -44,7 +43,7 @@ export const checkBioMetrics = async() => {
         } else {
             return false;
         }
-    })
+    });
 
     return result;
-}
+};
