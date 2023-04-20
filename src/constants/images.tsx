@@ -18,3 +18,5 @@ export var VALIDATOR_PROFILE = require('@/assets/images/ic_profile.png');
 
 export var ICON_VOTE_CHECK = require('@/assets/images/ic-check-round-32-px.png');
 export var ICON_LINK_ARROW = require('@/assets/images/ic-arrow-rignt-top-bl-16-px.png');
+
+export var ICON_CERTIFIED_SITE = require('@/assets/images/ic_certified.png');

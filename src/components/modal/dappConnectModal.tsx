@@ -1,24 +1,27 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { setDAppProjectIdList } from '@/util/wallet';
-import { convertNumber, wait } from '@/util/common';
-import { BgColor, Lato, TextCatTitleColor, TextDarkGrayColor } from '@/constants/theme';
+import { wait } from '@/util/common';
+import { Lato, TextDarkGrayColor } from '@/constants/theme';
+import { DAPP_SERVICE_CONNECTION, DAPP_SERVICE_CONNECTION_DESCRIPTION_1, DAPP_SERVICE_CONNECTION_DESCRIPTION_2 } from '@/constants/common';
+import { useDappCertified } from '@/hooks/dapps/hooks';
 import { CHAIN_NETWORK } from '@/../config';
-import { URLLockIcon } from '../icon/icon';
-import Button from '../button/button';
 import CustomModal from './customModal';
 import ConnectClient from '@/util/connectClient';
+import DappURLBox from './dappParts/dappURLBox';
+import DappTitleBox from './dappParts/dappTitleBox';
+import DappButtonBox from './dappParts/dappButtonBox';
 
 const DappConnectModal = () => {
     const { storage, common, wallet, modal } = useAppSelector((state) => state);
-
+    const { Certified } = useDappCertified();
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
 
     const [url, setUrl] = useState('');
     const [iconUrl, setIconUrl] = useState('');
-    const [iconHeight, setIconHeight] = useState(0);
+    const [isCertified, setIsCertified] = useState(0);
     const [dappName, setDappName] = useState('');
 
     const isVisible = useMemo(() => {
@@ -49,6 +52,7 @@ const DappConnectModal = () => {
                 setUrl(QRData.projectMetaData.url);
                 setIconUrl(QRData.projectMetaData.icon);
                 setDappName(QRData.projectMetaData.name);
+                setIsCertified(Certified(QRData.projectMetaData));
             } catch (error) {
                 handleModal(false);
             }
@@ -87,21 +91,6 @@ const DappConnectModal = () => {
     };
 
     useEffect(() => {
-        if (isVisible && iconUrl !== '') {
-            Image.getSize(
-                iconUrl,
-                (width, height) => {
-                    let ratio = convertNumber(height / width);
-                    setIconHeight(115 * ratio);
-                },
-                (error) => {
-                    console.log(error);
-                }
-            );
-        }
-    }, [isVisible, iconUrl]);
-
-    useEffect(() => {
         if (common.appState !== 'active' && common.isBioAuthInProgress === false) handleCloseModal();
     }, [common.appState]);
 
@@ -109,26 +98,21 @@ const DappConnectModal = () => {
         <CustomModal visible={isVisible} handleOpen={handleModal}>
             <View style={styles.modalTextContents}>
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
-                    <View style={[styles.urlBox]}>
-                        <URLLockIcon size={14} color={TextCatTitleColor} />
-                        <Text style={[styles.url, { paddingBottom: 0, paddingHorizontal: 10 }]}>{url}</Text>
-                    </View>
-                    {iconUrl !== '' && (
-                        <View style={styles.logoBox}>
-                            <Image style={{ width: 115, height: iconHeight, resizeMode: 'contain' }} source={{ uri: iconUrl }} />
-                        </View>
-                    )}
-                    <Text style={styles.desc}>{`Connect to ${dappName.toUpperCase()}.`}</Text>
+                    <DappURLBox certifiedState={isCertified} url={url} />
+                    <DappTitleBox
+                        title={DAPP_SERVICE_CONNECTION}
+                        descExist={true}
+                        desc={`${DAPP_SERVICE_CONNECTION_DESCRIPTION_1} ${dappName.toUpperCase()}.\n${DAPP_SERVICE_CONNECTION_DESCRIPTION_2}`}
+                        iconURL={iconUrl}
+                    />
                 </View>
-                <View style={styles.modalButtonBox}>
-                    <View style={{ flex: 1 }}>
-                        <Button title={'Cancel'} active={true} border={true} onPressEvent={() => handleCloseModal()} />
-                    </View>
-                    <View style={{ width: 10 }} />
-                    <View style={{ flex: 1 }}>
-                        <Button title={'Connect'} active={true} onPressEvent={() => handleConnect()} />
-                    </View>
-                </View>
+                <DappButtonBox
+                    active={true}
+                    rejectTitle={'Cancel'}
+                    confirmTitle={'Connect'}
+                    handleReject={() => handleCloseModal()}
+                    handleConfirm={() => handleConnect()}
+                />
             </View>
         </CustomModal>
     );
@@ -138,25 +122,6 @@ const styles = StyleSheet.create({
     boxV: {
         width: '100%',
         alignItems: 'flex-start'
-    },
-    urlBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 25,
-        paddingVertical: 6,
-        borderRadius: 15,
-        backgroundColor: BgColor
-    },
-    url: {
-        fontFamily: Lato,
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: TextCatTitleColor
-    },
-    logoBox: {
-        paddingTop: 20,
-        paddingBottom: 10
     },
     desc: {
         fontFamily: Lato,

@@ -140,3 +140,16 @@ const getMyNFTList = async (nfts: Array<INftItemType>, identity: string) => {
         return [];
     }
 };
+
+export const useDappCertified = () => {
+    const Certified = (metaData: any | null | undefined) => {
+        let certified = 0;
+        if (metaData === null || metaData === undefined) return 0;
+        if (metaData.url.includes('https://')) certified = 1;
+        if (metaData.isCertified) certified = 2;
+
+        return certified;
+    };
+
+    return { Certified };
+};

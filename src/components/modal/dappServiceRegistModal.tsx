@@ -111,14 +111,20 @@ const DappServiceRegistModal = () => {
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
                     {project !== undefined && (
                         <View style={[styles.projectBox]}>
-                            <Image style={{ width: 14, height: 14, resizeMode: 'contain' }} source={{ uri: project.icon }} />
+                            <Image
+                                style={{ width: 14, height: 14, resizeMode: 'contain', borderRadius: 10 }}
+                                source={{ uri: project.icon }}
+                            />
                             <Text style={[styles.url, { paddingBottom: 0, paddingHorizontal: 10 }]}>{project.name}</Text>
                         </View>
                     )}
                     {service !== undefined && (
                         <React.Fragment>
                             <View style={styles.logoBox}>
-                                <Image style={{ width: 85, height: 85, resizeMode: 'contain' }} source={{ uri: service.icon }} />
+                                <Image
+                                    style={{ width: 85, height: 85, resizeMode: 'contain', borderRadius: 10 }}
+                                    source={{ uri: service.icon }}
+                                />
                             </View>
                             <Text style={styles.desc}>{service.name}</Text>
                             {serviceRegistered ? (

@@ -5,8 +5,10 @@ import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Foundation from 'react-native-vector-icons/Foundation';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 interface IProps {
     size: number;
@@ -183,4 +185,16 @@ export const SquareIcon = ({ size, color }: IProps) => {
 
 export const StarIcon = ({ size, color }: IProps) => {
     return <Fontisto name="asterisk" size={size} color={color} />;
+};
+
+export const FavoriteIcon = ({ size, color }: IProps) => {
+    return <MaterialCommunityIcons name="card-account-details-star-outline" size={size} color={color} />;
+};
+
+export const BookmarkPlusIcon = ({ size, color }: IProps) => {
+    return <MaterialCommunityIcons name="bookmark-plus-outline" size={size} color={color} />;
+};
+
+export const RemoveIcon = ({ size, color }: IProps) => {
+    return <Ionicons name="ios-remove-circle-outline" size={size} color={color} />;
 };

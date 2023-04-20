@@ -1,42 +1,43 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { getBalanceFromAdr, getFirmaSDK, getTokenBalance } from '@/util/firma';
 import { getDAppConnectSession } from '@/util/wallet';
-import {
-    AddressTextColor,
-    BgColor,
-    DisableColor,
-    Lato,
-    TextCatTitleColor,
-    TextColor,
-    TextDarkGrayColor,
-    TextDisableColor,
-    WhiteColor
-} from '@/constants/theme';
+import { useDappCertified } from '@/hooks/dapps/hooks';
+import { BgColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { CHAIN_SYMBOL, DAPP_NOT_ENOUGHT_BALANCE, TRANSACTION_TYPE } from '@/constants/common';
+import { convertNumber, convertToFctNumber, makeDecimalPoint } from '@/util/common';
 import { CHAIN_NETWORK } from '@/../config';
-import { URLLockIcon } from '../icon/icon';
-import { convertAmount, convertCurrent, convertNumber, convertToFctNumber, makeDecimalPoint } from '@/util/common';
 import Toast from 'react-native-toast-message';
 import ConnectClient from '@/util/connectClient';
-import Button from '../button/button';
-import CustomModal from './customModal';
-import ValidationModal from './validationModal';
-import WarnContainer from '../parts/containers/warnContainer';
+import Button from '../../button/button';
+import CustomModal from '../customModal';
+import ValidationModal from '../validationModal';
+import WarnContainer from '../../parts/containers/warnContainer';
+import MyInfoBox from './myInfoBox';
+import ProductInfoBox from './productInfoBox';
+import TxInfoBox from './txInfoBox';
+import TxWithStationInfoBox from './txWithStationInfoBox';
+import DappURLBox from '../dappParts/dappURLBox';
+import DappTitleBox from '../dappParts/dappTitleBox';
+import DappButtonBox from '../dappParts/dappButtonBox';
 
 const DappDirectSignModal = () => {
     const { common, wallet, storage, modal } = useAppSelector((state) => state);
+    const { Certified } = useDappCertified();
 
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const defaultFee = convertToFctNumber(CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.defaultFee);
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [openValidationModal, setOpenValidationModal] = useState(false);
     const [url, setUrl] = useState('');
+    const [isCertified, setIsCertified] = useState(0);
     const [iconUrl, setIconUrl] = useState('');
-    const [iconHeight, setIconHeight] = useState(0);
-    const [description, setDescription] = useState('');
+    const [title, setTitle] = useState('');
+    const [productName, setProductName] = useState('');
+    const [companyName, setCompanyName] = useState('');
     const [isFCT, setIsFCT] = useState(true);
     const [isGetBalanceData, setIsGetBalanceData] = useState(false);
     const [isGetTokenBalanceData, setIsGetTokenBalanceData] = useState(false);
@@ -68,6 +69,18 @@ const DappDirectSignModal = () => {
         return modal.dappDirectSignModal;
     }, [modal.dappDirectSignModal]);
 
+    const QRData = useMemo(() => {
+        if (isVisible) {
+            return modal.modalData;
+        }
+        return null;
+    }, [modal.modalData, isVisible]);
+
+    const MessageType = useMemo(() => {
+        if (QRData === null || QRData.signParams.argument?.messageType === undefined) return null;
+        return QRData.signParams.argument.messageType;
+    }, [QRData]);
+
     const isLoadedAllBalanceData = useMemo(() => {
         if (isFCT) {
             return isGetBalanceData;
@@ -82,30 +95,41 @@ const DappDirectSignModal = () => {
         }
     }, [isLoadedAllBalanceData]);
 
-    const QRData = useMemo(() => {
-        if (isVisible) {
-            return modal.modalData;
+    const getBalance = async () => {
+        try {
+            const balanceResult = await getBalanceFromAdr(wallet.address);
+            setBalance(convertNumber(makeDecimalPoint(convertToFctNumber(balanceResult), 2)));
+            setIsGetBalanceData(true);
+        } catch (error) {
+            console.log(error);
+            Toast.show({
+                type: 'error',
+                text1: String(error)
+            });
+            throw error;
         }
-        return null;
-    }, [modal.modalData, isVisible]);
+    };
 
-    const companyName = useMemo(() => {
-        if (QRData) {
-            if (QRData.signParams.argument?.corpName !== undefined) return QRData.signParams.argument.corpName;
+    const getTokenBalanceFromDenom = async (denom: string) => {
+        try {
+            let result = await getTokenBalance(wallet.address, denom);
+            let token = convertToFctNumber(result);
+            setTokenBalance(token);
+            setIsGetTokenBalanceData(true);
+        } catch (error) {
+            console.log(error);
         }
-        return '';
-    }, [QRData]);
-
-    const productName = useMemo(() => {
-        if (QRData) {
-            if (QRData.signParams.argument?.name !== undefined) return QRData.signParams.argument.name;
-        }
-        return '';
-    }, [QRData]);
+    };
 
     useEffect(() => {
         if (QRData) {
             try {
+                let _productName = QRData.signParams.argument?.name === undefined ? '' : QRData.signParams.argument.name;
+                setProductName(_productName);
+
+                let _companyName = QRData.signParams.argument?.corpName === undefined ? '' : QRData.signParams.argument.corpName;
+                setCompanyName(_companyName);
+
                 if (QRData.signParams.argument?.fctPrice !== undefined) {
                     setIsFCT(true);
                     setProductPrice(convertNumber(QRData.signParams.argument.fctPrice));
@@ -124,12 +148,6 @@ const DappDirectSignModal = () => {
             }
         }
     }, [QRData]);
-
-    const availableBalance = useMemo(() => {
-        return convertCurrent(balance);
-    }, [balance]);
-
-    const defaultFee = convertToFctNumber(CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.defaultFee);
 
     const engoughBalance = useCallback(() => {
         if (productPrice > 0) {
@@ -194,32 +212,6 @@ const DappDirectSignModal = () => {
         }
     };
 
-    const getBalance = async () => {
-        try {
-            const balandeResult = await getBalanceFromAdr(wallet.address);
-            setBalance(convertNumber(makeDecimalPoint(convertToFctNumber(balandeResult), 2)));
-            setIsGetBalanceData(true);
-        } catch (error) {
-            console.log(error);
-            Toast.show({
-                type: 'error',
-                text1: String(error)
-            });
-            throw error;
-        }
-    };
-
-    const getTokenBalanceFromDenom = async (denom: string) => {
-        try {
-            let result = await getTokenBalance(wallet.address, denom);
-            let token = convertToFctNumber(result);
-            setTokenBalance(token);
-            setIsGetTokenBalanceData(true);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     useEffect(() => {
         const initializeModalData = async () => {
             try {
@@ -237,26 +229,12 @@ const DappDirectSignModal = () => {
     }, [QRData]);
 
     useEffect(() => {
-        if (isVisible && iconUrl !== '') {
-            Image.getSize(
-                iconUrl,
-                (width, height) => {
-                    let ratio = convertNumber(height / width);
-                    setIconHeight(115 * ratio);
-                },
-                (error) => {
-                    console.log(error);
-                }
-            );
-        }
-    }, [isVisible, iconUrl]);
-
-    useEffect(() => {
         if (isVisible) {
             try {
                 setUrl(QRData.projectMetaData.url);
                 setIconUrl(QRData.projectMetaData.icon);
-                setDescription(QRData.signParams.info);
+                setTitle(QRData.signParams.info);
+                setIsCertified(Certified(QRData.projectMetaData));
                 getBalance();
             } catch (error) {
                 CommonActions.handleLoadingProgress(false);
@@ -280,80 +258,35 @@ const DappDirectSignModal = () => {
             <React.Fragment>
                 <View style={styles.modalTextContents}>
                     <View style={[styles.boxV, { alignItems: 'center' }]}>
-                        <View style={[styles.urlBox]}>
-                            <URLLockIcon size={14} color={TextCatTitleColor} />
-                            <Text style={[styles.url, { paddingBottom: 0, paddingHorizontal: 10 }]}>{url}</Text>
-                        </View>
-                        {iconUrl !== '' && (
-                            <View style={styles.logoBox}>
-                                <Image style={{ width: 115, height: iconHeight, resizeMode: 'contain' }} source={{ uri: iconUrl }} />
-                            </View>
-                        )}
-                        <Text style={styles.desc}>{description}</Text>
-                        {productName !== '' && (
-                            <View style={styles.productBox}>
-                                <Text style={styles.productTitle}>{productName}</Text>
-                                <View style={[styles.boxH, { alignItems: 'baseline' }]}>
-                                    <Text style={styles.productPrice}>{productPrice}</Text>
-                                    <Text style={[styles.productTitle, { color: TextDisableColor }]}>{_CHAIN_SYMBOL}</Text>
-                                </View>
-                            </View>
-                        )}
+                        <DappURLBox certifiedState={isCertified} url={url} />
+                        <DappTitleBox title={title} descExist={false} iconURL={iconUrl} />
+                        <ProductInfoBox productName={productName} productPrice={productPrice} />
+                        <MyInfoBox address={wallet.address} balance={balance} />
 
-                        <View style={[styles.boxV, { paddingTop: 17, paddingBottom: 30 }]}>
-                            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
-                                <Text style={styles.title}>{'My Address'}</Text>
-                                <Text style={[styles.value, { color: AddressTextColor }]} numberOfLines={1} ellipsizeMode={'middle'}>
-                                    {wallet.address}
-                                </Text>
-                            </View>
-                            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between' }]}>
-                                <Text style={styles.title}>{'My Balance'}</Text>
-                                <Text style={[styles.value, { color: AddressTextColor }]}>{`${availableBalance} ${_CHAIN_SYMBOL}`}</Text>
-                            </View>
-                        </View>
-                        <View style={{ width: '100%', height: 1, backgroundColor: WhiteColor + '10' }} />
-                        <View style={[styles.boxV, { paddingTop: 20, paddingBottom: 17 }]}>
-                            {companyName !== '' && (
-                                <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
-                                    <Text style={styles.title}>{'Company'}</Text>
-                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{companyName}</Text>
-                                </View>
-                            )}
-                            {productName !== '' && (
-                                <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
-                                    <Text style={styles.title}>{'Plan'}</Text>
-                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{productName}</Text>
-                                </View>
-                            )}
-                            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
-                                <Text style={styles.title}>{'Fee'}</Text>
-                                <Text
-                                    style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}
-                                >{`${defaultFee} ${_CHAIN_SYMBOL}`}</Text>
-                            </View>
-                            {productName === '' && (
-                                <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
-                                    <Text style={styles.title}>{'Amount'}</Text>
-                                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount(
-                                        productPrice,
-                                        false,
-                                        productPrice > 0 ? 6 : 0
-                                    )} ${productPriceSymbol}`}</Text>
-                                </View>
-                            )}
-                        </View>
+                        {QRData !== null ? (
+                            MessageType === null ? (
+                                <TxInfoBox
+                                    defaultFee={defaultFee}
+                                    companyName={companyName}
+                                    productName={productName}
+                                    productPrice={productPrice}
+                                    productPriceSymbol={productPriceSymbol}
+                                />
+                            ) : (
+                                <TxWithStationInfoBox type={MessageType} qrData={QRData} />
+                            )
+                        ) : (
+                            <Fragment />
+                        )}
                     </View>
                     {enoughBalanceToPay ? (
-                        <View style={styles.modalButtonBox}>
-                            <View style={{ flex: 1 }}>
-                                <Button title={'Reject'} active={true} border={true} onPressEvent={() => handleReject()} />
-                            </View>
-                            <View style={{ width: 10 }} />
-                            <View style={{ flex: 1 }}>
-                                <Button title={'Sign'} active={true} onPressEvent={() => handleValidation(true)} />
-                            </View>
-                        </View>
+                        <DappButtonBox
+                            active={true}
+                            rejectTitle={'Reject'}
+                            confirmTitle={'Sign'}
+                            handleReject={() => handleReject()}
+                            handleConfirm={() => handleValidation(true)}
+                        />
                     ) : (
                         <View style={[styles.boxV, { paddingTop: 30 }]}>
                             <View style={[styles.boxH, { justifyContent: 'center' }]}>
@@ -398,26 +331,6 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'flex-start'
     },
-
-    urlBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 25,
-        paddingVertical: 6,
-        borderRadius: 15,
-        backgroundColor: BgColor
-    },
-    url: {
-        fontFamily: Lato,
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: TextCatTitleColor
-    },
-    logoBox: {
-        paddingTop: 20,
-        paddingBottom: 10
-    },
     desc: {
         fontFamily: Lato,
         fontSize: 14,
@@ -446,7 +359,7 @@ const styles = StyleSheet.create({
         paddingTop: 8
     },
 
-    title: {
+    catTitle: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
