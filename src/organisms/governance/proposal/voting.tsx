@@ -10,6 +10,7 @@ import CustomModal from '@/components/modal/customModal';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import AlertModal from '@/components/modal/alertModal';
 import { wait } from '@/util/common';
+import { VOTE_TYPE } from '@/constants/types';
 
 interface IProps {
     isVotingPeriod: boolean;
@@ -24,8 +25,6 @@ const width = (Dimensions.get('window').width - 20) / cols - marginHorizontal * 
 
 const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
     const { wallet } = useAppSelector((state) => state);
-
-    const votingType = ['YES', 'NO', 'NoWithVeto', 'Abstain'];
 
     const [active, setActive] = useState(isVotingPeriod);
     const [votingGas, setVotingGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
@@ -103,7 +102,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
                 <View style={styles.modalTextContents}>
                     <Text style={styles.title}>Voting</Text>
                     <View style={styles.box}>
-                        {votingType.map((item, index) => {
+                        {VOTE_TYPE.map((item, index) => {
                             return (
                                 <TouchableOpacity
                                     key={index}
@@ -144,14 +143,16 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
                 open={openTransactionModal}
                 setOpenModal={handleTransactionModal}
             />
-            <AlertModal
-                visible={isAlertModalOpen}
-                handleOpen={handleModalOpen}
-                title={'Failed'}
-                desc={alertDescription}
-                confirmTitle={'OK'}
-                type={'ERROR'}
-            />
+            {isAlertModalOpen && (
+                <AlertModal
+                    visible={isAlertModalOpen}
+                    handleOpen={handleModalOpen}
+                    title={'Failed'}
+                    desc={alertDescription}
+                    confirmTitle={'OK'}
+                    type={'ERROR'}
+                />
+            )}
         </React.Fragment>
     );
 };

@@ -7,11 +7,11 @@ import { useAppSelector } from '@/redux/hooks';
 import { CommonActions } from '@/redux/actions';
 import { IProposalItemState, useGovernanceList } from '@/hooks/governance/hooks';
 import { BgColor } from '@/constants/theme';
-import RefreshScrollView from '@/components/parts/refreshScrollView';
-import ProposalList from './proposalList';
 import { wait } from '@/util/common';
 import { useInterval } from '@/hooks/common/hooks';
 import { DATA_RELOAD_INTERVAL } from '@/constants/common';
+import RefreshScrollView from '@/components/parts/refreshScrollView';
+import ProposalList from './proposalList';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governance>;
 

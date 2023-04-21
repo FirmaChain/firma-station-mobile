@@ -897,7 +897,7 @@ const organizeValidatorDescription = (
     };
 };
 
-const getValidatorAvatarURL = (validatorsAvatarList: Array<IValidatorProfileInfo> | [], operatorAddress: string) => {
+export const getValidatorAvatarURL = (validatorsAvatarList: Array<IValidatorProfileInfo> | [], operatorAddress: string) => {
     let avatarURL = '';
     if (validatorsAvatarList.length > 0) {
         const avatarState = validatorsAvatarList.find((val: IValidatorProfileInfo) => val.operatorAddress === operatorAddress);

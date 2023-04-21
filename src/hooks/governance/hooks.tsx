@@ -6,6 +6,8 @@ import { StorageActions } from '@/redux/actions';
 import { getProposalByProposalId, getProposalParams, getProposals, getProposalTally } from '@/util/firma';
 import { ProposalInfo } from '@firmachain/firma-js';
 import { PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
+import { rootState } from '@/redux/reducers';
+import { CHAIN_NETWORK } from '@/../config';
 
 export interface IGovernanceState {
     list: Array<IProposalItemState>;
@@ -64,40 +66,69 @@ export interface IProposalVoteState {
     voters: Array<any>;
 }
 
+interface IProposalJSONProps {
+    ignoreProposalAddressList: string[];
+    ignoreProposalIdList: number[];
+    timestamp: string;
+}
+
 export const useGovernanceList = () => {
-    const { storage } = useAppSelector((state) => state);
+    const { storage } = useAppSelector((state: rootState) => state);
     const [governanceState, setGovernanceList] = useState<IGovernanceState>({
         list: []
     });
 
+    const getProposalJsonData = useCallback(async () => {
+        try {
+            const response = await fetch(`${CHAIN_NETWORK[storage.network].PROPOSAL_JSON}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-store',
+                    Pragma: 'no-store',
+                    Expires: '0'
+                }
+            });
+            const data: IProposalJSONProps = await response.json();
+            return data;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }, []);
+
     const handleProposalList = useCallback(async () => {
         try {
+            let proposalsJSON = (await getProposalJsonData()).ignoreProposalIdList;
             let proposals = await getProposals();
-            StorageActions.handleContentVolume({
-                ...storage.contentVolume,
-                proposals: proposals.length
-            });
-            if (proposals.length > 0) {
-                const list = proposals.map((proposal: ProposalInfo) => {
-                    let proposalId = proposal.proposal_id;
-                    let proposalType = PROPOSAL_MESSAGE_TYPE[proposal.content['@type']];
-                    let status = proposal.status;
-                    let title = proposal.content.title;
-                    let description = proposal.content.description;
-                    let depositEndTime = proposal.deposit_end_time;
-                    let votingStartTime = proposal.voting_start_time;
-                    let votingEndTime = proposal.voting_end_time;
 
-                    return {
-                        proposalId,
-                        proposalType,
-                        status,
-                        title,
-                        description,
-                        depositEndTime,
-                        votingStartTime,
-                        votingEndTime
-                    };
+            if (proposals.length > 0) {
+                const list = proposals
+                    .filter((proposal) => proposalsJSON.includes(Number(proposal.proposal_id)) === false)
+                    .map((proposal: ProposalInfo) => {
+                        let proposalId = proposal.proposal_id;
+                        let proposalType = PROPOSAL_MESSAGE_TYPE[proposal.content['@type']];
+                        let status = proposal.status;
+                        let title = proposal.content.title;
+                        let description = proposal.content.description;
+                        let depositEndTime = proposal.deposit_end_time;
+                        let votingStartTime = proposal.voting_start_time;
+                        let votingEndTime = proposal.voting_end_time;
+
+                        return {
+                            proposalId,
+                            proposalType,
+                            status,
+                            title,
+                            description,
+                            depositEndTime,
+                            votingStartTime,
+                            votingEndTime
+                        };
+                    });
+
+                StorageActions.handleContentVolume({
+                    ...storage.contentVolume,
+                    proposals: list.length
                 });
 
                 const sortList = list.sort((a: IProposalItemState, b: IProposalItemState) => Number(b.proposalId) - Number(a.proposalId));

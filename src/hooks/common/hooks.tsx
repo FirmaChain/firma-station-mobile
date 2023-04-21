@@ -1,13 +1,55 @@
+import { CHAIN_NETWORK } from '@/../config';
 import { MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
+import { rootState } from '@/redux/reducers';
 import { getChainInfo } from '@/util/firma';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 interface IMaintenanceState {
     isShow: boolean;
     title: string;
     content: string;
 }
+
+interface IWalletJSONProps {
+    contactAddressList: string[];
+    timestamp: string;
+}
+
+interface IProposalJSONProps {
+    ignoreProposalAddressList: string[];
+    ignoreProposalIdList: number[];
+    timestamp: string;
+}
+
+export const useWalletJSON = () => {
+    const { network } = useSelector((state: rootState) => state.storage);
+
+    const [walletJson, setWalletJson] = useState<IWalletJSONProps>({
+        contactAddressList: [],
+        timestamp: ''
+    });
+
+    const getWalletJsonData = useCallback(async () => {
+        try {
+            const response = await fetch(`${CHAIN_NETWORK[network].WALLET_JSON}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-store',
+                    Pragma: 'no-store',
+                    Expires: '0'
+                }
+            });
+            const data: IWalletJSONProps = await response.json();
+            setWalletJson(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
+    return { walletJson, getWalletJsonData };
+};
 
 export const useChainVersion = () => {
     const [chainVer, setChainVer] = useState('');
@@ -52,6 +94,8 @@ export const useServerMessage = () => {
                 }
             });
             const data: any = await response.json();
+
+            console.log(data);
 
             setMinAppVer(data.minAppVer);
             setCurrentAppVer(data.currentAppVer);
