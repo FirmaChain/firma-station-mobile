@@ -9,6 +9,7 @@ export async function WalletNameValidationCheck(name: string) {
 
 export function PasswordValidationCheck(password: string) {
     // const result = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{10,}$/.test(password);
+    if (password === undefined) return false;
     const result = password.length >= 10;
     return result;
 }

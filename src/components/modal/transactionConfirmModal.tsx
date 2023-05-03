@@ -21,6 +21,7 @@ interface IProps {
     title: string;
     amount: number;
     fee: number;
+    memo?: string;
     vote?: string;
     extraData?: any;
     open: boolean;
@@ -32,6 +33,7 @@ const TransactionConfirmModal = ({
     title,
     amount = 0,
     fee = 0,
+    memo = '',
     vote = '',
     extraData = null,
     open,
@@ -113,11 +115,30 @@ const TransactionConfirmModal = ({
                             </View>
                         )}
                         {amount > 0 && (
-                            <View style={[styles.boxH, styles.receiptDesc, { borderBottomWidth: 1, borderBottomColor: BorderColor }]}>
+                            <View
+                                style={[
+                                    styles.boxH,
+                                    styles.receiptDesc,
+                                    { borderBottomWidth: memo !== '' ? 0 : 1, borderBottomColor: BorderColor }
+                                ]}
+                            >
                                 <Text style={styles.itemTitle}>Amount</Text>
                                 <Text style={styles.itemBalance}>
                                     {convertAmount(amount, false, 6)}
                                     <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                                </Text>
+                            </View>
+                        )}
+                        {memo !== '' && (
+                            <View
+                                style={[
+                                    styles.boxH,
+                                    { alignItems: 'flex-end', paddingBottom: 15, borderBottomWidth: 1, borderBottomColor: BorderColor }
+                                ]}
+                            >
+                                <Text style={styles.itemTitle}>Memo</Text>
+                                <Text style={[styles.itemBalance, { fontSize: 14 }]} numberOfLines={1} ellipsizeMode="tail">
+                                    {memo}
                                 </Text>
                             </View>
                         )}
@@ -134,7 +155,9 @@ const TransactionConfirmModal = ({
                                             <Text style={[styles.itemTitle, { textTransform: 'capitalize' }]}>
                                                 {handleCapitalize(value)}
                                             </Text>
-                                            <Text style={styles.itemBalance}>{extraData[value]}</Text>
+                                            <Text style={styles.itemBalance} numberOfLines={1} ellipsizeMode="tail">
+                                                {extraData[value]}
+                                            </Text>
                                         </View>
                                     );
                                 })}
@@ -198,12 +221,16 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         color: TextCatTitleColor,
         fontWeight: 'normal',
-        fontSize: 16
+        fontSize: 16,
+        paddingRight: 20
     },
     itemBalance: {
+        width: '100%',
+        flex: 1,
         fontFamily: Lato,
         color: WhiteColor,
         fontWeight: 'normal',
+        textAlign: 'right',
         fontSize: 16
     }
 });

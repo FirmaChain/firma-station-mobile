@@ -1,48 +1,49 @@
-import React from "react";
-import { Keyboard, Pressable, StyleSheet } from "react-native";
-import { PLACEHOLDER_FOR_PASSWORD } from "@/constants/common";
-import InputSetVertical from "@/components/input/inputSetVertical";
+import React from 'react';
+import { Keyboard, Pressable, StyleSheet } from 'react-native';
+import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
+import InputSetVertical from '@/components/input/inputSetVertical';
 
 interface IProps {
     resetValues: boolean;
-    handlePassword: (value:string) => void;
+    handlePassword: (value: string) => void;
 }
 
-const InputBox = ({resetValues, handlePassword}:IProps) => {
+const InputBox = ({ resetValues, handlePassword }: IProps) => {
     const currentPasswordTextObj = {
-        title: "Current password",
-        placeholder: PLACEHOLDER_FOR_PASSWORD,
-    }
+        title: 'Current password',
+        placeholder: PLACEHOLDER_FOR_PASSWORD
+    };
 
     return (
-        <Pressable style={styles.contents} onPress={()=>Keyboard.dismiss()}>
+        <Pressable style={styles.contents} onPress={() => Keyboard.dismiss()}>
             <InputSetVertical
                 title={currentPasswordTextObj.title}
-                placeholder={currentPasswordTextObj.placeholder} 
+                value={''}
+                placeholder={currentPasswordTextObj.placeholder}
                 validation={true}
                 secure={true}
                 resetValues={resetValues}
-                onChangeEvent={handlePassword} />
+                onChangeEvent={handlePassword}
+            />
         </Pressable>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     contents: {
         flex: 2,
-        paddingVertical: 20,
+        paddingVertical: 20
     },
-    wallet:{
+    wallet: {
         paddingVertical: 10,
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#aaa',
+        color: '#aaa'
     },
     buttonBox: {
         flex: 1,
-        justifyContent: "flex-end",
+        justifyContent: 'flex-end'
     }
-})
-
+});
 
 export default InputBox;

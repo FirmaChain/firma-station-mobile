@@ -237,7 +237,8 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                             {dimActive === false && (
                                 <View style={{ flex: 1 }}>
                                     <InputSetVertical
-                                        title="Password"
+                                        title={'Password'}
+                                        value={''}
                                         validation={true}
                                         secure={true}
                                         placeholder={PLACEHOLDER_FOR_PASSWORD}

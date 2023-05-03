@@ -70,6 +70,7 @@ const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IPr
                 <View style={{ paddingBottom: 15 }}>
                     <InputSetVertical
                         title={'Password'}
+                        value={''}
                         bgColor={BgColor}
                         placeholder={PLACEHOLDER_FOR_PASSWORD}
                         secure={true}

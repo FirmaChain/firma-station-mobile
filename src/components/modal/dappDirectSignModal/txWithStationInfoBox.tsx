@@ -266,7 +266,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
             <View style={[styles.boxV, isEmptyInfo ? {} : { paddingTop: 20, paddingBottom: 17 }]}>
                 <RenderInfoByType type={type} />
                 <RenderAmountInfo title={'Fee'} amount={convertToFctNumber(fee)} />
-                {memo !== '' && <RenderDefaultInfo title={'Memo'} value={memo} />}
+                <RenderDefaultInfo title={'Memo'} value={memo} />
             </View>
         </Fragment>
     );

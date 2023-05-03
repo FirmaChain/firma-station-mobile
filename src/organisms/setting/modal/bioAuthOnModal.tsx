@@ -73,6 +73,7 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
                     <Text style={styles.desc}>{book.desc}</Text>
                     <InputSetVertical
                         title={''}
+                        value={''}
                         bgColor={BgColor}
                         placeholder={PLACEHOLDER_FOR_PASSWORD}
                         secure={true}

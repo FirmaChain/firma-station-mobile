@@ -145,6 +145,7 @@ const Send = () => {
                         title={'Send'}
                         fee={getFeesFromGas(gas)}
                         amount={sendInfoState.amount}
+                        memo={sendInfoState.memo === '' ? ' ' : sendInfoState.memo}
                         open={openTransactionModal}
                         setOpenModal={handleTransactionModal}
                     />
