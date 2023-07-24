@@ -28,7 +28,7 @@ const Delete = ({ wallet, handleDisconnect }: IProps) => {
             const result = await getWalletList();
             let arr = result ? result : [];
 
-            if (arr.length > 1) {
+            if (arr.length >= 1) {
                 arr.filter((item) => item !== wallet.name).map((item) => {
                     newList += item + '/';
                 });

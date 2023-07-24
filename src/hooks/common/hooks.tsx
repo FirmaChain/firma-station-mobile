@@ -95,8 +95,6 @@ export const useServerMessage = () => {
             });
             const data: any = await response.json();
 
-            console.log(data);
-
             setMinAppVer(data.minAppVer);
             setCurrentAppVer(data.currentAppVer);
             setMaintenanceState(data.maintenance);

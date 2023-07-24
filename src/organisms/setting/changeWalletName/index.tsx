@@ -92,7 +92,7 @@ const ChangeWalletName = () => {
         try {
             const result = await getWalletList();
             let arr = result ? updateArray(result, wallet.name, newWalletName) : [];
-            if (arr.length > 1) {
+            if (arr.length >= 1) {
                 arr.map((item) => {
                     newList += item + '/';
                 });
