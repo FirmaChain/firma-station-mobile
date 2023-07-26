@@ -23,6 +23,8 @@
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
             android:label="@string/app_name"
+            android:resizeableActivity="false"
+            android:configChanges="orientation"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,10 +35,11 @@
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+        android:configChanges="keyboard|keyboardHidden|orientation|uiMode"
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustPan"
         android:screenOrientation="portrait"
+        android:resizeableActivity="false"
         android:exported="true">
         <intent-filter>
           <action android:name="android.intent.action.VIEW" />
