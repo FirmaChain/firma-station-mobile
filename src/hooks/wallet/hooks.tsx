@@ -110,6 +110,7 @@ export const useHistoryData = () => {
                                     });
                                 }
                             }
+
                             const list = data.messagesByAddress.map((value: any) => {
                                 const result = {
                                     hash: value.transaction.hash,
@@ -120,7 +121,8 @@ export const useHistoryData = () => {
                                 };
                                 return result;
                             });
-                            if (list.length > 0 && list[0].block !== recentHistory?.block) {
+
+                            if (list.length > 0 && list[0].hash !== recentHistory?.hash) {
                                 setRecentHistory(list[0]);
                             }
 

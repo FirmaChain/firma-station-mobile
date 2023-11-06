@@ -53,9 +53,11 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
             try {
                 await handleDelegationState();
                 if (selectedTab === 0) handleIsRefresh(false);
-                wait(800).then(() => {
-                    handleDelegationLoading(false);
-                });
+                await wait(800)
+                    .then(() => {
+                        handleDelegationLoading(false);
+                    })
+                    .catch((error) => console.log(error));
             } catch (error) {
                 console.log(error);
                 CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
@@ -87,7 +89,7 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
     useEffect(() => {
         let exist = delegationState.length > 0 || redelegationState.length > 0 || undelegationState.length > 0;
         handleDelegationExist(exist);
-    }, [delegationState]);
+    }, [delegationState, redelegationState, undelegationState]);
 
     return (
         <View style={styles.listContainer}>

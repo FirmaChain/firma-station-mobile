@@ -62,7 +62,7 @@ const History = () => {
         if (historyList !== undefined) {
             let loaded = loadedHistoryList;
             let concatList = loaded.concat(historyList.list);
-            let list = concatList.filter((arr, index, callback) => index === callback.findIndex((val) => val.block === arr.block));
+            let list = concatList.filter((arr, index, callback) => index === callback.findIndex((val) => val.hash === arr.hash));
             setLoadedHistoryList(list);
         }
     }, [historyList]);
