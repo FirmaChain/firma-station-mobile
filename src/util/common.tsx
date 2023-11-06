@@ -2,7 +2,7 @@ import { FirmaUtil } from '@firmachain/firma-js';
 import moment from 'moment';
 
 export const wait = (timeout: number) => {
-    return new Promise((resolve) => setTimeout(resolve, timeout));
+    return new Promise<void>((resolve) => setTimeout(() => resolve(), timeout));
 };
 
 export const updateArray = (array: Array<any>, oldVal: any, newVal: any) => {
