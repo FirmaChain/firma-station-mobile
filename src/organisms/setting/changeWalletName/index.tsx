@@ -30,6 +30,7 @@ import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import InputBox from './inputBox';
 import Toast from 'react-native-toast-message';
+import { getAddressFromRecoverValue } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangeWalletName>;
 
@@ -76,6 +77,7 @@ const ChangeWalletName = () => {
 
     const removeCurrentWallet = useCallback(async () => {
         try {
+            await getAddressFromRecoverValue(recoverValue);
             removeRecoverType(storage.recoverType, wallet.address);
             await removeWallet(wallet.name);
             await removeDAppProjectIdList(wallet.name);
@@ -85,7 +87,7 @@ const ChangeWalletName = () => {
             console.log(error);
             throw error;
         }
-    }, [storage.recoverType, wallet.name]);
+    }, [storage.recoverType, wallet.name, recoverValue]);
 
     const createNewWallet = async () => {
         let newList: string = '';

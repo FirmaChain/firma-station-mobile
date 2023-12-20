@@ -75,15 +75,17 @@ const BioAuthRadio = ({ wallet }: IProps) => {
     };
 
     useEffect(() => {
-        const getUseBioAuthState = async () => {
-            const result = await getUseBioAuth(wallet.name);
-            setUseBio(result);
-        };
+        if (openBioModal === false) {
+            const getUseBioAuthState = async () => {
+                const result = await getUseBioAuth(wallet.name);
+                setUseBio(result);
+            };
 
-        if (common.isBioAuthInProgress === false) {
-            getUseBioAuthState();
+            if (common.isBioAuthInProgress === false) {
+                getUseBioAuthState();
+            }
         }
-    }, [common.isBioAuthInProgress]);
+    }, [common.isBioAuthInProgress, openBioModal]);
 
     return (
         <View style={styles.listItem}>

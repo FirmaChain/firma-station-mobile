@@ -153,7 +153,7 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
                     </View>
                     <SmallButton title="Send" active={available > 0} size={90} onPressEvent={handleSend} />
                 </View>
-                <View style={{ maxHeight: currencyList.length > 0 ? 500 : 0 }}>
+                <View style={{ maxHeight: currencyList.length > 0 ? 500 : 0, overflow: 'hidden' }}>
                     <View style={[styles.divider, { height: currencyList.length > 0 ? 1 : 0 }]} />
                     <View style={[styles.wrapperH, { justifyContent: 'space-between', paddingTop: 12 }]}>
                         <TouchableOpacity style={styles.currency} onPress={() => handleCurrencySelectModal(true)}>

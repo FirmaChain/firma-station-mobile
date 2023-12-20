@@ -15,6 +15,7 @@ import AlertModal from '@/components/modal/alertModal';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import InputBox from './inputBox';
+import { getAddressFromRecoverValue } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;
 
@@ -63,6 +64,7 @@ const ChangePassword = () => {
 
     const removeCurrentPassword = useCallback(async () => {
         try {
+            await getAddressFromRecoverValue(recoverValue);
             removeRecoverType(storage.recoverType, wallet.address);
             await removeWallet(wallet.name);
             await removePasswordViaBioAuth();
@@ -70,7 +72,7 @@ const ChangePassword = () => {
             console.log(error);
             throw error;
         }
-    }, [storage.recoverType, wallet.name]);
+    }, [storage.recoverType, wallet.name, recoverValue]);
 
     const createNewPassword = async () => {
         try {

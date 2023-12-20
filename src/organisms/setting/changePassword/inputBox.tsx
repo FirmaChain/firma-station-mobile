@@ -91,7 +91,8 @@ const InputBox = ({ wallet, validate, newPassword, recoverValue }: IProps) => {
             <InputSetVertical
                 title={newPasswordTextObj.title}
                 placeholder={newPasswordTextObj.placeholder}
-                value={newPwMessage}
+                value={newPW}
+                message={newPwMessage}
                 validation={newPwValidation}
                 secure={true}
                 onChangeEvent={handleNewPassword}
@@ -99,7 +100,8 @@ const InputBox = ({ wallet, validate, newPassword, recoverValue }: IProps) => {
             <InputSetVertical
                 title={confirmPasswordTextObj.title}
                 placeholder={confirmPasswordTextObj.placeholder}
-                value={confirmPwMessage}
+                value={''}
+                message={confirmPwMessage}
                 validation={confirmPwValidation}
                 secure={true}
                 onChangeEvent={handleConfirmPassword}
