@@ -30,8 +30,8 @@ android {
         missingDimensionStrategy 'react-native-camera', 'mlkit', 'general'
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 26
-        versionName "1.0.23"
+        versionCode 28
+        versionName "1.0.25"
     }
     dexOptions {
         javaMaxHeapSize "4g"

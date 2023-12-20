@@ -1,6 +1,6 @@
 {
     "name": "firma-station-mobile",
-    "version": "1.0.23",
+    "version": "1.0.25",
     "private": true,
     "scripts": {
       "android": "react-native run-android",
