@@ -15,6 +15,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDeta
 interface IProps {
     visible: boolean;
     NFTS: Array<INFTProps> | null;
+    cw721Contract: string | null;
 }
 
 interface INFTItemProps {
@@ -24,10 +25,10 @@ interface INFTItemProps {
 
 const itemCountPerLine = 3;
 
-const NFTsBox = ({ visible, NFTS }: IProps) => {
+const NFTsBox = ({ visible, NFTS, cw721Contract }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const [containerSize, setContainerSize] = useState(0);
-    const [NFTList, setNFTList] = useState<Array<any> | null>(null);
+    const [NFTList, setNFTList] = useState<Array<INFTProps> | null>(null);
     const [NFTCount, setNFTCount] = useState(0);
     const [NFTsExist, setNFTsExist] = useState(false);
 
@@ -46,8 +47,8 @@ const NFTsBox = ({ visible, NFTS }: IProps) => {
     const moveToNFTDetail = useCallback(
         (id: any) => {
             if (NFTList !== null) {
-                let nft = NFTList.find((value: any) => id === value.id);
-                navigation.navigate(Screens.NFT, { data: { nft: nft } });
+                const nft = NFTList.find((value: any) => id === value.id);
+                navigation.navigate(Screens.NFT, { data: { nft: nft, cw721Contract: cw721Contract } });
             }
         },
         [NFTList]

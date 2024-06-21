@@ -26,6 +26,7 @@ interface IProps {
     extraData?: any;
     open: boolean;
     setOpenModal: Function;
+    symbol?: string;
     transactionHandler: (password: string) => void;
 }
 
@@ -38,6 +39,7 @@ const TransactionConfirmModal = ({
     extraData = null,
     open,
     setOpenModal,
+    symbol = CHAIN_SYMBOL(),
     transactionHandler
 }: IProps) => {
     const { common } = useAppSelector((state) => state);
@@ -47,6 +49,7 @@ const TransactionConfirmModal = ({
         confirmTitle: 'Confirm'
     };
 
+    const SEND_TOKEN_SYMBOL = symbol;
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
     const [openValidationModal, setOpenValidationModal] = useState(false);
     const [transactionStart, setTransactionStart] = useState(false);
@@ -125,7 +128,7 @@ const TransactionConfirmModal = ({
                                 <Text style={styles.itemTitle}>Amount</Text>
                                 <Text style={styles.itemBalance}>
                                     {convertAmount(amount, false, 6)}
-                                    <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                                    <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${SEND_TOKEN_SYMBOL}`}</Text>
                                 </Text>
                             </View>
                         )}
@@ -152,7 +155,7 @@ const TransactionConfirmModal = ({
                                 {extraKey.map((value, index) => {
                                     return (
                                         <View key={index} style={[styles.boxH, styles.receiptDesc, { paddingTop: 10 }]}>
-                                            <Text style={[styles.itemTitle, { textTransform: 'capitalize' }]}>
+                                            <Text style={[styles.itemTitle]}>
                                                 {handleCapitalize(value)}
                                             </Text>
                                             <Text style={styles.itemBalance} numberOfLines={1} ellipsizeMode="tail">

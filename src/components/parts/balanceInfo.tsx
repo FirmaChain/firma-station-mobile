@@ -8,10 +8,11 @@ interface IProps {
     available: number;
     type?: string;
     reward?: number;
+    symbol?: string;
 }
 
-const BalanceInfo = ({ type, available = 0, reward = 0 }: IProps) => {
-    const _CHAIN_SYMBOL = CHAIN_SYMBOL();
+const BalanceInfo = ({ type, available = 0, reward = 0, symbol = CHAIN_SYMBOL() }: IProps) => {
+    const _CHAIN_SYMBOL = symbol;
     return (
         <View style={styles.box}>
             <View style={styles.boxH}>

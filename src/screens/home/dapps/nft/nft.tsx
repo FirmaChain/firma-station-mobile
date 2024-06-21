@@ -1,12 +1,16 @@
 import React from 'react';
 import NFT from '@/organisms/dapps/nft';
+import { INFTProps } from '@/hooks/dapps/hooks';
 
 interface IProps {
     route: { params: NFTParams };
 }
 
 export type NFTParams = {
-    data: any;
+    data: {
+        nft: INFTProps | undefined;
+        cw721Contract: string | null
+    };
 };
 
 const NFTScreen = (props: IProps) => {

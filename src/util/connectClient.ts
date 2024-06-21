@@ -7,11 +7,27 @@ export interface UserSession {
 }
 
 export interface ProjectList {
-    projectList: { name: string; description: string; url: string; icon: string; identity: string }[];
+    projectList: {
+        name: string;
+        description: string;
+        url: string;
+        icon: string;
+        identity: string;
+        cw721ContractAddress: string;
+        cw20ContractAddress: string;
+    }[];
 }
 
 interface ResponseProjectData {
-    projectList: { name: string; description: string; url: string; icon: string; identity: string }[];
+    projectList: {
+        name: string;
+        description: string;
+        url: string;
+        icon: string;
+        identity: string;
+        cw721ContractAddress: string;
+        cw20ContractAddress: string;
+    }[];
 }
 
 interface ResponseQRData {

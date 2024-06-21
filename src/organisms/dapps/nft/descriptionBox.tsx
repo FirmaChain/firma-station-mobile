@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
-import { Animated, Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
+import { BoxDarkColor, Lato, RestakeActiveColor, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
+import { Animated, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
 import { easeInAndOutCustomAnim, fadeOut, LayoutAnim } from '@/util/animation';
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 import LinearGradient from 'react-native-linear-gradient';
@@ -9,11 +9,12 @@ import FastImage from 'react-native-fast-image';
 
 interface IProps {
     data: any;
+    isCW721: boolean;
 }
 
 const NUM_OF_LINES = 3;
 
-const DescriptionBox = ({ data }: IProps) => {
+const DescriptionBox = ({ data, isCW721 }: IProps) => {
     const fadeAnimImage = useRef(new Animated.Value(1)).current;
 
     const [maxLines, setMaxLines] = useState(999);
@@ -77,6 +78,9 @@ const DescriptionBox = ({ data }: IProps) => {
                         <SquareSkeleton size={200} marginBottom={20} />
                     </Animated.View>
                 </View>
+                <View style={[styles.box, { display: isCW721 ? 'flex' : 'none', paddingBottom: 5 }]}>
+                    <Text style={styles.label}>CW721</Text>
+                </View>
                 <View style={styles.box}>
                     <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.contentTitle]}>
                         {data.name}
@@ -131,6 +135,18 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontWeight: 'bold',
         color: TextColor
+    },
+    label: {
+        fontFamily: Lato,
+        fontSize: 13,
+        borderRadius: 10,
+        textAlign: 'center',
+        overflow: 'hidden',
+        paddingHorizontal: 10,
+        paddingVertical: 3,
+        backgroundColor: RestakeActiveColor + '30',
+        color: RestakeActiveColor,
+        marginHorizontal: 5
     },
     descBox: {
         alignItems: 'flex-start',
