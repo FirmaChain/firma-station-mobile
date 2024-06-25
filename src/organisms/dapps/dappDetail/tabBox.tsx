@@ -1,8 +1,8 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
-import { INFTProps, useNFT } from '@/hooks/dapps/hooks';
-import { useIsFocused } from '@react-navigation/native';
+import { INFTProps, useCW721NFT, useNFT } from '@/hooks/dapps/hooks';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { IDappDataState } from '.';
 import NFTsBox from './nftsBox';
 import ServicesBox from './servicesBox';
@@ -17,12 +17,17 @@ interface IProps {
 const TabBox = ({ data, serviceOnly, isRefresh, handleRefresh }: IProps) => {
     const isFocused = useIsFocused();
     const { MyNFTS, handleNFTIdList, handleIdentity } = useNFT();
+    const { MyCW721NFTS, handleCW721NFTIdList } = useCW721NFT({ contractAddress: data.cw721ContractAddress });
 
     const [tab, setTab] = useState(0);
 
     const NFTS: Array<INFTProps> | null = useMemo(() => {
-        return MyNFTS;
-    }, [MyNFTS]);
+        if (data.cw721ContractAddress === '' || data.cw721ContractAddress === '0x') {
+            return MyNFTS;
+        } else {
+            return MyCW721NFTS
+        }
+    }, [MyNFTS, MyCW721NFTS, data.cw721ContractAddress]);
 
     const NFTCount = useMemo(() => {
         if (NFTS !== null) {
@@ -31,15 +36,19 @@ const TabBox = ({ data, serviceOnly, isRefresh, handleRefresh }: IProps) => {
         return 0;
     }, [NFTS]);
 
+
     useEffect(() => {
         if (isFocused) {
             if (serviceOnly) {
                 setTab(0);
             } else {
                 handleNFTIdList();
+                if (data.cw721ContractAddress !== null) {
+                    handleCW721NFTIdList();
+                }
             }
         }
-    }, [serviceOnly, isFocused]);
+    }, [serviceOnly, data.cw721ContractAddress, isFocused]);
 
     useEffect(() => {
         if (isRefresh) {
@@ -83,7 +92,7 @@ const TabBox = ({ data, serviceOnly, isRefresh, handleRefresh }: IProps) => {
             </View>
             <View style={{ flex: 1, paddingHorizontal: 20 }}>
                 <ServicesBox visible={tab === 0} identity={data.identity} data={data.serviceList} />
-                <NFTsBox visible={tab === 1} NFTS={NFTS} />
+                <NFTsBox visible={tab === 1} NFTS={NFTS} cw721Contract={data.cw721ContractAddress} />
             </View>
         </View>
     );

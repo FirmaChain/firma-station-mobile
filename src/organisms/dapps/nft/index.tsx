@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNFT } from '@/hooks/dapps/hooks';
+import { INFTProps, useNFT } from '@/hooks/dapps/hooks';
 import { DividerColor } from '@/constants/theme';
 import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
@@ -15,7 +15,10 @@ import PropertiesBox from './propertiesBox';
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.NFT>;
 
 interface IProps {
-    data: any;
+    data: {
+        nft: INFTProps | undefined;
+        cw721Contract: string | null;
+    };
 }
 
 interface IMetaData {
@@ -28,6 +31,8 @@ interface IMetaData {
 
 const NFT = ({ data }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
+
+    const isCW721 = !Boolean(data.cw721Contract === '' || data.cw721Contract === null);
 
     const { getNFTMetaData } = useNFT();
 
@@ -45,8 +50,12 @@ const NFT = ({ data }: IProps) => {
 
     const NFTInformation = useMemo(() => {
         if (NFTData === undefined) return null;
-        const { name, description, metaURI, ...nftValues } = NFTData;
-        return { ...nftValues, ...metaData };
+        const mergedMetaData = {
+            name: metaData.name || NFTData.name,
+            description: metaData.description || NFTData.description,
+        };
+
+        return { ...NFTData, ...mergedMetaData };
     }, [NFTData, metaData]);
 
     const handleMetaData = useCallback(async () => {
@@ -74,18 +83,25 @@ const NFT = ({ data }: IProps) => {
         navigation.goBack();
     };
 
+    const onClickSend = useCallback(() => {
+        if (isCW721) {
+            if (data.nft === undefined || data.cw721Contract === null) return;
+            return navigation.navigate(Screens.SendCW721, { imageURL: data.nft.image, tokenId: data.nft.id, nftName: data.nft.name, contract: data.cw721Contract });
+        }
+    }, [isCW721, data])
+
     return (
         <Container titleOn={false} backEvent={handleBack}>
             <ViewContainer>
                 <React.Fragment>
                     <ScrollView contentContainerStyle={{ paddingHorizontal: 20 }}>
-                        {NFTInformation !== null && <DescriptionBox data={NFTInformation} />}
+                        {NFTInformation !== null && <DescriptionBox data={NFTInformation} isCW721={isCW721} />}
                         <View style={styles.divider} />
                         {NFTInformation !== null && <InfoBox data={NFTInformation} />}
                         <PropertiesBox data={metaData.attributes} />
                     </ScrollView>
                     <View style={styles.buttonBox}>
-                        <Button title={'Send'} active={false} onPressEvent={() => null} />
+                        <Button title={'Send'} active={isCW721} onPressEvent={onClickSend} />
                     </View>
                 </React.Fragment>
             </ViewContainer>

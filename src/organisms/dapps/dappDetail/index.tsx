@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import DescriptionBox from './descriptionBox';
 import BalanceBox from './balanceBox';
 import TabBox from './tabBox';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
+import { getCW20TokenInfo } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
 
@@ -22,6 +23,8 @@ export interface IDappDataState {
     isServiceOnly: boolean;
     serviceList: Array<ServiceMetaData>;
     token: ITokenState | null;
+    cw721ContractAddress: string | null;
+    cw20ContractAddress: string | null;
 }
 
 export interface ITokenState {
@@ -42,7 +45,9 @@ const initDappData: IDappDataState = {
     identity: '',
     isServiceOnly: false,
     serviceList: [],
-    token: null
+    token: null,
+    cw721ContractAddress: null,
+    cw20ContractAddress: null
 };
 
 const DappDetail = ({ data }: IProps) => {
@@ -54,22 +59,49 @@ const DappDetail = ({ data }: IProps) => {
     const [isLoadedDappService, setIsLoadedDappService] = useState(false);
     const [isRefresh, setIsRefresh] = useState(false);
 
+    const moveToSendScreen = () => {
+        if (dappData === null) return;
+        if (dappData?.cw20ContractAddress === undefined || dappData.cw20ContractAddress === null) return;
+        if (dappData.token?.symbol === undefined || dappData.token?.symbol === null) return;
+        navigation.navigate(Screens.SendCW20, { contract: dappData?.cw20ContractAddress, symbol: dappData.token?.symbol });
+    }
+
     const handleRefresh = (refresh: boolean) => {
         setIsRefresh(refresh);
     };
 
-    const handleDappData = () => {
-        let identity = data?.identity === undefined ? '' : data.identity;
-        let isServiceOnly = data?.isServiceOnly === undefined ? false : data.isServiceOnly;
-        let serviceList = data?.serviceList === undefined ? [] : data.serviceList;
-        let token = data?.token === undefined ? null : data.token;
+    const handleDappData = async () => {
+        try {
+            const identity = data?.identity === undefined ? '' : data.identity;
+            const isServiceOnly = data?.isServiceOnly === undefined ? false : data.isServiceOnly;
+            const serviceList = data?.serviceList === undefined ? [] : data.serviceList;
+            const cw721ContractAddress = data?.cw721ContractAddress === '' ? null : data.cw721ContractAddress;
+            const cw20ContractAddress = data?.cw20ContractAddress === '' ? null : data.cw20ContractAddress;
+            let token = null;
 
-        setDappData({
-            identity: identity,
-            isServiceOnly: isServiceOnly,
-            serviceList: serviceList,
-            token: token
-        });
+            if (cw20ContractAddress !== null && cw20ContractAddress !== '0x' && cw20ContractAddress !== '') {
+                const cw20Token = await getCW20TokenInfo(cw20ContractAddress);
+
+                token = {
+                    denom: cw20Token.symbol,
+                    symbol: cw20Token.symbol
+                }
+            } else {
+                token = data?.token === undefined ? null : data.token;
+            }
+
+            setDappData({
+                identity: identity,
+                isServiceOnly: isServiceOnly,
+                serviceList: serviceList,
+                token: token,
+                cw721ContractAddress: cw721ContractAddress,
+                cw20ContractAddress: cw20ContractAddress
+            });
+
+        } catch (error) {
+            console.log('handleDappData : ', error);
+        }
     };
 
     const handleUserDappService = async () => {
@@ -127,6 +159,7 @@ const DappDetail = ({ data }: IProps) => {
 
     const isBalanceSectionOpen = useMemo(() => {
         if (dappData === undefined) return false;
+        if (dappData.cw20ContractAddress !== null) return true;
         if (isServiceOnly === false) {
             return dappData.token !== undefined && dappData.token !== null;
         }
@@ -147,7 +180,7 @@ const DappDetail = ({ data }: IProps) => {
                         </View>
                         {dappData !== undefined && (
                             <React.Fragment>
-                                {isBalanceSectionOpen && <BalanceBox tokenData={dappData.token} />}
+                                {isBalanceSectionOpen && <BalanceBox tokenData={dappData.token} cw20Contract={dappData.cw20ContractAddress} moveToSendScreen={moveToSendScreen} />}
                                 <TabBox data={dappData} serviceOnly={isServiceOnly} isRefresh={isRefresh} handleRefresh={handleRefresh} />
                             </React.Fragment>
                         )}

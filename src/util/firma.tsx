@@ -5,6 +5,7 @@ import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
 import { convertNumber, convertToFctNumber } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
 import { TOKEN_DENOM } from '@/constants/common';
+import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
 
 export interface IWallet {
     name?: string;
@@ -282,6 +283,29 @@ export const getEstimateGasSend = async (walletName: string, address: string, am
     }
 };
 
+
+export const getEstimateGasSendCW20 = async (walletName: string, contract: string, address: string, amount: string) => {
+    try {
+        const wallet = await getDecryptWalletInfo(walletName);
+        const _amount = await convertCW20Amount(contract, amount);
+        const gasEstimation = await getFirmaSDK().Cw20.getGasEstimationTransfer(wallet, contract, address, _amount);
+        return gasEstimation;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export const getEstimateGasSendCW721 = async (walletName: string, contract: string, address: string, tokenId: string) => {
+    try {
+        const wallet = await getDecryptWalletInfo(walletName);
+        const gasEstimation = await getFirmaSDK().Cw721.getGasEstimationTransfer(wallet, contract, address, tokenId)
+        return gasEstimation;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getEstimateGasVoting = async (walletName: string, proposalId: number, votingOpt: number) => {
     try {
         let wallet = await getDecryptWalletInfo(walletName);
@@ -396,7 +420,7 @@ export const getValidators = async () => {
         let nextKey: string = validatorList.pagination.next_key;
 
         while (nextKey !== null) {
-            const nextValidatorList = await getFirmaSDK().Staking.getValidatorList(nextKey);
+            const nextValidatorList = await getFirmaSDK().Staking.getValidatorList("" as StakingValidatorStatus, nextKey);
             const nextDataList = nextValidatorList.dataList;
             nextKey = nextValidatorList.pagination.next_key;
 
@@ -422,7 +446,7 @@ export const getSigningInfo = async (address: string) => {
     try {
         const result = await getFirmaSDK().Slashing.getSigningInfo(address);
         return result;
-    } catch (error) {}
+    } catch (error) { }
 };
 
 export const getValidatorFromAddress = async (address: string) => {
@@ -708,8 +732,8 @@ export const getStaking = async (address: string) => {
         const delegated = convertToFctNumber(
             delegationBalanceList.length > 0
                 ? delegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
+                    return (convertNumber(prev) + convertNumber(current)).toString();
+                })
                 : 0
         );
 
@@ -725,8 +749,8 @@ export const getStaking = async (address: string) => {
         const undelegate = convertToFctNumber(
             undelegationBalanceList.length > 0
                 ? undelegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
+                    return (convertNumber(prev) + convertNumber(current)).toString();
+                })
                 : 0
         );
 
@@ -797,3 +821,77 @@ export const getProposalTally = async (proposalId: string) => {
         throw error;
     }
 };
+
+// CW
+export const getCW20Balance = async (contract: string, address: string) => {
+    try {
+        const balance = await getFirmaSDK().Cw20.getBalance(contract, address);
+        return convertNumber(balance);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getCW20TokenInfo = async (contract: string) => {
+    try {
+        const info = await getFirmaSDK().Cw20.getTokenInfo(contract);
+        return info
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getCW721NftIdList = async (contract: string, address: string) => {
+    try {
+        const nftList = await getFirmaSDK().Cw721.getNFTIdListOfOwner(contract, address, 50);
+        return nftList;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+export const getCW721NFTItemFromId = async (contract: string, id: string) => {
+    try {
+        let nft = await getFirmaSDK().Cw721.getNftData(contract, id);
+        return nft;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const sendCW20 = async (recoverValue: string, target: string, amount: string, estimatedGas: number, contract: string) => {
+    try {
+        const wallet = await recoverWallet(recoverValue);
+        const _amount = await convertCW20Amount(contract, amount);
+        const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, { gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
+        return send;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export const sendCW721NFT = async (recoverValue: string, target: string, tokenId: string, estimatedGas: number, contract: string) => {
+    try {
+        const wallet = await recoverWallet(recoverValue);
+        const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, { gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
+        return send;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const convertCW20Amount = async (contract: string, amount: string) => {
+    try {
+        const tokenInfo = await getFirmaSDK().Cw20.getTokenInfo(contract);
+        const decimals = '0'.repeat(Number(tokenInfo.decimals));
+        return amount + decimals
+    } catch (error) {
+        throw error;
+    }
+}

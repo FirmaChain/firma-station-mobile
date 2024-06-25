@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
-import { getNFTIdListOfOwner, getNFTItemFromId, INftItemType } from '@/util/firma';
+import { getCW721NftIdList, getCW721NFTItemFromId, getNFTIdListOfOwner, getNFTItemFromId, INftItemType } from '@/util/firma';
+import { Cw721NftInfo } from '@firmachain/firma-js';
 
 export interface INFTTransctionState {
     height: number;
@@ -88,6 +89,71 @@ export const useNFT = () => {
     return { MyNFTS, NFTIdList, handleNFTIdList, handleIdentity, getNFTMetaData };
 };
 
+
+export const useCW721NFT = ({ contractAddress }: { contractAddress: string | null }) => {
+    const { wallet } = useAppSelector((state) => state);
+    const [CW721NFTIdList, setCW721NFTIdLIst] = useState<Array<string>>([]);
+    const [CW721NFTS, setCW721NFTS] = useState<Array<INftItemType>>([]);
+    const [MyCW721NFTS, setMyCW721NFTS] = useState<Array<INFTProps> | null>(null);
+
+    const handleCW721NFTIdList = useCallback(async () => {
+        try {
+            if (contractAddress === null) return;
+            let list = await getCW721NftIdList(contractAddress, wallet.address);
+            if (CW721NFTIdList.length === 0) {
+                setCW721NFTIdLIst(list);
+            } else {
+                list
+                    .filter((id) => CW721NFTIdList.includes(id) === false)
+                    .map((id) => {
+                        CW721NFTIdList.concat(id);
+                    });
+                setCW721NFTIdLIst(CW721NFTIdList);
+            }
+        } catch (error) {
+            throw error;
+        }
+    }, [wallet.address, CW721NFTIdList]);
+
+    const getCW721NFTMetaData = async (uri: string) => {
+        try {
+            const res = await fetch(uri);
+            const json = await res.json();
+            return json;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const handleCW721NFTList = useCallback(async () => {
+        try {
+            if (contractAddress === null) return;
+            const nftList = await getCW721NFTSList(contractAddress, CW721NFTIdList);
+            setCW721NFTS(nftList);
+        } catch (error) {
+            console.log(error);
+        }
+    }, [CW721NFTIdList, contractAddress]);
+
+    useEffect(() => {
+        handleCW721NFTList();
+    }, [CW721NFTIdList]);
+
+    useEffect(() => {
+        const handleMyNFTList = async () => {
+            try {
+                const myNftList: Array<INFTProps> = await getMyCW721NFTList(CW721NFTS);
+                setMyCW721NFTS(myNftList);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        handleMyNFTList();
+    }, [CW721NFTS]);
+
+    return { MyCW721NFTS, CW721NFTIdList, handleCW721NFTIdList, getCW721NFTMetaData };
+};
+
 const getNFTSList = async (idList: Array<string>) => {
     try {
         if (idList.length > 0) {
@@ -96,6 +162,30 @@ const getNFTSList = async (idList: Array<string>) => {
                 let nft = await getNFTItemFromId(idList[i]);
                 if (nft) {
                     list.push(nft);
+                }
+            }
+            return list;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+};
+
+const getCW721NFTSList = async (contract: string, idList: Array<string>) => {
+    try {
+        if (idList.length > 0) {
+            let list: Array<INftItemType> = [];
+            for (let i = 0; i < idList.length; i++) {
+                let nft: Cw721NftInfo | null = await getCW721NFTItemFromId(contract, idList[i]);
+                if (nft) {
+                    list.push({
+                        id: idList[i],
+                        owner: nft.access.owner,
+                        tokenURI: nft.info.token_uri
+                    });
                 }
             }
             return list;
@@ -129,6 +219,38 @@ const getMyNFTList = async (nfts: Array<INftItemType>, identity: string) => {
                         metaURI: metaURI
                     });
                 }
+            }
+
+            return list;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+};
+
+
+const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
+    try {
+        if (nfts.length > 0) {
+            let list: INFTProps[] = [];
+            for (let i = 0; i < nfts.length; i++) {
+                let NFT = nfts[i];
+                const res = await fetch(NFT.tokenURI);
+                const json = await res.json();
+                const image = json.imageURI;
+                const metaURI = json.metaURI !== undefined ? json.metaURI : '';
+
+                list = list.concat({
+                    id: NFT.id,
+                    name: json.name,
+                    image: image,
+                    description: json.description,
+                    identity: json.identity,
+                    metaURI: metaURI
+                });
             }
 
             return list;
