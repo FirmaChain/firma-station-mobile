@@ -235,8 +235,7 @@ const styles = StyleSheet.create({
     viewContainer: {
         height: '100%',
         alignItems: 'flex-end',
-        justifyContent: 'space-between',
-        paddingTop: Platform.select({ android: 0, ios: getStatusBarHeight() })
+        justifyContent: 'space-between'
     },
     disconnect: {
         height: 25,

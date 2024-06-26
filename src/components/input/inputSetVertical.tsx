@@ -44,6 +44,7 @@ const InputSetVertical = ({
     const [focus, setFocus] = useState(false);
 
     const handleInputChange = (value: string) => {
+        if (value.includes('/')) return;
         setVal(value);
         onChangeEvent(value);
     };

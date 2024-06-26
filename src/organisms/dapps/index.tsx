@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
-        paddingTop: 20,
+        paddingTop: 32,
         backgroundColor: BgColor
     },
     box: {
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
     },
     contentWrap: {
         marginBottom: 20
