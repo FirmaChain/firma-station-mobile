@@ -11,6 +11,8 @@ import {
     recoverWallet,
     redelegate,
     revoke,
+    sendCW20,
+    sendCW721NFT,
     sendFCT,
     undelegate,
     voting,
@@ -178,6 +180,10 @@ const Transaction = ({ state }: IProps) => {
                     }
 
                     setTransactionResult({ ...transactionResult, code: code, result: resultMessage });
+                    break;
+                case TRANSACTION_TYPE['SEND_CW20']:
+                    const sendCW20Result = await sendCW20(recoverValue, state.targetAddress, state.amount, state.gas, state.contractAddress);
+                    setTransactionResult({ ...transactionResult, code: sendCW20Result.code, result: sendCW20Result.transactionHash });
                     break;
                 default:
                     break;

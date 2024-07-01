@@ -11,6 +11,7 @@ import { WebParams } from '@/screens/webScreen';
 import { DappDetailParams } from '@/screens/home/dapps/dapp/dappDetail';
 import { NFTParams } from '@/screens/home/dapps/nft/nft';
 import { CreateStepRecoverParams } from '@/screens/createWallet/stepRecover';
+import { SendCW20Params } from '@/screens/home/dapps/sendCW20/sendCW20';
 
 export enum Screens {
     LoginCheck = 'LoginCheck',
@@ -43,6 +44,7 @@ export enum Screens {
     Dapps = 'Dapps',
     DappDetail = 'DappDetail',
     NFT = 'NFT',
+    SendCW20 = 'SendCW20',
 
     Setting = 'Setting',
     ChangePassword = 'ChangePassword',
@@ -82,6 +84,7 @@ export type StackParamList = {
     Dapps: undefined;
     DappDetail: DappDetailParams;
     NFT: NFTParams;
+    SendCW20: SendCW20Params;
 
     Setting: undefined;
     ChangePassword: undefined;
