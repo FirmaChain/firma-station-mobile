@@ -185,6 +185,10 @@ const Transaction = ({ state }: IProps) => {
                     const sendCW20Result = await sendCW20(recoverValue, state.targetAddress, state.amount, state.gas, state.contractAddress);
                     setTransactionResult({ ...transactionResult, code: sendCW20Result.code, result: sendCW20Result.transactionHash });
                     break;
+                case TRANSACTION_TYPE['SEND_CW721']:
+                    const sendCW721Result = await sendCW721NFT(recoverValue, state.targetAddress, state.tokenId, state.gas, state.contractAddress);
+                    setTransactionResult({ ...transactionResult, code: sendCW721Result.code, result: sendCW721Result.transactionHash });
+                    break;
                 default:
                     break;
             }
