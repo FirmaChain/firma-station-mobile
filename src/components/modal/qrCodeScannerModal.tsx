@@ -7,7 +7,6 @@ import { QRCODE_SCANNER_MODAL_TEXT } from '@/constants/common';
 import { BlackColor, Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
 import { FailFilledCircle } from '../icon/icon';
 import { checkCameraPermission } from '@/util/permission';
-// import { wait } from '@/util/common';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import CustomToast from '../toast/customToast';
 
@@ -17,13 +16,7 @@ const QRCodeScannerModal = () => {
     const handleCameraPermission = async () => {
         let permissionGranted = await checkCameraPermission();
         setVisible(permissionGranted);
-        // wait(1000).then(() => handleReaderTest());
     };
-
-    // const handleReaderTest = () => {
-    //     ModalActions.handleModalData({ result: 'sign://d3663139-2a36-4c69-bfd7-6038252db235' });
-    //     closeModal();
-    // };
 
     useEffect(() => {
         handleCameraPermission();

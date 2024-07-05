@@ -9,5 +9,5 @@
     "[typescriptreact]": {
         "editor.formatOnSave": true,
     },
-    "editor.insertSpaces": true,
+    "editor.insertSpaces": true
 }
