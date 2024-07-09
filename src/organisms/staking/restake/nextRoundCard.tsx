@@ -67,7 +67,7 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
                 });
         }
 
-        return `${convertAmount(amount, true, 2)} ${_CHAIN_SYMBOL}`;
+        return `${convertAmount({ value: amount })} ${_CHAIN_SYMBOL}`;
     }, [grantState]);
 
     const totalCount = useMemo(() => {

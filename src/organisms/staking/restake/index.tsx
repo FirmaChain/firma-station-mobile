@@ -18,7 +18,7 @@ import ViewContainer from '@/components/parts/containers/viewContainer';
 import WarnContainer from '@/components/parts/containers/warnContainer';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import AlertModal from '@/components/modal/alertModal';
-import BalanceInfoForRestake from '@/components/parts/balanceInfoForRestake';
+import BalanceInfoMultiLine from '@/components/parts/balanceInfoMultiLine';
 import StatusBox from './statusBox';
 import NextRoundCard from './nextRoundCard';
 import RestakeValidatorListModal from '@/components/modal/restakeValidatorListModal';
@@ -82,7 +82,7 @@ const Restake = () => {
             const { nextRoundDateTime, round, ...other } = restakeInfo;
             json = {
                 ...other,
-                minimum_Rewards: `${convertAmount(restakeInfo.minimum_Rewards, false, 2)} ${_CHAIN_SYMBOL}`
+                minimum_Rewards: `${convertAmount({ value: restakeInfo.minimum_Rewards, isUfct: false })} ${_CHAIN_SYMBOL}`
             };
         }
         return json;
@@ -219,7 +219,7 @@ const Restake = () => {
                     <View style={{ flex: 1 }}>
                         <ScrollView style={{ marginBottom: 20 }}>
                             <View style={{ flex: 1, paddingHorizontal: 20 }}>
-                                <BalanceInfoForRestake available={totalDelegate} reward={totalReward} />
+                                <BalanceInfoMultiLine available={totalDelegate} reward={totalReward} />
                                 <StatusBox
                                     grantState={stakingGrantState}
                                     delegationState={delegationStates}

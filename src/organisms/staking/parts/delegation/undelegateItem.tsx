@@ -19,7 +19,7 @@ const UndelegateItem = ({ data, navigate }: IProps) => {
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
             <View style={[styles.item]}>
                 <MonikerSection validator={data} />
-                <DataSection title="Amount" data={`${convertAmount(data.balance)} ${_CHAIN_SYMBOL}`} />
+                <DataSection title="Amount" data={`${convertAmount({ value: data.balance })} ${_CHAIN_SYMBOL}`} />
                 <DataSection title="Linked Until" data={convertTime(data.completionTime, true)} />
                 <View style={{ paddingBottom: 22 }} />
             </View>

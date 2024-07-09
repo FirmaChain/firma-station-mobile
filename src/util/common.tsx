@@ -24,10 +24,47 @@ export const convertCurrent = (value: number | string) => {
     return val.join('.');
 };
 
-export const convertAmount = (value: string | number, isUfct: boolean = true, point: number = 2) => {
-    if (isUfct) return convertCurrent(makeDecimalPoint(convertToFctNumber(value), point));
-    return convertCurrent(makeDecimalPoint(value, point));
+export const convertAmount = ({ value, isUfct = true, point = 2, decimal = null }: { value: string | number, isUfct?: boolean, point?: number, decimal?: number | null }) => {
+    if (decimal === null) {
+        if (isUfct) return convertCurrent(makeDecimalPoint(convertToFctNumber(value), point));
+        return convertCurrent(makeDecimalPoint(value, point));
+    } else {
+        return convertCurrent(makeDecimalPoint(convertAmountByDecimal(value, decimal), point));
+    }
 };
+
+export const convertAmountByDecimal = (value: string | number, decimalPlaces: number): string => {
+    const valueStr = value.toString();
+    if (valueStr.length <= decimalPlaces) {
+        return "0." + "0".repeat(decimalPlaces - valueStr.length) + valueStr;
+    }
+
+    const integerPart = valueStr.slice(0, valueStr.length - decimalPlaces);
+    const decimalPart = valueStr.slice(valueStr.length - decimalPlaces);
+
+    if (decimalPart === '') {
+        return integerPart;
+    }
+
+    return integerPart + "." + decimalPart;
+};
+
+export const convertAmountByDecimalToTx = (value: string | number, decimal: number) => {
+    const amount = value.toString()
+    if (amount.includes('.')) {
+        const [integerPart, fractionalPart] = amount.split('.');
+        const fractionalLength = fractionalPart.length;
+        if (fractionalLength > decimal) {
+            throw new Error(`The amount has more decimal places than allowed (${decimal})`);
+        }
+        const paddedFractional = fractionalPart.padEnd(decimal, '0');
+        const result = integerPart + paddedFractional;
+        return result.replace(/^0+/, '');
+    } else {
+        const paddedAmount = amount + '0'.repeat(decimal);
+        return paddedAmount;
+    }
+}
 
 export const convertToFctNumberForInput = (value: number | string) => {
     return makeDecimalPoint(convertToFctNumber(value), 6);
@@ -165,19 +202,19 @@ export const convertPercentage = (value: string | number) => {
 
 export const convertDelegateAmount = (amount: number) => {
     if (amount >= 10000) {
-        return convertAmount(amount, true, 2);
+        return convertAmount({ value: amount, point: 2 });
     }
     if (amount >= 1000) {
-        return convertAmount(amount, true, 3);
+        return convertAmount({ value: amount, point: 3 });
     }
     if (amount >= 100) {
-        return convertAmount(amount, true, 4);
+        return convertAmount({ value: amount, point: 4 });
     }
     if (amount >= 10) {
-        return convertAmount(amount, true, 5);
+        return convertAmount({ value: amount, point: 5 });
     }
     if (amount >= 0) {
-        return convertAmount(amount, true, 6);
+        return convertAmount({ value: amount, point: 6 });
     }
 };
 

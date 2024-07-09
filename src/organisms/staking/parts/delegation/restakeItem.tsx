@@ -32,7 +32,7 @@ const RestakeItem = ({ data, navigate }: IProps) => {
                 color: TextColor + '65',
                 value: 'Not yet'
             };
-        return { color: TextDisableColor, value: `${convertAmount(data.latestReward, true, 6)} ${_CHAIN_SYMBOL}` };
+        return { color: TextDisableColor, value: `${convertAmount({ value: data.latestReward, point: 6 })} ${_CHAIN_SYMBOL}` };
     }, [data]);
 
     return (
@@ -40,7 +40,7 @@ const RestakeItem = ({ data, navigate }: IProps) => {
             <View style={[styles.item]}>
                 <MonikerSection validator={data} />
                 <DataSection title="Delegated" data={`${convertDelegateAmount(data.delegated)} ${_CHAIN_SYMBOL}`} />
-                <DataSection title="Reward" data={`${convertAmount(data.stakingReward, true, 6)} ${_CHAIN_SYMBOL}`} />
+                <DataSection title="Reward" data={`${convertAmount({ value: data.stakingReward, point: 6 })} ${_CHAIN_SYMBOL}`} />
                 <DataSection title="Latest Restake" color={latestRestake.color} data={latestRestake.value} />
                 <DataSection title="Grant Status" data={status.title} color={status.color} label={true} />
                 <View style={{ paddingBottom: 22 }} />

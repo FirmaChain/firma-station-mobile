@@ -85,7 +85,7 @@ const PercentageBox = ({ data }: IProps) => {
 
     const handleAmount = useCallback(
         (amount: string | number) => {
-            return `${convertAmount(amount, false)} ${_CHAIN_SYMBOL}`;
+            return `${convertAmount({ value: amount, isUfct: false })} ${_CHAIN_SYMBOL}`;
         },
         [PercentageData]
     );

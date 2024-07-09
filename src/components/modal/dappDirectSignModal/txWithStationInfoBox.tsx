@@ -96,11 +96,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
         return (
             <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
                 <Text style={styles.catTitle}>{title}</Text>
-                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount(
-                    amount,
-                    false,
-                    amount > 0 ? 6 : 0
-                )} ${_CHAIN_SYMBOL}`}</Text>
+                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({ value: amount, isUfct: false, point: amount > 0 ? 6 : 0 })} ${_CHAIN_SYMBOL}`}</Text>
             </View>
         );
     };

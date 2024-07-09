@@ -127,7 +127,7 @@ const TransactionConfirmModal = ({
                             >
                                 <Text style={styles.itemTitle}>Amount</Text>
                                 <Text style={styles.itemBalance}>
-                                    {convertAmount(amount, false, 6)}
+                                    {convertAmount({ value: amount, isUfct: false, point: 6 })}
                                     <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${SEND_TOKEN_SYMBOL}`}</Text>
                                 </Text>
                             </View>
@@ -169,7 +169,7 @@ const TransactionConfirmModal = ({
                         <View style={[styles.boxH, styles.receiptDesc]}>
                             <Text style={styles.itemTitle}>Fee</Text>
                             <Text style={[styles.itemBalance, { color: TextCatTitleColor }]}>
-                                {convertNumber(convertAmount(fee / 1000000, false, 6))}
+                                {convertNumber(convertAmount({ value: fee / 1000000, isUfct: false, point: 6 }))}
                                 <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                             </Text>
                         </View>

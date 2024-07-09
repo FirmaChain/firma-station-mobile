@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
     NativeSyntheticEvent,
     NativeScrollEvent,
@@ -15,16 +15,18 @@ import { fadeIn, fadeOut } from '@/util/animation';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions } from '@/redux/actions';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface IProps {
     scrollEndFunc?: Function;
     refreshFunc: () => void;
     background?: string;
+    scrollToTop?: boolean;
     toTopButton?: boolean;
     children: JSX.Element;
 }
 
-const RefreshScrollView = ({ scrollEndFunc, refreshFunc, background = 'transparent', toTopButton = false, children }: IProps) => {
+const RefreshScrollView = ({ scrollEndFunc, refreshFunc, background = 'transparent', scrollToTop = false, toTopButton = false, children }: IProps) => {
     const { common: removeable } = useAppSelector((state) => state);
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
@@ -75,6 +77,14 @@ const RefreshScrollView = ({ scrollEndFunc, refreshFunc, background = 'transpare
             handleScrollToTop(true);
         }
     }, [removeable.scrollToTop]);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (scrollToTop) {
+                handleScrollToTop(false);
+            }
+        }, [scrollToTop])
+    );
 
     return (
         <View style={{ flex: 1 }}>

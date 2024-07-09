@@ -48,11 +48,7 @@ const TxInfoBox = ({ defaultFee, companyName, productName, productPrice, product
                     ]}
                 >
                     <Text style={styles.catTitle}>{'Amount'}</Text>
-                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount(
-                        productPrice,
-                        false,
-                        productPrice > 0 ? 6 : 0
-                    )} ${productPriceSymbol}`}</Text>
+                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({ value: productPrice, isUfct: false, point: productPrice > 0 ? 6 : 0 })} ${productPriceSymbol}`}</Text>
                 </View>
             </View>
         </Fragment>

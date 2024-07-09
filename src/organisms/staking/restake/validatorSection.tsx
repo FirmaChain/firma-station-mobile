@@ -74,7 +74,7 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
                             ]}
                         />
                         <Text style={[styles.value, isRestakeActive ? { color: RestakeActiveColor } : { color: RestakeNoDelegationColor }]}>
-                            {convertAmount(state.reward, true, 2)}
+                            {convertAmount({ value: state.reward })}
                             <Text
                                 style={{ fontSize: 12, fontWeight: 'normal', color: RestakeNoDelegationColor }}
                             >{` / ${minimumRewards} ${_CHAIN_SYMBOL}`}</Text>

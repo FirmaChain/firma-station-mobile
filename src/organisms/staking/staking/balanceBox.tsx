@@ -52,7 +52,7 @@ const BalanceBox = ({ stakingValues }: IProps) => {
                         >
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, { fontSize: resize }]}>{convertAmount(item.data, item.ufct)}</Text>
+                                <Text style={[styles.desc, { fontSize: resize }]}>{convertAmount({ value: item.data, isUfct: item.ufct })}</Text>
                             </View>
                         </View>
                     );

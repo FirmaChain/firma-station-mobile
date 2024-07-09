@@ -274,7 +274,7 @@ const InputBox = ({
     return (
         <ScrollView>
             <View style={{ paddingHorizontal: 20 }}>
-                <BalanceInfo type={type} available={available} reward={reward} />
+                <BalanceInfo showSubBalance={type === 'Delegate'} available={available} subAvailable={reward} />
             </View>
             {ClassifyByType()}
             <ValidatorSelectModal

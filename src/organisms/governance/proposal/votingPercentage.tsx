@@ -153,7 +153,7 @@ const VotingPercentage = ({ data }: IProps) => {
                                         {makeDecimalPoint(calculateRatio(item.vote, totalVote()) * 100) + ' %'}
                                     </Text>
                                 )}
-                                <Text style={[styles.amount, { textAlign: 'right' }]}>{convertAmount(item.vote)}</Text>
+                                <Text style={[styles.amount, { textAlign: 'right' }]}>{convertAmount({ value: item.vote })}</Text>
                             </View>
                             <View style={[styles.stampWrapper, { display: myVote[index] ? 'flex' : 'none' }]}>
                                 <Image style={styles.stamp} source={ICON_VOTE_CHECK} />

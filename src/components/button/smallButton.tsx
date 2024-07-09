@@ -14,19 +14,20 @@ interface IProps {
     disableTextColor?: string;
 }
 
-const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor, disableTextColor = TextDarkGrayColor}:IProps) => {
+const SmallButton = ({ title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor, disableTextColor = TextDarkGrayColor }: IProps) => {
     const [buttonHeight, setButtonHeight] = useState(height);
 
-    const handleOnPress = (value?:any) => {
-        if(active === false) return;
+    const handleOnPress = (value?: any) => {
+        if (active === false) return;
         onPressEvent && onPressEvent(value);
     }
 
     const buttonColor = useMemo(() => {
-        if(active){
-            if(border){
+        if (active) {
+            if (border) {
+                const bcakgroundColor = color === PointColor && border ? BgColor : color;
                 return {
-                    background: BgColor,
+                    background: bcakgroundColor,
                     textColor: TextColor,
                 }
             } else {
@@ -44,22 +45,24 @@ const SmallButton = ({title, onPressEvent, size = 100, height = 42, color = Poin
     }, [active, active, border, color])
 
     useEffect(() => {
-        if(height === 0) return setButtonHeight(0);
-        return setButtonHeight(42);
+        if (height === 0) return setButtonHeight(0);
+        return setButtonHeight(height);
     }, [height]);
 
     return (
         <View>
-            <TouchableOpacity 
+            <TouchableOpacity
                 disabled={!active}
-                style={[styles.button, 
-                    {width: size, 
-                    height: buttonHeight, 
-                    borderWidth: (border && active)? 1:0,
+                style={[styles.button,
+                {
+                    width: size,
+                    height: buttonHeight,
+                    borderWidth: (border && active) ? 1 : 0,
                     borderColor: WhiteColor,
-                    backgroundColor: buttonColor.background}]} 
-                onPress={()=>handleOnPress()}>
-                    <Text style={[styles.buttonText, {color: buttonColor.textColor}]}>{title}</Text>
+                    backgroundColor: buttonColor.background
+                }]}
+                onPress={() => handleOnPress()}>
+                <Text style={[styles.buttonText, { color: buttonColor.textColor }]}>{title}</Text>
             </TouchableOpacity>
         </View>
     )

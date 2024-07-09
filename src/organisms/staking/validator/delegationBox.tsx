@@ -45,12 +45,12 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
 
     const Available = useMemo(() => {
         if (stakingState === null) return 0;
-        return convertAmount(stakingState.available, false);
+        return convertAmount({ value: stakingState.available, isUfct: false });
     }, [stakingState]);
 
     const Delegate = useMemo(() => {
         if (stakingState === null) return 0;
-        return convertAmount(stakingState.delegated, false);
+        return convertAmount({ value: stakingState.delegated, isUfct: false });
     }, [stakingState]);
 
     const Reward = useMemo(() => {
@@ -156,12 +156,12 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
                             style={[
                                 styles.balance,
                                 {
-                                    fontSize: resizeFontSize(convertNumber(convertAmount(Reward, false)), 100000, 20),
+                                    fontSize: resizeFontSize(convertNumber(convertAmount({ value: Reward, isUfct: false })), 100000, 20),
                                     color: StakingStateExist ? TextColor : TextDisableColor
                                 }
                             ]}
                         >
-                            {convertAmount(Reward, false)}
+                            {convertAmount({ value: Reward, isUfct: false })}
                             <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </View>

@@ -87,7 +87,7 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
 
     useEffect(() => {
         setRewardTextSize(resizeFontSize(reward, 10000, 28));
-        setStakingReward(convertAmount(reward, false));
+        setStakingReward(convertAmount({ value: reward, isUfct: false }));
     }, [reward]);
 
     return (

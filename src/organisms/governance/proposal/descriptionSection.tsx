@@ -26,8 +26,8 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
                 { title: 'Voting Start Time', data: isDepositPeriod ? null : convertTime(data.votingStartTime, true) },
                 { title: 'Voting End Time', data: isDepositPeriod ? null : convertTime(data.votingEndTime, true) },
                 { title: 'Deposit Period', data: isDepositPeriod ? data.depositPeriod : null },
-                { title: 'Min Deposit Amount', data: isDepositPeriod ? `${convertAmount(data.minDeposit)} ${_CHAIN_SYMBOL}` : null },
-                { title: 'Current Deposit', data: isDepositPeriod ? `${convertAmount(data.proposalDeposit)} ${_CHAIN_SYMBOL}` : null }
+                { title: 'Min Deposit Amount', data: isDepositPeriod ? `${convertAmount({ value: data.minDeposit })} ${_CHAIN_SYMBOL}` : null },
+                { title: 'Current Deposit', data: isDepositPeriod ? `${convertAmount({ value: data.proposalDeposit })} ${_CHAIN_SYMBOL}` : null }
             ];
         return [
             { title: 'Proposal Type', data: '' },
@@ -89,7 +89,7 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
                     </View>
                     <View style={[styles.boxV, { paddingTop: 30 }]}>
                         <Text style={[styles.title, styles.titleV]}>Amount</Text>
-                        <Text style={[styles.desc, { fontSize: 16 }]}>{`${convertAmount(classified.amount)} ${_CHAIN_SYMBOL}`}</Text>
+                        <Text style={[styles.desc, { fontSize: 16 }]}>{`${convertAmount({ value: classified.amount })} ${_CHAIN_SYMBOL}`}</Text>
                     </View>
                 </View>
             );

@@ -19,7 +19,7 @@ const DelegateItem = ({ data, navigate }: IProps) => {
             <View style={[styles.item]}>
                 <MonikerSection validator={data} />
                 <DataSection title="Delegated" data={`${convertDelegateAmount(data.amount)} ${_CHAIN_SYMBOL}`} />
-                <DataSection title="Reward" data={`${convertAmount(data.reward, true, 6)} ${_CHAIN_SYMBOL}`} />
+                <DataSection title="Reward" data={`${convertAmount({ value: data.reward, point: 6 })} ${_CHAIN_SYMBOL}`} />
                 <View style={{ paddingBottom: 22 }} />
             </View>
         </TouchableOpacity>
