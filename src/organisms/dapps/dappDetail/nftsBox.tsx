@@ -1,48 +1,104 @@
-import React, { Fragment, memo, useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BgColor, BoxColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
+import React, { Fragment, memo, useCallback, useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { BgColor, Lato, TextGrayColor } from '@/constants/theme';
 import { DAPP_LOADING_NFT, DAPP_NO_NFT } from '@/constants/common';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
-import { fadeIn, fadeOut } from '@/util/animation';
-import SquareSkeleton from '@/components/skeleton/squareSkeleton';
-import { INFTProps } from '@/hooks/dapps/hooks';
-import FastImage from 'react-native-fast-image';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { INFTProps, useCW721NFT, useNFT } from '@/hooks/dapps/hooks';
+import SmallProgress from '@/components/parts/smallProgress';
+import NftItem from './nftItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
 
 interface IProps {
     visible: boolean;
-    NFTS: Array<INFTProps> | null;
+    identity: string;
     cw721Contract: string | null;
-}
-
-interface INFTItemProps {
-    item: INFTProps;
-    size: number;
+    isScrollEnd: boolean;
+    isRefresh: boolean;
+    handleRefresh: (refresh: boolean) => void;
 }
 
 const itemCountPerLine = 3;
 
-const NFTsBox = ({ visible, NFTS, cw721Contract }: IProps) => {
+const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, handleRefresh }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
+    const isFocused = useIsFocused();
+
+    const { MyNFTS, handleNFTIdList, handleIdentity, isFetching } = useNFT();
+    const { MyCW721NFTS, handleCW721NFTIdList, isFetching: isCW721Fetching } = useCW721NFT({ contractAddress: cw721Contract });
+
+    const isCW721 = !Boolean(!cw721Contract || cw721Contract === '0x')
+
     const [containerSize, setContainerSize] = useState(0);
     const [NFTList, setNFTList] = useState<Array<INFTProps> | null>(null);
-    const [NFTCount, setNFTCount] = useState(0);
-    const [NFTsExist, setNFTsExist] = useState(false);
 
-    const handleNFTsData = useCallback(() => {
-        if (NFTS !== null) {
-            setNFTList(NFTS);
-            setNFTCount(NFTS.length);
-            setNFTsExist(NFTS.length > 0);
+    const fetchNFTs = useCallback(() => {
+        if (!cw721Contract || cw721Contract === '0x') {
+            if (!isFetching && MyNFTS) {
+                setNFTList(prevList => {
+                    if (prevList) {
+                        const newList = MyNFTS.filter(nft => !prevList.some(existingNFT => existingNFT.id === nft.id));
+                        return [...prevList, ...newList];
+                    } else {
+                        return MyNFTS
+                    }
+                });
+            }
+        } else {
+            if (!isCW721Fetching && MyCW721NFTS) {
+                setNFTList(prevList => {
+                    if (prevList) {
+                        const newList = MyCW721NFTS.filter(nft => !prevList.some(existingNFT => existingNFT.id === nft.id));
+                        return [...prevList, ...newList];
+                    } else {
+                        return MyCW721NFTS
+                    }
+                });
+            }
         }
-    }, [NFTS]);
+    }, [MyNFTS, MyCW721NFTS, isFetching, isCW721Fetching, NFTList]);
 
     useEffect(() => {
-        handleNFTsData();
-    }, [NFTS]);
+        fetchNFTs();
+    }, [isFetching, isCW721Fetching]);
+
+    useEffect(() => {
+        if (cw721Contract && cw721Contract !== '0x' && isScrollEnd) {
+            handleCW721NFTIdList(NFTList === null ? '0' : NFTList[NFTList.length - 1].id)
+        }
+    }, [isScrollEnd, cw721Contract])
+
+    useEffect(() => {
+        if (isFocused) {
+            if (cw721Contract && cw721Contract !== '0x') {
+                handleCW721NFTIdList(NFTList === null ? '0' : NFTList[NFTList.length - 1].id);
+            } else {
+                handleNFTIdList();
+            }
+        }
+    }, [cw721Contract, isFocused]);
+
+    useEffect(() => {
+        if (isRefresh) {
+            if (cw721Contract && cw721Contract !== '0x') {
+                handleCW721NFTIdList(NFTList === null ? '0' : NFTList[NFTList.length - 1].id);
+            } else {
+                handleNFTIdList();
+            }
+            handleRefresh(false);
+        }
+    }, [isRefresh, cw721Contract]);
+
+    useEffect(() => {
+        if (isFocused) {
+            if (cw721Contract === null) {
+                handleIdentity(identity);
+            }
+        }
+    }, [isFocused, identity, cw721Contract]);
+
 
     const moveToNFTDetail = useCallback(
         (id: any) => {
@@ -59,83 +115,56 @@ const NFTsBox = ({ visible, NFTS, cw721Contract }: IProps) => {
             return (
                 <Fragment>
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
-                        {NFTsExist ? (
-                            NFTList !== null &&
-                            NFTList.map((value, key) => {
-                                return <NFTItem key={key} item={value} size={(containerSize - 20) / itemCountPerLine} />;
-                            })
+                        {NFTList !== null ? (
+                            NFTList.length > 0 ?
+                                <Fragment>
+                                    {NFTList.map((value, key) => {
+                                        return <NftItem key={key} item={value} size={(containerSize - 20) / itemCountPerLine} moveToNFTDetail={moveToNFTDetail} />
+                                    })}
+                                    <View style={[styles.moreWrap, { opacity: isCW721 && isCW721Fetching ? 1 : 0 }]}>
+                                        <SmallProgress />
+                                        <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
+                                    </View>
+                                </Fragment>
+                                :
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        height: '100%',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        paddingVertical: 30
+                                    }}
+                                >
+                                    <Text style={styles.notice}>{DAPP_NO_NFT}</Text>
+                                </View>
                         ) : (
                             <View
                                 style={{
                                     flex: 1,
                                     height: '100%',
+                                    flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    paddingVertical: 30
                                 }}
                             >
-                                <Text style={styles.notice}>{NFTList === null ? DAPP_LOADING_NFT : DAPP_NO_NFT}</Text>
+                                <SmallProgress />
+                                <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
                             </View>
                         )}
                     </View>
                 </Fragment>
             );
-        }, [NFTsExist, NFTList, containerSize]);
+        }, [NFTList, containerSize]);
         return renderTable();
-    };
-    const NFTItem = ({ item, size }: INFTItemProps) => {
-        const fadeAnimImage = useRef(new Animated.Value(1)).current;
-        const [imageLoading, setImageLoading] = useState(false);
-
-        useEffect(() => {
-            if (imageLoading === false) {
-                fadeOut(Animated, fadeAnimImage, 500);
-            } else {
-                fadeIn(Animated, fadeAnimImage, 500);
-            }
-        }, [imageLoading]);
-
-        const renderItem = useCallback(() => {
-            return (
-                <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
-                    <View style={{ paddingHorizontal: 10 }}>
-                        <View style={[styles.contentImageWrap, { width: '100%', height: size - 20 }]}>
-                            <FastImage
-                                style={styles.contentIamge}
-                                resizeMode={'contain'}
-                                source={{
-                                    uri: item.image,
-                                    priority: FastImage.priority.low
-                                }}
-                                onLoadStart={() => setImageLoading(true)}
-                                onLoadEnd={() => setImageLoading(false)}
-                            />
-                        </View>
-                        {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.image} /> */}
-                        <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
-                            {item.name}
-                        </Text>
-                        <Animated.View style={{ position: 'absolute', top: 0, left: 10, opacity: fadeAnimImage }}>
-                            <SquareSkeleton size={size - 20} marginBottom={0} borderRadius={2} />
-                        </Animated.View>
-                    </View>
-                </TouchableOpacity>
-            );
-        }, [fadeAnimImage]);
-
-        return renderItem();
     };
 
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
             <View style={styles.box}>
-                <View style={[styles.header, { display: NFTsExist ? 'flex' : 'none' }]}>
-                    <Text style={styles.title}>
-                        List
-                        <Text style={{ color: PointLightColor }}> {NFTCount}</Text>
-                    </Text>
+                <View style={[styles.infoBox, { height: '100%' }]}>
+                    <NFTTable />
                 </View>
-                <View style={[styles.infoBox, NFTsExist === false && { height: '100%' }]}>{visible && <NFTTable />}</View>
             </View>
         </View>
     );
@@ -154,7 +183,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     infoBox: {
-        width: '100%'
+        width: '100%',
+        paddingVertical: 20
     },
     header: {
         height: 48,
@@ -182,27 +212,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         paddingHorizontal: 10
     },
-    contentWrap: {
-        marginBottom: 20
-    },
-    contentImageWrap: {
-        overflow: 'hidden',
-        backgroundColor: BoxColor,
-        borderRadius: 2
-    },
-    contentIamge: {
+    moreWrap: {
         width: '100%',
-        height: '100%'
+        paddingVertical: 10,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    contentTitle: {
-        fontFamily: Lato,
-        fontSize: 14,
-        textAlign: 'center',
-        color: TextCatTitleColor,
-        padding: 5,
-        marginTop: 5,
-        overflow: 'hidden'
-    }
 });
 
 export default memo(NFTsBox);

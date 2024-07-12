@@ -22,9 +22,10 @@ export interface INFTProps {
 
 export const useNFT = () => {
     const { wallet } = useAppSelector((state) => state);
-    const [NFTIdList, setNFTIdLIst] = useState<Array<string>>([]);
-    const [NFTS, setNFTS] = useState<Array<INftItemType>>([]);
+    const [NFTIdList, setNFTIdLIst] = useState<Array<string> | null>(null);
+    const [NFTS, setNFTS] = useState<Array<INftItemType> | null>(null);
     const [MyNFTS, setMyNFTS] = useState<Array<INFTProps> | null>(null);
+    const [isFetching, setIsFetching] = useState(true);
     const [identity, setIdentity] = useState<string>('');
 
     const handleIdentity = (id: string) => {
@@ -34,16 +35,7 @@ export const useNFT = () => {
     const handleNFTIdList = useCallback(async () => {
         try {
             let list = await getNFTIdListOfOwner(wallet.address);
-            if (NFTIdList.length === 0) {
-                setNFTIdLIst(list.nftIdList);
-            } else {
-                list.nftIdList
-                    .filter((id) => NFTIdList.includes(id) === false)
-                    .map((id) => {
-                        NFTIdList.concat(id);
-                    });
-                setNFTIdLIst(NFTIdList);
-            }
+            setNFTIdLIst(list.nftIdList);
         } catch (error) {
             console.log(error);
             throw error;
@@ -63,6 +55,7 @@ export const useNFT = () => {
 
     const handleNFTList = useCallback(async () => {
         try {
+            if (NFTIdList === null) return;
             const nftList = await getNFTSList(NFTIdList);
             setNFTS(nftList);
         } catch (error) {
@@ -77,40 +70,38 @@ export const useNFT = () => {
     useEffect(() => {
         const handleMyNFTList = async () => {
             try {
+                if (NFTS === null) return;
+                setIsFetching(true);
                 const myNftList: Array<INFTProps> = await getMyNFTList(NFTS, identity);
                 setMyNFTS(myNftList);
+                setIsFetching(false);
             } catch (error) {
                 console.log(error);
+                setIsFetching(false);
             }
         };
         handleMyNFTList();
     }, [NFTS, identity]);
 
-    return { MyNFTS, NFTIdList, handleNFTIdList, handleIdentity, getNFTMetaData };
+    return { MyNFTS, NFTIdList, isFetching, handleNFTIdList, handleIdentity, getNFTMetaData };
 };
 
 
 export const useCW721NFT = ({ contractAddress }: { contractAddress: string | null }) => {
     const { wallet } = useAppSelector((state) => state);
-    const [CW721NFTIdList, setCW721NFTIdLIst] = useState<Array<string>>([]);
-    const [CW721NFTS, setCW721NFTS] = useState<Array<INftItemType>>([]);
+    const [CW721NFTIdList, setCW721NFTIdLIst] = useState<Array<string> | null>(null);
+    const [CW721NFTS, setCW721NFTS] = useState<Array<INftItemType> | null>(null);
     const [MyCW721NFTS, setMyCW721NFTS] = useState<Array<INFTProps> | null>(null);
+    const [isFetching, setIsFetching] = useState(true);
 
-    const handleCW721NFTIdList = useCallback(async () => {
+    const handleCW721NFTIdList = useCallback(async (startId: string) => {
         try {
             if (contractAddress === null) return;
-            let list = await getCW721NftIdList(contractAddress, wallet.address);
-            if (CW721NFTIdList.length === 0) {
-                setCW721NFTIdLIst(list);
-            } else {
-                list
-                    .filter((id) => CW721NFTIdList.includes(id) === false)
-                    .map((id) => {
-                        CW721NFTIdList.concat(id);
-                    });
-                setCW721NFTIdLIst(CW721NFTIdList);
-            }
+            setIsFetching(true);
+            let list = await getCW721NftIdList(contractAddress, wallet.address, startId);
+            setCW721NFTIdLIst(list);
         } catch (error) {
+            setIsFetching(false);
             throw error;
         }
     }, [wallet.address, CW721NFTIdList]);
@@ -128,9 +119,11 @@ export const useCW721NFT = ({ contractAddress }: { contractAddress: string | nul
     const handleCW721NFTList = useCallback(async () => {
         try {
             if (contractAddress === null) return;
+            if (CW721NFTIdList === null) return;
             const nftList = await getCW721NFTSList(contractAddress, CW721NFTIdList);
             setCW721NFTS(nftList);
         } catch (error) {
+            setIsFetching(false);
             console.log(error);
         }
     }, [CW721NFTIdList, contractAddress]);
@@ -142,16 +135,19 @@ export const useCW721NFT = ({ contractAddress }: { contractAddress: string | nul
     useEffect(() => {
         const handleMyNFTList = async () => {
             try {
+                if (CW721NFTS === null) return;
                 const myNftList: Array<INFTProps> = await getMyCW721NFTList(CW721NFTS);
                 setMyCW721NFTS(myNftList);
+                setIsFetching(false);
             } catch (error) {
                 console.log(error);
+                setIsFetching(false);
             }
         };
         handleMyNFTList();
     }, [CW721NFTS]);
 
-    return { MyCW721NFTS, CW721NFTIdList, handleCW721NFTIdList, getCW721NFTMetaData };
+    return { MyCW721NFTS, CW721NFTIdList, isFetching, handleCW721NFTIdList, getCW721NFTMetaData };
 };
 
 const getNFTSList = async (idList: Array<string>) => {

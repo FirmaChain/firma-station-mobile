@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
@@ -14,7 +14,7 @@ import DescriptionBox from './descriptionBox';
 import BalanceBox from './balanceBox';
 import TabBox from './tabBox';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
-import { getCW20TokenInfo } from '@/util/firma';
+import { getCW20TokenInfo, getCW20TokenMarketingInfo } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
 
@@ -25,6 +25,8 @@ export interface IDappDataState {
     token: ITokenState | null;
     cw721ContractAddress: string | null;
     cw20ContractAddress: string | null;
+    marketingLogo: string | null;
+    decimal: number | null;
 }
 
 export interface ITokenState {
@@ -41,14 +43,6 @@ interface IProps {
     data: any;
 }
 
-const initDappData: IDappDataState = {
-    identity: '',
-    isServiceOnly: false,
-    serviceList: [],
-    token: null,
-    cw721ContractAddress: null,
-    cw20ContractAddress: null
-};
 
 const DappDetail = ({ data }: IProps) => {
     const { storage, wallet } = useAppSelector((state) => state);
@@ -58,6 +52,13 @@ const DappDetail = ({ data }: IProps) => {
     const [dappData, setDappData] = useState<IDappDataState>();
     const [isLoadedDappService, setIsLoadedDappService] = useState(false);
     const [isRefresh, setIsRefresh] = useState(false);
+    const [isBottom, setIsBottom] = useState(false);
+
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const isScrolledToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
+        setIsBottom(isScrolledToBottom);
+    };
 
     const moveToSendScreen = () => {
         if (dappData === null) return;
@@ -78,14 +79,19 @@ const DappDetail = ({ data }: IProps) => {
             const cw721ContractAddress = data?.cw721ContractAddress === '' ? null : data.cw721ContractAddress;
             const cw20ContractAddress = data?.cw20ContractAddress === '' ? null : data.cw20ContractAddress;
             let token = null;
+            let marketingLogo: string | null = null;
+            let decimal = null;
 
             if (cw20ContractAddress !== null && cw20ContractAddress !== '0x' && cw20ContractAddress !== '') {
                 const cw20Token = await getCW20TokenInfo(cw20ContractAddress);
+                const cw20TokenMarketing = await getCW20TokenMarketingInfo(cw20ContractAddress);
 
                 token = {
                     denom: cw20Token.symbol,
                     symbol: cw20Token.symbol
-                }
+                };
+                decimal = cw20Token.decimals;
+                marketingLogo = cw20TokenMarketing.logo.url;
             } else {
                 token = data?.token === undefined ? null : data.token;
             }
@@ -96,7 +102,9 @@ const DappDetail = ({ data }: IProps) => {
                 serviceList: serviceList,
                 token: token,
                 cw721ContractAddress: cw721ContractAddress,
-                cw20ContractAddress: cw20ContractAddress
+                cw20ContractAddress: cw20ContractAddress,
+                marketingLogo: marketingLogo,
+                decimal: decimal
             });
 
         } catch (error) {
@@ -172,16 +180,14 @@ const DappDetail = ({ data }: IProps) => {
     return (
         <Container titleOn={false} backEvent={handleBack}>
             <ViewContainer>
-                <RefreshScrollView refreshFunc={() => handleRefresh(true)}>
+                <RefreshScrollView refreshFunc={() => handleRefresh(true)} scrollToTop={true} scrollEndFunc={handleScroll}>
                     <View style={{ flex: 1 }}>
                         <DescriptionBox data={data} />
-                        <View style={{ padding: 20 }}>
-                            <View style={styles.divider} />
-                        </View>
+                        <View style={{ padding: 15 }} />
                         {dappData !== undefined && (
                             <React.Fragment>
-                                {isBalanceSectionOpen && <BalanceBox tokenData={dappData.token} cw20Contract={dappData.cw20ContractAddress} moveToSendScreen={moveToSendScreen} />}
-                                <TabBox data={dappData} serviceOnly={isServiceOnly} isRefresh={isRefresh} handleRefresh={handleRefresh} />
+                                {isBalanceSectionOpen && <BalanceBox tokenData={dappData.token} cw20Contract={dappData.cw20ContractAddress} marketingLogo={dappData.marketingLogo} decimal={dappData.decimal} moveToSendScreen={moveToSendScreen} />}
+                                <TabBox data={dappData} isScrollEnd={isBottom} serviceOnly={isServiceOnly} isRefresh={isRefresh} handleRefresh={handleRefresh} />
                             </React.Fragment>
                         )}
                     </View>

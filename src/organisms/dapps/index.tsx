@@ -11,6 +11,7 @@ import { wait } from '@/util/common';
 import { fadeIn } from '@/util/animation';
 import ConnectClient, { ProjectList } from '@/util/connectClient';
 import DappsSkeleton from '@/components/skeleton/dappsSkeleton';
+import { useDappsContext } from '@/context/dappsContext';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Dapps>;
 
@@ -19,6 +20,7 @@ const itemCountPerLine = 2;
 const Dapps = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
+    const { setSelectedTabIndex, setData } = useDappsContext()
 
     const { storage } = useAppSelector((state) => state);
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
@@ -59,7 +61,8 @@ const Dapps = () => {
     };
 
     const moveToDetail = useCallback((data: any) => {
-        navigation.navigate(Screens.DappDetail, { data: data });
+        setData(data);
+        navigation.navigate(Screens.DappDetail);
     }, []);
 
     const DappItem = useCallback(
@@ -100,6 +103,8 @@ const Dapps = () => {
 
     useEffect(() => {
         if (isFocused) {
+            setSelectedTabIndex(0);
+            setData({});
             getProjectList();
         }
     }, [isFocused]);

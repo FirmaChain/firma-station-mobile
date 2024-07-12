@@ -4,18 +4,20 @@ import { convertAmount, resizeFontSize } from '@/util/common';
 import { BgColor, Lato, RestakeActiveColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { getCW20Balance, getTokenBalance } from '@/util/firma';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { ITokenState } from '.';
 import SmallButton from '@/components/button/smallButton';
-import { Screens } from '@/navigators/appRoutes';
+import { Image } from 'react-native';
 
 interface IProps {
     tokenData: ITokenState | null;
     cw20Contract: string | null;
+    marketingLogo: string | null;
+    decimal: number | null;
     moveToSendScreen: () => void;
 }
 
-const BalanceBox = ({ tokenData, cw20Contract, moveToSendScreen }: IProps) => {
+const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSendScreen }: IProps) => {
     const isFocused = useIsFocused();
 
     const { wallet } = useAppSelector((state) => state);
@@ -66,24 +68,26 @@ const BalanceBox = ({ tokenData, cw20Contract, moveToSendScreen }: IProps) => {
                 <View>
                     {isCW20 ?
                         <View style={styles.boxV}>
-                            <View style={[styles.cw20Titlewrap, { paddingBottom: 10 }]}>
+                            <View style={[styles.cw20Titlewrap, { paddingBottom: 5 }]}>
                                 <Text style={styles.title}>My Token</Text>
-                                <Text style={styles.label}>CW20</Text>
                             </View>
                             <View style={[styles.cw20Titlewrap, { width: '100%', justifyContent: 'space-between' }]}>
-                                <Text style={[styles.balance, { fontSize: balanceTextSize }]}>
-                                    {convertAmount(balance, true, 2)}
-                                    <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${tokenSymbol}`}</Text>
-                                </Text>
-                                <SmallButton title="Send" active={balance > 0 || isCW20} size={90} onPressEvent={moveToSendScreen} />
+                                <View style={styles.balanceWrap}>
+                                    <Image style={styles.logo} source={{ uri: marketingLogo === null ? '' : marketingLogo }} />
+                                    <Text style={[styles.balance, { fontSize: balanceTextSize }]}>
+                                        {convertAmount({ value: balance, isUfct: false, decimal: decimal })}
+                                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${tokenSymbol.toUpperCase()}`}</Text>
+                                    </Text>
+                                </View>
+                                <SmallButton title="Send" active={balance > 0 && isCW20} size={90} onPressEvent={moveToSendScreen} />
                             </View>
                         </View>
                         :
                         <View style={styles.boxH}>
                             <Text style={styles.title}>My Token</Text>
                             <Text style={[styles.balance, { fontSize: balanceTextSize }]}>
-                                {convertAmount(balance, true, 2)}
-                                <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${tokenSymbol}`}</Text>
+                                {convertAmount({ value: balance })}
+                                <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${tokenSymbol.toUpperCase()}`}</Text>
                             </Text>
                         </View>
                     }
@@ -101,8 +105,9 @@ const styles = StyleSheet.create({
     box: {
         borderRadius: 8,
         backgroundColor: BgColor,
-        paddingHorizontal: 20,
-        paddingVertical: 22,
+        paddingLeft: 17,
+        paddingRight: 20,
+        paddingVertical: 20,
         alignItems: 'flex-start',
         justifyContent: 'center'
     },
@@ -122,18 +127,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    label: {
-        fontFamily: Lato,
-        fontSize: 13,
-        borderRadius: 10,
-        textAlign: 'center',
-        overflow: 'hidden',
-        paddingHorizontal: 10,
-        paddingVertical: 3,
-        backgroundColor: RestakeActiveColor + '30',
-        color: RestakeActiveColor,
-        marginHorizontal: 5
-    },
     buttonBox: {
         flex: 1,
         justifyContent: 'flex-end',
@@ -142,15 +135,26 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontWeight: '600',
-        fontSize: 18,
+        fontSize: 16,
         color: TextDarkGrayColor
+    },
+    balanceWrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+    logo: {
+        width: 30,
+        height: 30,
+        borderRadius: 100
     },
     balance: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: '600',
         color: TextColor,
-        textAlign: 'right'
+        textAlign: 'right',
+        paddingLeft: 5
     }
 });
 

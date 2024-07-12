@@ -8,6 +8,7 @@ import { CHAIN_NETWORK } from '@/../config';
 import { fadeIn } from '@/util/animation';
 import TextSkeleton from '@/components/skeleton/textSkeleton';
 import CircleSkeleton from '@/components/skeleton/circleSkeleton';
+import { getCW721NFTItemFromId } from '@/util/firma';
 
 interface IProps {
     data: any;
@@ -22,6 +23,24 @@ interface IDataRenderProps {
 
 const InfoBox = ({ data }: IProps) => {
     const { storage } = useAppSelector((state) => state);
+
+    const isCW721 = !Boolean(data.cw721Contract === '');
+    const [owner, setOwner] = useState<string>("");
+
+    const getNFTOwner = useCallback(async () => {
+        try {
+            if (isCW721 === false) return;
+            const nftInfo = await getCW721NFTItemFromId(data.cw721Contract, data.tokenId);
+            const _owner = nftInfo === null ? '' : nftInfo.access.owner;
+            setOwner(_owner);
+        } catch (error) {
+            console.log('getNFTOwner : ', error);
+        }
+    }, [data, isCW721])
+
+    useEffect(() => {
+        getNFTOwner();
+    }, [data, isCW721])
 
     const chainID = useMemo(() => {
         return `(${CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.chainID})`;
@@ -93,10 +112,6 @@ const InfoBox = ({ data }: IProps) => {
     return (
         <View style={{ paddingBottom: 10 }}>
             <View style={styles.box}>
-                <Text style={styles.title}>No.</Text>
-                <Text style={styles.value}>{data.id}</Text>
-            </View>
-            <View style={styles.box}>
                 <Text style={styles.title}>Blockchain</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 4, paddingLeft: 2 }}>
                     <Image source={FIRMA_LOGO} style={{ width: 15, height: 15, borderRadius: 50, marginRight: 3 }} />
@@ -106,14 +121,29 @@ const InfoBox = ({ data }: IProps) => {
                     </Text>
                 </View>
             </View>
-            <View style={styles.box}>
-                <Text style={styles.title}>Collection</Text>
-                <InfoDataRender title={collection.name} imageURI={collection.icon} color={WhiteColor} loading={collection.name === ''} />
-            </View>
-            <View style={styles.box}>
-                <Text style={styles.title}>Created by</Text>
-                <InfoDataRender title={createdBy} color={WhiteColor} loading={createdBy === ''} />
-            </View>
+            {isCW721 ?
+                <Fragment>
+                    <View style={styles.box}>
+                        <Text style={styles.title}>Contract</Text>
+                        <InfoDataRender title={data.cw721Contract} imageURI={''} color={WhiteColor} loading={data.cw721Contract === ''} />
+                    </View>
+                    <View style={styles.box}>
+                        <Text style={styles.title}>Owned by</Text>
+                        <InfoDataRender title={owner} color={WhiteColor} imageURI={''} loading={owner === ''} />
+                    </View>
+                </Fragment>
+                :
+                <Fragment>
+                    <View style={styles.box}>
+                        <Text style={styles.title}>Collection</Text>
+                        <InfoDataRender title={collection.name} imageURI={collection.icon} color={WhiteColor} loading={collection.name === ''} />
+                    </View>
+                    <View style={styles.box}>
+                        <Text style={styles.title}>Created by</Text>
+                        <InfoDataRender title={createdBy} color={WhiteColor} loading={createdBy === ''} />
+                    </View>
+                </Fragment>
+            }
         </View>
     );
 };

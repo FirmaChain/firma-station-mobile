@@ -1,67 +1,31 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
-import { INFTProps, useCW721NFT, useNFT } from '@/hooks/dapps/hooks';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { IDappDataState } from '.';
 import NFTsBox from './nftsBox';
 import ServicesBox from './servicesBox';
+import { useDappsContext } from '@/context/dappsContext';
 
 interface IProps {
     data: IDappDataState;
     serviceOnly: boolean;
     isRefresh: boolean;
+    isScrollEnd: boolean;
     handleRefresh: (refresh: boolean) => void;
 }
 
-const TabBox = ({ data, serviceOnly, isRefresh, handleRefresh }: IProps) => {
+const TabBox = ({ data, serviceOnly, isRefresh, isScrollEnd, handleRefresh }: IProps) => {
     const isFocused = useIsFocused();
-    const { MyNFTS, handleNFTIdList, handleIdentity } = useNFT();
-    const { MyCW721NFTS, handleCW721NFTIdList } = useCW721NFT({ contractAddress: data.cw721ContractAddress });
-
-    const [tab, setTab] = useState(0);
-
-    const NFTS: Array<INFTProps> | null = useMemo(() => {
-        if (data.cw721ContractAddress === '' || data.cw721ContractAddress === '0x') {
-            return MyNFTS;
-        } else {
-            return MyCW721NFTS
-        }
-    }, [MyNFTS, MyCW721NFTS, data.cw721ContractAddress]);
-
-    const NFTCount = useMemo(() => {
-        if (NFTS !== null) {
-            return NFTS.length;
-        }
-        return 0;
-    }, [NFTS]);
-
+    const { selectedTabIndex, setSelectedTabIndex } = useDappsContext()
 
     useEffect(() => {
         if (isFocused) {
             if (serviceOnly) {
-                setTab(0);
-            } else {
-                handleNFTIdList();
-                if (data.cw721ContractAddress !== null) {
-                    handleCW721NFTIdList();
-                }
+                setSelectedTabIndex(0);
             }
         }
-    }, [serviceOnly, data.cw721ContractAddress, isFocused]);
-
-    useEffect(() => {
-        if (isRefresh) {
-            handleNFTIdList();
-            handleRefresh(false);
-        }
-    }, [isRefresh]);
-
-    useEffect(() => {
-        if (isFocused) {
-            handleIdentity(data.identity);
-        }
-    }, [isFocused]);
+    }, [serviceOnly, isFocused]);
 
     return (
         <View style={{ flex: 1 }}>
@@ -73,26 +37,26 @@ const TabBox = ({ data, serviceOnly, isRefresh, handleRefresh }: IProps) => {
                 ) : (
                     <React.Fragment>
                         <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' }]}
-                            onPress={() => setTab(0)}
+                            style={[styles.tab, { borderBottomColor: selectedTabIndex === 0 ? WhiteColor : 'transparent' }]}
+                            onPress={() => setSelectedTabIndex(0)}
                         >
-                            <Text style={tab === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>Services</Text>
+                            <Text style={selectedTabIndex === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>Services</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: tab === 1 ? WhiteColor : 'transparent' }]}
-                            onPress={() => setTab(1)}
+                            style={[styles.tab, { borderBottomColor: selectedTabIndex === 1 ? WhiteColor : 'transparent' }]}
+                            onPress={() => setSelectedTabIndex(1)}
                         >
-                            <Text style={tab === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>
-                                {NFTCount > 0 ? `NFTs (${NFTCount})` : 'NFTs'}
+                            <Text style={selectedTabIndex === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>
+                                {'NFTs'}
                             </Text>
                         </TouchableOpacity>
                     </React.Fragment>
                 )}
             </View>
             <View style={{ flex: 1, paddingHorizontal: 20 }}>
-                <ServicesBox visible={tab === 0} identity={data.identity} data={data.serviceList} />
-                <NFTsBox visible={tab === 1} NFTS={NFTS} cw721Contract={data.cw721ContractAddress} />
+                <ServicesBox visible={selectedTabIndex === 0} identity={data.identity} data={data.serviceList} />
+                <NFTsBox visible={selectedTabIndex === 1} isScrollEnd={isScrollEnd} identity={data.identity} cw721Contract={data.cw721ContractAddress} isRefresh={isRefresh} handleRefresh={handleRefresh} />
             </View>
         </View>
     );

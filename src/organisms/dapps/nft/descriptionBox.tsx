@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BoxDarkColor, Lato, RestakeActiveColor, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
+import { BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextGrayColor } from '@/constants/theme';
 import { Animated, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
 import { easeInAndOutCustomAnim, fadeOut, LayoutAnim } from '@/util/animation';
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
@@ -81,9 +81,14 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
                 <View style={[styles.box, { display: isCW721 ? 'flex' : 'none', paddingBottom: 5 }]}>
                     <Text style={styles.label}>CW721</Text>
                 </View>
-                <View style={styles.box}>
+                <View style={[styles.box, { paddingBottom: 5 }]}>
                     <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.contentTitle]}>
                         {data.name}
+                    </Text>
+                </View>
+                <View style={styles.box}>
+                    <Text style={[styles.tokenIdTitle]}>
+                        {`#${data.tokenId}`}
                     </Text>
                 </View>
             </View>
@@ -136,17 +141,23 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: TextColor
     },
+    tokenIdTitle: {
+        width: '100%',
+        fontSize: 20,
+        fontFamily: Lato,
+        color: TextDarkGrayColor
+    },
     label: {
         fontFamily: Lato,
-        fontSize: 13,
+        fontSize: 12,
         borderRadius: 10,
         textAlign: 'center',
         overflow: 'hidden',
-        paddingHorizontal: 10,
+        fontWeight: '600',
+        paddingHorizontal: 6,
         paddingVertical: 3,
-        backgroundColor: RestakeActiveColor + '30',
-        color: RestakeActiveColor,
-        marginHorizontal: 5
+        color: CW721Color,
+        backgroundColor: CW721BackgroundColor
     },
     descBox: {
         alignItems: 'flex-start',

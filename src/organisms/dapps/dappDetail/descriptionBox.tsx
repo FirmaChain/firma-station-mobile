@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
-import { Image, Linking, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
-import { DownEmptyArrow, ExternalLink, UpEmptyArrow } from '@/components/icon/icon';
+import React, { useEffect, useMemo, useState } from 'react';
+import { BoxDarkColor, CW20BackgroundColor, CW20Color, CW721BackgroundColor, CW721Color, Lato, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
+import { Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
+import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -9,20 +9,31 @@ interface IProps {
     data: any;
 }
 
-const NUM_OF_LINES = 3;
-
 const DescriptionBox = ({ data }: IProps) => {
     const [maxLines, setMaxLines] = useState(999);
     const [descLines, setDescLines] = useState(0);
     const [showMore, setShowMore] = useState(false);
     const [openAccordion, setOpenAccordion] = useState(false);
 
+    const CW20Contract = useMemo(() => {
+        if (data.cw20ContractAddress === null || data.cw20ContractAddress === '' || data.cw20ContractAddress === '0x') return "";
+        return data.cw20ContractAddress
+    }, [data.cw20ContractAddress])
+
+    const CW721Contract = useMemo(() => {
+        if (data.cw721ContractAddress === null || data.cw721ContractAddress === '' || data.cw721ContractAddress === '0x') return "";
+        return data.cw721ContractAddress
+    }, [data.cw721ContractAddress])
+
+    const isCWContract = useMemo(() => {
+        return !Boolean(CW20Contract === '' || CW721Contract === '');
+    }, [CW20Contract, CW721Contract])
+
+
+    const NUM_OF_LINES = isCWContract ? 2 : 3;
+
     const handleMaxLines = () => {
         setOpenAccordion(!openAccordion);
-    };
-
-    const handleMoveToWeb = (url: string) => {
-        Linking.openURL(url);
     };
 
     const onTextLayout = (event: NativeSyntheticEvent<TextLayoutEventData>) => {
@@ -54,16 +65,16 @@ const DescriptionBox = ({ data }: IProps) => {
         <View style={[styles.boxH, { paddingHorizontal: 20, paddingTop: 10, alignItems: 'flex-start' }]}>
             <View style={{ height: '100%', justifyContent: 'flex-start' }}>
                 <Image style={[styles.contentImage]} source={{ uri: data.icon }} />
-                {/* <Image style={[styles.contentImage]} source={data.icon} /> */}
             </View>
             <View style={[styles.boxV, { flex: 1 }]}>
-                <View style={[styles.boxH, { paddingBottom: 10 }]}>
+                <View style={[styles.boxH, { paddingBottom: 6, display: isCWContract ? 'flex' : 'none' }]}>
+                    <Text style={[styles.label, { display: CW20Contract === "" ? 'none' : 'flex', color: CW20Color, backgroundColor: CW20BackgroundColor }]}>{'CW20'}</Text>
+                    <Text style={[styles.label, { display: CW721Contract === "" ? 'none' : 'flex', color: CW721Color, backgroundColor: CW721BackgroundColor, marginLeft: CW20Contract === "" ? 0 : 8 }]}>{'CW721'}</Text>
+                </View>
+                <View style={[styles.boxH, { paddingBottom: 6 }]}>
                     <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.contentTitle]}>
                         {data.name}
                     </Text>
-                    {/* <TouchableOpacity style={{ display: data.url === '' ? 'none' : 'flex' }} onPress={() => handleMoveToWeb(data.url)}>
-                        <ExternalLink size={16} color={TextCatTitleColor} />
-                    </TouchableOpacity> */}
                 </View>
                 <View style={{ paddingBottom: openAccordion ? 20 : 0 }}>
                     <Text style={styles.desc} numberOfLines={maxLines} ellipsizeMode={'tail'} onTextLayout={onTextLayout}>
@@ -100,12 +111,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start'
     },
+    label: {
+        fontFamily: Lato,
+        fontSize: 12,
+        borderRadius: 10,
+        textAlign: 'center',
+        overflow: 'hidden',
+        fontWeight: '600',
+        paddingHorizontal: 6,
+        paddingVertical: 3,
+    },
     boxV: {
         alignItems: 'flex-start'
     },
     contentImage: {
-        width: 80,
-        height: 80,
+        width: 86,
+        height: 86,
         resizeMode: 'contain',
         overflow: 'hidden',
         borderRadius: 8,
@@ -118,14 +139,13 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         color: TextColor,
         paddingRight: 10,
-        paddingBottom: 2
     },
     desc: {
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: 'normal',
         textAlign: 'left',
-        color: TextCatTitleColor
+        color: TextCatTitleColor,
     },
     moreButtonBox: {
         position: 'absolute',
