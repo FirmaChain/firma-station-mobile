@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
-import { CHAIN_SYMBOL } from '@/constants/common';
+import { CHAIN_SYMBOL, CW_TX_NOTICE_TEXT } from '@/constants/common';
 import InputSetVerticalForAddress from '@/components/input/inputSetVerticalForAddress';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
 import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
@@ -9,6 +9,8 @@ import { useAppSelector } from '@/redux/hooks';
 import { rootState } from '@/redux/reducers';
 import { FavoritesCreateModal, FavoritesModal } from '@/components/modal';
 import { wait } from '@/util/common';
+import InputSetVertical from '@/components/input/inputSetVertical';
+import WarnContainer from '@/components/parts/containers/warnContainer';
 
 interface IProps {
     handleSendInfo: (type: string, value: string | number) => void;
@@ -23,8 +25,6 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
 
     const { modal } = useAppSelector((state: rootState) => state);
 
-    const [safetyActive, setSafetyActive] = useState(true);
-    const [limitAvailable, setLimitAvailable] = useState(0);
     const [addressValue, setAddressValue] = useState(dstAddress);
     const [memoValue, setMemoValue] = useState('');
 
@@ -76,29 +76,6 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
         });
     };
 
-    useEffect(() => {
-        if (safetyActive) {
-            if (available > 100000) {
-                setLimitAvailable(available - 100000);
-            }
-        } else {
-            if (available > 20000) {
-                setLimitAvailable(available - 20000);
-            } else {
-                setLimitAvailable(0);
-            }
-        }
-    }, [available, safetyActive]);
-
-    useEffect(() => {
-        if (available > 100000) {
-            setSafetyActive(true);
-        } else {
-            setLimitAvailable(available >= 20000 ? available - 20000 : 0);
-            setSafetyActive(false);
-        }
-    }, [available]);
-
     return (
         <View>
             <InputSetVerticalForAddress
@@ -111,11 +88,23 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
             <InputSetVerticalForAmount
                 title="Amount"
                 placeholder={`0 ${_CHAIN_SYMBOL}`}
-                accent={safetyActive}
-                limitValue={limitAvailable}
+                accent={false}
+                limitValue={available}
                 resetValues={reset}
                 onChangeEvent={(value: any) => handleSendInfoState('amount', value)}
             />
+            <InputSetVertical
+                title="Memo"
+                value={memoValue}
+                validation={true}
+                placeholder="Memo"
+                resetValues={reset}
+                onChangeEvent={(value: any) => handleSendInfoState('memo', value)}
+            />
+
+            <View style={{ paddingTop: 20 }}>
+                <WarnContainer text={CW_TX_NOTICE_TEXT} question={false} />
+            </View>
 
             <FavoritesModal
                 open={openFavoriteModal}

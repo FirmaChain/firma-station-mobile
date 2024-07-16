@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { BgColor, BoxDarkColor, Lato, RestakeActiveColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { BgColor, BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, RestakeActiveColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
 import { addressCheck, getEstimateGasSendCW20, getEstimateGasSendCW721, getFeesFromGas } from '@/util/firma';
 import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
@@ -24,6 +24,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SendCW20
 interface ISendInfo {
     address: string;
     tokenId: string;
+    memo: string;
 }
 
 interface IProps {
@@ -44,6 +45,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
     const [sendInfoState, setSendInfoState] = useState<ISendInfo>({
         address: '',
         tokenId: tokenId,
+        memo: ''
     });
     const [resetInputValues, setInputResetValues] = useState(false);
 
@@ -77,6 +79,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
             contractAddress: contract,
             targetAddress: sendInfoState.address,
             tokenId: sendInfoState.tokenId,
+            memo: sendInfoState.memo,
             gas: gas,
         };
         setInputResetValues(true);
@@ -226,15 +229,15 @@ const styles = StyleSheet.create({
     },
     label: {
         fontFamily: Lato,
-        fontSize: 13,
+        fontSize: 12,
         borderRadius: 10,
         textAlign: 'center',
         overflow: 'hidden',
-        paddingHorizontal: 10,
+        fontWeight: '600',
+        paddingHorizontal: 6,
         paddingVertical: 3,
-        backgroundColor: RestakeActiveColor + '30',
-        color: RestakeActiveColor,
-        marginHorizontal: 5
+        color: CW721Color,
+        backgroundColor: CW721BackgroundColor
     },
 });
 

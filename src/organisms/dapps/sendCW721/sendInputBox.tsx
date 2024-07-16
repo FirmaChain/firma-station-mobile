@@ -7,6 +7,9 @@ import { useAppSelector } from '@/redux/hooks';
 import { rootState } from '@/redux/reducers';
 import { FavoritesCreateModal, FavoritesModal } from '@/components/modal';
 import { wait } from '@/util/common';
+import InputSetVertical from '@/components/input/inputSetVertical';
+import WarnContainer from '@/components/parts/containers/warnContainer';
+import { CW_TX_NOTICE_TEXT } from '@/constants/common';
 
 interface IProps {
     handleSendInfo: (type: string, value: string | number) => void;
@@ -77,6 +80,17 @@ const SendInputBox = ({ handleSendInfo, reset, dstAddress, }: IProps) => {
                 resetValues={reset}
                 onChangeEvent={(value: any) => handleSendInfoState('address', value)}
             />
+            <InputSetVertical
+                title="Memo"
+                value={memoValue}
+                validation={true}
+                placeholder="Memo"
+                resetValues={reset}
+                onChangeEvent={(value: any) => handleSendInfoState('memo', value)}
+            />
+            <View style={{ paddingTop: 20 }}>
+                <WarnContainer text={CW_TX_NOTICE_TEXT} question={false} />
+            </View>
 
             <FavoritesModal
                 open={openFavoriteModal}
