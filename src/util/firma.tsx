@@ -2,10 +2,11 @@ import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
-import { convertNumber, convertToFctNumber } from './common';
+import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
 import { TOKEN_DENOM } from '@/constants/common';
 import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
+import Long from 'long';
 
 export interface IWallet {
     name?: string;
@@ -132,6 +133,17 @@ export const getBalanceFromAdr = async (address: string) => {
         throw error;
     }
 };
+
+export const getTokenList = async (address: string) => {
+    try {
+        const list = await getFirmaSDK().Bank.getTokenBalanceList(address);
+
+        return list
+    } catch (error) {
+        console.log('getTokenList error : ', error);
+        throw error;
+    }
+}
 
 export const getTokenBalance = async (address: string, denom: string) => {
     try {
@@ -283,6 +295,34 @@ export const getEstimateGasSend = async (walletName: string, address: string, am
     }
 };
 
+export const getEstimateGasSendToken = async (walletName: string, address: string, tokenId: string, amount: number, decimal: number) => {
+    try {
+        let wallet = await getDecryptWalletInfo(walletName);
+        const gasEstimation = await getFirmaSDK().Bank.getGasEstimationSendToken(wallet, address, tokenId, amount, decimal);
+        return gasEstimation;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getEstimateGasSendIBC = async (walletName: string, port: string, channel: string, denom: string, address: string, amount: number, decimal: number) => {
+    try {
+        let wallet = await getDecryptWalletInfo(walletName);
+        const _amount = convertAmountByDecimalToTx(amount, decimal);
+        const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
+        const timeStamp = (Date.now() + 600000).toString() + "000000";
+        const timeoutTimeStamp = Long.fromString(timeStamp, true);
+        const height = {
+            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(Long.fromNumber(1000)),
+            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
+        }
+
+        const gasEstimation = await getFirmaSDK().Ibc.getGasEstimationTransfer(wallet, port, channel, denom, _amount, address, height, timeoutTimeStamp);
+        return gasEstimation;
+    } catch (error) {
+        throw error;
+    }
+};
 
 export const getEstimateGasSendCW20 = async (walletName: string, contract: string, address: string, amount: string) => {
     try {
@@ -325,6 +365,42 @@ export const sendFCT = async (recoverValue: string, target: string, amount: numb
     try {
         let wallet = await recoverWallet(recoverValue);
         let send = await getFirmaSDK().Bank.send(wallet, target, amount, {
+            memo: memo,
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas)
+        });
+        return send;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const sendToken = async (recoverValue: string, target: string, amount: number, tokenId: string, decimal: number, estimatedGas: number, memo?: string) => {
+    try {
+        let wallet = await recoverWallet(recoverValue);
+        let send = await getFirmaSDK().Bank.sendToken(wallet, target, tokenId, amount, decimal, {
+            memo: memo,
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas)
+        });
+        return send;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const sendIBC = async (recoverValue: string, port: string, channel: string, denom: string, target: string, amount: number, decimal: number, estimatedGas: number, memo?: string) => {
+    try {
+        let wallet = await recoverWallet(recoverValue);
+        const _amount = convertAmountByDecimalToTx(amount, decimal);
+        const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
+        const timeStamp = (Date.now() + 600000).toString() + "000000";
+        const timeoutTimeStamp = Long.fromString(timeStamp, true);
+        const height = {
+            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(Long.fromNumber(1000)),
+            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
+        }
+        let send = await getFirmaSDK().Ibc.transfer(wallet, port, channel, denom, _amount, target, height, timeoutTimeStamp, {
             memo: memo,
             gas: estimatedGas,
             fee: getFeesFromGas(estimatedGas)
@@ -843,9 +919,19 @@ export const getCW20TokenInfo = async (contract: string) => {
     }
 }
 
-export const getCW721NftIdList = async (contract: string, address: string) => {
+export const getCW20TokenMarketingInfo = async (contract: string) => {
     try {
-        const nftList = await getFirmaSDK().Cw721.getNFTIdListOfOwner(contract, address, 50);
+        const info = await getFirmaSDK().Cw20.getMarketingInfo(contract);
+        return info
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getCW721NftIdList = async (contract: string, address: string, startId: string) => {
+    try {
+        const nftList = await getFirmaSDK().Cw721.getNFTIdListOfOwner(contract, address, 30, startId);
         return nftList;
     } catch (error) {
         console.log(error);
@@ -864,22 +950,21 @@ export const getCW721NFTItemFromId = async (contract: string, id: string) => {
     }
 };
 
-export const sendCW20 = async (recoverValue: string, target: string, amount: string, estimatedGas: number, contract: string) => {
+export const sendCW20 = async (recoverValue: string, target: string, amount: string, estimatedGas: number, contract: string, memo: string) => {
     try {
         const wallet = await recoverWallet(recoverValue);
         const _amount = await convertCW20Amount(contract, amount);
-        const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, { gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
+        const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, { memo: memo, gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
         return send;
     } catch (error) {
         throw error;
     }
 };
 
-
-export const sendCW721NFT = async (recoverValue: string, target: string, tokenId: string, estimatedGas: number, contract: string) => {
+export const sendCW721NFT = async (recoverValue: string, target: string, tokenId: string, estimatedGas: number, contract: string, memo: string) => {
     try {
         const wallet = await recoverWallet(recoverValue);
-        const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, { gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
+        const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, { memo: memo, gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
         return send;
     } catch (error) {
         throw error;
@@ -889,8 +974,8 @@ export const sendCW721NFT = async (recoverValue: string, target: string, tokenId
 export const convertCW20Amount = async (contract: string, amount: string) => {
     try {
         const tokenInfo = await getFirmaSDK().Cw20.getTokenInfo(contract);
-        const decimals = '0'.repeat(Number(tokenInfo.decimals));
-        return amount + decimals
+        const result = convertAmountByDecimalToTx(amount, tokenInfo.decimals);
+        return result;
     } catch (error) {
         throw error;
     }

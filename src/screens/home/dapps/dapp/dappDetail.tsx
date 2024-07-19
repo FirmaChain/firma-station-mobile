@@ -1,16 +1,9 @@
 import React from 'react';
 import DappDetail from '@/organisms/dapps/dappDetail';
+import { useDappsContext } from '@/context/dappsContext';
 
-interface IProps {
-    route: { params: DappDetailParams };
-}
-
-export type DappDetailParams = {
-    data: any;
-};
-
-const DappDetailScreen = (props: IProps) => {
-    const { data } = props.route.params;
+const DappDetailScreen = () => {
+    const { data } = useDappsContext()
 
     return <DappDetail data={data} />;
 };

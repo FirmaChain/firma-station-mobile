@@ -52,3 +52,10 @@ export const AbstainColor = '#9438DC';
 export const toastSuccess = PointColor;
 export const toastInfo = PointLightColor;
 export const toastError = FailedColor;
+
+export const CW20Color = '#00B776';
+export const CW20BackgroundColor = 'rgba(2, 225, 145, 0.20)';
+export const CW721Color = '#738DF5'
+export const CW721BackgroundColor = 'rgba(80, 110, 229, 0.30)';
+
+export const IBCConnectedColor = '#02E191'

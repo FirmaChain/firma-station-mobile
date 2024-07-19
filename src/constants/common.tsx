@@ -192,9 +192,13 @@ export const DAPP_SERVICE_REGIST = 'Register for a new Dapp service.';
 export const DAPP_SERVICE_REGIST_SUCCESS = 'The service has been registered.\nAvailable on the Dapps tab.';
 export const DAPP_SERVICE_EXIST_NOTICE = 'This service is already registered.';
 
+export const CW_TX_NOTICE_TEXT = `A transaction fee of 0.02 ${_CHAIN_SYMBOL} is required to transfer this token. Ensure you have enough ${_CHAIN_SYMBOL}.`
+
 // transaction
 export const TRANSACTION_TYPE: IKeyValue = {
     SEND: 'TRANSACTION_SEND',
+    SEND_TOKEN: 'TRANSACTION_SEND_TOKEN',
+    SEND_IBC: 'TRANSACTION_SEND_IBC',
     DELEGATE: 'TRANSACTION_DELEGATE',
     REDELEGATE: 'TRANSACTION_REDELEGATE',
     UNDELEGATE: 'TRANSACTION_UNDELEGATE',

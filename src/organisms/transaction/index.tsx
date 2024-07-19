@@ -14,6 +14,8 @@ import {
     sendCW20,
     sendCW721NFT,
     sendFCT,
+    sendIBC,
+    sendToken,
     undelegate,
     voting,
     withdrawAllRewards,
@@ -86,6 +88,14 @@ const Transaction = ({ state }: IProps) => {
                 case TRANSACTION_TYPE['SEND']:
                     const sendResult = await sendFCT(recoverValue, state.targetAddress, state.amount, state.gas, state.memo);
                     setTransactionResult({ ...transactionResult, code: sendResult.code, result: sendResult.transactionHash });
+                    break;
+                case TRANSACTION_TYPE['SEND_TOKEN']:
+                    const sendTokenResult = await sendToken(recoverValue, state.targetAddress, state.amount, state.tokenId, state.decimal, state.gas, state.memo);
+                    setTransactionResult({ ...transactionResult, code: sendTokenResult.code, result: sendTokenResult.transactionHash });
+                    break;
+                case TRANSACTION_TYPE['SEND_IBC']:
+                    const sendIBCResult = await sendIBC(recoverValue, 'transfer', state.channel, state.denom, state.targetAddress, state.amount, state.decimal, state.gas, state.memo);
+                    setTransactionResult({ ...transactionResult, code: sendIBCResult.code, result: sendIBCResult.transactionHash });
                     break;
                 case TRANSACTION_TYPE['DELEGATE']:
                     const delegateResult = await delegate(recoverValue, state.operatorAddressDst, state.amount, state.gas);
@@ -182,11 +192,11 @@ const Transaction = ({ state }: IProps) => {
                     setTransactionResult({ ...transactionResult, code: code, result: resultMessage });
                     break;
                 case TRANSACTION_TYPE['SEND_CW20']:
-                    const sendCW20Result = await sendCW20(recoverValue, state.targetAddress, state.amount, state.gas, state.contractAddress);
+                    const sendCW20Result = await sendCW20(recoverValue, state.targetAddress, state.amount, state.gas, state.contractAddress, state.memo);
                     setTransactionResult({ ...transactionResult, code: sendCW20Result.code, result: sendCW20Result.transactionHash });
                     break;
                 case TRANSACTION_TYPE['SEND_CW721']:
-                    const sendCW721Result = await sendCW721NFT(recoverValue, state.targetAddress, state.tokenId, state.gas, state.contractAddress);
+                    const sendCW721Result = await sendCW721NFT(recoverValue, state.targetAddress, state.tokenId, state.gas, state.contractAddress, state.memo);
                     setTransactionResult({ ...transactionResult, code: sendCW721Result.code, result: sendCW721Result.transactionHash });
                     break;
                 default:
@@ -209,6 +219,8 @@ const Transaction = ({ state }: IProps) => {
     const handleBack = () => {
         switch (state.type) {
             case TRANSACTION_TYPE['SEND']:
+            case TRANSACTION_TYPE['SEND_TOKEN']:
+            case TRANSACTION_TYPE['SEND_IBC']:
                 navigation.reset({ routes: [{ name: Screens.Home }] });
                 break;
             case TRANSACTION_TYPE['DELEGATE']:
@@ -221,6 +233,10 @@ const Transaction = ({ state }: IProps) => {
             case TRANSACTION_TYPE['GRANT']:
             case TRANSACTION_TYPE['REVOKE']:
                 navigation.navigate(Screens.Staking);
+                break;
+            case TRANSACTION_TYPE['SEND_CW20']:
+            case TRANSACTION_TYPE['SEND_CW721']:
+                navigation.navigate(Screens.DappDetail);
                 break;
             default:
                 navigation.goBack();
