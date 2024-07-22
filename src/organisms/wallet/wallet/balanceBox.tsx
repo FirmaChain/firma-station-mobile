@@ -1,77 +1,66 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
-import { StorageActions } from '@/redux/actions';
 import { IStakingState } from '@/hooks/staking/hooks';
 import { FirmaUtil } from '@firmachain/firma-js';
-import { convertAmount, convertCurrent, convertNumber, convertToFctNumber, makeDecimalPoint, resizeFontSize } from '@/util/common';
+import { convertAmount, convertCurrent, convertNumber, makeDecimalPoint, resizeFontSize } from '@/util/common';
 import { FIRMA_LOGO } from '@/constants/images';
-import { CHAIN_CURRENCY, CHAIN_SYMBOL, CURRENCY_LIST, CURRENCY_SYMBOL } from '@/constants/common';
-import { BgColor, BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { DownArrow, ForwardArrow } from '@/components/icon/icon';
+import { CHAIN_SYMBOL, CURRENCY_SYMBOL } from '@/constants/common';
+import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { ForwardArrow } from '@/components/icon/icon';
 import SmallButton from '@/components/button/smallButton';
-import CustomModal from '@/components/modal/customModal';
-import ModalItems from '@/components/modal/modalItems';
+import Toast from 'react-native-toast-message';
+import { getTokenList } from '@/util/firma';
+import { useFocusEffect } from '@react-navigation/native';
+import { IBC_CONFIG } from '../../../../config';
+import { IBCTokenState, useIBCTokenContext } from '@/context/ibcTokenContext';
+import ConnectedSign from '@/components/parts/connectedSign';
+import { useFetchPrices } from '@/hooks/wallet/hooks';
 
 interface IProps {
     stakingValues: IStakingState | null;
-    handleSend: Function;
-    handleStaking: Function;
-    chainInfo: any;
+    handleSend: () => void;
+    handleStaking: () => void;
+    handleSendIBC: (token: IBCTokenState) => void;
 }
 
-const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IProps) => {
-    const { storage, staking } = useAppSelector((state) => state);
+const BalanceBox = ({ stakingValues, handleSend, handleStaking, handleSendIBC }: IProps) => {
+    const { staking, wallet } = useAppSelector((state) => state);
+    const { tokenList, setTokenList, setIbcToken } = useIBCTokenContext();
+    const { priceData } = useFetchPrices()
+
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
-    const [currencyIndex, setCurrencyIndex] = useState(0);
-    const [openCurrencySelectModal, setOpenCurrencySelectModal] = useState(false);
-
-    const currencyList = useMemo(() => {
-        if (chainInfo.market_data === undefined) return [];
-        const allList = Object.keys(chainInfo.market_data.current_price);
-        let list: string[] = [];
-        allList
-            .filter((key) => CURRENCY_LIST.includes(key.toUpperCase()))
-            .map((value) => {
-                list[CURRENCY_LIST.indexOf(value.toUpperCase())] = value.toUpperCase();
+    const getOtherTokenList = async () => {
+        try {
+            const list = await getTokenList(wallet.address);
+            setTokenList(list);
+        } catch (error) {
+            console.log(error);
+            Toast.show({
+                type: 'error',
+                text1: String(error)
             });
-        return list
-            .filter((value) => value !== undefined)
-            .map((value) => {
-                return value;
-            });
-    }, [chainInfo]);
+        }
+    }
 
-    const symbolList = useMemo(() => {
-        if (currencyList.length === 0) return [];
-        let result = currencyList.map((value) => {
-            if (CURRENCY_SYMBOL[value.toUpperCase()] === undefined) {
-                if (CHAIN_CURRENCY[value.toUpperCase()] === undefined) {
-                    return value.toUpperCase();
-                } else {
-                    return CHAIN_CURRENCY[value.toUpperCase()];
-                }
-            } else {
-                return CURRENCY_SYMBOL[value.toUpperCase()];
+    const IBCToken: IBCTokenState[] | null = useMemo(() => {
+        const ibcArray = Object.entries(IBC_CONFIG).map(([key, value]) => ({
+            ...value,
+            key
+        }));
+
+        const list = ibcArray.filter((value) => value.enable).map((value) => {
+            const token = tokenList.find(token => token.denom.toLowerCase() === value.denom.toLowerCase());
+            return {
+                ...value,
+                amount: token ? token.amount : '0',
             }
-        });
-        return result;
-    }, [currencyList]);
+        })
 
-    useEffect(() => {
-        setCurrencyIndex(currencyList.indexOf(storage.currency));
-    }, [currencyList]);
+        return list;
+    }, [tokenList])
 
-    const currentPrice = useMemo(() => {
-        if (chainInfo?.market_data === undefined) return 0;
-        return Number(chainInfo.market_data.current_price[storage.currency.toLowerCase()]);
-    }, [chainInfo, storage.currency]);
-
-    const currentExchange = useMemo(() => {
-        if (chainInfo?.market_data === undefined) return 0;
-        return makeDecimalPoint(chainInfo.market_data.current_price['usd'], 3);
-    }, [chainInfo]);
 
     const available = useMemo(() => {
         if (stakingValues === null) return 0;
@@ -92,95 +81,94 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, chainInfo }: IPr
         return convertCurrent(makeDecimalPoint(staking.stakingReward));
     }, [staking.stakingReward]);
 
-    const currencyData = useMemo(() => {
+    const currencyData = (price: number) => {
         let decimal = 2;
-        const fct = convertToFctNumber(available) * currentPrice;
-        if (['BTC', 'ETH'].includes(storage.currency)) {
-            decimal = 6;
-            if (fct > 10) decimal = 5;
-            if (fct > 100) decimal = 4;
-            if (fct > 1000) decimal = 3;
-            if (fct > 10000) decimal = 2;
-        }
-        return convertCurrent(makeDecimalPoint(fct.toFixed(6), decimal));
-    }, [currentPrice, available]);
+        if (price < 0.0001) decimal = 6;
+        if (price < 0.001) decimal = 5;
+        if (price < 0.01) decimal = 4;
+        if (price < 0.1) decimal = 3;
+        return convertCurrent(makeDecimalPoint(price.toFixed(6), decimal));
+    }
 
     const balanceTextSize = useMemo(() => {
-        return resizeFontSize(convertNumber(FirmaUtil.getFCTStringFromUFCT(available)), 100000, 28);
+        return resizeFontSize(convertNumber(FirmaUtil.getFCTStringFromUFCT(available)), 100000, 20);
     }, [available]);
 
-    const handleCurrencySelectModal = (open: boolean) => {
-        setOpenCurrencySelectModal(open);
-    };
+    const ibcBalanceTextSize = (amount: number | string, decimal: number) => {
+        const _amount = convertAmount({ value: amount, isUfct: false, point: 2, decimal: decimal })
+        return resizeFontSize(convertNumber(_amount), 10000000000000, 16)
+    }
 
-    const CurrencyText = () => {
-        if (CURRENCY_SYMBOL[storage.currency] === undefined) {
-            return (
-                <View style={styles.currencyWrapper}>
-                    <Text style={[styles.balance, { fontSize: 16 }]}>{currencyData}</Text>
-                    <Text style={[styles.balance, { fontSize: 10, paddingBottom: 1, paddingLeft: 4 }]}>{storage.currency}</Text>
-                </View>
-            );
-        } else {
-            return (
-                <View style={styles.currencyWrapper}>
-                    <Text style={[styles.balance, { fontSize: 16 }]}>{CURRENCY_SYMBOL[storage.currency]}</Text>
-                    <Text style={[styles.balance, { fontSize: 16, paddingLeft: 4 }]}>{currencyData}</Text>
-                </View>
-            );
-        }
-    };
+    const currencySymbol = CURRENCY_SYMBOL['USD'];
 
-    const handleSelectCurrency = (index: number) => {
-        setCurrencyIndex(index);
-        StorageActions.handleCurrency(currencyList[index]);
-        setOpenCurrencySelectModal(false);
-    };
+    useFocusEffect(
+        useCallback(() => {
+            setIbcToken(null);
+            getOtherTokenList()
+        }, [])
+    )
+
+    const Currency = useCallback(({ chainName, symbol }: { chainName: string, symbol: string }) => {
+        if (priceData === null) return null;
+        if (priceData[chainName] === undefined) return null;
+
+        return (
+            <Text style={styles.currencyBalance}>{`1 ${symbol} = ${currencySymbol}${currencyData(priceData[chainName])}`}</Text>
+        )
+    }, [priceData])
 
     return (
         <View style={styles.container}>
             <View style={[styles.box, { paddingBottom: 20 }]}>
                 <Text style={styles.title}>Available</Text>
                 <View
-                    style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, paddingBottom: 19 }]}
+                    style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 }]}
                 >
-                    <View style={[styles.wrapperH, { alignItems: 'center' }]}>
+                    <View style={[styles.wrapperH, { alignItems: 'flex-start' }]}>
                         <Image style={styles.logo} source={FIRMA_LOGO} />
-                        <Text style={[styles.balance, { fontSize: balanceTextSize, paddingLeft: 5 }]}>
-                            {convertAmount(available)}
-                            <Text style={[styles.chainName, { paddingLeft: 2 }]}>{` ${_CHAIN_SYMBOL}`}</Text>
-                        </Text>
+                        <View>
+                            <View style={[styles.currency, { alignItems: 'center' }]} >
+                                <Text style={[styles.balance, { fontSize: balanceTextSize, paddingLeft: 5 }]}>
+                                    {convertAmount({ value: available })}
+                                </Text>
+                                <Text style={[styles.chainName, { paddingLeft: 6, fontSize: 16 }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                            </View>
+                            <Currency chainName={'firmachain'} symbol={_CHAIN_SYMBOL} />
+                        </View>
                     </View>
                     <SmallButton title="Send" active={available > 0} size={90} onPressEvent={handleSend} />
                 </View>
-                <View style={{ maxHeight: currencyList.length > 0 ? 500 : 0, overflow: 'hidden' }}>
-                    <View style={[styles.divider, { height: currencyList.length > 0 ? 1 : 0 }]} />
-                    <View style={[styles.wrapperH, { justifyContent: 'space-between', paddingTop: 12 }]}>
-                        <TouchableOpacity style={styles.currency} onPress={() => handleCurrencySelectModal(true)}>
-                            <Text style={[styles.chainName, { fontSize: 16, paddingRight: 4 }]}>{storage.currency}</Text>
-                            <DownArrow size={12} color={GrayColor} />
-                        </TouchableOpacity>
-                        {CurrencyText()}
-                        <CustomModal visible={openCurrencySelectModal} bgColor={BgColor} handleOpen={handleCurrencySelectModal}>
-                            <React.Fragment>
-                                <View style={styles.headerBox}>
-                                    <Text style={styles.headerTitle}>Currency</Text>
+                {IBCToken &&
+                    <View>
+                        <View style={[styles.divider, { height: IBCToken.length > 0 ? 1 : 0 }]} />
+                        <View style={styles.ibcTitleWrap}>
+                            <Text style={styles.ibcTitle}>{'IBC Coin'}</Text>
+                            <ConnectedSign />
+                        </View>
+                        {IBCToken.map((value, index) => {
+                            return (
+                                <View key={`IBC-${index}`} style={{ maxHeight: 500, overflow: 'hidden', marginBottom: 13 }}>
+                                    <View style={[styles.wrapperH, { justifyContent: 'space-between' }]}>
+                                        <View style={[styles.wrapperH, { justifyContent: 'space-between', width: '100%' }]}>
+                                            <View style={styles.currency} >
+                                                <Image style={[styles.tokenLogo]} source={{ uri: value.icon }} />
+                                                <View>
+                                                    <View style={[styles.currency, { alignItems: 'center' }]} >
+                                                        <Text style={[styles.balance, { fontSize: ibcBalanceTextSize(value.amount, value.decimal), paddingRight: 6 }]}>{convertAmount({ value: value.amount, isUfct: false, point: 2, decimal: value.decimal })}</Text>
+                                                        <Text style={styles.chainName}>{value.displayName.toUpperCase()}</Text>
+                                                    </View>
+                                                    <Currency chainName={value.chainName} symbol={value.displayName.toUpperCase()} />
+                                                </View>
+                                            </View>
+                                            <SmallButton title={'Send'} active={convertNumber(value.amount) > 0} onPressEvent={() => handleSendIBC(value)} size={90} height={42} border={true} color={'transparent'} />
+                                        </View>
+                                    </View>
                                 </View>
-                                <ModalItems
-                                    initVal={currencyIndex}
-                                    data={currencyList}
-                                    subData={symbolList}
-                                    onPressEvent={handleSelectCurrency}
-                                />
-                            </React.Fragment>
-                        </CustomModal>
-                    </View>
-                    <View style={[styles.wrapperH, { justifyContent: 'flex-end', paddingTop: 5 }]}>
-                        <Text style={[styles.balance, { fontSize: 12, fontWeight: 'normal', color: TextDarkGrayColor }]}>
-                            {`(1 ${_CHAIN_SYMBOL} = $ ${currentExchange} )`}
-                        </Text>
-                    </View>
-                </View>
+                            )
+                        })
+                        }
+
+                    </View>}
             </View>
 
             <TouchableOpacity style={[styles.box, { marginVertical: 16, paddingHorizontal: 0 }]} onPress={() => handleStaking()}>
@@ -232,8 +220,8 @@ const styles = StyleSheet.create({
         color: TextCatTitleColor
     },
     logo: {
-        width: 30,
-        height: 30
+        width: 24,
+        height: 24
     },
     balance: {
         fontFamily: Lato,
@@ -241,6 +229,14 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textAlign: 'center',
         color: TextColor
+    },
+    currencyBalance: {
+        fontFamily: Lato,
+        fontSize: 12,
+        fontWeight: '400',
+        textAlign: 'center',
+        color: TextColor + 70,
+        paddingTop: 2
     },
     chainName: {
         fontFamily: Lato,
@@ -257,7 +253,8 @@ const styles = StyleSheet.create({
     },
     divider: {
         height: 1,
-        backgroundColor: DisableColor
+        backgroundColor: DisableColor,
+        marginVertical: 20
     },
     dividerV: {
         width: 0.5,
@@ -279,6 +276,17 @@ const styles = StyleSheet.create({
         color: TextCatTitleColor,
         paddingHorizontal: 10
     },
+    tokenLogo: {
+        width: 22.5,
+        height: 22.5,
+        marginRight: 4
+    },
+    headerAvailableTitle: {
+        fontFamily: Lato,
+        fontSize: 18,
+        color: TextColor,
+        paddingHorizontal: 10
+    },
     currencyWrapper: {
         flexDirection: 'row',
         alignItems: 'flex-end',
@@ -286,9 +294,21 @@ const styles = StyleSheet.create({
     },
     currency: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'flex-start'
-    }
+    },
+    ibcTitleWrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingBottom: 12
+    },
+    ibcTitle: {
+        fontFamily: Lato,
+        fontSize: 16,
+        fontWeight: '600',
+        color: TextCatTitleColor
+    },
 });
 
 export default BalanceBox;

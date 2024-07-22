@@ -8,11 +8,11 @@ import { DelegateParams } from '../screens/home/staking/delegate';
 import { DepositParams } from '@/screens/home/governance/deposit';
 import { TransactionParams } from '@/screens/transaction/transaction';
 import { WebParams } from '@/screens/webScreen';
-import { DappDetailParams } from '@/screens/home/dapps/dapp/dappDetail';
 import { NFTParams } from '@/screens/home/dapps/nft/nft';
 import { CreateStepRecoverParams } from '@/screens/createWallet/stepRecover';
 import { SendCW20Params } from '@/screens/home/dapps/sendCW20/sendCW20';
 import { SendCW721Params } from '@/screens/home/dapps/sendCW721/sendCW721';
+import { SendIBCParams } from '@/screens/home/wallet/sendIBC';
 
 export enum Screens {
     LoginCheck = 'LoginCheck',
@@ -32,6 +32,7 @@ export enum Screens {
 
     Wallet = 'Wallet',
     Send = 'Send',
+    SendIBC = 'SendIBC',
 
     Staking = 'Staking',
     Validator = 'Validator',
@@ -73,6 +74,7 @@ export type StackParamList = {
 
     Wallet: undefined;
     Send: undefined;
+    SendIBC: SendIBCParams;
 
     Staking: undefined;
     Validator: ValidatorParams;
@@ -84,7 +86,7 @@ export type StackParamList = {
     Deposit: DepositParams;
 
     Dapps: undefined;
-    DappDetail: DappDetailParams;
+    DappDetail: undefined;
     NFT: NFTParams;
     SendCW20: SendCW20Params;
     SendCW721: SendCW721Params;

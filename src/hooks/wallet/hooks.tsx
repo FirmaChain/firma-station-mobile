@@ -6,6 +6,8 @@ import { convertNumber } from '@/util/common';
 import { TRANSACTION_TYPE_MODEL } from '@/constants/common';
 import { PointColor } from '@/constants/theme';
 import { StorageActions } from '@/redux/actions';
+import axios from 'axios';
+import { COINGECKO, COINGECKO_PRICE_LIST } from '../../../config';
 
 export interface IBalanceState {
     available: number;
@@ -28,6 +30,9 @@ export interface IHistoryState {
 
 export interface IHistoryListState {
     list: Array<IHistoryState>;
+}
+export interface CryptoPrices {
+    [chain: string]: number;
 }
 
 export const useBalanceData = () => {
@@ -171,3 +176,38 @@ export const useHistoryData = () => {
         handleHistoryOffset
     };
 };
+
+export const useFetchPrices = () => {
+    const [priceData, setPriceData] = useState<CryptoPrices | null>(null);
+
+
+    const transformPrices = (data: any): CryptoPrices => {
+        const transformed: CryptoPrices = {};
+        for (const [chain, priceObj] of Object.entries(data)) {
+            transformed[chain] = (priceObj as { [currency: string]: number }).usd;
+        }
+        return transformed;
+    };
+
+    const fetchPrices = async () => {
+        try {
+            const response = await axios.get(COINGECKO, {
+                params: {
+                    ids: COINGECKO_PRICE_LIST,
+                    vs_currencies: 'usd',
+                },
+            });
+            const transformedPrices = transformPrices(response.data);
+            setPriceData(transformedPrices);
+        } catch (error) {
+            console.error('Error fetching prices:', error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        fetchPrices();
+    }, [])
+
+    return { priceData, fetchPrices }
+}

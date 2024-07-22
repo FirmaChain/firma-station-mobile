@@ -16,6 +16,7 @@ import HistoryBox from './historyBox';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import { useInterval } from '@/hooks/common/hooks';
 import { CHAIN_PREFIX, DATA_RELOAD_INTERVAL } from '@/constants/common';
+import { IBCTokenState } from '@/context/ibcTokenContext';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
@@ -28,7 +29,6 @@ const Wallet = () => {
     const { stakingState, getStakingState } = useStakingData();
 
     const [isInit, setIsInit] = useState(false);
-    const [chainInfo, setChainInfo]: Array<any> = useState([]);
 
     const historyVolume = useMemo(() => {
         if (storage.historyVolume === undefined) return null;
@@ -39,6 +39,9 @@ const Wallet = () => {
     const moveToSendScreen = () => {
         navigation.navigate(Screens.Send);
     };
+    const moveToSendIBCScrees = (token: IBCTokenState) => {
+        navigation.navigate(Screens.SendIBC, { tokenData: token });
+    }
     const moveToStakingTab = () => {
         navigation.navigate(Screens.Staking);
     };
@@ -50,22 +53,8 @@ const Wallet = () => {
         navigation.navigate(Screens.WebScreen, { uri: uri });
     };
 
-    const getChainInfo = async () => {
-        try {
-            const result = await fetch(`${COINGECKO}/${CHAIN_PREFIX()}`);
-            const json = await result.json();
-
-            LayoutAnim();
-            easeInAndOutCustomAnim(150);
-            setChainInfo(json);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     const refreshStates = async () => {
         try {
-            await getChainInfo();
             await Promise.all([getStakingState(), handleHisotyPolling()]);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
@@ -101,8 +90,8 @@ const Wallet = () => {
                         <BalanceBox
                             stakingValues={stakingState}
                             handleSend={moveToSendScreen}
+                            handleSendIBC={moveToSendIBCScrees}
                             handleStaking={moveToStakingTab}
-                            chainInfo={chainInfo}
                         />
                         <HistoryBox
                             handleHistory={moveToHistoryScreen}
