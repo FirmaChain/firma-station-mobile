@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, ScrollView, Text, Platform, View, Pressable } from "react-native";
 import { BgColor, BoxDarkColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
 import { Radio } from "../icon/icon";
-import { IbcChainState } from "../../../config";
+import { IBCChainState } from "../../../config";
 
 interface IProps {
-    data: IbcChainState[];
-    selectChain: IbcChainState | null;
-    onPressEvent: (chain: IbcChainState) => void;
+    data: IBCChainState[];
+    selectChain: IBCChainState | null;
+    onPressEvent: (chain: IBCChainState) => void;
 }
 
 const ModalIBCChain = ({ data, selectChain, onPressEvent }: IProps) => {

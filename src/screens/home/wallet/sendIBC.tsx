@@ -1,9 +1,9 @@
-import { IBCTokenState } from "@/context/ibcTokenContext";
 import SendIBC from "@/organisms/wallet/sendIBC";
+import { IBCDataState } from "@/organisms/wallet/wallet";
 import React from "react";
 
 export type SendIBCParams = {
-    tokenData: IBCTokenState
+    tokenData: IBCDataState
 }
 
 interface IProps {

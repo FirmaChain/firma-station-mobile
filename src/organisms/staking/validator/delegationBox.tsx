@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { degree, LayoutAnim, easeInAndOutCustomAnim, TurnToOpposite, TurnToOriginal } from '@/util/animation';
-import { getEstimateGasFromDelegation, getFeesFromGas } from '@/util/firma';
+import { getEstimateGasFromDelegation, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
 import { ARROW_ACCORDION } from '@/constants/images';
 import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from '@/constants/theme';
-import { FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
 import { IStakingState } from '@/hooks/staking/hooks';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import SmallButton from '@/components/button/smallButton';
@@ -30,7 +29,7 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
     const [openAccordion, setOpenAccordion] = useState(false);
     const [accordionHeight, setAccordionHeight] = useState(0);
 
-    const [withdrawGas, setWithdrawGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [withdrawGas, setWithdrawGas] = useState(getFirmaConfig().defaultGas);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
 

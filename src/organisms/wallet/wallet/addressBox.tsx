@@ -13,7 +13,7 @@ interface IProps {
     address: string;
 }
 
-const AddressBox = ({address}: IProps) => {
+const AddressBox = ({ address }: IProps) => {
     const [openQRModal, setOpenQRModal] = useState(false);
 
     const handleAddressToClipboard = () => {
@@ -21,10 +21,10 @@ const AddressBox = ({address}: IProps) => {
         Toast.show({
             type: 'info',
             text1: COPIED_CLIPBOARD + "address",
-          });
+        });
     }
 
-    const handleQRCode = (value:boolean) => {
+    const handleQRCode = (value: boolean) => {
         setOpenQRModal(value);
     }
 
@@ -32,30 +32,30 @@ const AddressBox = ({address}: IProps) => {
         <View style={styles.container}>
             <Text numberOfLines={1} ellipsizeMode="middle" style={styles.address}>{address}</Text>
             <View style={styles.iconWrapper}>
-                <TouchableOpacity style={{marginRight: 10}} onPress={handleAddressToClipboard}>
-                    <Copy size={20} color={TextCatTitleColor}/>
+                <TouchableOpacity style={{ marginRight: 10 }} onPress={handleAddressToClipboard}>
+                    <Copy size={20} color={TextCatTitleColor} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleQRCode(true)}>
-                    <QRCodeIcon size={20} color={TextCatTitleColor}/>
+                    <QRCodeIcon size={20} color={TextCatTitleColor} />
                 </TouchableOpacity>
             </View>
             <CustomModal
                 visible={openQRModal}
                 handleOpen={handleQRCode}>
-                    <View style={styles.modalTextContents}>
-                        <Text style={[styles.title, {fontWeight: "bold"}]}>{ADDRESS_QRCODE_MODAL_TEXT.title}</Text>
-                        <View style={styles.qrcodeContainer}>
-                            <View style={styles.qrcodeWapper}>
-                                <QRCode
-                                    size={130}
-                                    value={address}/>
-                            </View>
+                <View style={styles.modalTextContents}>
+                    <Text style={[styles.title, { fontWeight: "bold" }]}>{ADDRESS_QRCODE_MODAL_TEXT.title}</Text>
+                    <View style={styles.qrcodeContainer}>
+                        <View style={styles.qrcodeWapper}>
+                            <QRCode
+                                size={130}
+                                value={address} />
                         </View>
-                        <Button
-                            title={ADDRESS_QRCODE_MODAL_TEXT.confirmTitle}
-                            active={true}
-                            onPressEvent={() => handleQRCode(false)}/>
                     </View>
+                    <Button
+                        title={ADDRESS_QRCODE_MODAL_TEXT.confirmTitle}
+                        active={true}
+                        onPressEvent={() => handleQRCode(false)} />
+                </View>
             </CustomModal>
         </View>
     )
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         backgroundColor: AddressBoxColor,
         borderRadius: 4,
-        flexDirection:'row',
+        flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },

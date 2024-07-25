@@ -1,22 +1,12 @@
 import { Token } from '@firmachain/firma-js';
 import React, { createContext, useState, ReactNode, useContext, useEffect } from 'react';
-
-export interface IBCTokenState {
-    enable: boolean;
-    displayName: string;
-    denom: string;
-    decimal: number;
-    icon: string;
-    link: string;
-    amount: string;
-    chainName: string;
-}
+import { IBCConfig } from '../../config';
 
 interface IBCTokenContextType {
     tokenList: Token[];
-    ibcToken: IBCTokenState | null;
+    ibcTokenConfig: IBCConfig | null;
     setTokenList: (data: Token[]) => void;
-    setIbcToken: (token: IBCTokenState | null) => void;
+    setIbcTokenConfig: (token: IBCConfig | null) => void;
 }
 
 export const IBCTokenContext = createContext<IBCTokenContextType | undefined>(undefined);
@@ -36,10 +26,10 @@ interface IBCTokenProviderProps {
 
 export const IBCTokenProvider: React.FC<IBCTokenProviderProps> = ({ children }) => {
     const [tokenList, setTokenList] = useState<Token[]>([]);
-    const [ibcToken, setIbcToken] = useState<IBCTokenState | null>(null);
+    const [ibcTokenConfig, setIbcTokenConfig] = useState<IBCConfig | null>(null);
 
     return (
-        <IBCTokenContext.Provider value={{ tokenList, ibcToken, setTokenList, setIbcToken }}>
+        <IBCTokenContext.Provider value={{ tokenList, ibcTokenConfig, setTokenList, setIbcTokenConfig }}>
             {children}
         </IBCTokenContext.Provider>
     );

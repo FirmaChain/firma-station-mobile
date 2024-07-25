@@ -6,11 +6,11 @@ interface IProps {
     handleDisconnect: () => void;
 }
 
-const Disconnect = ({handleDisconnect}:IProps) => {
+const Disconnect = ({ handleDisconnect }: IProps) => {
     return (
         <TouchableOpacity onPress={() => handleDisconnect()}>
-            <View style={[styles.listItem, {justifyContent: "center"}]}>
-                <Text style={[styles.itemTitle, {fontWeight:"bold"}]}>Disconnect</Text>
+            <View style={[styles.listItem, { justifyContent: "center" }]}>
+                <Text style={[styles.itemTitle, { fontWeight: "bold" }]}>Disconnect</Text>
             </View>
         </TouchableOpacity>
     )

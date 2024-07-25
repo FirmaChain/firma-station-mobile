@@ -47,6 +47,10 @@ export const getRestakeAddress = () => {
     return restakeAddress;
 };
 
+export const getFirmaConfig = () => {
+    return getFirmaSDK().Config
+}
+
 export const getChainInfo = async () => {
     try {
         const result = await getFirmaSDK().BlockChain.getChainInfo();
@@ -358,7 +362,7 @@ export const getEstimateGasVoting = async (walletName: string, proposalId: numbe
 
 export const getFeesFromGas = (estimatedGas: number) => {
     const fee = Math.ceil(estimatedGas * 0.1);
-    return Math.max(fee, FIRMACHAIN_DEFAULT_CONFIG.defaultFee);
+    return Math.max(fee, getFirmaConfig().defaultFee);
 };
 
 export const sendFCT = async (recoverValue: string, target: string, amount: number, estimatedGas: number, memo?: string) => {

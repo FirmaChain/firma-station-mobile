@@ -7,9 +7,8 @@ import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { BgColor } from '@/constants/theme';
 import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
-import { addressCheck, getCW20Balance, getEstimateGasSendCW20, getFeesFromGas } from '@/util/firma';
+import { addressCheck, getCW20Balance, getEstimateGasSendCW20, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { convertAmount, convertNumber } from '@/util/common';
-import { FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import Button from '@/components/button/button';
@@ -38,7 +37,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
     const { wallet } = useAppSelector((state) => state);
     const { balance, getBalance } = useBalanceData();
 
-    const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [gas, setGas] = useState(getFirmaConfig().defaultGas);
     const [sendInfoState, setSendInfoState] = useState<ISendInfo>({
         address: '',
         amount: '0',

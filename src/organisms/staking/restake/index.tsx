@@ -8,10 +8,10 @@ import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { useDelegationData, useRestakeInfoData, useStakingData } from '@/hooks/staking/hooks';
 import { convertAmount } from '@/util/common';
-import { getEstimateGasGrantStakeAuthorization, getEstimateGasRevokeStakeAuthorization, getFeesFromGas } from '@/util/firma';
+import { getEstimateGasGrantStakeAuthorization, getEstimateGasRevokeStakeAuthorization, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { CHAIN_SYMBOL, RESTAKE_NOTICE_TEXT, RESTAKE_TYPE, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor, TextCatTitleColor } from '@/constants/theme';
-import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
+import { GUIDE_URI } from '@/../config';
 import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -33,7 +33,7 @@ const Restake = () => {
     const { wallet } = useAppSelector((state) => state);
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
-    const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [gas, setGas] = useState(getFirmaConfig().defaultGas);
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
     const [openValidatorListModal, setOpenValidatorListModal] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);

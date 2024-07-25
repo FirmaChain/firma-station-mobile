@@ -180,7 +180,6 @@ export const useHistoryData = () => {
 export const useFetchPrices = () => {
     const [priceData, setPriceData] = useState<CryptoPrices | null>(null);
 
-
     const transformPrices = (data: any): CryptoPrices => {
         const transformed: CryptoPrices = {};
         for (const [chain, priceObj] of Object.entries(data)) {
@@ -204,10 +203,6 @@ export const useFetchPrices = () => {
             throw error;
         }
     };
-
-    useEffect(() => {
-        fetchPrices();
-    }, [])
 
     return { priceData, fetchPrices }
 }

@@ -34,7 +34,7 @@ const ConnectedSign = () => {
                 <Animated.View style={[styles.dotShadow, { width: animatedStyle.width, height: animatedStyle.height }]} />
                 <View style={styles.dot} />
             </View>
-            <Text style={styles.connectedTitle}>{'CONNECTED'}</Text>
+            <Text style={styles.connectedTitle}>{'LIVE'}</Text>
         </View>
     )
 }
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     },
     connectedTitle: {
         fontFamily: 'Lato',
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: '600',
         textTransform: 'uppercase',
         color: IBCConnectedColor,

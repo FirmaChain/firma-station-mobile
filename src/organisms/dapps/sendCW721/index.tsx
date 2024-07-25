@@ -5,10 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { BgColor, BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, RestakeActiveColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { BgColor, BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
-import { addressCheck, getEstimateGasSendCW20, getEstimateGasSendCW721, getFeesFromGas } from '@/util/firma';
-import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
+import { addressCheck, getEstimateGasSendCW721, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import { GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import Button from '@/components/button/button';
@@ -40,7 +40,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
 
     const { wallet } = useAppSelector((state) => state);
 
-    const [gas, setGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [gas, setGas] = useState(getFirmaConfig().defaultGas);
     const [imageLoading, setImageLoading] = useState(true);
     const [sendInfoState, setSendInfoState] = useState<ISendInfo>({
         address: '',

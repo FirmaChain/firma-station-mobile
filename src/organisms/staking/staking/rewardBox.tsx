@@ -13,8 +13,7 @@ import {
     TextStakingReward
 } from '@/constants/theme';
 import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
-import { getEstimateGasFromAllDelegations, getFeesFromGas } from '@/util/firma';
-import { FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
+import { getEstimateGasFromAllDelegations, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import SmallButton from '@/components/button/smallButton';
 import AlertModal from '@/components/modal/alertModal';
@@ -34,7 +33,7 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
     const [rewardTextSize, setRewardTextSize] = useState(28);
 
     const [stakingReward, setStakingReward] = useState('0.0');
-    const [withdrawAllGas, setWithdrawAllGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [withdrawAllGas, setWithdrawAllGas] = useState(getFirmaConfig().defaultGas);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
 

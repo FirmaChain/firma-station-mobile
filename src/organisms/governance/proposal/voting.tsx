@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions } from '@/redux/actions';
-import { getEstimateGasVoting, getFeesFromGas } from '@/util/firma';
+import { getEstimateGasVoting, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { BgColor, BoxColor, Lato, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
-import { FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
 import Button from '@/components/button/button';
 import CustomModal from '@/components/modal/customModal';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
@@ -27,7 +26,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
     const { wallet } = useAppSelector((state) => state);
 
     const [active, setActive] = useState(isVotingPeriod);
-    const [votingGas, setVotingGas] = useState(FIRMACHAIN_DEFAULT_CONFIG.defaultGas);
+    const [votingGas, setVotingGas] = useState(getFirmaConfig().defaultGas);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
 

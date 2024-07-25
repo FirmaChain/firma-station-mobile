@@ -6,10 +6,10 @@ import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { useDelegationData } from '@/hooks/staking/hooks';
-import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas } from '@/util/firma';
+import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { convertNumber } from '@/util/common';
 import { DATA_RELOAD_INTERVAL, MAXIMUM_UNDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE } from '@/constants/common';
-import { FIRMACHAIN_DEFAULT_CONFIG, GUIDE_URI } from '@/../config';
+import { GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import Button from '@/components/button/button';
@@ -60,7 +60,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         operatorAddressDst: operatorAddress,
         operatorAddressSrc: '',
         amount: 0,
-        gas: FIRMACHAIN_DEFAULT_CONFIG.defaultGas
+        gas: getFirmaConfig().defaultGas
     });
 
     const handleModalOpen = (open: boolean) => {
@@ -116,7 +116,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         if (status > 0) return;
         CommonActions.handleLoadingProgress(true);
 
-        let gas = FIRMACHAIN_DEFAULT_CONFIG.defaultGas;
+        let gas = getFirmaConfig().defaultGas;
         try {
             switch (type) {
                 case 'Delegate':

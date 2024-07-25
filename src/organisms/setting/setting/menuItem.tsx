@@ -6,12 +6,12 @@ import { ForwardArrow } from "@/components/icon/icon";
 interface IProps {
     title: string;
     path: string;
-    handleMenus: (path:string) => void;
+    handleMenus: (path: string) => void;
 }
 
-const MenuItem = ({title, path, handleMenus}:IProps) => {
+const MenuItem = ({ title, path, handleMenus }: IProps) => {
     return (
-        <TouchableOpacity onPress={()=>handleMenus(path)}>
+        <TouchableOpacity onPress={() => handleMenus(path)}>
             <View style={styles.listItem}>
                 <Text style={styles.itemTitle}>{title}</Text>
                 <ForwardArrow size={20} color={WhiteColor} />
