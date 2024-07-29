@@ -194,6 +194,8 @@ export const DAPP_SERVICE_EXIST_NOTICE = 'This service is already registered.';
 
 export const CW_TX_NOTICE_TEXT = `A transaction fee of 0.02 ${_CHAIN_SYMBOL} is required to transfer this token. Ensure you have enough ${_CHAIN_SYMBOL}.`
 
+export const IBC_OSMO_ADDRESS_INVALID_TEXT = `Only addresses starting with "osmo1" are accepted.`
+
 // transaction
 export const TRANSACTION_TYPE: IKeyValue = {
     SEND: 'TRANSACTION_SEND',

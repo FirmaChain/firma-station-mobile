@@ -12,7 +12,7 @@ import { FAVORITE_REMOVE_SUCCESS, FAVORITE_REMOVE_WARN_TEXT } from '@/constants/
 import { BgColor, Lato, TextCatTitleColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from '@/constants/theme';
 import { BoxDarkColor, FailedColor } from '@/constants/theme';
 import { RestakeActiveColor } from '@/constants/theme';
-import { LOADING_LOGO_3 } from '@/constants/images';
+import { ICON_ATOM_LOGO, ICON_OSMO_LOGO, LOADING_LOGO_3 } from '@/constants/images';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import FastImage from 'react-native-fast-image';
 
@@ -154,6 +154,15 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
         }, [item]);
 
         const RenderListItem = useCallback(() => {
+
+            const getLogoImage = (address: string) => {
+                if (address.includes('firma')) return LOADING_LOGO_3;
+                if (address.includes('cosmos')) return ICON_ATOM_LOGO;
+                if (address.includes('osmo')) return ICON_OSMO_LOGO;
+
+                return LOADING_LOGO_3;
+            }
+
             return (
                 <TouchableOpacity
                     key={index}
@@ -183,7 +192,7 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                             <View style={styles.favoriteItemBox}>
                                 <View style={styles.nameBox}>
                                     <View style={{ justifyContent: 'center' }}>
-                                        <FastImage style={styles.logo} source={LOADING_LOGO_3} />
+                                        <FastImage style={styles.logo} source={getLogoImage(item.address)} />
                                     </View>
                                     <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>
                                         {item.name}
@@ -260,7 +269,7 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                     renderItem={ListItem}
                     scrollEnabled={true}
                     keyExtractor={(_item, index) => index.toString()}
-                    onScrollToIndexFailed={() => {}}
+                    onScrollToIndexFailed={() => { }}
                     onDragEnd={({ data }) => recreateList(data)}
                 />
             </GestureHandlerRootView>

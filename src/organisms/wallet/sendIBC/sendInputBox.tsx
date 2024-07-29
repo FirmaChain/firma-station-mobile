@@ -10,32 +10,35 @@ import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { FavoritesCreateModal, FavoritesModal } from '@/components/modal';
 import { useAppSelector } from '@/redux/hooks';
 import { rootState } from '@/redux/reducers';
-import { wait } from '@/util/common';
+import { convertAmount, convertNumber, wait } from '@/util/common';
 import { DownArrow } from '@/components/icon/icon';
-import { SendType } from '.';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import CustomModal from '@/components/modal/customModal';
 import ModalIBCChain from '@/components/modal/modalIBCChain';
-import { IBC_SEND_CHAIN_CONFIG, IbcChainState } from '../../../../config';
+import { IBC_SEND_CHAIN_CONFIG, IBCChainState } from '../../../../config';
+import { SendType } from '../common/senTypeSelector';
 
 interface IProps {
-    handleSendInfo: (type: string, value: string | number | IbcChainState | null) => void;
+    handleSendInfo: (type: string, value: string | number | IBCChainState | null) => void;
     type: SendType;
     denom: string;
+    decimal: number;
     available: number;
     symbol?: string;
     reset: boolean;
     dstAddress: string;
 }
 
-const SendInputBox = ({ handleSendInfo, type, denom, available, symbol = CHAIN_SYMBOL(), reset, dstAddress }: IProps) => {
+const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol = CHAIN_SYMBOL(), reset, dstAddress }: IProps) => {
     const { modal } = useAppSelector((state: rootState) => state);
     const _CHAIN_SYMBOL = symbol;
     const [addressValue, setAddressValue] = useState(dstAddress);
     const [memoValue, setMemoValue] = useState('');
     const [openChainSelectModal, setOpenChainSelectModal] = useState(false);
     const [accordionHeight, setAccordionHeight] = useState(0);
-    const [selectChain, setSelectChain] = useState<IbcChainState | null>(null);
+    const [selectChain, setSelectChain] = useState<IBCChainState | null>(null);
+    const [isMaxAmount, setIsMaxAmount] = useState(false);
+    const [amount, setAmount] = useState(0);
 
     useEffect(() => {
         LayoutAnim();
@@ -56,8 +59,9 @@ const SendInputBox = ({ handleSendInfo, type, denom, available, symbol = CHAIN_S
         return modal.favoriteCreateModal;
     }, [modal.favoriteCreateModal]);
 
-    const handleSendInfoState = (type: string, value: string | number | IbcChainState | null) => {
+    const handleSendInfoState = (type: string, value: string | number | IBCChainState | null) => {
         handleSendInfo(type, value);
+        if (type === 'amount' && (typeof value === 'number')) setAmount(value);
         if (type === 'address' && (typeof value === 'string' || typeof value === 'number')) setAddressValue(value.toString());
         if (type === 'memo' && (typeof value === 'string' || typeof value === 'number')) setMemoValue(value.toString());
         if (type === 'chain' && (typeof value !== 'string' && typeof value !== 'number')) {
@@ -98,6 +102,10 @@ const SendInputBox = ({ handleSendInfo, type, denom, available, symbol = CHAIN_S
         });
     };
 
+    useEffect(() => {
+        setIsMaxAmount(amount >= convertNumber(convertAmount({ value: available, isUfct: false, point: 6, decimal: decimal })));
+    }, [amount, available]);
+
     return (
         <View>
             <View style={[styles.chainContainer, { height: accordionHeight }]}>
@@ -114,13 +122,15 @@ const SendInputBox = ({ handleSendInfo, type, denom, available, symbol = CHAIN_S
                 value={addressValue}
                 resetValues={reset}
                 onChangeEvent={(value: any) => handleSendInfoState('address', value)}
+                type={type}
             />
             <InputSetVerticalForAmount
                 title="Amount"
                 placeholder={`0 ${_CHAIN_SYMBOL.toUpperCase()}`}
-                accent={false}
+                accent={isMaxAmount}
                 limitValue={available}
                 resetValues={reset}
+                enableMaxAmount={true}
                 onChangeEvent={(value: any) => handleSendInfoState('amount', value)}
             />
             <InputSetVertical
@@ -152,13 +162,13 @@ const SendInputBox = ({ handleSendInfo, type, denom, available, symbol = CHAIN_S
             />
             <CustomModal visible={openChainSelectModal} bgColor={BgColor} handleOpen={setOpenChainSelectModal}>
                 <React.Fragment>
-                    <View style={styles.headerBox}>
-                        <Text style={styles.headerTitle}>{'Destination Chain'}</Text>
+                    <View style={styles.modalHeaderBox}>
+                        <Text style={styles.modalHeaderTitle}>{'Destination Chain'}</Text>
                     </View>
                     <ModalIBCChain
                         data={IBC_SEND_CHAIN_CONFIG[denom]}
                         selectChain={selectChain}
-                        onPressEvent={(value: IbcChainState) => handleSendInfoState('chain', value)}
+                        onPressEvent={(value: IBCChainState) => handleSendInfoState('chain', value)}
                     />
                 </React.Fragment>
             </CustomModal>
@@ -214,7 +224,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: TextColor,
     },
-    headerBox: {
+    modalHeaderBox: {
         width: '100%',
         paddingHorizontal: 10,
         paddingVertical: 15,
@@ -223,7 +233,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: BoxColor
     },
-    headerTitle: {
+    modalHeaderTitle: {
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,

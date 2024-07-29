@@ -5,11 +5,13 @@ import { ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { addressCheck } from '@/util/firma';
 import { FavoriteIcon, QRCodeScannerIcon } from '../icon/icon';
-import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
-import { WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
+import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from '@/constants/theme';
+import { IBC_OSMO_ADDRESS_INVALID_TEXT, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TextButton from '../button/textButton';
 import Toast from 'react-native-toast-message';
+import { SendType } from '@/organisms/wallet/common/senTypeSelector';
+import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 
 interface IProps {
     title: string;
@@ -21,6 +23,7 @@ interface IProps {
     enableFavorite?: boolean;
     enableQrScanner?: boolean;
     onChangeEvent: Function;
+    type?: SendType;
 }
 
 const InputSetVerticalForAddress = ({
@@ -32,13 +35,26 @@ const InputSetVerticalForAddress = ({
     resetValues = false,
     enableFavorite: enableFavorite = true,
     enableQrScanner = true,
-    onChangeEvent
+    onChangeEvent,
+    type = 'SEND_TOKEN'
 }: IProps) => {
+
     const isFocused = useIsFocused();
     const { common, modal } = useAppSelector((state) => state);
 
     const [focus, setFocus] = useState(false);
     const [val, setVal] = useState(value);
+    const [validAddress, setValidAddress] = useState(true);
+
+    useEffect(() => {
+        if (type === 'SEND_IBC' && val.length > 0) {
+            LayoutAnim();
+            easeInAndOutCustomAnim(150);
+            setValidAddress(val.startsWith('osmo1'));
+        } else {
+            setValidAddress(true);
+        }
+    }, [type, val])
 
     const setOpenFavoritekModal = (active: boolean) => {
         ModalActions.handleFavoriteModal(active);
@@ -121,6 +137,7 @@ const InputSetVerticalForAddress = ({
                     onBlur={() => setFocus(false)}
                     onChangeText={(text) => handleInputChange(text)}
                 />
+                <Text style={[styles.noticeText, { maxHeight: validAddress ? 0 : 20 }]}>{IBC_OSMO_ADDRESS_INVALID_TEXT}</Text>
             </View>
         </Fragment>
     );
@@ -184,5 +201,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 350,
         alignItems: 'center'
+    },
+    noticeText: {
+        fontFamily: Lato,
+        fontSize: 14,
+        color: TextWarnColor,
+        overflow: 'hidden'
     }
 });

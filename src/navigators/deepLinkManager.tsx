@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
@@ -14,6 +14,8 @@ import { CHAIN_NETWORK } from '@/../config';
 import ConnectClient from '@/util/connectClient';
 import Toast from 'react-native-toast-message';
 import DappServiceRegistModal from '@/components/modal/dappServiceRegistModal';
+import { IBCDataState } from '@/organisms/wallet/wallet';
+import { useIBCTokenContext } from '@/context/ibcTokenContext';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -21,15 +23,47 @@ const DeepLinkManager = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const { storage, wallet, common, modal } = useAppSelector((state) => state);
+    const { tokenList, ibcTokenConfig } = useIBCTokenContext();
     const [deepLink, setDeepLink] = useState('');
 
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
 
+    const IBCToken: IBCDataState[] | null = useMemo(() => {
+        if (ibcTokenConfig === null) return [];
+
+        const ibcArray = Object.entries(ibcTokenConfig).map(([key, value]) => ({
+            ...value,
+            key
+        }));
+
+        const list = ibcArray.filter((value) => value.enable).map((value) => {
+            const token = tokenList.find(token => token.denom.toLowerCase() === value.denom.toLowerCase());
+            return {
+                ...value,
+                amount: token ? token.amount : '0',
+            }
+        })
+
+        return list;
+    }, [tokenList, ibcTokenConfig])
+
     useEffect(() => {
-        if (wallet.dstAddress !== '') {
-            navigation.navigate(Screens.Send);
+        const state = navigation.getState().routes;
+        const prevPath = state[state.length - 1].name;
+
+        if (wallet.dstAddress !== '' && prevPath === Screens.Home.toString()) {
+            if (IBCToken !== null) {
+                if (wallet.dstAddress.includes('osmo1')) {
+                    const tokenData = IBCToken.find((value) => value.displayName.toLocaleLowerCase() === 'osmo');
+                    if (tokenData !== undefined) {
+                        return navigation.navigate(Screens.SendIBC, { tokenData });
+                    }
+                }
+            }
+
+            return navigation.navigate(Screens.Send);
         }
-    }, [wallet.dstAddress]);
+    }, [wallet.dstAddress, IBCToken]);
 
     useEffect(() => {
         Linking.getInitialURL().then((value) => {

@@ -6,6 +6,8 @@ import CustomToast from '@/components/toast/customToast';
 import StackNavigator from './stackNavigators';
 import AppStateManager from './appStateManager';
 import Toast from 'react-native-toast-message';
+import { IBCTokenProvider } from '@/context/ibcTokenContext';
+import { DappsProvider } from '@/context/dappsContext';
 
 const Router = () => {
     const { common } = useAppSelector((state) => state);
@@ -25,9 +27,14 @@ const Router = () => {
 
     return (
         <NavigationContainer theme={DarkTheme}>
-            <StackNavigator />
-            <AppStateManager />
-            <CustomToast />
+
+            <IBCTokenProvider>
+                <DappsProvider>
+                    <StackNavigator />
+                    <AppStateManager />
+                    <CustomToast />
+                </DappsProvider>
+            </IBCTokenProvider>
         </NavigationContainer>
     );
 };
