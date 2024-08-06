@@ -14,6 +14,11 @@ export interface IFavoriteProps {
     memo?: string;
 }
 
+export interface ICWContractsState {
+    address: string;
+    type: 'CW20' | 'CW721'
+}
+
 // common
 export const APP_STATE = 'APP_STATE';
 export const MAINTENANCE_STATE = 'MAINTENANCE_STATE';
@@ -46,6 +51,7 @@ export const DAPP_CONNECT_MODAL = 'DAPP_CONNECT_MODAL';
 export const DAPP_SIGN_MODAL = 'DAPP_SIGN_MODAL';
 export const DAPP_DIRECT_SIGN_MODAL = 'DAPP_DIRECT_SIGN_MODAL';
 export const DAPP_SERVICE_REG_MODAL = 'DAPP_SERVICE_REG_MODAL';
+export const ADD_CW_CONTRACT_MODAL = 'ADD_CW_CONTRACT_MODAL';
 
 // staking
 export const UPDATE_DELEGATE_STATE = 'UPDATE_DELEGATE_STATE';
@@ -67,3 +73,5 @@ export const HANDLE_RECOVER_TYPE = 'HANDLE_RECOVER_TYPE';
 export const HANDLE_VALIDATORS_PROFILE_INFO = 'HANDLE_VALIDATORS_PROFILE_INFO';
 export const HANDLE_LAST_SELECTED_WALLET_INDEX = 'HANDLE_LAST_SELECTED_WALLET_INDEX';
 export const HANDLE_FAVORITE = 'HANDLE_FAVORITE';
+export const HANDLE_CW20_CONTRACTS = 'HANDLE_CW20_CONTRACTS';
+export const HANDLE_CW721_CONTRACTS = 'HANDLE_CW721_CONTRACTS';

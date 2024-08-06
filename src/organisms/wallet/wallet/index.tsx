@@ -18,6 +18,8 @@ import BalanceBox from './balanceBox';
 import HistoryBox from './historyBox';
 import Toast from 'react-native-toast-message';
 import { IBC_CONFIG } from '../../../../config';
+import AssetsBox from './assetsBox';
+import StakingBox from './stakingBox';
 export interface IBCDataState {
     enable: boolean;
     displayName: string;
@@ -59,6 +61,9 @@ const Wallet = () => {
     };
     const moveToHistoryScreen = () => {
         navigation.navigate(Screens.History);
+    };
+    const moveToAssetsScrees = () => {
+        navigation.navigate(Screens.Assets);
     };
 
     const handleMoveToWeb = (uri: string) => {
@@ -119,6 +124,11 @@ const Wallet = () => {
                             handleSendIBC={moveToSendIBCScrees}
                             handleStaking={moveToStakingTab}
                         />
+                        <AssetsBox
+                            handleAssets={moveToAssetsScrees} />
+                        <StakingBox
+                            stakingValues={stakingState}
+                            handleStaking={moveToStakingTab} />
                         <HistoryBox
                             handleHistory={moveToHistoryScreen}
                             historyVolume={historyVolume}
