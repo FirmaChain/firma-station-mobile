@@ -47,7 +47,7 @@ const PropertiesBox = ({ data }: IProps) => {
                     <View style={styles.divider} />
                     <View style={styles.valueWapper}>
                         <Text style={[styles.value]}>{handleCapitalize(item.value)}</Text>
-                        {item.description && <Text style={[styles.description]}>{handleCapitalize(item.description)}</Text>}
+                        {item.description !== "" && <Text style={[styles.description]}>{handleCapitalize(item.description)}</Text>}
                     </View>
                 </View>
             </View>

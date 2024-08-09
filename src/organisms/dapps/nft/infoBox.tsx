@@ -82,7 +82,7 @@ const InfoBox = ({ data }: IProps) => {
                         <View style={styles.wrap}>
                             <Animated.Image
                                 style={{ width: 15, height: 15, opacity: fadeAnimText, borderRadius: 50 }}
-                                source={imageURI === undefined ? VALIDATOR_PROFILE : { uri: imageURI }}
+                                source={imageURI === undefined || imageURI === '' ? VALIDATOR_PROFILE : { uri: imageURI }}
                             />
                             <Animated.Text
                                 style={[styles.value, { color: color, opacity: fadeAnimText, flex: 0, paddingLeft: 5, lineHeight: 17 }]}
@@ -121,6 +121,10 @@ const InfoBox = ({ data }: IProps) => {
                     </Text>
                 </View>
             </View>
+            <View style={[styles.box, { maxHeight: collection.name === '' ? 0 : 100 }]}>
+                <Text style={styles.title}>Collection</Text>
+                <InfoDataRender title={collection.name === null ? '' : collection.name} imageURI={collection.icon} color={WhiteColor} loading={collection.name === null} />
+            </View>
             {isCW721 ?
                 <Fragment>
                     <View style={styles.box}>
@@ -133,16 +137,10 @@ const InfoBox = ({ data }: IProps) => {
                     </View>
                 </Fragment>
                 :
-                <Fragment>
-                    <View style={styles.box}>
-                        <Text style={styles.title}>Collection</Text>
-                        <InfoDataRender title={collection.name} imageURI={collection.icon} color={WhiteColor} loading={collection.name === ''} />
-                    </View>
-                    <View style={styles.box}>
-                        <Text style={styles.title}>Created by</Text>
-                        <InfoDataRender title={createdBy} color={WhiteColor} loading={createdBy === ''} />
-                    </View>
-                </Fragment>
+                <View style={styles.box}>
+                    <Text style={styles.title}>Created by</Text>
+                    <InfoDataRender title={createdBy} color={WhiteColor} loading={createdBy === ''} />
+                </View>
             }
         </View>
     );

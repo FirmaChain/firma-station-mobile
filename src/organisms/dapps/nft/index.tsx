@@ -25,7 +25,7 @@ interface IMetaData {
     name: string;
     description: string;
     attributes: Array<any>;
-    collection: { name: string; icon: string };
+    collection: { name: string | null; icon: string };
     createdBy: string;
     tokenId: string;
 }
@@ -42,12 +42,14 @@ const NFT = ({ data }: IProps) => {
         name: '',
         description: '',
         attributes: [],
-        collection: { name: '', icon: '' },
+        collection: { name: null, icon: '' },
         createdBy: '',
         tokenId: ''
     });
 
     const NFTData = useMemo(() => {
+        console.log(data);
+
         return data.nft;
     }, [data]);
 
@@ -59,7 +61,7 @@ const NFT = ({ data }: IProps) => {
             tokenId: metaData.tokenId || NFTData.id
         };
 
-        return { ...NFTData, ...mergedMetaData, cw721Contract: cw721Contract };
+        return { ...NFTData, ...metaData, ...mergedMetaData, cw721Contract: cw721Contract };
     }, [NFTData, metaData, cw721Contract]);
 
     const handleMetaData = useCallback(async () => {

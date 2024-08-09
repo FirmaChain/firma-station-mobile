@@ -4,7 +4,7 @@ import { INFTProps } from '@/hooks/dapps/hooks';
 import { fadeIn, fadeOut } from '@/util/animation';
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { View, StyleSheet, Animated, TouchableOpacity, Text } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import FastImage, { Source } from 'react-native-fast-image';
 
 interface IProps {
     item: INFTProps;
@@ -14,6 +14,12 @@ interface IProps {
 
 const NFTItem = ({ item, size, moveToNFTDetail }: IProps) => {
 
+    const getImageSource = (value: string | Source): Source => {
+        return typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))
+            ? { uri: value, priority: FastImage.priority.low }
+            : value as Source;
+    };
+
     return (
         <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
             <View style={{ paddingHorizontal: 10 }}>
@@ -21,10 +27,7 @@ const NFTItem = ({ item, size, moveToNFTDetail }: IProps) => {
                     <FastImage
                         style={styles.contentImage}
                         resizeMode="contain"
-                        source={{
-                            uri: item.image,
-                            priority: FastImage.priority.low,
-                        }}
+                        source={getImageSource(item.image)}
                     />
                 </View>
                 <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>

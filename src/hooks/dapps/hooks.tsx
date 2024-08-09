@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import { getCW721NftIdList, getCW721NFTItemFromId, getNFTIdListOfOwner, getNFTItemFromId, INftItemType } from '@/util/firma';
 import { Cw721NftInfo } from '@firmachain/firma-js';
+import { ICON_CW_NFT_THUMBNAIL } from '@/constants/images';
 
 export interface INFTTransctionState {
     height: number;
@@ -234,19 +235,36 @@ const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
             let list: INFTProps[] = [];
             for (let i = 0; i < nfts.length; i++) {
                 let NFT = nfts[i];
-                const res = await fetch(NFT.tokenURI);
-                const json = await res.json();
-                const image = json.imageURI;
-                const metaURI = json.metaURI !== undefined ? json.metaURI : '';
 
-                list = list.concat({
-                    id: NFT.id,
-                    name: json.name,
-                    image: image,
-                    description: json.description,
-                    identity: json.identity,
-                    metaURI: metaURI
-                });
+                try {
+                    const res = await fetch(NFT.tokenURI);
+                    const json = await res.json();
+                    const name = json.name !== undefined ? json.name : NFT.id;
+                    const image = json.imageURI !== undefined ? json.imageURI : ICON_CW_NFT_THUMBNAIL;
+                    const metaURI = json.metaURI !== undefined ? json.metaURI : '';
+                    const description = json.description !== undefined ? json.description : '';
+                    const identity = json.identity !== undefined ? json.identity : '';
+
+                    list = list.concat({
+                        id: NFT.id,
+                        name: name,
+                        image: image,
+                        description: description,
+                        identity: identity,
+                        metaURI: metaURI
+                    });
+                } catch (error) {
+                    console.log(`Error fetching data for NFT with id ${NFT.id}:`, error);
+
+                    list = list.concat({
+                        id: NFT.id,
+                        name: NFT.id,
+                        image: ICON_CW_NFT_THUMBNAIL,
+                        description: '',
+                        identity: '',
+                        metaURI: ''
+                    });
+                }
             }
 
             return list;
@@ -254,7 +272,7 @@ const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
             return [];
         }
     } catch (error) {
-        console.log(error);
+        console.log('getMyCW721NFTList', error);
         return [];
     }
 };

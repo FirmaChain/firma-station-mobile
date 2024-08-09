@@ -60,20 +60,25 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
         }
     }, [MyNFTS, MyCW721NFTS, isFetching, isCW721Fetching, NFTList]);
 
+    const RefreshNFTs = () => {
+        if (NFTList === null || NFTList.length === 0) { handleCW721NFTIdList('0'); }
+        else { handleCW721NFTIdList(NFTList[NFTList.length - 1].id); }
+    }
+
     useEffect(() => {
         fetchNFTs();
     }, [isFetching, isCW721Fetching]);
 
     useEffect(() => {
         if (cw721Contract && cw721Contract !== '0x' && isScrollEnd) {
-            handleCW721NFTIdList(NFTList === null ? '0' : NFTList[NFTList.length - 1].id)
+            RefreshNFTs();
         }
     }, [isScrollEnd, cw721Contract])
 
     useEffect(() => {
         if (isFocused) {
             if (cw721Contract && cw721Contract !== '0x') {
-                handleCW721NFTIdList(NFTList === null ? '0' : NFTList[NFTList.length - 1].id);
+                RefreshNFTs();;
             } else {
                 handleNFTIdList();
             }
@@ -83,7 +88,7 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
     useEffect(() => {
         if (isRefresh) {
             if (cw721Contract && cw721Contract !== '0x') {
-                handleCW721NFTIdList(NFTList === null ? '0' : NFTList[NFTList.length - 1].id);
+                RefreshNFTs();
             } else {
                 handleNFTIdList();
             }

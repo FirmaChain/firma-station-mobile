@@ -26,9 +26,8 @@ const DescriptionBox = ({ data }: IProps) => {
     }, [data.cw721ContractAddress])
 
     const isCWContract = useMemo(() => {
-        return !Boolean(CW20Contract === '' || CW721Contract === '');
+        return !Boolean(CW20Contract === '' && CW721Contract === '');
     }, [CW20Contract, CW721Contract])
-
 
     const NUM_OF_LINES = isCWContract ? 2 : 3;
 
