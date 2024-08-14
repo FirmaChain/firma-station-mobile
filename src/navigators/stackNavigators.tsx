@@ -38,6 +38,8 @@ import DappDetailScreen from '@/screens/home/dapps/dapp/dappDetail';
 import NFTScreen from '@/screens/home/dapps/nft/nft';
 import SendCW20Screen from "@/screens/home/dapps/sendCW20/sendCW20";
 import SendCW721Screen from "@/screens/home/dapps/sendCW721/sendCW721";
+import AssetsScreen from '@/screens/home/assets/assets';
+import CW721Screen from '@/screens/home/assets/cw721';
 
 export const Stack = createStackNavigator<StackParamList>();
 
@@ -104,6 +106,8 @@ const StackNavigator = () => {
             <Stack.Group>
                 <Stack.Screen options={{ headerShown: false }} name={Screens.Send} component={SendScreen} />
                 <Stack.Screen options={{ headerShown: false }} name={Screens.SendIBC} component={SendIBCScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.Assets} component={AssetsScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.CW721} component={CW721Screen} />
             </Stack.Group>
 
             <Stack.Group>

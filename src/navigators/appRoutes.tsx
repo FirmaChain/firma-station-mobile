@@ -13,6 +13,7 @@ import { CreateStepRecoverParams } from '@/screens/createWallet/stepRecover';
 import { SendCW20Params } from '@/screens/home/dapps/sendCW20/sendCW20';
 import { SendCW721Params } from '@/screens/home/dapps/sendCW721/sendCW721';
 import { SendIBCParams } from '@/screens/home/wallet/sendIBC';
+import { CW721Params } from '@/screens/home/assets/cw721';
 
 export enum Screens {
     LoginCheck = 'LoginCheck',
@@ -33,6 +34,8 @@ export enum Screens {
     Wallet = 'Wallet',
     Send = 'Send',
     SendIBC = 'SendIBC',
+    Assets = 'Assets',
+    CW721 = 'CW721',
 
     Staking = 'Staking',
     Validator = 'Validator',
@@ -75,6 +78,8 @@ export type StackParamList = {
     Wallet: undefined;
     Send: undefined;
     SendIBC: SendIBCParams;
+    Assets: undefined;
+    CW721: CW721Params;
 
     Staking: undefined;
     Validator: ValidatorParams;

@@ -196,6 +196,15 @@ export const CW_TX_NOTICE_TEXT = `A transaction fee of 0.02 ${_CHAIN_SYMBOL} is 
 
 export const IBC_OSMO_ADDRESS_INVALID_TEXT = `Only addresses starting with "osmo1" are accepted.`
 
+export const CW20_NOT_EXIST = 'No CW20 contracts\nhave been added.';
+export const CW721_NOT_EXIST = 'No CW721 contracts\nhave been added.';
+export const CW_REMOVE_WARN_TEXT = 'Press Remove to delete immediately.';
+export const CW721_REMOVE_SUCCESS = 'Successfully removed from list.';
+export const CW20_REMOVE_SUCCESS = 'Successfully removed from list.';
+export const EXIST_CW_CONTRACT_TO_LIST = 'Contract address already registered.';
+export const NON_EXIST_CW_CONTRACT = 'Contract information does not exist.';
+export const ERROR_CW_CONTRACT = 'The contract address is invalid.'
+
 // transaction
 export const TRANSACTION_TYPE: IKeyValue = {
     SEND: 'TRANSACTION_SEND',

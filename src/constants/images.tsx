@@ -23,3 +23,5 @@ export var ICON_CERTIFIED_SITE = require('@/assets/images/ic_certified.png');
 
 export var ICON_OSMO_LOGO = require('@assets/images/ic_osmo_logo.png');
 export var ICON_ATOM_LOGO = require('@assets/images/ic_atom_logo.png');
+
+export var ICON_CW_NFT_THUMBNAIL = require('@assets/images/img_nft_thumbnail.png');

@@ -8,6 +8,7 @@ import AppStateManager from './appStateManager';
 import Toast from 'react-native-toast-message';
 import { IBCTokenProvider } from '@/context/ibcTokenContext';
 import { DappsProvider } from '@/context/dappsContext';
+import { CWProvider } from '@/context/cwContext';
 
 const Router = () => {
     const { common } = useAppSelector((state) => state);
@@ -27,14 +28,15 @@ const Router = () => {
 
     return (
         <NavigationContainer theme={DarkTheme}>
-
-            <IBCTokenProvider>
-                <DappsProvider>
-                    <StackNavigator />
-                    <AppStateManager />
-                    <CustomToast />
-                </DappsProvider>
-            </IBCTokenProvider>
+            <CWProvider>
+                <IBCTokenProvider>
+                    <DappsProvider>
+                        <StackNavigator />
+                        <AppStateManager />
+                        <CustomToast />
+                    </DappsProvider>
+                </IBCTokenProvider>
+            </CWProvider>
         </NavigationContainer>
     );
 };

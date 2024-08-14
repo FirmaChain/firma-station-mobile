@@ -1,13 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { IStakingState } from '@/hooks/staking/hooks';
 import { FirmaUtil } from '@firmachain/firma-js';
 import { convertAmount, convertCurrent, convertNumber, makeDecimalPoint, resizeFontSize } from '@/util/common';
 import { FIRMA_LOGO } from '@/constants/images';
 import { CHAIN_SYMBOL, CURRENCY_SYMBOL } from '@/constants/common';
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { ForwardArrow } from '@/components/icon/icon';
 import { useFocusEffect } from '@react-navigation/native';
 import { useIBCTokenContext } from '@/context/ibcTokenContext';
 import { useFetchPrices } from '@/hooks/wallet/hooks';
@@ -22,8 +20,7 @@ interface IProps {
     handleSendIBC: (token: IBCDataState) => void;
 }
 
-const BalanceBox = ({ stakingValues, handleSend, handleStaking, handleSendIBC }: IProps) => {
-    const { staking } = useAppSelector((state) => state);
+const BalanceBox = ({ stakingValues, handleSend, handleSendIBC }: IProps) => {
     const { tokenList, ibcTokenConfig } = useIBCTokenContext();
     const { priceData, fetchPrices } = useFetchPrices()
 
@@ -52,20 +49,6 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, handleSendIBC }:
         if (stakingValues === null) return 0;
         return stakingValues.available;
     }, [stakingValues]);
-
-    const delegated = useMemo(() => {
-        if (stakingValues === null) return 0;
-        return convertCurrent(makeDecimalPoint(stakingValues.delegated));
-    }, [stakingValues]);
-
-    const undelegate = useMemo(() => {
-        if (stakingValues === null) return 0;
-        return convertCurrent(makeDecimalPoint(stakingValues.undelegate));
-    }, [stakingValues]);
-
-    const reward = useMemo(() => {
-        return convertCurrent(makeDecimalPoint(staking.stakingReward));
-    }, [staking.stakingReward]);
 
     const currencyData = (price: number) => {
         let decimal = 2;
@@ -163,29 +146,6 @@ const BalanceBox = ({ stakingValues, handleSend, handleStaking, handleSendIBC }:
 
                     </View>}
             </View>
-
-            <TouchableOpacity style={[styles.box, { marginVertical: 16, paddingHorizontal: 0 }]} onPress={() => handleStaking()}>
-                <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }]}>
-                    <Text style={styles.title}>Staking</Text>
-                    <ForwardArrow size={20} color={TextCatTitleColor} />
-                </View>
-                <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingTop: 18 }]}>
-                    <View style={styles.stakingWrapper}>
-                        <Text style={[styles.chainName, { fontSize: 14 }]}>Delegated</Text>
-                        <Text style={[styles.balance, { fontSize: 18 }]}>{delegated}</Text>
-                    </View>
-                    <View style={styles.dividerV} />
-                    <View style={styles.stakingWrapper}>
-                        <Text style={[styles.chainName, { fontSize: 14 }]}>Undelegate</Text>
-                        <Text style={[styles.balance, { fontSize: 18 }]}>{undelegate}</Text>
-                    </View>
-                    <View style={styles.dividerV} />
-                    <View style={styles.stakingWrapper}>
-                        <Text style={[styles.chainName, { fontSize: 14 }]}>Reward</Text>
-                        <Text style={[styles.balance, { fontSize: 18 }]}>{reward}</Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
         </View>
     );
 };

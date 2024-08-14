@@ -57,5 +57,8 @@ export const CW20Color = '#00B776';
 export const CW20BackgroundColor = 'rgba(2, 225, 145, 0.20)';
 export const CW721Color = '#738DF5'
 export const CW721BackgroundColor = 'rgba(80, 110, 229, 0.30)';
+export const CWLabelColor = '#999999';
+export const CWLabelBackgroundColor = '#2C2C2C';
+export const CWLabelBorderColor = '#383838';
 
 export const IBCConnectedColor = '#02E191'
