@@ -10,7 +10,10 @@ import {
     HANDLE_VALIDATORS_PROFILE_INFO,
     HANDLE_LAST_SELECTED_WALLET_INDEX,
     IFavoriteState,
-    HANDLE_FAVORITE
+    HANDLE_FAVORITE,
+    ICWContractsState,
+    HANDLE_CW721_CONTRACTS,
+    HANDLE_CW20_CONTRACTS
 } from '../types';
 
 export interface IContentVolume {
@@ -28,6 +31,10 @@ export interface IValidatorsProfileState {
     lastUpdatedTime: number;
 }
 
+interface IKeyValueForCWContract {
+    [key: string]: ICWContractsState[];
+}
+
 export interface IStorageStateProps {
     currency: string;
     network: string;
@@ -38,6 +45,8 @@ export interface IStorageStateProps {
     validatorsProfile: IValidatorsProfileState;
     lastSelectedWalletIndex: number;
     favorite: IFavoriteState[];
+    cw20Contracts: IKeyValueForCWContract;
+    cw721Contracts: IKeyValueForCWContract;
 }
 
 const initialState: IStorageStateProps = {
@@ -55,7 +64,9 @@ const initialState: IStorageStateProps = {
         lastUpdatedTime: 0
     },
     lastSelectedWalletIndex: -1,
-    favorite: []
+    favorite: [],
+    cw20Contracts: {},
+    cw721Contracts: {}
 };
 
 export const ACTION_CREATORS = {
@@ -67,7 +78,9 @@ export const ACTION_CREATORS = {
     HANDLE_RECOVER_TYPE: createAction<IKeyValue>(HANDLE_RECOVER_TYPE),
     HANDLE_VALIDATORS_PROFILE_INFO: createAction<IValidatorsProfileState>(HANDLE_VALIDATORS_PROFILE_INFO),
     HANDLE_LAST_SELECTED_WALLET_INDEX: createAction<number>(HANDLE_LAST_SELECTED_WALLET_INDEX),
-    HANDLE_FAVORITE: createAction<IFavoriteState[]>(HANDLE_FAVORITE)
+    HANDLE_FAVORITE: createAction<IFavoriteState[]>(HANDLE_FAVORITE),
+    HANDLE_CW20_CONTRACTS: createAction<IKeyValueForCWContract>(HANDLE_CW20_CONTRACTS),
+    HANDLE_CW721_CONTRACTS: createAction<IKeyValueForCWContract>(HANDLE_CW721_CONTRACTS)
 };
 
 export const ACTIONS = {
@@ -79,7 +92,9 @@ export const ACTIONS = {
     handleRecoverType: ACTION_CREATORS.HANDLE_RECOVER_TYPE,
     handleValidatorsProfile: ACTION_CREATORS.HANDLE_VALIDATORS_PROFILE_INFO,
     handleLastSelectedWalletIndex: ACTION_CREATORS.HANDLE_LAST_SELECTED_WALLET_INDEX,
-    handleFavorite: ACTION_CREATORS.HANDLE_FAVORITE
+    handleFavorite: ACTION_CREATORS.HANDLE_FAVORITE,
+    handleCW20Contracts: ACTION_CREATORS.HANDLE_CW20_CONTRACTS,
+    handleCW721Contracts: ACTION_CREATORS.HANDLE_CW721_CONTRACTS
 };
 
 const reducer = createReducer(initialState, (builder) => {
@@ -109,6 +124,12 @@ const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(ACTION_CREATORS.HANDLE_FAVORITE, (state, { payload }) => {
         state.favorite = payload;
+    });
+    builder.addCase(ACTION_CREATORS.HANDLE_CW20_CONTRACTS, (state, { payload }) => {
+        state.cw20Contracts = payload;
+    });
+    builder.addCase(ACTION_CREATORS.HANDLE_CW721_CONTRACTS, (state, { payload }) => {
+        state.cw721Contracts = payload;
     });
 });
 

@@ -11,7 +11,8 @@ import {
     DAPP_SERVICE_REG_MODAL,
     FAVORITE_MODAL,
     FAVORITE_CREATE_MODAL,
-    HANDLE_FAVORITE_DATA
+    HANDLE_FAVORITE_DATA,
+    ADD_CW_CONTRACT_MODAL
 } from '../types';
 
 export interface IModalStateProps {
@@ -26,6 +27,7 @@ export interface IModalStateProps {
     dappSignModal: boolean;
     dappDirectSignModal: boolean;
     dappServiceRegModal: boolean;
+    addCWContractModal: boolean;
 }
 
 const initialState: IModalStateProps = {
@@ -39,7 +41,8 @@ const initialState: IModalStateProps = {
     dappConnectModal: false,
     dappSignModal: false,
     dappDirectSignModal: false,
-    dappServiceRegModal: false
+    dappServiceRegModal: false,
+    addCWContractModal: false
 };
 
 export const ACTION_CREATORS = {
@@ -54,7 +57,8 @@ export const ACTION_CREATORS = {
     DAPP_CONNECT_MODAL: createAction<boolean>(DAPP_CONNECT_MODAL),
     DAPP_SIGN_MODAL: createAction<boolean>(DAPP_SIGN_MODAL),
     DAPP_DIRECT_SIGN_MODAL: createAction<boolean>(DAPP_DIRECT_SIGN_MODAL),
-    DAPP_SERVICE_REG_MODAL: createAction<boolean>(DAPP_SERVICE_REG_MODAL)
+    DAPP_SERVICE_REG_MODAL: createAction<boolean>(DAPP_SERVICE_REG_MODAL),
+    ADD_CW_CONTRACT_MODAL: createAction<boolean>(ADD_CW_CONTRACT_MODAL)
 };
 
 export const ACTIONS = {
@@ -69,7 +73,8 @@ export const ACTIONS = {
     handleDAppConnectModal: ACTION_CREATORS.DAPP_CONNECT_MODAL,
     handleDAppSignModal: ACTION_CREATORS.DAPP_SIGN_MODAL,
     handleDAppDirectSignModal: ACTION_CREATORS.DAPP_DIRECT_SIGN_MODAL,
-    handleDAppServiceRegistModal: ACTION_CREATORS.DAPP_SERVICE_REG_MODAL
+    handleDAppServiceRegistModal: ACTION_CREATORS.DAPP_SERVICE_REG_MODAL,
+    handleAddCWContractModal: ACTION_CREATORS.ADD_CW_CONTRACT_MODAL
 };
 
 const reducer = createReducer(initialState, (builder) => {
@@ -108,6 +113,9 @@ const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(ACTION_CREATORS.DAPP_SERVICE_REG_MODAL, (state, { payload }) => {
         state.dappServiceRegModal = payload;
+    });
+    builder.addCase(ACTION_CREATORS.ADD_CW_CONTRACT_MODAL, (state, { payload }) => {
+        state.addCWContractModal = payload;
     });
 });
 

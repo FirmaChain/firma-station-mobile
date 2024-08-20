@@ -2,7 +2,7 @@ import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
-import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from './common';
+import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber, wait } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
 import { TOKEN_DENOM } from '@/constants/common';
 import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
@@ -982,5 +982,102 @@ export const convertCW20Amount = async (contract: string, amount: string) => {
         return result;
     } catch (error) {
         throw error;
+    }
+}
+
+export type ValidCWType = 'DEFAULT' | 'NON_EXIST' | 'CW20' | 'CW721' | 'ERROR'
+export const verifyCWContract = async (contract: string): Promise<ValidCWType> => {
+    try {
+        await getCWContractInfo(contract);
+    } catch (error) {
+        return 'NON_EXIST'
+    }
+
+    try {
+        await getCW20ContractInfo(contract);
+        return 'CW20';
+    } catch (error) {
+        console.log("Error in CW20 check:", error);
+    }
+
+    try {
+        await getCW721ContractInfo(contract);
+        return 'CW721'
+    } catch (error) {
+        console.log("Error in Cw721 check:", error);
+        return 'ERROR';
+    }
+};
+
+export const getCWContractInfo = async (contract: string) => {
+    try {
+        const result = await getFirmaSDK().CosmWasm.getContractInfo(contract);
+        return result
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}
+
+export const getCW20ContractInfo = async (contract: string) => {
+    try {
+        const result = await getFirmaSDK().Cw20.getTokenInfo(contract);
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getCW20ExtraInfo = async (contract: string) => {
+    try {
+        const marketing = await getFirmaSDK().Cw20.getMarketingInfo(contract);
+
+        return {
+            marketing,
+        }
+
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getCW721ContractInfo = async (contract: string) => {
+    try {
+        const result = await getFirmaSDK().Cw721.getContractInfo(contract);
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getCW721TotalNFTs = async (contract: string) => {
+    try {
+        const totalSupply = await getFirmaSDK().Cw721.getTotalNfts(contract);
+        const totalNFTIds = await getFirmaSDK().Cw721.getAllNftIdList(contract);
+
+        return {
+            totalSupply,
+            totalNFTIds
+        }
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getCW721NFTImage = async ({ contractAddress, tokenId }: { contractAddress: string, tokenId: string }) => {
+    try {
+        const tokenURI = await firmaSDK.Cw721.getNftTokenUri(contractAddress, tokenId);
+        const response = await fetch(tokenURI);
+        const metadata = await response.json();
+        const imageURI = metadata.imageURI || "";
+
+        return imageURI
+    } catch (error) {
+        console.log(error);
+        return ''
     }
 }
