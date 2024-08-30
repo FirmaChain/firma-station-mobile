@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { BoxDarkColor } from '@/constants/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '@/components/header/header';
@@ -33,11 +33,11 @@ const Container = ({
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: bgColor, paddingTop: insets.top }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: bgColor, paddingTop: insets.top }]}>
             <Header step={step} bgColor={bgColor} onPressEvent={() => handleMoveBack()} />
             {titleOn && <TitleBar title={title} subTitle={subTitle} handleGuide={handleGuide} />}
             {children}
-        </View>
+        </SafeAreaView>
     );
 };
 

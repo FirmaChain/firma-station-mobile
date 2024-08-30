@@ -9,10 +9,11 @@ import FastImage, { Source } from 'react-native-fast-image';
 interface IProps {
     item: INFTProps;
     size: number;
+    disabled?: boolean;
     moveToNFTDetail: (id: string) => void;
 }
 
-const NFTItem = ({ item, size, moveToNFTDetail }: IProps) => {
+const NFTItem = ({ item, size, disabled = false, moveToNFTDetail }: IProps) => {
 
     const getImageSource = (value: string | Source): Source => {
         return typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))
@@ -21,7 +22,7 @@ const NFTItem = ({ item, size, moveToNFTDetail }: IProps) => {
     };
 
     return (
-        <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
+        <TouchableOpacity activeOpacity={disabled ? 1 : 0.2} style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
             <View style={{ paddingHorizontal: 10 }}>
                 <View style={[styles.contentImageWrap, { width: '100%', height: size - 20 }]}>
                     <FastImage

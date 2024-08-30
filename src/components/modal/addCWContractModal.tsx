@@ -168,17 +168,6 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
     useEffect(() => {
         const checkContract = async () => {
             const type = await verifyCWContract(addressValue);
-            if (type === 'NON_EXIST') {
-                Toast.show({
-                    type: 'error',
-                    text1: NON_EXIST_CW_CONTRACT
-                });
-            } else if (type === 'ERROR') {
-                Toast.show({
-                    type: 'error',
-                    text1: ERROR_CW_CONTRACT
-                });
-            }
             setValidType(type);
         };
 

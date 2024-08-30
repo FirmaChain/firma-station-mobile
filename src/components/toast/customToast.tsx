@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 import { wait } from '@/util/common';
 import { Lato, toastError, toastInfo, toastSuccess } from '@/constants/theme';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 const CustomToast = () => {
     const [display, setDisplay] = useState('none');
+    const statusBarHeight = StatusBar.currentHeight || 0;
 
     const toastConfig = {
         success: (props: any) => (
             <BaseToast
                 {...props}
-                style={{ zIndex: 9999, borderLeftWidth: 0, backgroundColor: toastSuccess, display: display }}
+                style={{ zIndex: 9999, borderLeftWidth: 0, backgroundColor: toastSuccess, display: display, marginTop: statusBarHeight + 20 }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
                 text1NumberOfLines={5}
@@ -21,7 +22,7 @@ const CustomToast = () => {
         info: (props: any) => (
             <BaseToast
                 {...props}
-                style={{ zIndex: 9999, borderLeftWidth: 0, backgroundColor: toastInfo, color: 'white', display: display }}
+                style={{ zIndex: 9999, borderLeftWidth: 0, backgroundColor: toastInfo, color: 'white', display: display, marginTop: statusBarHeight + 20 }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
                 text1NumberOfLines={5}
@@ -31,7 +32,7 @@ const CustomToast = () => {
         error: (props: any) => (
             <ErrorToast
                 {...props}
-                style={{ zIndex: 9999, borderLeftWidth: 0, backgroundColor: toastError, color: 'white', display: display }}
+                style={{ zIndex: 9999, borderLeftWidth: 0, backgroundColor: toastError, color: 'white', display: display, marginTop: statusBarHeight + 20 }}
                 text1Style={styles.text1Style}
                 text1NumberOfLines={5}
                 text2Style={styles.text2Style}

@@ -126,7 +126,7 @@ const CW721 = ({ contract }: IProps) => {
                                                     NFTList.length > 0 ?
                                                         <Fragment>
                                                             {NFTList.map((value, key) => {
-                                                                return <NftItem key={key} item={value} size={(containerSize - 20) / itemCountPerLine} moveToNFTDetail={() => null} />
+                                                                return <NftItem key={key} disabled={true} item={value} size={(containerSize - 20) / itemCountPerLine} moveToNFTDetail={() => null} />
                                                             })}
                                                             <View style={[styles.moreWrap, { opacity: isCW721Fetching ? 1 : 0 }]}>
                                                                 <SmallProgress />
