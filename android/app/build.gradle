@@ -27,8 +27,8 @@ android {
         missingDimensionStrategy 'react-native-camera', 'mlkit', 'general'
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 29
-        versionName "1.0.26"
+        versionCode 36
+        versionName "1.0.27"
     }
 
     aaptOptions {
