@@ -16,7 +16,8 @@ export interface IFavoriteProps {
 
 export interface ICWContractsState {
     address: string;
-    type: 'CW20' | 'CW721'
+    type: 'CW20' | 'CW721';
+    network: string;
 }
 
 // common

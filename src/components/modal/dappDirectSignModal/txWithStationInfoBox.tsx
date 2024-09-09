@@ -37,6 +37,7 @@ interface IInfoProps {
 interface IRenderDefaultInfoProps {
     title: string;
     value: string;
+    isMemo?: boolean;
 }
 
 interface IRenderAmountInfoProps {
@@ -68,8 +69,14 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
 
     const QRData = useMemo(() => {
         let data = qrData.signParams.argument;
-        if (data.fee !== undefined) setFee(data.fee);
-        if (data.memo !== undefined) setMemo(data.memo);
+
+        if (data.fee !== undefined) {
+            setFee(data.fee);
+        }
+        if (data.memo !== undefined) {
+            setMemo(data.memo);
+        }
+
         return data;
     }, [qrData]);
 
@@ -81,11 +88,21 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
         return DAPP_MESSAGE_TYPE[type] === AUTHZ_REVOKE;
     }, [type]);
 
-    const RenderDefaultInfo = ({ title, value }: IRenderDefaultInfoProps) => {
+    const RenderDefaultInfo = ({ title, value, isMemo }: IRenderDefaultInfoProps) => {
         return (
-            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
-                <Text style={styles.catTitle}>{title}</Text>
-                <Text style={[styles.value, { flex: 0, color: AddressTextColor, fontSize: 15 }]} numberOfLines={1} ellipsizeMode={'middle'}>
+            <View
+                style={[
+                    styles.boxH,
+                    { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
+                    isMemo && { alignItems: 'flex-start' }
+                ]}
+            >
+                <Text style={[styles.catTitle, isMemo && { flex: 0, width: 40 }]}>{title}</Text>
+                <Text
+                    style={[styles.value, { flex: isMemo ? 1 : 0, color: AddressTextColor, fontSize: 15 }, isMemo && { maxWidth: 240 }]}
+                    numberOfLines={isMemo ? 2 : 1}
+                    ellipsizeMode={'middle'}
+                >
                     {value}
                 </Text>
             </View>
@@ -96,7 +113,11 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
         return (
             <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
                 <Text style={styles.catTitle}>{title}</Text>
-                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({ value: amount, isUfct: false, point: amount > 0 ? 6 : 0 })} ${_CHAIN_SYMBOL}`}</Text>
+                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({
+                    value: amount,
+                    isUfct: false,
+                    point: amount > 0 ? 6 : 0
+                })} ${_CHAIN_SYMBOL}`}</Text>
             </View>
         );
     };
@@ -125,7 +146,9 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
 
     const RenderInfoByType = useCallback(
         ({ type }: IInfoProps) => {
-            if (QRData === undefined) return <Fragment />;
+            if (QRData === undefined) {
+                return <Fragment />;
+            }
             switch (DAPP_MESSAGE_TYPE[type]) {
                 case BANK_SEND:
                     let sendAmount = QRData.fctPrice;
@@ -262,7 +285,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
             <View style={[styles.boxV, isEmptyInfo ? {} : { paddingTop: 20, paddingBottom: 17 }]}>
                 <RenderInfoByType type={type} />
                 <RenderAmountInfo title={'Fee'} amount={convertToFctNumber(fee)} />
-                <RenderDefaultInfo title={'Memo'} value={memo} />
+                <RenderDefaultInfo title={'Memo'} value={memo} isMemo />
             </View>
         </Fragment>
     );

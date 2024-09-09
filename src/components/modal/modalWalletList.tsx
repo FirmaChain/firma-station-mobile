@@ -20,7 +20,9 @@ type Item = {
 const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: IProps) => {
     const flatListRef = useRef<any>(null);
     const initialData = useMemo(() => {
-        if (data === null) return [];
+        if (data === null) {
+            return [];
+        }
         return data.map((item, index) => {
             return {
                 key: index,
@@ -30,7 +32,9 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
     }, [data]);
 
     const initValLabel = useMemo(() => {
-        if (data === null) return '';
+        if (data === null) {
+            return '';
+        }
         return data[initVal];
     }, [initVal]);
 
@@ -48,7 +52,9 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
         let result = '';
         let newIndex = -1;
         listData.map((item, index) => {
-            if (reselectItem(item.label)) newIndex = index;
+            if (reselectItem(item.label)) {
+                newIndex = index;
+            }
             return (result += item.label + '/');
         });
         result = result.slice(0, -1);
@@ -58,7 +64,9 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
     };
 
     const reselectItem = (label: string) => {
-        if (initValLabel === label) return true;
+        if (initValLabel === label) {
+            return true;
+        }
         return false;
     };
 

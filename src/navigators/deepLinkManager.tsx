@@ -29,39 +29,46 @@ const DeepLinkManager = () => {
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
 
     const IBCToken: IBCDataState[] | null = useMemo(() => {
-        if (ibcTokenConfig === null) return [];
+        if (ibcTokenConfig === null) {
+            return [];
+        }
 
         const ibcArray = Object.entries(ibcTokenConfig).map(([key, value]) => ({
             ...value,
             key
         }));
 
-        const list = ibcArray.filter((value) => value.enable).map((value) => {
-            const token = tokenList.find(token => token.denom.toLowerCase() === value.denom.toLowerCase());
-            return {
-                ...value,
-                amount: token ? token.amount : '0',
-            }
-        })
+        const list = ibcArray
+            .filter((value) => value.enable)
+            .map((value) => {
+                const token = tokenList.find((token) => token.denom.toLowerCase() === value.denom.toLowerCase());
+                return {
+                    ...value,
+                    amount: token ? token.amount : '0'
+                };
+            });
 
         return list;
-    }, [tokenList, ibcTokenConfig])
+    }, [tokenList, ibcTokenConfig]);
 
     useEffect(() => {
-        const state = navigation.getState().routes;
-        const prevPath = state[state.length - 1].name;
+        const state = navigation.getState()?.routes;
 
-        if (wallet.dstAddress !== '' && prevPath === Screens.Home.toString()) {
-            if (IBCToken !== null) {
-                if (wallet.dstAddress.includes('osmo1')) {
-                    const tokenData = IBCToken.find((value) => value.displayName.toLocaleLowerCase() === 'osmo');
-                    if (tokenData !== undefined) {
-                        return navigation.navigate(Screens.SendIBC, { tokenData });
+        if (state) {
+            const prevPath = state[state.length - 1].name;
+
+            if (wallet.dstAddress !== '' && prevPath === Screens.Home.toString()) {
+                if (IBCToken !== null) {
+                    if (wallet.dstAddress.includes('osmo1')) {
+                        const tokenData = IBCToken.find((value) => value.displayName.toLocaleLowerCase() === 'osmo');
+                        if (tokenData !== undefined) {
+                            return navigation.navigate(Screens.SendIBC, { tokenData });
+                        }
                     }
                 }
-            }
 
-            return navigation.navigate(Screens.Send);
+                return navigation.navigate(Screens.Send);
+            }
         }
     }, [wallet.dstAddress, IBCToken]);
 
@@ -84,9 +91,15 @@ const DeepLinkManager = () => {
     }, []);
 
     useEffect(() => {
-        if (common.appState !== 'active') return;
-        if (common.isBioAuthInProgress) return;
-        if (common.lockStation) return;
+        if (common.appState !== 'active') {
+            return;
+        }
+        if (common.isBioAuthInProgress) {
+            return;
+        }
+        if (common.lockStation) {
+            return;
+        }
         if (deepLink !== '' && deepLink !== undefined) {
             CommonActions.handleLoadingProgress(true);
             let convertLink = deepLink.replace('firmastation', 'sign');
@@ -120,7 +133,9 @@ const DeepLinkManager = () => {
     };
 
     const urlForWebLinkCheck = (url: string) => {
-        if (url.includes('http://') || url.includes('https://')) return true;
+        if (url.includes('http://') || url.includes('https://')) {
+            return true;
+        }
         return false;
     };
 

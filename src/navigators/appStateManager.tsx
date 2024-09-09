@@ -21,6 +21,11 @@ import Progress from '@/components/parts/progress';
 import AlertModal from '@/components/modal/alertModal';
 import ValidationModal from '@/components/modal/validationModal';
 import DeepLinkManager from './deepLinkManager';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Screens, StackParamList } from './appRoutes';
+
+type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
 const AppStateManager = () => {
     const netInfo = useNetInfo();
@@ -32,6 +37,8 @@ const AppStateManager = () => {
     const [maintenance, setMaintenance] = useState<boolean | null>(null);
     const [maintenanceData, setMaintenanceData] = useState({});
     const [openAlertModal, setOpenAlertModal] = useState(false);
+
+    const navigation: ScreenNavgationProps = useNavigation();
 
     const handleValidatorsProfile = useCallback(async () => {
         try {
@@ -73,7 +80,9 @@ const AppStateManager = () => {
     }, []);
 
     const handleUnlock = (result: string) => {
-        if (result === '') return;
+        if (result === '') {
+            return;
+        }
         CommonActions.handleLoggedIn(true);
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime('');
@@ -168,7 +177,9 @@ const AppStateManager = () => {
     }, [update, maintenanceState]);
 
     useEffect(() => {
-        if (wallet.name === '') return;
+        if (wallet.name === '') {
+            return;
+        }
         let appStateListener = AppState.addEventListener('change', (nextAppState) => {
             CommonActions.handleAppState(nextAppState);
 
@@ -193,7 +204,9 @@ const AppStateManager = () => {
     }, [netInfo]);
 
     useEffect(() => {
-        handleLoadingProgress();
+        if (navigation.getState()) {
+            handleLoadingProgress();
+        }
     }, [common.connect, common.isNetworkChanged, common.lockStation]);
 
     useEffect(() => {

@@ -11,11 +11,30 @@ interface IProps {
 
 const DataSection = ({ title, data, color = TextDisableColor, label = false }: IProps) => {
     return (
-        <View style={[styles.vdWrapperH, { alignItems: label ? 'flex-start' : 'center' }]}>
+        <View style={[styles.vdWrapperH, { alignItems: 'flex-start' }]}>
             <Text style={[styles.descTitle, { paddingTop: label ? 3 : 0 }]}>{title}</Text>
-            <Text style={[label ? styles.descLabel : styles.descItem, { color: color }, label && { flexShrink: 1, backgroundColor: color + '30' }]}>
-                {data}
-            </Text>
+
+            <View
+                style={[
+                    label && {
+                        flexShrink: 1,
+                        backgroundColor: color + '30',
+                        borderRadius: 10,
+                        paddingHorizontal: 10,
+                        paddingVertical: 3
+                    }
+                ]}
+            >
+                <Text
+                    style={[
+                        label ? styles.descLabel : styles.descItem,
+                        { color: color }
+                        // label && { flexShrink: 1, backgroundColor: color + '30', minHeight: 18 }
+                    ]}
+                >
+                    {data}
+                </Text>
+            </View>
         </View>
     );
 };
@@ -31,7 +50,7 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         color: TextDisableColor,
-        minWidth: 80
+        minWidth: 100
     },
     descItem: {
         fontFamily: Lato,
@@ -41,11 +60,12 @@ const styles = StyleSheet.create({
     descLabel: {
         fontFamily: Lato,
         fontSize: 14,
-        borderRadius: 10,
+        // borderRadius: 10,
         textAlign: 'center',
-        overflow: 'hidden',
-        paddingHorizontal: 10,
-        paddingVertical: 3
+        minHeight: 18
+        // overflow: 'hidden'
+        // paddingHorizontal: 10,
+        // paddingVertical: 3
     }
 });
 

@@ -3,7 +3,17 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { BgColor, BoxColor, BoxDarkColor, DisableColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
+import {
+    BgColor,
+    BoxColor,
+    BoxDarkColor,
+    DisableColor,
+    InputPlaceholderColor,
+    Lato,
+    TextCatTitleColor,
+    TextColor,
+    WhiteColor
+} from '@/constants/theme';
 import { ScreenWidth } from '@/util/getScreenSize';
 import { useSelector } from 'react-redux';
 import { rootState } from '@/redux/reducers';
@@ -23,22 +33,24 @@ const Assets = () => {
     const { modal, storage, wallet } = useSelector((state: rootState) => state);
     const { cw20Data, cw721Data } = useCWContext();
 
-    const { handleCW721ContractsInfo } = useCW721()
-    const { handleCW20ContractsInfo } = useCW20()
+    const { handleCW721ContractsInfo } = useCW721();
+    const { handleCW20ContractsInfo } = useCW20();
 
     useEffect(() => {
         handleCW20ContractsInfo();
-    }, [storage.cw20Contracts])
+    }, [storage.cw20Contracts]);
 
     useEffect(() => {
         handleCW721ContractsInfo();
-    }, [storage.cw721Contracts, wallet])
+    }, [storage.cw721Contracts, wallet]);
 
     const [tab, setTab] = useState(0);
     const [isEdit, setIsEdit] = useState(false);
 
     const handleTab = (index: number) => {
-        if (index === tab) return;
+        if (index === tab) {
+            return;
+        }
         setTab(index);
         setIsEdit(false);
     };
@@ -54,7 +66,7 @@ const Assets = () => {
             type: 'success',
             text1: `successfully added the ${value === 0 ? 'CW20' : 'CW721'} contract`
         });
-    }
+    };
 
     const openAddCWContractModal = useMemo(() => {
         return modal.addCWContractModal;
@@ -74,9 +86,11 @@ const Assets = () => {
                 <View style={styles.titleBox}>
                     <Text style={styles.title}>{'Assets'}</Text>
                     <View style={styles.titleButtonBox}>
-                        {isEdit === false && <TouchableOpacity style={styles.textButtonWrap} onPress={() => handleAddCWContractModal(true)}>
-                            <Text style={styles.textButton}>{'Add'}</Text>
-                        </TouchableOpacity>}
+                        {isEdit === false && (
+                            <TouchableOpacity style={styles.textButtonWrap} onPress={() => handleAddCWContractModal(true)}>
+                                <Text style={styles.textButton}>{'Add'}</Text>
+                            </TouchableOpacity>
+                        )}
                         <TouchableOpacity style={styles.textButtonWrap} onPress={() => setIsEdit(!isEdit)}>
                             <Text style={styles.textButton}>{isEdit ? 'Done' : 'Edit'}</Text>
                         </TouchableOpacity>
@@ -119,7 +133,7 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         marginHorizontal: 20,
         overflow: 'hidden',
-        backgroundColor: BgColor,
+        backgroundColor: BgColor
     },
     listContainer: {
         height: '100%',
@@ -146,7 +160,7 @@ const styles = StyleSheet.create({
     },
     titleButtonBox: {
         display: 'flex',
-        flexDirection: "row",
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end'
     },

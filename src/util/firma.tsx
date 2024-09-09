@@ -48,8 +48,8 @@ export const getRestakeAddress = () => {
 };
 
 export const getFirmaConfig = () => {
-    return getFirmaSDK().Config
-}
+    return getFirmaSDK().Config;
+};
 
 export const getChainInfo = async () => {
     try {
@@ -142,12 +142,12 @@ export const getTokenList = async (address: string) => {
     try {
         const list = await getFirmaSDK().Bank.getTokenBalanceList(address);
 
-        return list
+        return list;
     } catch (error) {
         console.log('getTokenList error : ', error);
         throw error;
     }
-}
+};
 
 export const getTokenBalance = async (address: string, denom: string) => {
     try {
@@ -309,19 +309,38 @@ export const getEstimateGasSendToken = async (walletName: string, address: strin
     }
 };
 
-export const getEstimateGasSendIBC = async (walletName: string, port: string, channel: string, denom: string, address: string, amount: number, decimal: number) => {
+export const getEstimateGasSendIBC = async (
+    walletName: string,
+    port: string,
+    channel: string,
+    denom: string,
+    address: string,
+    amount: number,
+    decimal: number
+) => {
     try {
         let wallet = await getDecryptWalletInfo(walletName);
         const _amount = convertAmountByDecimalToTx(amount, decimal);
         const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
-        const timeStamp = (Date.now() + 600000).toString() + "000000";
+        const timeStamp = (Date.now() + 600000).toString() + '000000';
         const timeoutTimeStamp = Long.fromString(timeStamp, true);
         const height = {
-            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(Long.fromNumber(1000)),
-            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
-        }
+            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
+                Long.fromNumber(1000)
+            ),
+            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true)
+        };
 
-        const gasEstimation = await getFirmaSDK().Ibc.getGasEstimationTransfer(wallet, port, channel, denom, _amount, address, height, timeoutTimeStamp);
+        const gasEstimation = await getFirmaSDK().Ibc.getGasEstimationTransfer(
+            wallet,
+            port,
+            channel,
+            denom,
+            _amount,
+            address,
+            height,
+            timeoutTimeStamp
+        );
         return gasEstimation;
     } catch (error) {
         throw error;
@@ -339,11 +358,10 @@ export const getEstimateGasSendCW20 = async (walletName: string, contract: strin
     }
 };
 
-
 export const getEstimateGasSendCW721 = async (walletName: string, contract: string, address: string, tokenId: string) => {
     try {
         const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Cw721.getGasEstimationTransfer(wallet, contract, address, tokenId)
+        const gasEstimation = await getFirmaSDK().Cw721.getGasEstimationTransfer(wallet, contract, address, tokenId);
         return gasEstimation;
     } catch (error) {
         throw error;
@@ -379,7 +397,15 @@ export const sendFCT = async (recoverValue: string, target: string, amount: numb
     }
 };
 
-export const sendToken = async (recoverValue: string, target: string, amount: number, tokenId: string, decimal: number, estimatedGas: number, memo?: string) => {
+export const sendToken = async (
+    recoverValue: string,
+    target: string,
+    amount: number,
+    tokenId: string,
+    decimal: number,
+    estimatedGas: number,
+    memo?: string
+) => {
     try {
         let wallet = await recoverWallet(recoverValue);
         let send = await getFirmaSDK().Bank.sendToken(wallet, target, tokenId, amount, decimal, {
@@ -393,17 +419,29 @@ export const sendToken = async (recoverValue: string, target: string, amount: nu
     }
 };
 
-export const sendIBC = async (recoverValue: string, port: string, channel: string, denom: string, target: string, amount: number, decimal: number, estimatedGas: number, memo?: string) => {
+export const sendIBC = async (
+    recoverValue: string,
+    port: string,
+    channel: string,
+    denom: string,
+    target: string,
+    amount: number,
+    decimal: number,
+    estimatedGas: number,
+    memo?: string
+) => {
     try {
         let wallet = await recoverWallet(recoverValue);
         const _amount = convertAmountByDecimalToTx(amount, decimal);
         const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
-        const timeStamp = (Date.now() + 600000).toString() + "000000";
+        const timeStamp = (Date.now() + 600000).toString() + '000000';
         const timeoutTimeStamp = Long.fromString(timeStamp, true);
         const height = {
-            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(Long.fromNumber(1000)),
-            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
-        }
+            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
+                Long.fromNumber(1000)
+            ),
+            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true)
+        };
         let send = await getFirmaSDK().Ibc.transfer(wallet, port, channel, denom, _amount, target, height, timeoutTimeStamp, {
             memo: memo,
             gas: estimatedGas,
@@ -500,7 +538,7 @@ export const getValidators = async () => {
         let nextKey: string = validatorList.pagination.next_key;
 
         while (nextKey !== null) {
-            const nextValidatorList = await getFirmaSDK().Staking.getValidatorList("" as StakingValidatorStatus, nextKey);
+            const nextValidatorList = await getFirmaSDK().Staking.getValidatorList('' as StakingValidatorStatus, nextKey);
             const nextDataList = nextValidatorList.dataList;
             nextKey = nextValidatorList.pagination.next_key;
 
@@ -526,7 +564,7 @@ export const getSigningInfo = async (address: string) => {
     try {
         const result = await getFirmaSDK().Slashing.getSigningInfo(address);
         return result;
-    } catch (error) { }
+    } catch (error) {}
 };
 
 export const getValidatorFromAddress = async (address: string) => {
@@ -812,8 +850,8 @@ export const getStaking = async (address: string) => {
         const delegated = convertToFctNumber(
             delegationBalanceList.length > 0
                 ? delegationBalanceList.reduce((prev: string, current: string) => {
-                    return (convertNumber(prev) + convertNumber(current)).toString();
-                })
+                      return (convertNumber(prev) + convertNumber(current)).toString();
+                  })
                 : 0
         );
 
@@ -829,8 +867,8 @@ export const getStaking = async (address: string) => {
         const undelegate = convertToFctNumber(
             undelegationBalanceList.length > 0
                 ? undelegationBalanceList.reduce((prev: string, current: string) => {
-                    return (convertNumber(prev) + convertNumber(current)).toString();
-                })
+                      return (convertNumber(prev) + convertNumber(current)).toString();
+                  })
                 : 0
         );
 
@@ -911,27 +949,27 @@ export const getCW20Balance = async (contract: string, address: string) => {
         console.log(error);
         throw error;
     }
-}
+};
 
 export const getCW20TokenInfo = async (contract: string) => {
     try {
         const info = await getFirmaSDK().Cw20.getTokenInfo(contract);
-        return info
+        return info;
     } catch (error) {
         console.log(error);
         throw error;
     }
-}
+};
 
 export const getCW20TokenMarketingInfo = async (contract: string) => {
     try {
         const info = await getFirmaSDK().Cw20.getMarketingInfo(contract);
-        return info
+        return info;
     } catch (error) {
         console.log(error);
         throw error;
     }
-}
+};
 
 export const getCW721NftIdList = async (contract: string, address: string, startId: string) => {
     try {
@@ -941,8 +979,7 @@ export const getCW721NftIdList = async (contract: string, address: string, start
         console.log(error);
         throw error;
     }
-}
-
+};
 
 export const getCW721NFTItemFromId = async (contract: string, id: string) => {
     try {
@@ -954,21 +991,43 @@ export const getCW721NFTItemFromId = async (contract: string, id: string) => {
     }
 };
 
-export const sendCW20 = async (recoverValue: string, target: string, amount: string, estimatedGas: number, contract: string, memo: string) => {
+export const sendCW20 = async (
+    recoverValue: string,
+    target: string,
+    amount: string,
+    estimatedGas: number,
+    contract: string,
+    memo: string
+) => {
     try {
         const wallet = await recoverWallet(recoverValue);
         const _amount = await convertCW20Amount(contract, amount);
-        const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, { memo: memo, gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
+        const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, {
+            memo: memo,
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas)
+        });
         return send;
     } catch (error) {
         throw error;
     }
 };
 
-export const sendCW721NFT = async (recoverValue: string, target: string, tokenId: string, estimatedGas: number, contract: string, memo: string) => {
+export const sendCW721NFT = async (
+    recoverValue: string,
+    target: string,
+    tokenId: string,
+    estimatedGas: number,
+    contract: string,
+    memo: string
+) => {
     try {
         const wallet = await recoverWallet(recoverValue);
-        const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, { memo: memo, gas: estimatedGas, fee: getFeesFromGas(estimatedGas) })
+        const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, {
+            memo: memo,
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas)
+        });
         return send;
     } catch (error) {
         throw error;
@@ -983,28 +1042,28 @@ export const convertCW20Amount = async (contract: string, amount: string) => {
     } catch (error) {
         throw error;
     }
-}
+};
 
-export type ValidCWType = 'DEFAULT' | 'NON_EXIST' | 'CW20' | 'CW721' | 'ERROR'
+export type ValidCWType = 'DEFAULT' | 'NON_EXIST' | 'CW20' | 'CW721' | 'ERROR';
 export const verifyCWContract = async (contract: string): Promise<ValidCWType> => {
     try {
         await getCWContractInfo(contract);
     } catch (error) {
-        return 'NON_EXIST'
+        return 'NON_EXIST';
     }
 
     try {
         await getCW20ContractInfo(contract);
         return 'CW20';
     } catch (error) {
-        console.log("Error in CW20 check:", error);
+        console.log('Error in CW20 check:', error);
     }
 
     try {
         await getCW721ContractInfo(contract);
-        return 'CW721'
+        return 'CW721';
     } catch (error) {
-        console.log("Error in Cw721 check:", error);
+        console.log('Error in Cw721 check:', error);
         return 'ERROR';
     }
 };
@@ -1012,12 +1071,12 @@ export const verifyCWContract = async (contract: string): Promise<ValidCWType> =
 export const getCWContractInfo = async (contract: string) => {
     try {
         const result = await getFirmaSDK().CosmWasm.getContractInfo(contract);
-        return result
+        return result;
     } catch (error) {
         console.log(error);
-        throw error
+        throw error;
     }
-}
+};
 
 export const getCW20ContractInfo = async (contract: string) => {
     try {
@@ -1027,21 +1086,20 @@ export const getCW20ContractInfo = async (contract: string) => {
         console.log(error);
         throw error;
     }
-}
+};
 
 export const getCW20ExtraInfo = async (contract: string) => {
     try {
         const marketing = await getFirmaSDK().Cw20.getMarketingInfo(contract);
 
         return {
-            marketing,
-        }
-
+            marketing
+        };
     } catch (error) {
         console.log(error);
         throw error;
     }
-}
+};
 
 export const getCW721ContractInfo = async (contract: string) => {
     try {
@@ -1051,7 +1109,7 @@ export const getCW721ContractInfo = async (contract: string) => {
         console.log(error);
         throw error;
     }
-}
+};
 
 export const getCW721TotalNFTs = async (contract: string) => {
     try {
@@ -1061,23 +1119,23 @@ export const getCW721TotalNFTs = async (contract: string) => {
         return {
             totalSupply,
             totalNFTIds
-        }
+        };
     } catch (error) {
         console.log(error);
         throw error;
     }
-}
+};
 
-export const getCW721NFTImage = async ({ contractAddress, tokenId }: { contractAddress: string, tokenId: string }) => {
+export const getCW721NFTImage = async ({ contractAddress, tokenId }: { contractAddress: string; tokenId: string }) => {
     try {
         const tokenURI = await firmaSDK.Cw721.getNftTokenUri(contractAddress, tokenId);
         const response = await fetch(tokenURI);
         const metadata = await response.json();
-        const imageURI = metadata.imageURI || "";
+        const imageURI = metadata.imageURI || '';
 
-        return imageURI
+        return imageURI;
     } catch (error) {
         console.log(error);
-        return ''
+        return '';
     }
-}
+};
