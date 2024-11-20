@@ -1,4 +1,5 @@
 import 'text-encoding-polyfill';
+import 'react-native-get-random-values';
 import './shim.js';
 import { AppRegistry } from 'react-native';
 import App from './src/App';
