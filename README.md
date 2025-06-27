@@ -11,15 +11,17 @@
 -   Node.JS: v16.20.2
 -   OpenJDK: 11.0.24
 
-### 2. install
+### 2. Install
 
 > **Do not remove .lock files for no reason.**
 
 1. Create a project with git clone.
 
-2. Install modules.
+2. Install dependency.
 
 ```bash
+# Before proceed, set "Global" node version to v16.20.2
+# Because metro open new terminal windows we cannot change, It the global verions is not v16 bundling would fail.
 npm install
 ```
 
@@ -30,6 +32,11 @@ cd ios
 pod install
 cd ..
 ```
+
+5. Test iOS build with XCode
+
+-   Open project with xcode and test build.
+-   Some error could occur but most of those are not critical and easy to fix.
 
 ### 3. Run
 
