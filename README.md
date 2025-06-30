@@ -8,20 +8,19 @@
 
 ### 1. Requirements
 
--   Node.JS: v16.20.2
+-   Node.JS: v18.20.6
 -   OpenJDK: 11.0.24
 
-### 2. Install
+### 2. install
 
 > **Do not remove .lock files for no reason.**
 
 1. Create a project with git clone.
 
-2. Install dependency.
+2. Install modules.
 
 ```bash
-# Before proceed, set "Global" node version to v16.20.2
-# Because metro open new terminal windows we cannot change, It the global verions is not v16 bundling would fail.
+nvm use
 npm install
 ```
 

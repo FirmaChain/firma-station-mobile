@@ -22,7 +22,7 @@ module.exports = {
             domain: require.resolve('domain-browser'),
             http: require.resolve('@tradle/react-native-http'),
             https: require.resolve('@tradle/react-native-http'),
-            os: require.resolve('react-native-os'),
+            // os: require.resolve('react-native-os'),
             path: require.resolve('path-browserify'),
             querystring: require.resolve('querystring-es3'),
             fs: require.resolve('react-native-level-fs'),
