@@ -96,7 +96,7 @@
         "@react-native-community/eslint-config": "^2.0.0",
         "@types/crypto-js": "^4.1.1",
         "@types/jest": "^26.0.23",
-        "@types/node": "^22.9.0",
+        "@types/node": "18.19.113",
         "@types/react": "^18.3.23",
         "@types/react-native": "^0.70.0",
         "@types/react-native-vector-icons": "^6.4.10",
@@ -123,5 +123,6 @@
             "json",
             "node"
         ]
-    }
+    },
+    "packageManager": "yarn@4.9.2"
 }

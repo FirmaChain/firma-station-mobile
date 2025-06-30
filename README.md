@@ -21,7 +21,7 @@
 
 ```bash
 nvm use
-npm install
+yarn install
 ```
 
 4. Install pod modules for iOS
@@ -40,6 +40,6 @@ cd ..
 ### 3. Run
 
 ```bash
-npm run ios
-npm run android
+yarn run ios
+yarn run android
 ```
