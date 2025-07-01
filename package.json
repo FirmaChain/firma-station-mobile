@@ -1,6 +1,6 @@
 {
     "name": "firma-station-mobile",
-    "version": "1.0.27",
+    "version": "1.0.28",
     "private": true,
     "scripts": {
         "android": "react-native run-android",
@@ -32,7 +32,7 @@
         "buffer": "^4.9.2",
         "console-browserify": "^1.2.0",
         "constants-browserify": "^1.0.0",
-        "crypto-js": "^4.2.0",
+        "crypto-js": "3.3.0",
         "deprecated-react-native-prop-types": "^5.0.0",
         "dns.js": "^1.0.1",
         "domain-browser": "^1.2.0",

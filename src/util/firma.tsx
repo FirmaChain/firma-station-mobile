@@ -518,7 +518,6 @@ export const getSlashingState = async () => {
 export const getBankSupply = async () => {
     try {
         const denom = TOKEN_DENOM();
-        console.log('denom', denom);
 
         const supply = await getFirmaSDK().Bank.getTokenSupply(denom);
         return convertNumber(supply);

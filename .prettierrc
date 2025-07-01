@@ -2,9 +2,9 @@
     "bracketSpacing": true,
     "printWidth": 140,
     "singleQuote": true,
-    "trailingComma": "none",
+    "trailingComma": "es5",
     "tabWidth": 4,
     "useTabs": false,
     "arrowParens": "avoid",
-    "bracketSameLine": true,
+    "bracketSameLine": true
 }

@@ -64,3 +64,6 @@ config.ts
 
 #Gemfile
 Gemfile.lock
+
+.yarn
+!.yarn/releases

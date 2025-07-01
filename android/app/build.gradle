@@ -37,8 +37,8 @@ android {
         missingDimensionStrategy 'react-native-camera', 'mlkit', 'general'
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 36
-        versionName "1.0.27"
+        versionCode 42
+        versionName "1.0.28"
 
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         if (isNewArchitectureEnabled()) {
