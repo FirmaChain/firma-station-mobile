@@ -6,7 +6,7 @@ import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber, wait } f
 import { getDecryptPassword, getRecoverValue } from './wallet';
 import { TOKEN_DENOM } from '@/constants/common';
 import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
-import Long from 'long';
+// import Long from 'long';
 
 export interface IWallet {
     name?: string;
@@ -154,8 +154,8 @@ export const getTokenBalance = async (address: string, denom: string) => {
         let balance = 0;
         let allList = await getFirmaSDK().Bank.getTokenBalanceList(address);
         allList
-            .filter((token) => token.denom === denom)
-            .map((value) => {
+            .filter(token => token.denom === denom)
+            .map(value => {
                 return (balance += Number(value.amount));
             });
 
@@ -178,7 +178,7 @@ const organizeWallet = async (wallet: FirmaWalletService) => {
             mnemonic: _mnemonic,
             privateKey: _privateKey,
             address: _address,
-            balance: _balance
+            balance: _balance,
         };
         return result;
     } catch (error) {
@@ -323,12 +323,14 @@ export const getEstimateGasSendIBC = async (
         const _amount = convertAmountByDecimalToTx(amount, decimal);
         const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
         const timeStamp = (Date.now() + 600000).toString() + '000000';
-        const timeoutTimeStamp = Long.fromString(timeStamp, true);
+        const timeoutTimeStamp = BigInt(timeStamp); // Long.fromString(timeStamp, true);
         const height = {
-            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
-                Long.fromNumber(1000)
-            ),
-            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true)
+            revisionHeight: BigInt(clientState.identified_client_state.client_state.latest_height.revision_height) + BigInt(1000),
+            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
+            //     Long.fromNumber(1000)
+            // ),
+            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number),
+            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
         };
 
         const gasEstimation = await getFirmaSDK().Ibc.getGasEstimationTransfer(
@@ -389,7 +391,7 @@ export const sendFCT = async (recoverValue: string, target: string, amount: numb
         let send = await getFirmaSDK().Bank.send(wallet, target, amount, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
         return send;
     } catch (error) {
@@ -411,7 +413,7 @@ export const sendToken = async (
         let send = await getFirmaSDK().Bank.sendToken(wallet, target, tokenId, amount, decimal, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
         return send;
     } catch (error) {
@@ -435,17 +437,19 @@ export const sendIBC = async (
         const _amount = convertAmountByDecimalToTx(amount, decimal);
         const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
         const timeStamp = (Date.now() + 600000).toString() + '000000';
-        const timeoutTimeStamp = Long.fromString(timeStamp, true);
+        const timeoutTimeStamp = BigInt(timeStamp); // Long.fromString(timeStamp, true);
         const height = {
-            revisionHeight: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
-                Long.fromNumber(1000)
-            ),
-            revisionNumber: Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true)
+            revisionHeight: BigInt(clientState.identified_client_state.client_state.latest_height.revision_height) + BigInt(1000),
+            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
+            //     Long.fromNumber(1000)
+            // ),
+            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number),
+            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
         };
         let send = await getFirmaSDK().Ibc.transfer(wallet, port, channel, denom, _amount, target, height, timeoutTimeStamp, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
         return send;
     } catch (error) {
@@ -514,6 +518,8 @@ export const getSlashingState = async () => {
 export const getBankSupply = async () => {
     try {
         const denom = TOKEN_DENOM();
+        console.log('denom', denom);
+
         const supply = await getFirmaSDK().Bank.getTokenSupply(denom);
         return convertNumber(supply);
     } catch (error) {
@@ -599,10 +605,10 @@ export const getStakingFromvalidator = async (address: string, validatorAddress:
         const balance = await getBalanceFromAdr(address);
 
         const totalReward = await getTotalReward(address);
-        const reward = totalReward.rewards.find((value) => value.validator_address === validatorAddress);
+        const reward = totalReward.rewards.find(value => value.validator_address === validatorAddress);
 
         const delegateListOrigin = await getDelegateList(address);
-        const delegation = delegateListOrigin.find((value) => value.delegation.validator_address === validatorAddress);
+        const delegation = delegateListOrigin.find(value => value.delegation.validator_address === validatorAddress);
 
         const available = convertToFctNumber(convertNumber(balance));
         const delegated = convertToFctNumber(delegation ? delegation.balance.amount : 0);
@@ -613,7 +619,7 @@ export const getStakingFromvalidator = async (address: string, validatorAddress:
             available,
             delegated,
             undelegate,
-            stakingReward
+            stakingReward,
         };
 
         return values;
@@ -627,7 +633,7 @@ export const delegate = async (recoverValue: string, address: string, amount: nu
         let wallet = await recoverWallet(recoverValue);
         let result = await getFirmaSDK().Staking.delegate(wallet, address, amount, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
         return result;
     } catch (error) {
@@ -640,7 +646,7 @@ export const redelegate = async (recoverValue: string, srcAddress: string, dstAd
         let wallet = await recoverWallet(recoverValue);
         let result = await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
         return result;
     } catch (error) {
@@ -653,7 +659,7 @@ export const undelegate = async (recoverValue: string, address: string, amount: 
         let wallet = await recoverWallet(recoverValue);
         let result = await getFirmaSDK().Staking.undelegate(wallet, address, amount, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
 
         return result;
@@ -670,7 +676,7 @@ export const grant = async (recoverValue: string, validatorAddress: string[], ma
 
         let result = await getFirmaSDK().Authz.grantStakeAuthorization(wallet, getRestakeAddress(), validatorAddress, 1, date, maxTokens, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
 
         return result;
@@ -684,7 +690,7 @@ export const revoke = async (recoverValue: string, estimatedGas: number) => {
         let wallet = await recoverWallet(recoverValue);
         let result = await getFirmaSDK().Authz.revokeStakeAuthorization(wallet, getRestakeAddress(), 1, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
 
         return result;
@@ -698,7 +704,7 @@ export const withdrawRewards = async (recoverValue: string, address: string, est
         let wallet = await recoverWallet(recoverValue);
         const result = await getFirmaSDK().Distribution.withdrawAllRewards(wallet, address, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
 
         return result;
@@ -714,7 +720,7 @@ export const withdrawAllRewards = async (recoverValue: string, estimatedGas: num
         const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList;
         const result = await getFirmaSDK().Distribution.withdrawAllRewardsFromAllValidator(wallet, delegationList, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
 
         return result;
@@ -728,7 +734,7 @@ export const voting = async (recoverValue: string, proposalId: number, votingOpt
         let wallet = await recoverWallet(recoverValue);
         const result = await getFirmaSDK().Gov.vote(wallet, proposalId, votingOpt, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
 
         return result;
@@ -742,16 +748,16 @@ export const getDelegations = async (address: string) => {
         const totalReward = await getTotalReward(address);
         const delegateListOrigin = await getDelegateList(address);
         const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
-        const delegateList = delegateListSort.map((value) => {
+        const delegateList = delegateListSort.map(value => {
             return {
                 validatorAddress: value.delegation.validator_address,
                 delegatorAddress: value.delegation.delegator_address,
                 amount: convertNumber(value.balance.amount),
                 reward: convertNumber(
-                    totalReward.rewards.find((adr) => adr.validator_address === value.delegation.validator_address)?.amount
+                    totalReward.rewards.find(adr => adr.validator_address === value.delegation.validator_address)?.amount
                 ),
                 moniker: value.delegation.validator_address,
-                avatarURL: ''
+                avatarURL: '',
             };
         });
         return delegateList;
@@ -766,8 +772,8 @@ export const getRedelegations = async (address: string) => {
         const redelegationListOrigin = await getRedelegationList(address);
 
         let redelegationList: IRedelegationInfo[] = [];
-        redelegationListOrigin.map((redelegation) => {
-            redelegation.entries.map((entry) => {
+        redelegationListOrigin.map(redelegation => {
+            redelegation.entries.map(entry => {
                 redelegationList.push({
                     srcAddress: redelegation.redelegation.validator_src_address,
                     srcMoniker: '',
@@ -776,7 +782,7 @@ export const getRedelegations = async (address: string) => {
                     dstMoniker: '',
                     dstAvatarURL: '',
                     balance: convertNumber(entry.redelegation_entry.shares_dst),
-                    completionTime: entry.redelegation_entry.completion_time
+                    completionTime: entry.redelegation_entry.completion_time,
                 });
             });
         });
@@ -797,14 +803,14 @@ export const getUndelegations = async (address: string) => {
         const undelegationListOrigin = await getUndelegateList(address);
 
         let undelegationList: IUndelegationInfo[] = [];
-        undelegationListOrigin.map((undelegation) => {
-            undelegation.entries.map((entry) => {
+        undelegationListOrigin.map(undelegation => {
+            undelegation.entries.map(entry => {
                 undelegationList.push({
                     validatorAddress: undelegation.validator_address,
                     moniker: '',
                     avatarURL: '',
                     balance: convertNumber(entry.balance),
-                    completionTime: entry.completion_time
+                    completionTime: entry.completion_time,
                 });
             });
         });
@@ -837,14 +843,14 @@ export const getStaking = async (address: string) => {
             getBalanceFromAdr(address),
             getTotalReward(address),
             getDelegateList(address),
-            getUndelegateList(address)
+            getUndelegateList(address),
         ]);
 
         const available = convertNumber(balance);
         const stakingReward = convertToFctNumber(totalReward.total);
 
         const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
-        const delegationBalanceList = delegateListSort.map((value) => {
+        const delegationBalanceList = delegateListSort.map(value => {
             return value.balance.amount;
         });
         const delegated = convertToFctNumber(
@@ -855,9 +861,9 @@ export const getStaking = async (address: string) => {
                 : 0
         );
 
-        const undelegationBalanceList = undelegateListOrigin.map((value) => {
+        const undelegationBalanceList = undelegateListOrigin.map(value => {
             return value.entries
-                .map((value) => {
+                .map(value => {
                     return value.balance;
                 })
                 .reduce((prev: string, current: string) => {
@@ -876,7 +882,7 @@ export const getStaking = async (address: string) => {
             available,
             delegated,
             undelegate,
-            stakingReward
+            stakingReward,
         };
         return staking;
     } catch (error) {
@@ -1005,7 +1011,7 @@ export const sendCW20 = async (
         const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
         return send;
     } catch (error) {
@@ -1026,7 +1032,7 @@ export const sendCW721NFT = async (
         const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
+            fee: getFeesFromGas(estimatedGas),
         });
         return send;
     } catch (error) {
@@ -1093,7 +1099,7 @@ export const getCW20ExtraInfo = async (contract: string) => {
         const marketing = await getFirmaSDK().Cw20.getMarketingInfo(contract);
 
         return {
-            marketing
+            marketing,
         };
     } catch (error) {
         console.log(error);
@@ -1118,7 +1124,7 @@ export const getCW721TotalNFTs = async (contract: string) => {
 
         return {
             totalSupply,
-            totalNFTIds
+            totalNFTIds,
         };
     } catch (error) {
         console.log(error);
