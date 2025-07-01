@@ -7,12 +7,12 @@ export interface IKeyValue {
 }
 
 const LABELS: IKeyValue = TRANSACTION_LABELS;
-let EXPLORER = CHAIN_NETWORK['MainNet'].EXPLORER;
-let DENOM = CHAIN_NETWORK['MainNet'].FIRMACHAIN_CONFIG.denom;
-let _CHAIN_PREFIX = CHAIN_NETWORK['MainNet'].CHAIN_NAME_FOR_COINGECKO;
-let _CHAIN_SYMBOL = CHAIN_NETWORK['MainNet'].CHAIN_SYMBOL;
-let _BLOCKS_PER_YEAR = CHAIN_NETWORK['MainNet'].BLOCKS_PER_YEAR;
-let _DEFAULT_MINT_INFLATION = CHAIN_NETWORK['MainNet'].DEFAULT_MINT_INFLATION;
+let EXPLORER = CHAIN_NETWORK.MainNet.EXPLORER;
+let DENOM = CHAIN_NETWORK.MainNet.FIRMACHAIN_CONFIG.denom;
+let _CHAIN_PREFIX = CHAIN_NETWORK.MainNet.CHAIN_NAME_FOR_COINGECKO;
+let _CHAIN_SYMBOL = CHAIN_NETWORK.MainNet.CHAIN_SYMBOL;
+let _BLOCKS_PER_YEAR = CHAIN_NETWORK.MainNet.BLOCKS_PER_YEAR;
+let _DEFAULT_MINT_INFLATION = CHAIN_NETWORK.MainNet.DEFAULT_MINT_INFLATION;
 
 export const setNetworkData = (network: string) => {
     EXPLORER = CHAIN_NETWORK[network].EXPLORER;
@@ -96,12 +96,12 @@ export const FAVORITE_REMOVE_SUCCESS = 'Successfully removed favorite.';
 
 export const BIOMETRICS_PERMISSION_ALERT = {
     title: 'Biometrics not authorized',
-    desc: 'Move to settings to enable Biometrics permissions?'
+    desc: 'Move to settings to enable Biometrics permissions?',
 };
 
 export const CAMERA_PERMISSION_ALERT = {
     title: 'Camera not authorized',
-    desc: 'Move to settings to enable camera permissions?'
+    desc: 'Move to settings to enable camera permissions?',
 };
 
 export const LOADING_DATA_NOTICE = 'Loading data. Please wait...';
@@ -117,7 +117,7 @@ export const FEE_INSUFFICIENT_NOTICE = 'The fee is insufficient. Please check th
 export const ADDRESS_QRCODE_MODAL_TEXT = {
     title: 'Address',
     desc: 'Description for QR code',
-    confirmTitle: 'Ok'
+    confirmTitle: 'Ok',
 };
 
 export const QRCODE_SCANNER_MODAL_TEXT = 'Please read the QR code.';
@@ -126,7 +126,7 @@ export const CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT = {
     title: 'Use Bio Auth',
     desc: 'Use your Biometric for faster, easeier access to your account',
     confirmTitle: 'Enable',
-    cancelTitle: 'Later'
+    cancelTitle: 'Later',
 };
 
 export const CREATE_WALLET_FAILED = 'Wallet creation failed. Please try again.';
@@ -141,13 +141,13 @@ export const HISTORY_NOT_EXIST = "There's no history yet.";
 export const SETTING_BIO_AUTH_MODAL_TEXT = {
     title: 'Use Bio Auth',
     desc: 'Enter your password to turn on Bio Auth.',
-    confirmTitle: 'Confirm'
+    confirmTitle: 'Confirm',
 };
 
 export const SETTING_DELETE_WALLET_TEXT = {
     title: 'Delete wallet',
     desc: 'Are you sure you want to delete this wallet?\nYour wallet cannot be recovered without seed phrase.',
-    confirmTitle: 'Delete'
+    confirmTitle: 'Delete',
 };
 
 // delegate
@@ -161,19 +161,19 @@ export const WARNING_FOR_MAX_AMOUNT_TEST = 'If the maximum value is transmitted,
 export const MAXIMUM_UNDELEGATE_NOTICE_TEXT = 'A maximum of 7 undelegations are allowed per validator during the 21 day link period.';
 export const UNDELEGATE_NOTICE_TEXT = [
     "A 21 day period is required when undelegating your tokens. During the 21 day period, you will not receive any rewards. And you can't send and delegate that amount during 21 days.",
-    MAXIMUM_UNDELEGATE_NOTICE_TEXT
+    MAXIMUM_UNDELEGATE_NOTICE_TEXT,
 ];
 
 export const NO_DELEGATION = 'No Delegation';
 export const REDELEGATE_NOTICE_TEXT = [
     'Redelegated supply will be linked for a period of 21 days.',
     'A maximum of 7 redelegations are allowed. ',
-    'Until the 21 day link period passes, you cannot redelegate your redelgated supply to another validator.'
+    'Until the 21 day link period passes, you cannot redelegate your redelgated supply to another validator.',
 ];
 
 export const RESTAKE_NOTICE_TEXT = [
     'Performs a restake to all validators currently being delegated.',
-    'If you delegate to a new Validator after activating Restake, you must update Restake.'
+    'If you delegate to a new Validator after activating Restake, you must update Restake.',
 ];
 
 export const DAPP_SERVICE_CONNECTION = 'SERVICE CONNECTION REQUEST';
@@ -192,9 +192,9 @@ export const DAPP_SERVICE_REGIST = 'Register for a new Dapp service.';
 export const DAPP_SERVICE_REGIST_SUCCESS = 'The service has been registered.\nAvailable on the Dapps tab.';
 export const DAPP_SERVICE_EXIST_NOTICE = 'This service is already registered.';
 
-export const CW_TX_NOTICE_TEXT = `A transaction fee of 0.02 ${_CHAIN_SYMBOL} is required to transfer this token. Ensure you have enough ${_CHAIN_SYMBOL}.`
+export const CW_TX_NOTICE_TEXT = `A transaction fee of 0.02 ${_CHAIN_SYMBOL} is required to transfer this token. Ensure you have enough ${_CHAIN_SYMBOL}.`;
 
-export const IBC_OSMO_ADDRESS_INVALID_TEXT = `Only addresses starting with "osmo1" are accepted.`
+export const IBC_OSMO_ADDRESS_INVALID_TEXT = 'Only addresses starting with "osmo1" are accepted.';
 
 export const CW20_NOT_EXIST = 'No CW20 contracts\nhave been added.';
 export const CW721_NOT_EXIST = 'No CW721 contracts\nhave been added.';
@@ -203,7 +203,7 @@ export const CW721_REMOVE_SUCCESS = 'Successfully removed from list.';
 export const CW20_REMOVE_SUCCESS = 'Successfully removed from list.';
 export const EXIST_CW_CONTRACT_TO_LIST = 'Contract address already registered.';
 export const NON_EXIST_CW_CONTRACT = 'Contract information does not exist.';
-export const ERROR_CW_CONTRACT = 'The contract address is invalid.'
+export const ERROR_CW_CONTRACT = 'The contract address is invalid.';
 
 // transaction
 export const TRANSACTION_TYPE: IKeyValue = {
@@ -226,21 +226,21 @@ export const TRANSACTION_TYPE: IKeyValue = {
 export const RESTAKE_STATUS: IKeyValue = {
     NO_DELEGATION: {
         title: 'Not yet delegated',
-        color: RestakeNoDelegationColor
+        color: RestakeNoDelegationColor,
     },
     ACTIVE: {
         title: 'Active',
-        color: RestakeActiveColor
+        color: RestakeActiveColor,
     },
     INACTIVE: {
         title: 'Inactive',
-        color: RestakeInactiveColor
-    }
+        color: RestakeInactiveColor,
+    },
 };
 
 export const RESTAKE_TYPE: IKeyValue = {
     GRANT: 'Grant stake authorization',
-    REVOKE: 'Revoke stake authorization'
+    REVOKE: 'Revoke stake authorization',
 };
 
 // transaction & unlock
@@ -256,7 +256,7 @@ export const PROPOSAL_STATUS: IKeyValue = {
     PROPOSAL_STATUS_PASSED: 'PASSED',
     PROPOSAL_STATUS_REJECTED: 'REJECTED',
     PROPOSAL_STATUS_FAILED: 'FAILED',
-    PROPOSAL_STATUS_INVALID: 'INVALID'
+    PROPOSAL_STATUS_INVALID: 'INVALID',
 };
 
 export const STATUS_COLOR: IKeyValue = {
@@ -265,14 +265,14 @@ export const STATUS_COLOR: IKeyValue = {
     PROPOSAL_STATUS_INVALID: '#2BA891',
     PROPOSAL_STATUS_PASSED: '#F17047',
     PROPOSAL_STATUS_REJECTED: '#DA4B4B',
-    PROPOSAL_STATUS_FAILED: '#9438DC'
+    PROPOSAL_STATUS_FAILED: '#9438DC',
 };
 
 export const PROPOSAL_MESSAGE_TYPE: IKeyValue = {
     '/cosmos.gov.v1beta1.TextProposal': 'Text',
     '/cosmos.params.v1beta1.ParameterChangeProposal': 'ParameterChange',
     '/cosmos.distribution.v1beta1.CommunityPoolSpendProposal': 'CommunityPoolSpend',
-    '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal': 'SoftwareUpgrade'
+    '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal': 'SoftwareUpgrade',
 };
 
 export const PROPOSAL_MESSAGE_TYPE_TEXT = 'Text';
@@ -308,7 +308,7 @@ export const TYPE_COLORS: IKeyValue = {
     seventeen: '#E99E8E',
     eighteen: '#F0A479',
     nineteen: '#D37763',
-    twenty: '#D9C788'
+    twenty: '#D9C788',
 };
 
 export const TRANSACTION_TYPE_MODEL: IKeyValue = {
@@ -316,252 +316,256 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
     // staking
     // ========================
     '/cosmos.staking.v1beta1.MsgDelegate': {
-        tagTheme: TYPE_COLORS['one'],
-        tagDisplay: LABELS['txDelegateLabel']
+        tagTheme: TYPE_COLORS.one,
+        tagDisplay: LABELS.txDelegateLabel,
     },
     '/cosmos.staking.v1beta1.MsgBeginRedelegate': {
-        tagTheme: TYPE_COLORS['one'],
-        tagDisplay: LABELS['txRedelegateLabel']
+        tagTheme: TYPE_COLORS.one,
+        tagDisplay: LABELS.txRedelegateLabel,
     },
     '/cosmos.staking.v1beta1.MsgUndelegate': {
-        tagTheme: TYPE_COLORS['one'],
-        tagDisplay: LABELS['txUndelegateLabel']
+        tagTheme: TYPE_COLORS.one,
+        tagDisplay: LABELS.txUndelegateLabel,
     },
     '/cosmos.staking.v1beta1.MsgCreateValidator': {
-        tagTheme: TYPE_COLORS['one'],
-        tagDisplay: LABELS['txCreateValidatorLabel']
+        tagTheme: TYPE_COLORS.one,
+        tagDisplay: LABELS.txCreateValidatorLabel,
     },
     '/cosmos.staking.v1beta1.MsgEditValidator': {
-        tagTheme: TYPE_COLORS['one'],
-        tagDisplay: LABELS['txEditValidatorLabel']
+        tagTheme: TYPE_COLORS.one,
+        tagDisplay: LABELS.txEditValidatorLabel,
     },
     // ========================
     // bank
     // ========================
     '/cosmos.bank.v1beta1.MsgSend': {
-        tagTheme: TYPE_COLORS['two'],
-        tagDisplay: LABELS['txSendLabel']
+        tagTheme: TYPE_COLORS.two,
+        tagDisplay: LABELS.txSendLabel,
     },
     '/cosmos.bank.v1beta1.MsgMultiSend': {
-        tagTheme: TYPE_COLORS['two'],
-        tagDisplay: LABELS['txMultisendLabel']
+        tagTheme: TYPE_COLORS.two,
+        tagDisplay: LABELS.txMultisendLabel,
     },
     // ========================
     // crisis
     // ========================
     '/cosmos.crisis.v1beta1.MsgVerifyInvariant': {
-        tagTheme: TYPE_COLORS['three'],
-        tagDisplay: LABELS['txVerifyInvariantLabel']
+        tagTheme: TYPE_COLORS.three,
+        tagDisplay: LABELS.txVerifyInvariantLabel,
     },
     // ========================
     // slashing
     // ========================
     '/cosmos.slashing.v1beta1.MsgUnjail': {
-        tagTheme: TYPE_COLORS['five'],
-        tagDisplay: LABELS['txUnjailLabel']
+        tagTheme: TYPE_COLORS.five,
+        tagDisplay: LABELS.txUnjailLabel,
     },
     // ========================
     // distribution
     // ========================
     '/cosmos.distribution.v1beta1.MsgFundCommunityPool': {
-        tagTheme: TYPE_COLORS['six'],
-        tagDisplay: LABELS['txFundLabel']
+        tagTheme: TYPE_COLORS.six,
+        tagDisplay: LABELS.txFundLabel,
     },
     '/cosmos.distribution.v1beta1.MsgSetWithdrawAddress': {
-        tagTheme: TYPE_COLORS['six'],
-        tagDisplay: LABELS['txsetRewardAddressLabel']
+        tagTheme: TYPE_COLORS.six,
+        tagDisplay: LABELS.txsetRewardAddressLabel,
     },
     '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward': {
-        tagTheme: TYPE_COLORS['six'],
-        tagDisplay: LABELS['txWithdrawRewardLabel']
+        tagTheme: TYPE_COLORS.six,
+        tagDisplay: LABELS.txWithdrawRewardLabel,
     },
     '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission': {
-        tagTheme: TYPE_COLORS['six'],
-        tagDisplay: LABELS['txWithdrawCommissionLabel']
+        tagTheme: TYPE_COLORS.six,
+        tagDisplay: LABELS.txWithdrawCommissionLabel,
     },
     // ========================
     // governance
     // ========================
     '/cosmos.gov.v1beta1.MsgDeposit': {
-        tagTheme: TYPE_COLORS['seven'],
-        tagDisplay: LABELS['txDepositLabel']
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txDepositLabel,
     },
     '/cosmos.gov.v1beta1.MsgVote': {
-        tagTheme: TYPE_COLORS['seven'],
-        tagDisplay: LABELS['txVoteLabel']
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txVoteLabel,
     },
     '/cosmos.gov.v1beta1.MsgSubmitProposal': {
-        tagTheme: TYPE_COLORS['seven'],
-        tagDisplay: LABELS['txSubmitProposalLabel']
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txSubmitProposalLabel,
+    },
+    '/cosmos.gov.v1.MsgCancelProposal': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txCancelProposalLabel,
     },
     // ========================
     // ibc client
     // ========================
     '/ibc.core.client.v1.MsgCreateClient': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txCreateClientLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txCreateClientLabel,
     },
     '/ibc.core.client.v1.MsgUpdateClient': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txUpdateClientLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txUpdateClientLabel,
     },
     '/ibc.core.client.v1.MsgUpgradeClient': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txUpgradeClientLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txUpgradeClientLabel,
     },
     '/ibc.core.client.v1.MsgSubmitMisbehaviour': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txSubmitMisbehaviourLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txSubmitMisbehaviourLabel,
     },
     '/ibc.core.client.v1.Height': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txHeightLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txHeightLabel,
     },
     // ========================
     // ibc channel
     // ========================
     '/ibc.core.channel.v1.MsgRecvPacket': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txRecvPacketLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txRecvPacketLabel,
     },
     '/ibc.core.channel.v1.Channel': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txChannelLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txChannelLabel,
     },
     '/ibc.core.channel.v1.Counterparty': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txCounterpartyLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txCounterpartyLabel,
     },
     '/ibc.core.channel.v1.Packet': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txPacketLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txPacketLabel,
     },
     '/ibc.core.channel.v1.MsgAcknowledgement': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txAcknowledgementLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txAcknowledgementLabel,
     },
     '/ibc.core.channel.v1.MsgChannelCloseConfirm': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txChannelCloseConfirmLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txChannelCloseConfirmLabel,
     },
     '/ibc.core.channel.v1.MsgChannelCloseInit': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txChannelCloseInitLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txChannelCloseInitLabel,
     },
     '/ibc.core.channel.v1.MsgChannelOpenAck': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txChannelOpenAckLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txChannelOpenAckLabel,
     },
     '/ibc.core.channel.v1.MsgChannelOpenConfirm': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txChannelOpenConfirmLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txChannelOpenConfirmLabel,
     },
     '/ibc.core.channel.v1.MsgChannelOpenInit': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txChannelOpenInitLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txChannelOpenInitLabel,
     },
     '/ibc.core.channel.v1.MsgChannelOpenTry': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txChannelOpenTryLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txChannelOpenTryLabel,
     },
     '/ibc.core.channel.v1.MsgTimeout': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txTimeoutLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txTimeoutLabel,
     },
     '/ibc.core.channel.v1.MsgTimeoutOnClose': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txTimeoutOnCloseLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txTimeoutOnCloseLabel,
     },
     // ========================
     // ibc connection
     // ========================
     '/ibc.core.connection.v1.MsgConnectionOpenAck': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txConnectionOpenAckLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txConnectionOpenAckLabel,
     },
     '/ibc.core.connection.v1.MsgConnectionOpenConfirm': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txConnectionOpenConfirmLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txConnectionOpenConfirmLabel,
     },
     '/ibc.core.connection.v1.MsgConnectionOpenInit': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txConnectionOpenInitLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txConnectionOpenInitLabel,
     },
     '/ibc.core.connection.v1.MsgConnectionOpenTry': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txConnectionOpenTryLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txConnectionOpenTryLabel,
     },
     '/ibc.core.connection.v1.ConnectionEnd': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txConnectionEndLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txConnectionEndLabel,
     },
     '/ibc.core.connection.v1.Counterparty': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txCounterpartyLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txCounterpartyLabel,
     },
     '/ibc.core.connection.v1.Version': {
-        tagTheme: TYPE_COLORS['nine'],
-        tagDisplay: LABELS['txVersionLabel']
+        tagTheme: TYPE_COLORS.nine,
+        tagDisplay: LABELS.txVersionLabel,
     },
     // ========================
     // ibc transfer
     // ========================
     '/ibc.applications.transfer.v1.MsgTransfer': {
-        tagTheme: TYPE_COLORS['ten'],
-        tagDisplay: LABELS['txTransferLabel']
+        tagTheme: TYPE_COLORS.ten,
+        tagDisplay: LABELS.txTransferLabel,
     },
 
     // ========================
     // firmachain transfer
     // ========================
     '/firmachain.firmachain.nft.MsgMint': {
-        tagTheme: TYPE_COLORS['four'],
-        tagDisplay: LABELS['txNFTMintLabel']
+        tagTheme: TYPE_COLORS.four,
+        tagDisplay: LABELS.txNFTMintLabel,
     },
     '/firmachain.firmachain.nft.MsgTransfer': {
-        tagTheme: TYPE_COLORS['four'],
-        tagDisplay: LABELS['txNFTTransferLabel']
+        tagTheme: TYPE_COLORS.four,
+        tagDisplay: LABELS.txNFTTransferLabel,
     },
     '/firmachain.firmachain.nft.MsgBurn': {
-        tagTheme: TYPE_COLORS['four'],
-        tagDisplay: LABELS['txNFTBurnLabel']
+        tagTheme: TYPE_COLORS.four,
+        tagDisplay: LABELS.txNFTBurnLabel,
     },
     '/firmachain.firmachain.contract.MsgAddContractLog': {
-        tagTheme: TYPE_COLORS['four'],
-        tagDisplay: LABELS['txAddContractLogLabel']
+        tagTheme: TYPE_COLORS.four,
+        tagDisplay: LABELS.txAddContractLogLabel,
     },
     '/firmachain.firmachain.contract.MsgCreateContractFile': {
-        tagTheme: TYPE_COLORS['four'],
-        tagDisplay: LABELS['txCreateContractFileLabel']
+        tagTheme: TYPE_COLORS.four,
+        tagDisplay: LABELS.txCreateContractFileLabel,
     },
     '/cosmos.feegrant.v1beta1.MsgGrantAllowance': {
-        tagTheme: TYPE_COLORS['two'],
-        tagDisplay: LABELS['txFeegrantGrantLabel']
+        tagTheme: TYPE_COLORS.two,
+        tagDisplay: LABELS.txFeegrantGrantLabel,
     },
     '/cosmos.feegrant.v1beta1.MsgRevokeAllowance': {
-        tagTheme: TYPE_COLORS['three'],
-        tagDisplay: LABELS['txFeegrantRevokeLabel']
+        tagTheme: TYPE_COLORS.three,
+        tagDisplay: LABELS.txFeegrantRevokeLabel,
     },
     '/cosmos.authz.v1beta1.MsgGrant': {
-        tagTheme: TYPE_COLORS['two'],
-        tagDisplay: LABELS['txAuthzGrantLabel']
+        tagTheme: TYPE_COLORS.two,
+        tagDisplay: LABELS.txAuthzGrantLabel,
     },
     '/firmachain.firmachain.token.MsgCreateToken': {
-        tagTheme: TYPE_COLORS['two'],
-        tagDisplay: LABELS['txTokenCreateLabel']
+        tagTheme: TYPE_COLORS.two,
+        tagDisplay: LABELS.txTokenCreateLabel,
     },
     '/firmachain.firmachain.token.MsgMint': {
-        tagTheme: TYPE_COLORS['two'],
-        tagDisplay: LABELS['txTokenMintLabel']
+        tagTheme: TYPE_COLORS.two,
+        tagDisplay: LABELS.txTokenMintLabel,
     },
     '/firmachain.firmachain.token.MsgBurn': {
-        tagTheme: TYPE_COLORS['four'],
-        tagDisplay: LABELS['txTokenBurnLabel']
+        tagTheme: TYPE_COLORS.four,
+        tagDisplay: LABELS.txTokenBurnLabel,
     },
     '/firmachain.firmachain.token.MsgUpdateTokenURI': {
-        tagTheme: TYPE_COLORS['three'],
-        tagDisplay: LABELS['txTokenUpdateURILabel']
-    }
+        tagTheme: TYPE_COLORS.three,
+        tagDisplay: LABELS.txTokenUpdateURILabel,
+    },
 };
 
 export const CURRENCY_LIST = ['USD', 'KRW', 'SGD', 'IDR', 'THB', 'RUB', 'EUR', 'JPY', 'BTC', 'ETH'];
@@ -581,7 +585,7 @@ export const CHAIN_CURRENCY: IKeyValue = {
     BITS: 'Bits',
     SATS: 'Satoshi',
     XAG: 'Silver - Troy Ounce',
-    XAU: 'Gold - Troy Ounce'
+    XAU: 'Gold - Troy Ounce',
 };
 
 export const CURRENCY_SYMBOL: IKeyValue = {
@@ -694,5 +698,5 @@ export const CURRENCY_SYMBOL: IKeyValue = {
     VEF: 'Bs',
     VND: '₫',
     YER: '﷼',
-    ZWD: 'Z$'
+    ZWD: 'Z$',
 };
