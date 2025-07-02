@@ -1,18 +1,19 @@
-const { getDefaultConfig } = require('metro-config');
-const { resolver: defaultResolver } = getDefaultConfig.getDefaultValues();
+const { getDefaultConfig } = require('@react-native/metro-config');
+
+/**
+ * Metro configuration
+ * https://facebook.github.io/metro/docs/configuration
+ *
+ * @type {import('metro-config').MetroConfig}
+ */
+
+const config = getDefaultConfig(__dirname);
 
 module.exports = {
-    transformer: {
-        getTransformOptions: async () => ({
-            transform: {
-                experimentalImportSupport: false,
-                inlineRequires: true
-            }
-        })
-    },
+    ...config,
     resolver: {
-        ...defaultResolver,
-        sourceExts: [...defaultResolver.sourceExts, 'cjs'],
+        ...config.resolver,
+        sourceExts: [...config.resolver.sourceExts, 'cjs'],
         extraNodeModules: {
             zlib: require.resolve('browserify-zlib'),
             constants: require.resolve('constants-browserify'),
@@ -25,7 +26,7 @@ module.exports = {
             // os: require.resolve('react-native-os'),
             path: require.resolve('path-browserify'),
             querystring: require.resolve('querystring-es3'),
-            fs: require.resolve('react-native-level-fs'),
+            fs: require.resolve('react-native-fs'),
             _stream_transform: require.resolve('readable-stream/transform'),
             _stream_readable: require.resolve('readable-stream/readable'),
             _stream_writable: require.resolve('readable-stream/writable'),
@@ -41,7 +42,7 @@ module.exports = {
             buffer: require.resolve('buffer'),
             punycode: require.resolve('punycode'),
             string_decoder: require.resolve('string_decoder'),
-            url: require.resolve('url')
-        }
-    }
+            url: require.resolve('url'),
+        },
+    },
 };
