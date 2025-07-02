@@ -9,7 +9,7 @@
 ### 1. Requirements
 
 -   Node.JS: v18.20.6
--   OpenJDK: 11.0.24
+-   OpenJDK: 17.0.15
 
 ### 2. install
 

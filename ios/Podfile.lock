@@ -76,7 +76,7 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - hermes-engine (0.70.0)
-  - jail-monkey (2.8.3):
+  - jail-monkey (2.8.4):
     - React-Core
   - libevent (2.1.12)
   - libwebp (1.5.0):
@@ -727,7 +727,7 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 8e84f1284180801c1a1b241f443ba64f931ff561
-  jail-monkey: 9298d04aa09f8c9cdcf04e7bf597ea423b52b5bf
+  jail-monkey: e057abe7b37f84e1763491eb72113efd334a6de0
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c

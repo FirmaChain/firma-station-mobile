@@ -1,0 +1,8 @@
+diff --git a/node_modules/jail-monkey/android/src/main/AndroidManifest.xml b/node_modules/jail-monkey/android/src/main/AndroidManifest.xml
+index a2f47b6..ebca982 100644
+--- a/node_modules/jail-monkey/android/src/main/AndroidManifest.xml
++++ b/node_modules/jail-monkey/android/src/main/AndroidManifest.xml
+@@ -1,2 +1,2 @@
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
++<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.gantix.JailMonkey">
+ </manifest>
