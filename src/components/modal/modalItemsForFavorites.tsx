@@ -32,30 +32,48 @@ type Item = {
 };
 
 const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEventForEdit }: IProps) => {
+    // External Seletor
+    const { storage, wallet } = useAppSelector((state: rootState) => state);
+
+    // Internal Hooks
     const flatListRef = useRef<any>(null);
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
-    const { storage, wallet } = useAppSelector((state: rootState) => state);
+    const [selected, setSelected] = useState(initVal);
+    const [removeItemIndex, setRemoveItemIndex] = useState(-1);
 
-    const initialData = useCallback(() => {
+    const currentList = useMemo(() => {
         if (data === null) return [];
         return data.map((item, index) => {
             return {
                 key: index,
                 name: item.name,
                 address: item.address,
-                memo: item.memo === undefined ? '' : item.memo
+                memo: item.memo === undefined ? '' : item.memo,
             };
         });
     }, [data]);
 
-    const [selected, setSelected] = useState(initVal);
-    const [removeItemIndex, setRemoveItemIndex] = useState(-1);
+    const AnimationState = useMemo(() => {
+        LayoutAnim();
+        easeInAndOutCustomAnim(150);
+        if (isEdit) {
+            fadeIn(Animated, fadeAnim, 300);
+            return {
+                iconWidth: 20,
+                iconMargin: 15,
+            };
+        } else {
+            setRemoveItemIndex(-1);
+            fadeOut(Animated, fadeAnim, 300);
+            return {
+                iconWidth: 0,
+                iconMargin: 0,
+            };
+        }
+    }, [isEdit]);
 
-    useEffect(() => {
-        setSelected(initVal);
-    }, [initVal]);
-
+    // Functions
     const handleSelect = (address: string, memo: string, isEdit: boolean) => {
         if (isEdit === false) {
             onPressEvent(address, memo);
@@ -76,30 +94,30 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                 key: index,
                 name: item.name,
                 address: item.address,
-                memo: item.memo === undefined ? '' : item.memo
+                memo: item.memo === undefined ? '' : item.memo,
             });
         });
         adjustFavoriteList(newFavorite);
     };
 
     const removeFavorite = (key: number) => {
-        let newFavorite: Item[] = initialData().filter((_item, index) => index !== key);
+        let newFavorite: Item[] = currentList.filter((_item, index) => index !== key);
         adjustFavoriteList(newFavorite);
         setRemoveItemIndex(-1);
 
         Toast.show({
             type: 'info',
-            text1: FAVORITE_REMOVE_SUCCESS
+            text1: FAVORITE_REMOVE_SUCCESS,
         });
     };
 
     const adjustFavoriteList = (list: Item[]) => {
         let favorites = storage.favorite;
-        let newList = favorites.map((value) => {
+        let newList = favorites.map(value => {
             if (value.ownerAddress === wallet.address) {
                 return {
                     ownerAddress: value.ownerAddress,
-                    favorite: list
+                    favorite: list,
                 };
             } else {
                 return value;
@@ -109,42 +127,26 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
         StorageActions.handleFavorite(newList);
     };
 
-    const AnimationState = useMemo(() => {
-        LayoutAnim();
-        easeInAndOutCustomAnim(150);
-        if (isEdit) {
-            fadeIn(Animated, fadeAnim, 300);
-            return {
-                iconWidth: 20,
-                iconMargin: 15
-            };
-        } else {
-            setRemoveItemIndex(-1);
-            fadeOut(Animated, fadeAnim, 300);
-            return {
-                iconWidth: 0,
-                iconMargin: 0
-            };
-        }
-    }, [isEdit]);
+    // Render Item
 
-    const ListItem = ({ item, index = 0, drag }: RenderItemParams<Item>) => {
+    const ListItem = ({ item, drag }: RenderItemParams<Item>) => {
+        const index = currentList.findIndex(dataItem => dataItem.key === item.key) || 0;
         const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
 
         const AnimationStateForRemoveBox = useMemo(() => {
             if (index === removeItemIndex) {
                 fadeIn(Animated, fadeAnimForRemove, 300);
                 return {
-                    height: 'auto',
+                    height: 'auto' as 'auto', // height suppports 'auto' but considered as 'string' here
                     padding: 10,
-                    buttonPadding: 4
+                    buttonPadding: 4,
                 };
             } else {
                 fadeOut(Animated, fadeAnimForRemove, 150);
                 return {
                     height: 0.1,
                     padding: 0,
-                    buttonPadding: 0
+                    buttonPadding: 0,
                 };
             }
         }, [removeItemIndex]);
@@ -154,14 +156,13 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
         }, [item]);
 
         const RenderListItem = useCallback(() => {
-
             const getLogoImage = (address: string) => {
                 if (address.includes('firma')) return LOADING_LOGO_3;
                 if (address.includes('cosmos')) return ICON_ATOM_LOGO;
                 if (address.includes('osmo')) return ICON_OSMO_LOGO;
 
                 return LOADING_LOGO_3;
-            }
+            };
 
             return (
                 <TouchableOpacity
@@ -169,23 +170,20 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                     style={styles.modalContentBox}
                     onPress={() => {
                         handleSelect(item.address, item.memo, isEdit);
-                    }}
-                >
+                    }}>
                     <View>
                         <View style={[styles.modalPressBox]}>
                             <Animated.View
                                 style={{
                                     opacity: fadeAnim,
                                     marginRight: AnimationState.iconMargin,
-                                    width: AnimationState.iconWidth
-                                }}
-                            >
+                                    width: AnimationState.iconWidth,
+                                }}>
                                 <TouchableOpacity
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                     onPress={() => {
                                         isEdit && handleRemoveItemSelect(index);
-                                    }}
-                                >
+                                    }}>
                                     <RemoveIcon size={20} color={FailedColor} />
                                 </TouchableOpacity>
                             </Animated.View>
@@ -209,8 +207,7 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                                 <Text
                                     style={[styles.memo, { display: MemoExist ? 'flex' : 'none' }]}
                                     numberOfLines={1}
-                                    ellipsizeMode={'middle'}
-                                >
+                                    ellipsizeMode={'middle'}>
                                     {item.memo}
                                 </Text>
                             </View>
@@ -232,10 +229,9 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                                     opacity: fadeAnimForRemove,
                                     height: AnimationStateForRemoveBox.height,
                                     paddingBottom: AnimationStateForRemoveBox.padding,
-                                    paddingHorizontal: 20
-                                }
-                            ]}
-                        >
+                                    paddingHorizontal: 20,
+                                },
+                            ]}>
                             <Text style={styles.removeNotice}>{FAVORITE_REMOVE_WARN_TEXT}</Text>
                             <TouchableOpacity onPress={() => removeFavorite(index)}>
                                 <Animated.Text
@@ -244,10 +240,9 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                                         {
                                             opacity: fadeAnimForRemove,
                                             height: AnimationStateForRemoveBox.height,
-                                            paddingVertical: AnimationStateForRemoveBox.buttonPadding
-                                        }
-                                    ]}
-                                >
+                                            paddingVertical: AnimationStateForRemoveBox.buttonPadding,
+                                        },
+                                    ]}>
                                     {'Remove'}
                                 </Animated.Text>
                             </TouchableOpacity>
@@ -255,21 +250,26 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                     </View>
                 </TouchableOpacity>
             );
-        }, [initialData, isEdit, selected, removeItemIndex]);
+        }, [currentList, isEdit, selected, removeItemIndex]);
         return RenderListItem();
     };
+
+    // Side Effect
+    useEffect(() => {
+        setSelected(initVal);
+    }, [initVal]);
 
     return (
         <Fragment>
             <GestureHandlerRootView style={{ minHeight: 300, backgroundColor: BgColor }}>
                 <DraggableFlatList
                     ref={flatListRef}
-                    data={initialData()}
+                    data={currentList}
                     style={{ maxHeight: 450 }}
                     renderItem={ListItem}
                     scrollEnabled={true}
-                    keyExtractor={(_item, index) => index.toString()}
-                    onScrollToIndexFailed={() => { }}
+                    keyExtractor={_item => String(_item.key) + _item.address}
+                    onScrollToIndexFailed={() => {}}
                     onDragEnd={({ data }) => recreateList(data)}
                 />
             </GestureHandlerRootView>
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
         backgroundColor: BgColor,
         marginBottom: 1,
         borderBottomColor: BoxDarkColor,
-        borderBottomWidth: 0.5
+        borderBottomWidth: 0.5,
     },
     modalPressBox: {
         width: '100%',
@@ -292,28 +292,28 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 1
+        marginBottom: 1,
     },
     favoriteItemBox: {
         flex: 1,
         width: '100%',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingRight: 10
+        paddingRight: 10,
     },
     nameBox: {
         flex: 1,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        paddingBottom: 5
+        paddingBottom: 5,
     },
     name: {
         width: '70%',
         fontFamily: Lato,
         fontSize: 16,
         fontWeight: '600',
-        color: TextColor
+        color: TextColor,
     },
     verifiedBox: {
         justifyContent: 'center',
@@ -321,14 +321,14 @@ const styles = StyleSheet.create({
         borderColor: RestakeActiveColor,
         borderWidth: 1,
         borderRadius: 5,
-        marginLeft: 5
+        marginLeft: 5,
     },
     verified: {
         fontFamily: Lato,
         fontSize: 8,
         color: RestakeActiveColor,
         paddingHorizontal: 5,
-        paddingVertical: 3
+        paddingVertical: 3,
     },
     logo: {
         width: 20,
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 50,
         overflow: 'hidden',
-        marginRight: 7
+        marginRight: 7,
     },
     address: {
         flex: 1,
@@ -344,26 +344,26 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
         color: TextCatTitleColor,
-        paddingBottom: 5
+        paddingBottom: 5,
     },
     memo: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 12,
         fontWeight: '600',
-        color: TextGrayColor
+        color: TextGrayColor,
     },
     removeConfirmBox: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     removeNotice: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
         color: TextWarnColor,
-        marginRight: 20
+        marginRight: 20,
     },
     removeButton: {
         color: TextColor,
@@ -373,8 +373,8 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         overflow: 'hidden',
-        backgroundColor: FailedColor
-    }
+        backgroundColor: FailedColor,
+    },
 });
 
 export default ModalItemsForFavorites;
