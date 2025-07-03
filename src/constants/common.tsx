@@ -539,15 +539,18 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
         tagDisplay: LABELS.txCreateContractFileLabel,
     },
     '/cosmos.feegrant.v1beta1.MsgGrantAllowance': {
-        tagTheme: TYPE_COLORS.two,
+        tagTheme: TYPE_COLORS.fourteen, // To match Explorer
+        // tagTheme: TYPE_COLORS.two,
         tagDisplay: LABELS.txFeegrantGrantLabel,
     },
     '/cosmos.feegrant.v1beta1.MsgRevokeAllowance': {
-        tagTheme: TYPE_COLORS.three,
+        tagTheme: TYPE_COLORS.fourteen, // To match Explorer
+        // tagTheme: TYPE_COLORS.three,
         tagDisplay: LABELS.txFeegrantRevokeLabel,
     },
     '/cosmos.authz.v1beta1.MsgGrant': {
-        tagTheme: TYPE_COLORS.two,
+        tagTheme: TYPE_COLORS.thirteen, // To match Explorer
+        // tagTheme: TYPE_COLORS.six,
         tagDisplay: LABELS.txAuthzGrantLabel,
     },
     '/firmachain.firmachain.token.MsgCreateToken': {

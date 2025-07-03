@@ -57,7 +57,7 @@
     "txCreateContractFileLabel": "Create Contract File",
     "txFeegrantGrantLabel": "Grant Allowance",
     "txFeegrantRevokeLabel": "Revoke Allowance",
-    "txAuthzGrantLabel": "Grant",
+    "txAuthzGrantLabel": "Authz Grant",
     "txTokenCreateLabel": "Token Create",
     "txTokenMintLabel": "Token Mint",
     "txTokenBurnLabel": "Token Burn",
