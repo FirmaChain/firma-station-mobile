@@ -8,12 +8,13 @@
         "start": "react-native start",
         "test": "jest",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-        "postinstall": "patch-package"
+        "postinstall": "patch-package",
+        "reset-watchman": "watchman watch-del-all"
     },
     "dependencies": {
         "@apollo/client": "^3.8.0",
         "@apollo/react-hooks": "4.0.0",
-        "@firmachain/firma-js": "^0.3.1",
+        "@firmachain/firma-js": "0.3.2",
         "@react-native-async-storage/async-storage": "^2.0.0",
         "@react-native-clipboard/clipboard": "^1.16.3",
         "@react-native-community/netinfo": "^8.2.0",
@@ -62,6 +63,7 @@
         "react-native-permissions": "3.6.1",
         "react-native-qrcode-scanner": "^1.5.5",
         "react-native-qrcode-svg": "6.3.2",
+        "react-native-quick-base64": "^2.2.0",
         "react-native-randombytes": "^3.6.2",
         "react-native-reanimated": "3.15.5",
         "react-native-safe-area-context": "4.14.1",

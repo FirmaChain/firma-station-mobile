@@ -82,8 +82,16 @@ android {
         missingDimensionStrategy 'react-native-camera', 'mlkit', 'general'
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 43
+        versionCode 44
         versionName "1.0.28"
+    }
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libcrypto.so'
+        pickFirst '**/libssl.so'
+        pickFirst '**/libflipper.so'
+        pickFirst '**/libfbjni.so'
+        pickFirst '**/libjsc.so'
     }
     signingConfigs {
         debug {
@@ -134,3 +142,13 @@ dependencies {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+//? Fix lint issue while building
+afterEvaluate {
+    def lintTask       = tasks.findByName("lintVitalAnalyzeRelease")
+    def copyFontsTask  = tasks.findByName("copyReactNativeVectorIconFonts")
+
+    if (lintTask != null && copyFontsTask != null) {
+        lintTask.dependsOn(copyFontsTask)   // Lint after copy
+    }
+}

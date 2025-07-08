@@ -1823,9 +1823,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firmachain/firma-js@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@firmachain/firma-js@npm:0.3.1"
+"@firmachain/firma-js@npm:0.3.2":
+  version: 0.3.2
+  resolution: "@firmachain/firma-js@npm:0.3.2"
   dependencies:
     "@cosmjs/amino": "npm:0.33.1"
     "@cosmjs/math": "npm:0.33.1"
@@ -1844,7 +1844,7 @@ __metadata:
     pako: "npm:2.0.2"
     protobufjs: "npm:6.10.2"
     readline-sync: "npm:1.4.10"
-  checksum: 10c0/c99ac12d849d7dfee4cb0413e2f6df8734b2c34cdc1d617723e364af436a729a87e5f69e577c2ae367aed1dc487460d1ae93947f2cfbe89a35f847915f31cabe
+  checksum: 10c0/7d1bbef5ecaa8388521f44d857d4f377e846aacd5ddf110769e4e29977c98ef10eaf686d2693bf8a1ce13b77e24885b535614ab383d0f5682a5f37ac83727746
   languageName: node
   linkType: hard
 
@@ -3479,9 +3479,9 @@ __metadata:
   linkType: hard
 
 "agent-base@npm:^7.1.0, agent-base@npm:^7.1.2":
-  version: 7.1.3
-  resolution: "agent-base@npm:7.1.3"
-  checksum: 10c0/6192b580c5b1d8fb399b9c62bf8343d76654c2dd62afcb9a52b2cf44a8b6ace1e3b704d3fe3547d91555c857d3df02603341ff2cb961b9cfe2b12f9f3c38ee11
+  version: 7.1.4
+  resolution: "agent-base@npm:7.1.4"
+  checksum: 10c0/c2c9ab7599692d594b6a161559ada307b7a624fa4c7b03e3afdb5a5e31cd0e53269115b620fcab024c5ac6a6f37fa5eb2e004f076ad30f5f7e6b8b671f7b35fe
   languageName: node
   linkType: hard
 
@@ -4356,7 +4356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.24.0, browserslist@npm:^4.25.0":
+"browserslist@npm:^4.24.0, browserslist@npm:^4.25.1":
   version: 4.25.1
   resolution: "browserslist@npm:4.25.1"
   dependencies:
@@ -4539,9 +4539,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001726":
-  version: 1.0.30001726
-  resolution: "caniuse-lite@npm:1.0.30001726"
-  checksum: 10c0/2c5f91da7fd9ebf8c6b432818b1498ea28aca8de22b30dafabe2a2a6da1e014f10e67e14f8e68e872a0867b6b4cd6001558dde04e3ab9770c9252ca5c8849d0e
+  version: 1.0.30001727
+  resolution: "caniuse-lite@npm:1.0.30001727"
+  checksum: 10c0/f0a441c05d8925d728c2d02ce23b001935f52183a3bf669556f302568fe258d1657940c7ac0b998f92bc41383e185b390279a7d779e6d96a2b47881f56400221
   languageName: node
   linkType: hard
 
@@ -4860,11 +4860,11 @@ __metadata:
   linkType: hard
 
 "core-js-compat@npm:^3.43.0":
-  version: 3.43.0
-  resolution: "core-js-compat@npm:3.43.0"
+  version: 3.44.0
+  resolution: "core-js-compat@npm:3.44.0"
   dependencies:
-    browserslist: "npm:^4.25.0"
-  checksum: 10c0/923804c16faf91bacb747a697640a907cb2a3e63078d467a75eb7ea4187d62d36347a94e5826d1b36739012e81a2ea435922cc8bd8e228fa68efaf00a9ce94af
+    browserslist: "npm:^4.25.1"
+  checksum: 10c0/5de4b042b8bb232b8390be3079030de5c7354610f136ed3eb91310a44455a78df02cfcf49b2fd05d5a5aa2695460620abf1b400784715f7482ed4770d40a68b2
   languageName: node
   linkType: hard
 
@@ -5382,9 +5382,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.173":
-  version: 1.5.179
-  resolution: "electron-to-chromium@npm:1.5.179"
-  checksum: 10c0/500a27e152a1033540f44cd4ebe4bcd8df0b466e83de95f812e65a3066adc61540c2d43f315848db5fdf8402eb383933642d10d912809f70a8e266e3e720c2e2
+  version: 1.5.180
+  resolution: "electron-to-chromium@npm:1.5.180"
+  checksum: 10c0/3042aa1d20e1ff0b8205bc856a98a7f94aafb3051d468a40d9bb3dac65b36dc48b9c1197c5a56ea179f39231668a3f0c35b02c3a58d0fe25d047613e07a21565
   languageName: node
   linkType: hard
 
@@ -6226,7 +6226,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@babel/preset-env": "npm:^7.20.0"
     "@babel/runtime": "npm:^7.20.0"
-    "@firmachain/firma-js": "npm:^0.3.1"
+    "@firmachain/firma-js": "npm:0.3.2"
     "@react-native-async-storage/async-storage": "npm:^2.0.0"
     "@react-native-clipboard/clipboard": "npm:^1.16.3"
     "@react-native-community/netinfo": "npm:^8.2.0"
@@ -6294,6 +6294,7 @@ __metadata:
     react-native-permissions: "npm:3.6.1"
     react-native-qrcode-scanner: "npm:^1.5.5"
     react-native-qrcode-svg: "npm:6.3.2"
+    react-native-quick-base64: "npm:^2.2.0"
     react-native-randombytes: "npm:^3.6.2"
     react-native-reanimated: "npm:3.15.5"
     react-native-safe-area-context: "npm:4.14.1"
@@ -6351,9 +6352,9 @@ __metadata:
   linkType: hard
 
 "flow-parser@npm:0.*":
-  version: 0.274.2
-  resolution: "flow-parser@npm:0.274.2"
-  checksum: 10c0/d0ed8ee7964e383a564e89d994d825104b9a84dd969e131b66bc138e35736f9f9b2274f646050a45d7398fa69741a92537a64104989428f24d8f974ce70c611c
+  version: 0.275.0
+  resolution: "flow-parser@npm:0.275.0"
+  checksum: 10c0/47f30339022b00c6037c5281d5c6c9995b8f174677d0b7e950fa4661e7ab71573031e9c70e567783f790a1216fcbeac3cf8c4639fda4a0af2b2035b490fc17ed
   languageName: node
   linkType: hard
 
@@ -10369,6 +10370,16 @@ __metadata:
     react-native: ">=0.63.4"
     react-native-svg: ">=13.2.0"
   checksum: 10c0/d421bbb316decaedf0fceff457daa18449b954e8be82cecf46f3ebe80909f8d473983d1dcc78f4ba39887097a45cb2602f687fe8589b4ed44412f4db464e149f
+  languageName: node
+  linkType: hard
+
+"react-native-quick-base64@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "react-native-quick-base64@npm:2.2.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/f4c800aa3b4932228c406de86d70c8b4183e2522e941736d7edb4fbe7d9b6158e375cd197869a344f551fff8c5e609b4d6eb4d2ce6e8ef61dfb2aef42aadebff
   languageName: node
   linkType: hard
 
