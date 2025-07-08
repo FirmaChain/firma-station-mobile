@@ -19,7 +19,7 @@ import {
     undelegate,
     voting,
     withdrawAllRewards,
-    withdrawRewards
+    withdrawRewards,
 } from '@/util/firma';
 import { BgColor } from '@/constants/theme';
 import { TRANSACTION_TYPE } from '@/constants/common';
@@ -28,6 +28,7 @@ import ProgressTransaction from './progressTransaction';
 import TransactionResult from './transactionResult';
 import ConnectClient from '@/util/connectClient';
 import { CHAIN_NETWORK } from '@/../config';
+import { fromByteArray } from 'react-native-quick-base64';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Transaction>;
 
@@ -44,7 +45,7 @@ export interface IResultState {
 const Transaction = ({ state }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { storage, wallet } = useAppSelector((state) => state);
+    const { storage, wallet } = useAppSelector(state => state);
     const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
 
     const [mnemonic, setMnemonic] = useState('');
@@ -53,7 +54,7 @@ const Transaction = ({ state }: IProps) => {
     const [transactionResult, setTransactionResult] = useState<IResultState>({
         code: 0,
         result: '',
-        type: state.type
+        type: state.type,
     });
 
     useEffect(() => {
@@ -90,11 +91,29 @@ const Transaction = ({ state }: IProps) => {
                     setTransactionResult({ ...transactionResult, code: sendResult.code, result: sendResult.transactionHash });
                     break;
                 case TRANSACTION_TYPE['SEND_TOKEN']:
-                    const sendTokenResult = await sendToken(recoverValue, state.targetAddress, state.amount, state.tokenId, state.decimal, state.gas, state.memo);
+                    const sendTokenResult = await sendToken(
+                        recoverValue,
+                        state.targetAddress,
+                        state.amount,
+                        state.tokenId,
+                        state.decimal,
+                        state.gas,
+                        state.memo
+                    );
                     setTransactionResult({ ...transactionResult, code: sendTokenResult.code, result: sendTokenResult.transactionHash });
                     break;
                 case TRANSACTION_TYPE['SEND_IBC']:
-                    const sendIBCResult = await sendIBC(recoverValue, 'transfer', state.channel, state.denom, state.targetAddress, state.amount, state.decimal, state.gas, state.memo);
+                    const sendIBCResult = await sendIBC(
+                        recoverValue,
+                        'transfer',
+                        state.channel,
+                        state.denom,
+                        state.targetAddress,
+                        state.amount,
+                        state.decimal,
+                        state.gas,
+                        state.memo
+                    );
                     setTransactionResult({ ...transactionResult, code: sendIBCResult.code, result: sendIBCResult.transactionHash });
                     break;
                 case TRANSACTION_TYPE['DELEGATE']:
@@ -112,7 +131,7 @@ const Transaction = ({ state }: IProps) => {
                     setTransactionResult({
                         ...transactionResult,
                         code: redelegateResult.code,
-                        result: redelegateResult.transactionHash
+                        result: redelegateResult.transactionHash,
                     });
                     break;
                 case TRANSACTION_TYPE['UNDELEGATE']:
@@ -120,7 +139,7 @@ const Transaction = ({ state }: IProps) => {
                     setTransactionResult({
                         ...transactionResult,
                         code: undelegateResult.code,
-                        result: undelegateResult.transactionHash
+                        result: undelegateResult.transactionHash,
                     });
                     break;
                 case TRANSACTION_TYPE['GRANT']:
@@ -140,7 +159,7 @@ const Transaction = ({ state }: IProps) => {
                     setTransactionResult({
                         ...transactionResult,
                         code: withdrawAllResult.code,
-                        result: withdrawAllResult.transactionHash
+                        result: withdrawAllResult.transactionHash,
                     });
                     break;
                 case TRANSACTION_TYPE['VOTING']:
@@ -155,14 +174,14 @@ const Transaction = ({ state }: IProps) => {
                     let resultMessage = '';
 
                     if (connectClient.isDirectSign(state.data)) {
-                        const { txRaw, signature } = await connectClient.getDirectSignRawData(Wallet, state.data);
+                        const txRaw = await connectClient.getDirectSignRawData(Wallet, state.data);
 
-                        if (await connectClient.verifySign(JSON.parse(state.session), state.data, signature)) {
+                        if (await connectClient.verifySign(JSON.parse(state.session), state.data, fromByteArray(txRaw.signatures[0]))) {
                             if (state.data.qrType === 1) {
                                 await connectClient.approve(JSON.parse(state.session), state.data, {
                                     address: wallet.address,
                                     chainId: state.chainId,
-                                    rawData: rawData
+                                    rawData: rawData,
                                 });
 
                                 rawData = await connectClient.broadcast(Wallet, txRaw);
@@ -172,10 +191,15 @@ const Transaction = ({ state }: IProps) => {
                                 await connectClient.approve(JSON.parse(state.session), state.data, {
                                     address: wallet.address,
                                     chainId: state.chainId,
-                                    rawData: rawData
+                                    rawData: rawData,
                                 });
                             }
-                            resultMessage = JSON.parse(rawData).transactionHash;
+                            resultMessage = JSON.parse(rawData, (_, value) => {
+                                if (typeof value === 'string' && /^\d{16,}$/.test(value)) {
+                                    return BigInt(value);
+                                }
+                                return value;
+                            }).transactionHash;
                         }
                     } else {
                         rawData = await connectClient.getArbitarySignRawData(Wallet, state.data);
@@ -185,18 +209,32 @@ const Transaction = ({ state }: IProps) => {
                         await connectClient.approve(JSON.parse(state.session), state.data, {
                             address: wallet.address,
                             chainId: state.chainId,
-                            rawData: rawData
+                            rawData: rawData,
                         });
                     }
 
                     setTransactionResult({ ...transactionResult, code: code, result: resultMessage });
                     break;
                 case TRANSACTION_TYPE['SEND_CW20']:
-                    const sendCW20Result = await sendCW20(recoverValue, state.targetAddress, state.amount, state.gas, state.contractAddress, state.memo);
+                    const sendCW20Result = await sendCW20(
+                        recoverValue,
+                        state.targetAddress,
+                        state.amount,
+                        state.gas,
+                        state.contractAddress,
+                        state.memo
+                    );
                     setTransactionResult({ ...transactionResult, code: sendCW20Result.code, result: sendCW20Result.transactionHash });
                     break;
                 case TRANSACTION_TYPE['SEND_CW721']:
-                    const sendCW721Result = await sendCW721NFT(recoverValue, state.targetAddress, state.tokenId, state.gas, state.contractAddress, state.memo);
+                    const sendCW721Result = await sendCW721NFT(
+                        recoverValue,
+                        state.targetAddress,
+                        state.tokenId,
+                        state.gas,
+                        state.contractAddress,
+                        state.memo
+                    );
                     setTransactionResult({ ...transactionResult, code: sendCW721Result.code, result: sendCW721Result.transactionHash });
                     break;
                 default:
@@ -227,7 +265,7 @@ const Transaction = ({ state }: IProps) => {
             case TRANSACTION_TYPE['REDELEGATE']:
             case TRANSACTION_TYPE['UNDELEGATE']:
                 navigation.navigate(Screens.Validator, {
-                    validatorAddress: state.operatorAddressDst
+                    validatorAddress: state.operatorAddressDst,
                 });
                 break;
             case TRANSACTION_TYPE['GRANT']:

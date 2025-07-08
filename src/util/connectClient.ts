@@ -1,6 +1,7 @@
 import { FirmaUtil } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { getDAppConnectSession, setDAppConnectSession } from './wallet';
+import { fromByteArray } from 'react-native-quick-base64';
 
 export interface UserSession {
     userkey: string;
@@ -124,14 +125,17 @@ interface ApproveParam {
 }
 
 class ConnectClient {
-    constructor(public relayHost: string, private requestService = new RequestService(relayHost)) {}
+    constructor(
+        public relayHost: string,
+        private requestService = new RequestService(relayHost)
+    ) {}
 
     public async getProjects(): Promise<ProjectList> {
         try {
             const response: ResponseProjectData = await this.requestService.requestGet<ResponseProjectData>('/v1/projects');
 
             return {
-                projectList: response.projectList
+                projectList: response.projectList,
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -145,7 +149,7 @@ class ConnectClient {
             );
 
             return {
-                service: response.service
+                service: response.service,
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -157,7 +161,7 @@ class ConnectClient {
             const response: ResponseAuthData = await this.requestService.requestPost<ResponseAuthData>('/v1/wallets/auth');
 
             return {
-                userkey: response.userkey
+                userkey: response.userkey,
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -184,11 +188,11 @@ class ConnectClient {
     public async connectFromSession(session: UserSession): Promise<UserSession> {
         try {
             const response: ResponseAuthData = await this.requestService.requestPost<ResponseAuthData>('/v1/wallets/auth', {
-                userkey: session.userkey
+                userkey: session.userkey,
             });
 
             return {
-                userkey: response.userkey
+                userkey: response.userkey,
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -221,7 +225,7 @@ class ConnectClient {
                     apiCode,
                     requestKey,
                     signParams,
-                    projectMetaData
+                    projectMetaData,
                 };
             } else {
                 throw new Error('Invalid API Code');
@@ -249,7 +253,7 @@ class ConnectClient {
 
                 return {
                     project,
-                    service
+                    service,
                 };
             } else {
                 throw new Error('Invalid API Code');
@@ -281,16 +285,16 @@ class ConnectClient {
         }
     }
 
-    public async getDirectSignRawData(wallet: FirmaWalletService, QRData: QRData): Promise<any> {
+    public async getDirectSignRawData(wallet: FirmaWalletService, QRData: QRData) {
         try {
             const signDoc = FirmaUtil.parseSignDocValues(QRData.signParams.message);
 
             const address = await wallet.getAddress();
 
             const commonTxClient = FirmaUtil.getCommonTxClient(wallet);
-            const extTxRaw = await commonTxClient.signDirectForSignDoc(address, signDoc);
+            const extTxRaw = await commonTxClient.signDirectForSignDocTxRaw(address, signDoc);
 
-            const valid = await FirmaUtil.verifyDirectSignature(address, extTxRaw.signature, signDoc);
+            const valid = await FirmaUtil.verifyDirectSignature(address, fromByteArray(extTxRaw.signatures[0]), signDoc);
 
             if (valid) {
                 return extTxRaw;
@@ -309,7 +313,7 @@ class ConnectClient {
                 `/v1/wallets/sign/${QRData.requestKey}`,
                 { signature },
                 {
-                    userkey: session.userkey
+                    userkey: session.userkey,
                 }
             );
 
@@ -324,7 +328,11 @@ class ConnectClient {
             const commonTxClient = FirmaUtil.getCommonTxClient(wallet);
             const result = await commonTxClient.broadcast(txRaw);
 
-            return JSON.stringify(result);
+            //? Prevent BigInt issue
+            return JSON.stringify(result, (_, value) => {
+                if (typeof value === 'bigint') return String(value) + 'n';
+                else return value;
+            });
         } catch (e) {
             console.log(e);
             throw new Error('Invalid QR(' + e + ')');
@@ -338,7 +346,7 @@ class ConnectClient {
                     `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/approve`,
                     approveParam,
                     {
-                        userkey: session.userkey
+                        userkey: session.userkey,
                     }
                 );
                 return {};
@@ -358,7 +366,7 @@ class ConnectClient {
                     `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/reject`,
                     {},
                     {
-                        userkey: session.userkey
+                        userkey: session.userkey,
                     }
                 );
                 return {};
@@ -379,7 +387,7 @@ class RequestService {
             const requestOptions = {
                 method: 'POST',
                 headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
             };
             const response = await fetch(`${this.relay}${uri}`, requestOptions);
             const data: any = await response.json();
@@ -399,7 +407,7 @@ class RequestService {
             const requestOptions = {
                 method: 'PUT',
                 headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
             };
             const response = await fetch(`${this.relay}${uri}`, requestOptions);
             const data: any = await response.json();
@@ -418,8 +426,8 @@ class RequestService {
             const response = await fetch(`${this.relay}${uri}`, {
                 headers: {
                     ...headers,
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             });
             const data: any = await response.json();
             if (data.code === 0) {
