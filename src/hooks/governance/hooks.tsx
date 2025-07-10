@@ -4,7 +4,6 @@ import { getProposalData } from '@/apollo/gqls';
 import { convertNumber, convertTime } from '@/util/common';
 import { StorageActions } from '@/redux/actions';
 import { getProposalByProposalId, getProposalParams, getProposals, getProposalTally } from '@/util/firma';
-import { ProposalInfo } from '@firmachain/firma-js';
 import { PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
 import { rootState } from '@/redux/reducers';
 import { CHAIN_NETWORK } from '@/../config';
@@ -75,7 +74,7 @@ interface IProposalJSONProps {
 export const useGovernanceList = () => {
     const { storage } = useAppSelector((state: rootState) => state);
     const [governanceState, setGovernanceList] = useState<IGovernanceState>({
-        list: []
+        list: [],
     });
 
     const getProposalJsonData = useCallback(async () => {
@@ -85,8 +84,8 @@ export const useGovernanceList = () => {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-store',
                     Pragma: 'no-store',
-                    Expires: '0'
-                }
+                    Expires: '0',
+                },
             });
             const data: IProposalJSONProps = await response.json();
             return data;
@@ -98,43 +97,50 @@ export const useGovernanceList = () => {
 
     const handleProposalList = useCallback(async () => {
         try {
-            let proposalsJSON = (await getProposalJsonData()).ignoreProposalIdList;
-            let proposals = await getProposals();
+            const proposalsJSON = (await getProposalJsonData()).ignoreProposalIdList;
+            const proposals = await getProposals();
 
             if (proposals.length > 0) {
                 const list = proposals
-                    .filter((proposal) => proposalsJSON.includes(Number(proposal.proposal_id)) === false)
-                    .map((proposal: ProposalInfo) => {
-                        let proposalId = proposal.proposal_id;
-                        let proposalType = PROPOSAL_MESSAGE_TYPE[proposal.content['@type']];
-                        let status = proposal.status;
-                        let title = proposal.content.title;
-                        let description = proposal.content.description;
-                        let depositEndTime = proposal.deposit_end_time;
-                        let votingStartTime = proposal.voting_start_time;
-                        let votingEndTime = proposal.voting_end_time;
+                    .filter(proposal => proposalsJSON.includes(Number(proposal.id)) === false)
+                    .map(proposal => {
+                        const _proposal = proposal as any;
+                        const { id, messages, status, title, summary } = proposal;
+
+                        const firstMsg = messages[0] as any;
+                        const firmsMsgContent = firstMsg?.content || null;
+
+                        const proposalId = id.toString();
+                        const proposalType =
+                            PROPOSAL_MESSAGE_TYPE[
+                                (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
+                            ];
+
+                        const depositEndTime = _proposal.deposit_end_time;
+                        const votingStartTime = _proposal.voting_start_time;
+                        const votingEndTime = _proposal.voting_end_time;
 
                         return {
                             proposalId,
                             proposalType,
-                            status,
+                            status: status.toString(),
                             title,
-                            description,
+                            description: summary,
                             depositEndTime,
                             votingStartTime,
-                            votingEndTime
+                            votingEndTime,
                         };
                     });
 
                 StorageActions.handleContentVolume({
                     ...storage.contentVolume,
-                    proposals: list.length
+                    proposals: list.length,
                 });
 
-                const sortList = list.sort((a: IProposalItemState, b: IProposalItemState) => Number(b.proposalId) - Number(a.proposalId));
-                setGovernanceList((prevState) => ({
+                const sortList = list.sort((a, b) => Number(b.proposalId) - Number(a.proposalId));
+                setGovernanceList(prevState => ({
                     ...prevState,
-                    list: sortList
+                    list: sortList,
                 }));
             }
         } catch (error) {
@@ -152,7 +158,7 @@ export const useGovernanceList = () => {
 
     return {
         governanceState,
-        handleGovernanceListPolling
+        handleGovernanceListPolling,
     };
 };
 
@@ -165,7 +171,7 @@ export const useProposalData = () => {
             const [proposal, param, proposalTally] = await Promise.all([
                 getProposalByProposalId(_id),
                 getProposalParams(),
-                getProposalTally(_id)
+                getProposalTally(_id),
             ]);
 
             let bondedTokens: number | null = null;
@@ -173,13 +179,13 @@ export const useProposalData = () => {
             try {
                 const proposalData = await getProposalData({ proposalId: _id });
                 if (proposalData.data.proposal[0] !== undefined) {
-                    if (proposalData.data.proposal[0].staking_pool_snapshot !== (undefined || null)) {
-                        let _bondedTokens = proposalData.data.proposal[0].staking_pool_snapshot.bonded_tokens;
+                    if (proposalData.data.proposal[0].staking_pool_snapshot) {
+                        const _bondedTokens = proposalData.data.proposal[0].staking_pool_snapshot.bonded_tokens;
                         bondedTokens = _bondedTokens;
                     }
 
                     if (proposalData.data.proposalVote !== undefined) {
-                        let _votingList = proposalData.data.proposalVote;
+                        const _votingList = proposalData.data.proposalVote;
                         votingList = _votingList;
                     }
                 }
@@ -187,31 +193,36 @@ export const useProposalData = () => {
                 console.log(error);
             }
 
-            let proposalId = proposal.proposal_id;
-            let title = proposal.content.title;
-            let status = proposal.status;
-            let proposalType = PROPOSAL_MESSAGE_TYPE[proposal.content['@type']];
-            let submitTime = proposal.submit_time;
-            let description = proposal.content.description;
-            let classified = classifiedData(proposal.content);
-            let votingStartTime = proposal.voting_start_time;
-            let votingEndTime = proposal.voting_end_time;
-            let quorum = param.tally_params.quorum;
-            let maxDepositPeriod = param.deposit_params.max_deposit_period;
-            let depositPeriod = convertDepositPeriod(maxDepositPeriod, submitTime);
-            let minDeposit = param.deposit_params.min_deposit[0].amount;
-            let proposalDeposit = proposal.total_deposit[0].amount;
-            let tallyResult = proposalTally;
-            let currentTurnout = calculateCurrentTurnout(bondedTokens, tallyResult);
+            const _proposal = proposal as any;
+            const firstMsg = proposal.messages[0] as any;
+            const firmsMsgContent = firstMsg?.content || null;
+
+            const proposalId = proposal.id.toString();
+            const title = proposal.title;
+            const status = proposal.status.toString();
+            const proposalType =
+                PROPOSAL_MESSAGE_TYPE[(firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')];
+            const submitTime = _proposal.submit_time;
+            const description = proposal.summary;
+            const classified = classifiedData(proposal.messages);
+            const votingStartTime = _proposal.voting_start_time;
+            const votingEndTime = _proposal.voting_end_time;
+            const quorum = param.quorum;
+            const maxDepositPeriod = param.max_deposit_period;
+            const depositPeriod = convertDepositPeriod(maxDepositPeriod, submitTime);
+            const minDeposit = param.min_deposit[0].amount;
+            const proposalDeposit = _proposal.total_deposit[0].amount;
+            const tallyResult = proposalTally;
+            const currentTurnout = calculateCurrentTurnout(bondedTokens, tallyResult);
 
             const titleState: IProposalTitleState = {
-                proposalId: proposalId,
-                title: title,
-                status: status
+                proposalId,
+                title,
+                status,
             };
 
             const descState: IProposalDescriptionState = {
-                status: status,
+                status,
                 proposalType: proposalType,
                 submitTime: submitTime,
                 description: description,
@@ -220,7 +231,7 @@ export const useProposalData = () => {
                 votingEndTime: votingEndTime,
                 depositPeriod: depositPeriod,
                 minDeposit: minDeposit,
-                proposalDeposit: proposalDeposit
+                proposalDeposit: proposalDeposit,
             };
 
             const voteState: IProposalVoteState = {
@@ -230,13 +241,13 @@ export const useProposalData = () => {
                 currentTurnout: currentTurnout,
                 totalVotingPower: bondedTokens,
                 proposalTally: tallyResult,
-                voters: votingList
+                voters: votingList,
             };
 
             setProposalState({
                 titleState,
                 descState,
-                voteState
+                voteState,
             });
         } catch (error) {
             throw error;
@@ -254,7 +265,7 @@ export const useProposalData = () => {
     const classifiedData = (content: any) => {
         if (content.changes !== undefined) {
             return {
-                changes: content.changes
+                changes: content.changes,
             };
         }
 
@@ -262,14 +273,14 @@ export const useProposalData = () => {
             return {
                 height: content.plan.height,
                 version: content.plan.name,
-                info: content.info
+                info: content.info,
             };
         }
 
         if (content.recipient !== undefined) {
             return {
                 recipient: content.recipient,
-                amount: content.amount[0].amount
+                amount: content.amount[0].amount,
             };
         }
     };
@@ -295,6 +306,6 @@ export const useProposalData = () => {
 
     return {
         proposalState,
-        handleProposalPolling
+        handleProposalPolling,
     };
 };

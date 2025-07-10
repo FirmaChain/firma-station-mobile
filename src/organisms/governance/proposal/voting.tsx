@@ -23,7 +23,7 @@ const marginVertical = 5;
 const width = (Dimensions.get('window').width - 20) / cols - marginHorizontal * (cols + 1);
 
 const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
-    const { wallet } = useAppSelector((state) => state);
+    const { wallet } = useAppSelector(state => state);
 
     const [active, setActive] = useState(isVotingPeriod);
     const [votingGas, setVotingGas] = useState(getFirmaConfig().defaultGas);
@@ -110,20 +110,18 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
                                         {
                                             borderColor: selectedVote === item ? WhiteColor : BoxColor,
                                             marginBottom: index < 2 ? marginVertical * 4 : 0,
-                                            marginLeft: index % 2 === 0 ? 0 : marginHorizontal * 2
-                                        }
+                                            marginLeft: index % 2 === 0 ? 0 : marginHorizontal * 2,
+                                        },
                                     ]}
-                                    onPress={() => setSelectedVote(item)}
-                                >
+                                    onPress={() => setSelectedVote(item)}>
                                     <Text
                                         style={[
                                             styles.vote,
                                             {
                                                 color: selectedVote === item ? WhiteColor : TextDarkGrayColor,
-                                                fontWeight: selectedVote === item ? '600' : 'normal'
-                                            }
-                                        ]}
-                                    >
+                                                fontWeight: selectedVote === item ? '600' : 'normal',
+                                            },
+                                        ]}>
                                         {item}
                                     </Text>
                                 </TouchableOpacity>
@@ -159,13 +157,13 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
 const styles = StyleSheet.create({
     modalTextContents: {
         width: '100%',
-        padding: 20
+        padding: 20,
     },
     title: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: 'bold',
-        color: TextDarkGrayColor
+        color: TextDarkGrayColor,
     },
     box: {
         flexDirection: 'row',
@@ -173,7 +171,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingTop: 10,
-        paddingBottom: 30
+        paddingBottom: 30,
     },
     borderBox: {
         width: width,
@@ -183,18 +181,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: BgColor
+        backgroundColor: BgColor,
     },
     voteItem: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextColor
+        color: TextColor,
     },
     vote: {
         width: 'auto',
         fontFamily: Lato,
-        fontSize: 16
-    }
+        fontSize: 16,
+    },
 });
 
 export default Voting;
