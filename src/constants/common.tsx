@@ -386,11 +386,27 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txDepositLabel,
     },
+    '/cosmos.gov.v1.MsgDeposit': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txDepositLabel,
+    },
     '/cosmos.gov.v1beta1.MsgVote': {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txVoteLabel,
     },
+    '/cosmos.gov.v1.MsgVote': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txVoteLabel,
+    },
+    '/cosmos.gov.v1.MsgVoteWeighted ': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txVoteWeightedLabel,
+    },
     '/cosmos.gov.v1beta1.MsgSubmitProposal': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txSubmitProposalLabel,
+    },
+    '/cosmos.gov.v1.MsgSubmitProposal': {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txSubmitProposalLabel,
     },
@@ -398,6 +414,23 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txCancelProposalLabel,
     },
+    '/cosmos.distribution.v1beta1.MsgCommunityPoolSpend': {
+        tagTheme: TYPE_COLORS.six,
+        tagDisplay: LABELS.txCommunityPoolSpendLabel,
+    },
+    '/cosmos.upgrade.v1.MsgSoftwareUpgrade': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txSoftwareUpgradeLabel,
+    },
+    '/cosmos.gov.v1.MsgUpdateParams': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txGovUpdateParamsLabel,
+    },
+    '/cosmos.staking.v1.MsgUpdateParams': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txStakingUpdateParamsLabel,
+    },
+
     // ========================
     // ibc client
     // ========================
