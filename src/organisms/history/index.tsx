@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Linking, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
@@ -15,12 +15,14 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>
 
 const History = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { storage, wallet } = useAppSelector((state) => state);
+    const { storage, wallet } = useAppSelector(state => state);
     const { historyList, handleHistoryOffset, handleHisotyPolling } = useHistoryData();
 
     const [isLoading, setIsLoading] = useState(true);
     const [historyRefresh, setHistoryRefresh] = useState(false);
     const [loadedHistoryList, setLoadedHistoryList] = useState<Array<IHistoryState>>([]);
+
+    const historyHashMap = useRef(new Map<string, boolean>());
 
     const itemsSkeleton = useMemo(() => {
         if (storage.historyVolume === undefined) return null;
@@ -58,12 +60,18 @@ const History = () => {
         navigation.goBack();
     };
 
+    //? Fix: prevent duplicate data on refresh
     useEffect(() => {
-        if (historyList !== undefined) {
-            let loaded = loadedHistoryList;
-            let concatList = loaded.concat(historyList.list);
-            let list = concatList;
-            setLoadedHistoryList(list);
+        if (historyList !== undefined && historyList.list.length > 0) {
+            if (loadedHistoryList.length === 0) {
+                historyHashMap.current.clear();
+                historyList.list.forEach(item => historyHashMap.current.set(item.hash, true));
+                setLoadedHistoryList(historyList.list);
+            } else {
+                const newItems = historyList.list.filter(item => !historyHashMap.current.has(item.hash));
+                newItems.forEach(item => historyHashMap.current.set(item.hash, true));
+                setLoadedHistoryList(prev => [...prev, ...newItems]);
+            }
         }
     }, [historyList]);
 
@@ -125,19 +133,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         paddingVertical: 20,
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     notice: {
         textAlign: 'center',
         fontFamily: Lato,
         fontSize: 18,
         color: TextDarkGrayColor,
-        opacity: 0.8
+        opacity: 0.8,
     },
     listBox: {
         flex: 1,
-        backgroundColor: BgColor
-    }
+        backgroundColor: BgColor,
+    },
 });
 
 export default History;
