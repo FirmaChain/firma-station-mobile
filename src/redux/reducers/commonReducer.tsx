@@ -16,7 +16,7 @@ import {
     IS_NETWORK_CHANGED,
     IS_CONNECTION,
     LOGGEDIN,
-    DATA_LOAD_STATUS
+    DATA_LOAD_STATUS,
 } from '../types';
 
 export interface ICommonStateProps {
@@ -33,7 +33,7 @@ export interface ICommonStateProps {
     networkChangeActivate: boolean;
     isBioAuthInProgress: boolean;
     isNetworkChanged: boolean;
-    connect: boolean;
+    connect: boolean | null;
     loggedIn: boolean;
     dataLoadStatus: number;
 }
@@ -52,9 +52,9 @@ const initialState: ICommonStateProps = {
     networkChangeActivate: false,
     isBioAuthInProgress: false,
     isNetworkChanged: false,
-    connect: true,
+    connect: null, // Default is null, because it's not initialized yet
     loggedIn: false,
-    dataLoadStatus: 0
+    dataLoadStatus: 0,
 };
 
 export const ACTION_CREATORS = {
@@ -72,9 +72,9 @@ export const ACTION_CREATORS = {
     HANDLE_NETWORK_CHANGE_ACTIVATE: createAction<boolean>(HANDLE_NETWORK_CHANGE_ACTIVATE),
     IS_BIOAUTH_IN_PROGRESS: createAction<boolean>(IS_BIOAUTH_IN_PROGRESS),
     IS_NETWORK_CHANGED: createAction<boolean>(IS_NETWORK_CHANGED),
-    IS_CONNECTION: createAction<boolean>(IS_CONNECTION),
+    IS_CONNECTION: createAction<boolean | null>(IS_CONNECTION),
     LOGGEDIN: createAction<boolean>(LOGGEDIN),
-    DATA_LOAD_STATUS: createAction<number>(DATA_LOAD_STATUS)
+    DATA_LOAD_STATUS: createAction<number>(DATA_LOAD_STATUS),
 };
 
 export const ACTIONS = {
@@ -94,10 +94,10 @@ export const ACTIONS = {
     handleIsNetworkChange: ACTION_CREATORS.IS_NETWORK_CHANGED,
     handleIsConnection: ACTION_CREATORS.IS_CONNECTION,
     handleLoggedIn: ACTION_CREATORS.LOGGEDIN,
-    handleDataLoadStatus: ACTION_CREATORS.DATA_LOAD_STATUS
+    handleDataLoadStatus: ACTION_CREATORS.DATA_LOAD_STATUS,
 };
 
-const reducer = createReducer(initialState, (builder) => {
+const reducer = createReducer(initialState, builder => {
     builder.addCase(ACTION_CREATORS.APP_STATE, (state, { payload }) => {
         state.appState = payload;
     });
@@ -117,7 +117,7 @@ const reducer = createReducer(initialState, (builder) => {
         state.requestIds.push(payload);
     });
     builder.addCase(ACTION_CREATORS.CLEAR_REQUEST_ID, (state, { payload }) => {
-        state.requestIds = state.requestIds.filter((v) => v !== payload);
+        state.requestIds = state.requestIds.filter(v => v !== payload);
     });
     builder.addCase(ACTION_CREATORS.APP_PAUSED_TIME, (state, { payload }) => {
         state.appPausedTime = payload;
