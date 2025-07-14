@@ -4,7 +4,7 @@ import { IFavoriteProps } from '@/redux/types';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { rootState } from '@/redux/reducers';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { MenuIcon, Radio, RemoveIcon } from '../icon/icon';
 import { LayoutAnim, easeInAndOutCustomAnim, fadeIn, fadeOut } from '@/util/animation';
@@ -18,41 +18,157 @@ import FastImage from 'react-native-fast-image';
 
 interface IProps {
     initVal: string;
-    data: Array<IFavoriteProps>;
+    data: IFavoriteProps[];
     isEdit: boolean;
     onPressEvent: (address: string, memo: string) => void;
     onPressEventForEdit: (address: string) => void;
 }
 
-type Item = {
-    key: number;
-    name: string;
-    address: string;
-    memo: string;
+// Custom hook: manange remove animation
+const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | null) => {
+    const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
+
+    return useMemo(() => {
+        const isTargetItem = removeItem?.address === item.address && removeItem?.name === item.name && removeItem.memo === item.memo;
+
+        if (isTargetItem) {
+            fadeIn(Animated, fadeAnimForRemove, 300);
+            return {
+                opacity: fadeAnimForRemove,
+                height: 'auto' as 'auto',
+                padding: 10,
+                buttonPadding: 4,
+            };
+        } else {
+            fadeOut(Animated, fadeAnimForRemove, 150);
+            return {
+                opacity: fadeAnimForRemove,
+                height: 0.1,
+                padding: 0,
+                buttonPadding: 0,
+            };
+        }
+    }, [removeItem, item, fadeAnimForRemove]);
 };
 
-const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEventForEdit }: IProps) => {
+// Confirm Remove Box
+interface RemoveConfirmBoxProps {
+    item: IFavoriteProps;
+    removeItem: IFavoriteProps | null;
+    onRemove: (item: IFavoriteProps) => void;
+}
+
+const RemoveConfirmBox = ({ item, removeItem, onRemove }: RemoveConfirmBoxProps) => {
+    const animationState = useRemoveAnimation(item, removeItem);
+
+    return (
+        <Animated.View
+            style={[
+                styles.removeConfirmBox,
+                {
+                    opacity: animationState.opacity,
+                    height: animationState.height,
+                    paddingBottom: animationState.padding,
+                    paddingHorizontal: 20,
+                },
+            ]}>
+            <Text style={styles.removeNotice}>{FAVORITE_REMOVE_WARN_TEXT}</Text>
+            <TouchableOpacity onPress={() => onRemove(item)}>
+                <Animated.Text
+                    style={[
+                        styles.removeButton,
+                        {
+                            opacity: animationState.opacity,
+                            height: animationState.height,
+                            paddingVertical: animationState.buttonPadding,
+                        },
+                    ]}>
+                    {'Remove'}
+                </Animated.Text>
+            </TouchableOpacity>
+        </Animated.View>
+    );
+};
+
+// Favorite List Item
+interface FavoriteListItemProps {
+    item: IFavoriteProps;
+    isEdit: boolean;
+    selected: string;
+    animationState: any;
+    onSelect: (address: string, memo: string, isEdit: boolean) => void;
+    onRemove: (item: IFavoriteProps) => void;
+    drag: () => void;
+}
+
+const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, onRemove, drag }: FavoriteListItemProps) => {
+    const getLogoImage = (address: string) => {
+        if (address.includes('firma')) return LOADING_LOGO_3;
+        if (address.includes('cosmos')) return ICON_ATOM_LOGO;
+        if (address.includes('osmo')) return ICON_OSMO_LOGO;
+        return LOADING_LOGO_3;
+    };
+
+    return (
+        <View key={item.address + item.name} style={styles.modalContentBox}>
+            <View style={[styles.modalPressBox]}>
+                <Animated.View
+                    style={{
+                        marginRight: animationState.iconMargin,
+                        width: animationState.iconWidth,
+                    }}>
+                    <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} onPress={() => isEdit && onRemove(item)}>
+                        <RemoveIcon size={20} color={FailedColor} />
+                    </TouchableOpacity>
+                </Animated.View>
+
+                <TouchableOpacity style={styles.favoriteItemBox} onPress={() => onSelect(item.address, item.memo || '', isEdit)}>
+                    <View style={styles.nameBox}>
+                        <View style={{ justifyContent: 'center' }}>
+                            <FastImage style={styles.logo} source={getLogoImage(item.address)} />
+                        </View>
+                        <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>
+                            {item.name}
+                        </Text>
+                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={styles.verifiedBox}>
+                                <Text style={styles.verified}>{'VERIFIED'}</Text>
+                            </View>
+                        </View>
+                    </View>
+                    <Text style={styles.address} numberOfLines={1} ellipsizeMode={'middle'}>
+                        {item.address}
+                    </Text>
+                    <Text style={[styles.memo, { display: item.memo ? 'flex' : 'none' }]} numberOfLines={1} ellipsizeMode={'middle'}>
+                        {item.memo}
+                    </Text>
+                </TouchableOpacity>
+
+                <View>
+                    {isEdit ? (
+                        <TouchableOpacity onPressIn={drag}>
+                            <MenuIcon size={20} color={WhiteColor} />
+                        </TouchableOpacity>
+                    ) : (
+                        <Radio size={20} color={WhiteColor} active={item.address === selected} />
+                    )}
+                </View>
+            </View>
+        </View>
+    );
+};
+
+const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPressEvent, onPressEventForEdit }: IProps) => {
     // External Seletor
-    const { storage, wallet } = useAppSelector((state: rootState) => state);
+    const {
+        storage: { favorite },
+        wallet,
+    } = useAppSelector((state: rootState) => state);
 
     // Internal Hooks
-    const flatListRef = useRef<any>(null);
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
-    const [selected, setSelected] = useState(initVal);
-    const [removeItemIndex, setRemoveItemIndex] = useState(-1);
-
-    const currentList = useMemo(() => {
-        if (data === null) return [];
-        return data.map((item, index) => {
-            return {
-                key: index,
-                name: item.name,
-                address: item.address,
-                memo: item.memo === undefined ? '' : item.memo,
-            };
-        });
-    }, [data]);
+    const [removeItem, setRemoveItem] = useState<IFavoriteProps | null>(null);
 
     const AnimationState = useMemo(() => {
         LayoutAnim();
@@ -64,7 +180,7 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
                 iconMargin: 15,
             };
         } else {
-            setRemoveItemIndex(-1);
+            setRemoveItem(null);
             fadeOut(Animated, fadeAnim, 300);
             return {
                 iconWidth: 0,
@@ -77,33 +193,18 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
     const handleSelect = (address: string, memo: string, isEdit: boolean) => {
         if (isEdit === false) {
             onPressEvent(address, memo);
-            setSelected(address);
         } else {
             onPressEventForEdit(address);
         }
     };
 
-    const handleRemoveItemSelect = (index: number) => {
-        setRemoveItemIndex(index === removeItemIndex ? -1 : index);
-    };
+    const removeFavorite = (item: IFavoriteProps) => {
+        const newFavorite: IFavoriteProps[] = data.filter(
+            _item => _item.address !== item.address && _item.name !== item.name && _item.memo !== item.memo
+        );
 
-    const recreateList = (data: Item[]) => {
-        let newFavorite: Item[] = [];
-        data.map((item, index) => {
-            return newFavorite.push({
-                key: index,
-                name: item.name,
-                address: item.address,
-                memo: item.memo === undefined ? '' : item.memo,
-            });
-        });
         adjustFavoriteList(newFavorite);
-    };
-
-    const removeFavorite = (key: number) => {
-        let newFavorite: Item[] = currentList.filter((_item, index) => index !== key);
-        adjustFavoriteList(newFavorite);
-        setRemoveItemIndex(-1);
+        setRemoveItem(null);
 
         Toast.show({
             type: 'info',
@@ -111,169 +212,56 @@ const ModalItemsForFavorites = ({ initVal, data, isEdit, onPressEvent, onPressEv
         });
     };
 
-    const adjustFavoriteList = (list: Item[]) => {
-        let favorites = storage.favorite;
-        let newList = favorites.map(value => {
-            if (value.ownerAddress === wallet.address) {
-                return {
-                    ownerAddress: value.ownerAddress,
-                    favorite: list,
-                };
-            } else {
-                return value;
-            }
-        });
+    const adjustFavoriteList = useCallback(
+        (list: IFavoriteProps[]) => {
+            const newList = favorite.map(value => {
+                if (value.ownerAddress === wallet.address) {
+                    return {
+                        ownerAddress: value.ownerAddress,
+                        favorite: list,
+                    };
+                } else {
+                    return value;
+                }
+            });
 
-        StorageActions.handleFavorite(newList);
-    };
+            StorageActions.handleFavorite(newList);
+        },
+        [favorite]
+    );
 
-    // Render Item
-
-    const ListItem = ({ item, drag }: RenderItemParams<Item>) => {
-        const index = currentList.findIndex(dataItem => dataItem.key === item.key) || 0;
-        const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
-
-        const AnimationStateForRemoveBox = useMemo(() => {
-            if (index === removeItemIndex) {
-                fadeIn(Animated, fadeAnimForRemove, 300);
-                return {
-                    height: 'auto' as 'auto', // height suppports 'auto' but considered as 'string' here
-                    padding: 10,
-                    buttonPadding: 4,
-                };
-            } else {
-                fadeOut(Animated, fadeAnimForRemove, 150);
-                return {
-                    height: 0.1,
-                    padding: 0,
-                    buttonPadding: 0,
-                };
-            }
-        }, [removeItemIndex]);
-
-        const MemoExist = useMemo(() => {
-            return item.memo !== '';
-        }, [item]);
-
-        const RenderListItem = useCallback(() => {
-            const getLogoImage = (address: string) => {
-                if (address.includes('firma')) return LOADING_LOGO_3;
-                if (address.includes('cosmos')) return ICON_ATOM_LOGO;
-                if (address.includes('osmo')) return ICON_OSMO_LOGO;
-
-                return LOADING_LOGO_3;
-            };
-
+    // Smaller ListItem render
+    const ListItem = useCallback(
+        ({ item, drag }: RenderItemParams<IFavoriteProps>) => {
             return (
-                <TouchableOpacity
-                    key={index}
-                    style={styles.modalContentBox}
-                    onPress={() => {
-                        handleSelect(item.address, item.memo, isEdit);
-                    }}>
-                    <View>
-                        <View style={[styles.modalPressBox]}>
-                            <Animated.View
-                                style={{
-                                    opacity: fadeAnim,
-                                    marginRight: AnimationState.iconMargin,
-                                    width: AnimationState.iconWidth,
-                                }}>
-                                <TouchableOpacity
-                                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                    onPress={() => {
-                                        isEdit && handleRemoveItemSelect(index);
-                                    }}>
-                                    <RemoveIcon size={20} color={FailedColor} />
-                                </TouchableOpacity>
-                            </Animated.View>
-                            <View style={styles.favoriteItemBox}>
-                                <View style={styles.nameBox}>
-                                    <View style={{ justifyContent: 'center' }}>
-                                        <FastImage style={styles.logo} source={getLogoImage(item.address)} />
-                                    </View>
-                                    <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>
-                                        {item.name}
-                                    </Text>
-                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                        <View style={styles.verifiedBox}>
-                                            <Text style={styles.verified}>{'VERIFIED'}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                                <Text style={styles.address} numberOfLines={1} ellipsizeMode={'middle'}>
-                                    {item.address}
-                                </Text>
-                                <Text
-                                    style={[styles.memo, { display: MemoExist ? 'flex' : 'none' }]}
-                                    numberOfLines={1}
-                                    ellipsizeMode={'middle'}>
-                                    {item.memo}
-                                </Text>
-                            </View>
-
-                            <View>
-                                {isEdit ? (
-                                    <TouchableOpacity onPressIn={drag}>
-                                        <MenuIcon size={20} color={WhiteColor} />
-                                    </TouchableOpacity>
-                                ) : (
-                                    <Radio size={20} color={WhiteColor} active={item.address === selected} />
-                                )}
-                            </View>
-                        </View>
-                        <Animated.View
-                            style={[
-                                styles.removeConfirmBox,
-                                {
-                                    opacity: fadeAnimForRemove,
-                                    height: AnimationStateForRemoveBox.height,
-                                    paddingBottom: AnimationStateForRemoveBox.padding,
-                                    paddingHorizontal: 20,
-                                },
-                            ]}>
-                            <Text style={styles.removeNotice}>{FAVORITE_REMOVE_WARN_TEXT}</Text>
-                            <TouchableOpacity onPress={() => removeFavorite(index)}>
-                                <Animated.Text
-                                    style={[
-                                        styles.removeButton,
-                                        {
-                                            opacity: fadeAnimForRemove,
-                                            height: AnimationStateForRemoveBox.height,
-                                            paddingVertical: AnimationStateForRemoveBox.buttonPadding,
-                                        },
-                                    ]}>
-                                    {'Remove'}
-                                </Animated.Text>
-                            </TouchableOpacity>
-                        </Animated.View>
-                    </View>
-                </TouchableOpacity>
+                <View>
+                    <FavoriteListItem
+                        item={item}
+                        isEdit={isEdit}
+                        selected={selectedAddress}
+                        animationState={AnimationState}
+                        onSelect={handleSelect}
+                        onRemove={setRemoveItem}
+                        drag={drag}
+                    />
+                    <RemoveConfirmBox item={item} removeItem={removeItem} onRemove={removeFavorite} />
+                </View>
             );
-        }, [currentList, isEdit, selected, removeItemIndex]);
-        return RenderListItem();
-    };
-
-    // Side Effect
-    useEffect(() => {
-        setSelected(initVal);
-    }, [initVal]);
+        },
+        [isEdit, removeItem]
+    );
 
     return (
-        <Fragment>
-            <GestureHandlerRootView style={{ minHeight: 300, backgroundColor: BgColor }}>
-                <DraggableFlatList
-                    ref={flatListRef}
-                    data={currentList}
-                    style={{ maxHeight: 450 }}
-                    renderItem={ListItem}
-                    scrollEnabled={true}
-                    keyExtractor={_item => String(_item.key) + _item.address}
-                    onScrollToIndexFailed={() => {}}
-                    onDragEnd={({ data }) => recreateList(data)}
-                />
-            </GestureHandlerRootView>
-        </Fragment>
+        <GestureHandlerRootView style={{ minHeight: 300, backgroundColor: BgColor }}>
+            <DraggableFlatList
+                data={data}
+                style={{ maxHeight: 450 }}
+                renderItem={ListItem}
+                scrollEnabled={true}
+                keyExtractor={item => item.address + item.name} //? Both address and name are unique
+                onDragEnd={({ data }) => adjustFavoriteList(data)}
+            />
+        </GestureHandlerRootView>
     );
 };
 
