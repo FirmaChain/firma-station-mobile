@@ -1,4 +1,4 @@
-import { bindActionCreators } from 'redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
 import { store } from './store';
 import { ACTIONS as commonActions } from './reducers/commonReducer';

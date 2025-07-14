@@ -3,6 +3,7 @@ import { MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
 import { rootState } from '@/redux/reducers';
 import { getChainInfo } from '@/util/firma';
+import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -28,7 +29,7 @@ export const useWalletJSON = () => {
 
     const [walletJson, setWalletJson] = useState<IWalletJSONProps>({
         contactAddressList: [],
-        timestamp: ''
+        timestamp: '',
     });
 
     const getWalletJsonData = useCallback(async () => {
@@ -38,8 +39,8 @@ export const useWalletJSON = () => {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-store',
                     Pragma: 'no-store',
-                    Expires: '0'
-                }
+                    Expires: '0',
+                },
             });
             const data: IWalletJSONProps = await response.json();
             setWalletJson(data);
@@ -73,27 +74,26 @@ export const useChainVersion = () => {
     return {
         handleChainInfo,
         chainVer,
-        sdkVer
+        sdkVer,
     };
 };
 
 export const useServerMessage = () => {
-    const { storage } = useAppSelector((state) => state);
+    const { storage } = useAppSelector(state => state);
     const [minAppVer, setMinAppVer] = useState<string | null | undefined>(null);
     const [currentAppVer, setCurrentAppVer] = useState<string | null | undefined>(null);
     const [maintenanceState, setMaintenanceState] = useState<IMaintenanceState | null | undefined>(null);
 
     const getMaintenanceData = useCallback(async () => {
         try {
-            const response = await fetch(`${MAINTENANCE_API}/${MAINTENANCE_PATH[storage.network]}`, {
+            const { data } = await axios.get(`${MAINTENANCE_API}/${MAINTENANCE_PATH[storage.network]}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-store',
                     Pragma: 'no-store',
-                    Expires: '0'
-                }
+                    Expires: '0',
+                },
             });
-            const data: any = await response.json();
 
             setMinAppVer(data.minAppVer);
             setCurrentAppVer(data.currentAppVer);
@@ -114,7 +114,7 @@ export const useServerMessage = () => {
         minAppVer,
         currentAppVer,
         maintenanceState,
-        getMaintenanceData
+        getMaintenanceData,
     };
 };
 
