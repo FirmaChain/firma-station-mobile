@@ -1,7 +1,6 @@
 import { FirmaUtil } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { getDAppConnectSession, setDAppConnectSession } from './wallet';
-import { fromByteArray } from 'react-native-quick-base64';
 
 export interface UserSession {
     userkey: string;
@@ -292,9 +291,9 @@ class ConnectClient {
             const address = await wallet.getAddress();
 
             const commonTxClient = FirmaUtil.getCommonTxClient(wallet);
-            const extTxRaw = await commonTxClient.signDirectForSignDocTxRaw(address, signDoc);
+            const extTxRaw = await commonTxClient.signDirectForSignDoc(address, signDoc);
 
-            const valid = await FirmaUtil.verifyDirectSignature(address, fromByteArray(extTxRaw.signatures[0]), signDoc);
+            const valid = await FirmaUtil.verifyDirectSignature(address, extTxRaw.signature, signDoc);
 
             if (valid) {
                 return extTxRaw;
@@ -330,7 +329,7 @@ class ConnectClient {
 
             //? Prevent BigInt issue
             return JSON.stringify(result, (_, value) => {
-                if (typeof value === 'bigint') return String(value) + 'n';
+                if (typeof value === 'bigint') return String(value);
                 else return value;
             });
         } catch (e) {

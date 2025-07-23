@@ -174,9 +174,9 @@ const Transaction = ({ state }: IProps) => {
                     let resultMessage = '';
 
                     if (connectClient.isDirectSign(state.data)) {
-                        const txRaw = await connectClient.getDirectSignRawData(Wallet, state.data);
+                        const { signature, txRaw } = await connectClient.getDirectSignRawData(Wallet, state.data);
 
-                        if (await connectClient.verifySign(JSON.parse(state.session), state.data, fromByteArray(txRaw.signatures[0]))) {
+                        if (await connectClient.verifySign(JSON.parse(state.session), state.data, signature)) {
                             if (state.data.qrType === 1) {
                                 await connectClient.approve(JSON.parse(state.session), state.data, {
                                     address: wallet.address,
