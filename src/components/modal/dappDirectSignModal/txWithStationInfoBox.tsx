@@ -15,7 +15,7 @@ import {
     STAKING_UNDELEGATE,
     STAKING_WITHDRAW,
     STAKING_WITHDRAW_ALL,
-    VOTE_TYPE
+    VOTE_TYPE,
 } from '@/constants/types';
 import { convertAmount, convertNumber, convertTime, convertToFctNumber } from '@/util/common';
 import { useAppSelector } from '@/redux/hooks';
@@ -54,7 +54,7 @@ interface IRenderValidatorInfoProps {
 const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
-    const { storage, wallet } = useAppSelector((state) => state);
+    const { storage, wallet } = useAppSelector(state => state);
     const { stakingState, getStakingState } = useStakingData();
     const { proposalState, handleProposalPolling } = useProposalData();
 
@@ -94,15 +94,17 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                 style={[
                     styles.boxH,
                     { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
-                    isMemo && { alignItems: 'flex-start' }
-                ]}
-            >
+                    isMemo && { alignItems: 'flex-start' },
+                ]}>
                 <Text style={[styles.catTitle, isMemo && { flex: 0, width: 40 }]}>{title}</Text>
                 <Text
-                    style={[styles.value, { flex: isMemo ? 1 : 0, color: AddressTextColor, fontSize: 15 }, isMemo && { maxWidth: 240 }]}
+                    style={[
+                        styles.value,
+                        { flex: isMemo ? 1 : 0, color: AddressTextColor, fontSize: 15 },
+                        isMemo ? { maxWidth: 240 } : { maxWidth: '50%' },
+                    ]}
                     numberOfLines={isMemo ? 2 : 1}
-                    ellipsizeMode={'middle'}
-                >
+                    ellipsizeMode={'middle'}>
                     {value}
                 </Text>
             </View>
@@ -116,7 +118,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                 <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({
                     value: amount,
                     isUfct: false,
-                    point: amount > 0 ? 6 : 0
+                    point: amount > 0 ? 6 : 0,
                 })} ${_CHAIN_SYMBOL}`}</Text>
             </View>
         );
@@ -231,7 +233,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
             try {
                 const [validator, avatarURL] = await Promise.all([
                     getValidatorFromAddress(validatorAddress),
-                    getValidatorAvatarURL(ValidatorAvatarList, validatorAddress)
+                    getValidatorAvatarURL(ValidatorAvatarList, validatorAddress),
                 ]);
                 if (type === 0) {
                     setSrcMoniker(validator.description.moniker);
@@ -295,25 +297,25 @@ const styles = StyleSheet.create({
     boxH: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     boxV: {
         width: '100%',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
     },
 
     catTitle: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
-        color: TextDarkGrayColor
+        color: TextDarkGrayColor,
     },
     value: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
         color: TextDarkGrayColor,
-        textAlign: 'right'
+        textAlign: 'right',
     },
     avatar: {
         width: 20,
@@ -321,8 +323,8 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 50,
         overflow: 'hidden',
-        marginRight: 7
-    }
+        marginRight: 7,
+    },
 });
 
 export default TxWithStationInfoBox;

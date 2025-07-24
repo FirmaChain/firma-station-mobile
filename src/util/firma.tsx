@@ -6,7 +6,6 @@ import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from '.
 import { getDecryptPassword, getRecoverValue } from './wallet';
 import { TOKEN_DENOM } from '@/constants/common';
 import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
-// import Long from 'long';
 
 export interface IWallet {
     name?: string;
@@ -28,7 +27,7 @@ export interface INftItemType {
 }
 
 //! Temp vote info for proposal tally. Remove this if tally type is fixed
-interface TmpCurrentVoteInfo {
+export interface TmpCurrentVoteInfo {
     yes_count: string;
     no_count: string;
     no_with_veto_count: string;
@@ -964,10 +963,10 @@ export const getProposalTally = async (proposalId: string) => {
         const result = (await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId)) as unknown as TmpCurrentVoteInfo;
 
         return {
-            yes_count: result.yes_count,
-            no_count: result.no_count,
-            no_with_veto_count: result.no_with_veto_count,
-            abstain_count: result.abstain_count,
+            yes: result.yes_count,
+            no: result.no_count,
+            no_with_veto: result.no_with_veto_count,
+            abstain: result.abstain_count,
         };
     } catch (error) {
         throw error;
