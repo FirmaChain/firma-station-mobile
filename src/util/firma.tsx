@@ -2,7 +2,7 @@ import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
-import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber, wait } from './common';
+import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
 import { TOKEN_DENOM } from '@/constants/common';
 import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
@@ -270,7 +270,10 @@ export const getEstimateGasGrantStakeAuthorization = async (walletName: string, 
             getRestakeAddress(),
             validatorAddress,
             1,
-            date,
+            {
+                seconds: BigInt(Math.floor(date.getTime() / 1000)),
+                nanos: (date.getTime() % 1000) * 1000000,
+            },
             0
         );
         return gasEstimation;
@@ -673,10 +676,21 @@ export const grant = async (recoverValue: string, validatorAddress: string[], ma
         let date = new Date();
         date.setFullYear(date.getFullYear() + 1);
 
-        let result = await getFirmaSDK().Authz.grantStakeAuthorization(wallet, getRestakeAddress(), validatorAddress, 1, date, maxTokens, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
-        });
+        let result = await getFirmaSDK().Authz.grantStakeAuthorization(
+            wallet,
+            getRestakeAddress(),
+            validatorAddress,
+            1,
+            {
+                seconds: BigInt(Math.floor(date.getTime() / 1000)),
+                nanos: (date.getTime() % 1000) * 1000000,
+            },
+            maxTokens,
+            {
+                gas: estimatedGas,
+                fee: getFeesFromGas(estimatedGas),
+            }
+        );
 
         return result;
     } catch (error) {
