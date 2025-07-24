@@ -27,6 +27,14 @@ export interface INftItemType {
     tokenURI: string;
 }
 
+//! Temp vote info for proposal tally. Remove this if tally type is fixed
+interface TmpCurrentVoteInfo {
+    yes_count: string;
+    no_count: string;
+    no_with_veto_count: string;
+    abstain_count: string;
+}
+
 let firmaSDK: FirmaSDK;
 let restakeAddress: string;
 
@@ -952,8 +960,15 @@ export const getProposalByProposalId = async (proposalId: string) => {
 
 export const getProposalTally = async (proposalId: string) => {
     try {
-        let result = await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId);
-        return result;
+        //! Temp vote info for proposal tally. Remove this if tally type is fixed
+        const result = (await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId)) as unknown as TmpCurrentVoteInfo;
+
+        return {
+            yes_count: result.yes_count,
+            no_count: result.no_count,
+            no_with_veto_count: result.no_with_veto_count,
+            abstain_count: result.abstain_count,
+        };
     } catch (error) {
         throw error;
     }
