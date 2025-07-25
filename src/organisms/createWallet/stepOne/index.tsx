@@ -26,15 +26,15 @@ interface IProps {
 
 const StepOne = ({ recoverValue = null }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet, common, storage } = useAppSelector((state) => state);
+    const { wallet, common, storage } = useAppSelector(state => state);
 
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
     const [validation, setValidation] = useState(false);
-    const handleWalletInfo = (name: string, password: string, validation: boolean) => {
+    const handleWalletInfo = (name: string, _password: string, _validation: boolean) => {
         setWalletName(name);
-        setPassword(password);
-        setValidation(validation);
+        setPassword(_password);
+        setValidation(_validation);
     };
 
     const [openBioAuthModal, setOpenBioAuthModal] = useState(false);
@@ -50,20 +50,20 @@ const StepOne = ({ recoverValue = null }: IProps) => {
                 CommonActions.handleLoadingProgress(false);
                 return Toast.show({
                     type: 'error',
-                    text1: CREATE_WALLET_FAILED
+                    text1: CREATE_WALLET_FAILED,
                 });
             }
-            const wallet: IWallet = {
+            const newWallet: IWallet = {
                 name: walletName,
                 password: password,
-                mnemonic: result.mnemonic
+                mnemonic: result.mnemonic,
             };
-            navigation.navigate(Screens.CreateStepTwo, { wallet: wallet });
+            navigation.navigate(Screens.CreateStepTwo, { wallet: newWallet });
         } catch (error) {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: CREATE_WALLET_FAILED
+                text1: CREATE_WALLET_FAILED,
             });
         }
     };
@@ -82,7 +82,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: CREATE_WALLET_FAILED
+                text1: CREATE_WALLET_FAILED,
             });
         }
     };
@@ -105,7 +105,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
         }
     };
@@ -136,8 +136,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
             title={recoverValue ? 'Recover Wallet' : 'New Wallet'}
             handleGuide={handleMoveToWeb}
             step={recoverValue ? 0 : 1}
-            backEvent={handleBack}
-        >
+            backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>
                     <InputBox walletInfo={handleWalletInfo} />
@@ -166,12 +165,12 @@ const styles = StyleSheet.create({
     contentBox: {
         flex: 3,
         paddingHorizontal: 20,
-        marginTop: 30
+        marginTop: 30,
     },
     buttonBox: {
         flex: 1,
-        justifyContent: 'flex-end'
-    }
+        justifyContent: 'flex-end',
+    },
 });
 
 export default StepOne;

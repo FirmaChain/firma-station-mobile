@@ -4,9 +4,11 @@ import { getProposalData } from '@/apollo/gqls';
 import { convertNumber, convertTime } from '@/util/common';
 import { StorageActions } from '@/redux/actions';
 import { getProposalByProposalId, getProposalParams, getProposals, getProposalTally } from '@/util/firma';
-import { PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
+import { ERROR_FETCHING_PROPOSAL_DATA, PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
 import { rootState } from '@/redux/reducers';
 import { CHAIN_NETWORK } from '@/../config';
+import { useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 export interface IGovernanceState {
     list: Array<IProposalItemState>;
@@ -163,6 +165,8 @@ export const useGovernanceList = () => {
 };
 
 export const useProposalData = () => {
+    const navigation = useNavigation();
+
     const [proposalState, setProposalState] = useState<IProposalState | null>(null);
 
     const handleProposal = useCallback(async (id: number) => {
@@ -249,8 +253,13 @@ export const useProposalData = () => {
                 descState,
                 voteState,
             });
-        } catch (error) {
-            throw error;
+        } catch (e) {
+            // Fix: if failed to fetch proposal data, show error toast and return to previous screen (governance)
+            Toast.show({
+                type: 'error',
+                text1: ERROR_FETCHING_PROPOSAL_DATA,
+            });
+            navigation.goBack();
         }
     }, []);
 

@@ -249,6 +249,7 @@ export const UNLOCK_AUTH_TEXT = 'Enter your password to unlock.';
 
 // proposal
 export const PROPOSAL_NOT_REGISTERED = 'No proposal registered.';
+export const ERROR_FETCHING_PROPOSAL_DATA = 'Failed to fetch proposal data';
 
 export const PROPOSAL_STATUS: IKeyValue = {
     PROPOSAL_STATUS_DEPOSIT_PERIOD: 'DEPOSIT PERIOD',
@@ -580,7 +581,7 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
         tagDisplay: LABELS.txFeegrantRevokeLabel,
     },
     '/cosmos.authz.v1beta1.MsgGrant': {
-        tagTheme: TYPE_COLORS['two'], // To match Station desktop
+        tagTheme: TYPE_COLORS.two, // To match Station desktop
         tagDisplay: LABELS.txAuthzGrantLabel,
     },
     '/firmachain.firmachain.token.MsgCreateToken': {
