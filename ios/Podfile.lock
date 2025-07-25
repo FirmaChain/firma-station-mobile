@@ -407,7 +407,7 @@ PODS:
     - React-Core
   - react-native-netinfo (8.3.1):
     - React-Core
-  - react-native-quick-base64 (2.2.0):
+  - react-native-quick-base64 (2.2.1):
     - React-Core
   - react-native-randombytes (3.6.2):
     - React-Core
@@ -874,7 +874,7 @@ SPEC CHECKSUMS:
   react-native-camera: 079d80421f0572d6b4e836908114d614d0adb553
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-netinfo: 98ba850c436e81a5e811abb5055952db52d5d023
-  react-native-quick-base64: 2039138ce809e44fb6de3205ba4c1cf2f0b82fe3
+  react-native-quick-base64: aa7af8c380016c63366692b61a25f8283c945c40
   react-native-randombytes: 4eeddad82d1fd57adda1cd5beffe67d041c9d6de
   react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
