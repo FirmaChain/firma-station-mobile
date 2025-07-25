@@ -1823,9 +1823,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firmachain/firma-js@npm:0.3.7-beta1":
-  version: 0.3.7-beta1
-  resolution: "@firmachain/firma-js@npm:0.3.7-beta1"
+"@firmachain/firma-js@npm:0.3.7-beta2":
+  version: 0.3.7-beta2
+  resolution: "@firmachain/firma-js@npm:0.3.7-beta2"
   dependencies:
     "@cosmjs/amino": "npm:0.34.0"
     "@cosmjs/math": "npm:0.34.0"
@@ -1844,7 +1844,7 @@ __metadata:
     pako: "npm:2.0.2"
     protobufjs: "npm:6.10.2"
     readline-sync: "npm:1.4.10"
-  checksum: 10c0/10946b8de36bd39616cfc19720004d9c37407eaae2e920845e15371bad6e6dd1cf5b3a5e8e27f76d5722c3e45e9a06068ab1e6f2813c76aabeafc75740105e34
+  checksum: 10c0/b04b7dd8907cd8e6d49194a8d7ea4648c48a962c1cd85bffe68fc991d9ced7253df6e4f5ebf8cf73d139c9e75e307ded26524214eab937d6bb660a1b2fc4cc93
   languageName: node
   linkType: hard
 
@@ -6430,7 +6430,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@babel/preset-env": "npm:^7.20.0"
     "@babel/runtime": "npm:^7.20.0"
-    "@firmachain/firma-js": "npm:0.3.7-beta1"
+    "@firmachain/firma-js": "npm:0.3.7-beta2"
     "@react-native-async-storage/async-storage": "npm:^2.0.0"
     "@react-native-clipboard/clipboard": "npm:^1.16.3"
     "@react-native-community/netinfo": "npm:^8.2.0"

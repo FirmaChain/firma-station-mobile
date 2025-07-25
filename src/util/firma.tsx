@@ -26,14 +26,6 @@ export interface INftItemType {
     tokenURI: string;
 }
 
-//! Temp vote info for proposal tally. Remove this if tally type is fixed
-export interface TmpCurrentVoteInfo {
-    yes_count: string;
-    no_count: string;
-    no_with_veto_count: string;
-    abstain_count: string;
-}
-
 let firmaSDK: FirmaSDK;
 let restakeAddress: string;
 
@@ -959,8 +951,7 @@ export const getProposalByProposalId = async (proposalId: string) => {
 
 export const getProposalTally = async (proposalId: string) => {
     try {
-        //! Temp vote info for proposal tally. Remove this if tally type is fixed
-        const result = (await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId)) as unknown as TmpCurrentVoteInfo;
+        const result = await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId);
 
         return {
             yes: result.yes_count,
