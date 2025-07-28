@@ -1,8 +1,8 @@
 module.exports = {
     root: true,
-    extends: '@react-native',
+    extends: ['@react-native', 'prettier'],
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint', 'prettier'],
     overrides: [
         {
             files: ['*.ts', '*.tsx'],
