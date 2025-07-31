@@ -9,6 +9,7 @@ import { rootState } from '@/redux/reducers';
 import { CHAIN_NETWORK } from '@/../config';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import _ from 'lodash';
 
 export interface IGovernanceState {
     list: Array<IProposalItemState>;
@@ -115,7 +116,7 @@ export const useGovernanceList = () => {
                         const proposalId = id.toString();
                         const proposalType =
                             PROPOSAL_MESSAGE_TYPE[
-                                (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
+                            (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
                             ];
 
                         const depositEndTime = _proposal.deposit_end_time;
@@ -190,7 +191,15 @@ export const useProposalData = () => {
 
                     if (proposalData.data.proposalVote !== undefined) {
                         const _votingList = proposalData.data.proposalVote;
-                        votingList = _votingList;
+
+                        const latestVotesByVoter = _
+                            .chain(_votingList)
+                            .groupBy('voter_address')
+                            .values()
+                            .map((votes) => votes[votes.length - 1])
+                            .value();
+
+                        votingList = latestVotesByVoter;
                     }
                 }
             } catch (error) {

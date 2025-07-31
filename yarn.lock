@@ -1823,9 +1823,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firmachain/firma-js@npm:0.3.7-beta2":
-  version: 0.3.7-beta2
-  resolution: "@firmachain/firma-js@npm:0.3.7-beta2"
+"@firmachain/firma-js@npm:0.3.7-beta3":
+  version: 0.3.7-beta3
+  resolution: "@firmachain/firma-js@npm:0.3.7-beta3"
   dependencies:
     "@cosmjs/amino": "npm:0.34.0"
     "@cosmjs/math": "npm:0.34.0"
@@ -1844,7 +1844,7 @@ __metadata:
     pako: "npm:2.0.2"
     protobufjs: "npm:6.10.2"
     readline-sync: "npm:1.4.10"
-  checksum: 10c0/b04b7dd8907cd8e6d49194a8d7ea4648c48a962c1cd85bffe68fc991d9ced7253df6e4f5ebf8cf73d139c9e75e307ded26524214eab937d6bb660a1b2fc4cc93
+  checksum: 10c0/da03f5cc627cb69ca30189a3eb35f3f2a589363034587d03903f13cb2b789c2e2ce1e10d61b7992347846061111bb006a655a0cb6d376f31960d1b260ef87c8a
   languageName: node
   linkType: hard
 
@@ -3083,6 +3083,13 @@ __metadata:
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 10c0/a996a745e6c5d60292f36731dd41341339d4eeed8180bb09226e5c8d23759067692b1d88e5d91d72ee83dfc00d3aca8e7bd43ea120516c17922cbcb7c3e252db
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4":
+  version: 4.17.20
+  resolution: "@types/lodash@npm:4.17.20"
+  checksum: 10c0/98cdd0faae22cbb8079a01a3bb65aa8f8c41143367486c1cbf5adc83f16c9272a2a5d2c1f541f61d0d73da543c16ee1d21cf2ef86cb93cd0cc0ac3bced6dd88f
   languageName: node
   linkType: hard
 
@@ -6475,7 +6482,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@babel/preset-env": "npm:^7.20.0"
     "@babel/runtime": "npm:^7.20.0"
-    "@firmachain/firma-js": "npm:0.3.7-beta2"
+    "@firmachain/firma-js": "npm:0.3.7-beta3"
     "@react-native-async-storage/async-storage": "npm:^2.0.0"
     "@react-native-clipboard/clipboard": "npm:^1.16.3"
     "@react-native-community/netinfo": "npm:^8.2.0"
@@ -6489,6 +6496,7 @@ __metadata:
     "@tsconfig/react-native": "npm:^3.0.0"
     "@types/crypto-js": "npm:^4.1.1"
     "@types/jest": "npm:^26.0.23"
+    "@types/lodash": "npm:^4"
     "@types/node": "npm:18.19.113"
     "@types/react": "npm:^18.0.24"
     "@types/react-native-vector-icons": "npm:^6.4.10"
@@ -6517,6 +6525,7 @@ __metadata:
     graphql: "npm:15.7.1"
     jail-monkey: "npm:^2.8.3"
     jest: "npm:^29.2.1"
+    lodash: "npm:^4.17.21"
     metro-react-native-babel-preset: "npm:^0.76.9"
     moment: "npm:^2.29.2"
     patch-package: "npm:^8.0.0"
