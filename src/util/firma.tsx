@@ -571,7 +571,7 @@ export const getSigningInfo = async (address: string) => {
     try {
         const result = await getFirmaSDK().Slashing.getSigningInfo(address);
         return result;
-    } catch (error) {}
+    } catch (error) { }
 };
 
 export const getValidatorFromAddress = async (address: string) => {
@@ -868,8 +868,8 @@ export const getStaking = async (address: string) => {
         const delegated = convertToFctNumber(
             delegationBalanceList.length > 0
                 ? delegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
+                    return (convertNumber(prev) + convertNumber(current)).toString();
+                })
                 : 0
         );
 
@@ -885,8 +885,8 @@ export const getStaking = async (address: string) => {
         const undelegate = convertToFctNumber(
             undelegationBalanceList.length > 0
                 ? undelegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
+                    return (convertNumber(prev) + convertNumber(current)).toString();
+                })
                 : 0
         );
 
@@ -924,7 +924,7 @@ export const getNFTItemFromId = async (id: string) => {
 
 export const getProposals = async () => {
     try {
-        let result = await getFirmaSDK().Gov.getProposalList();
+        let result = await getFirmaSDK().Gov.getAllProposalList();
         return result;
     } catch (error) {
         throw error;
