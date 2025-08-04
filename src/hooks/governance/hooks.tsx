@@ -116,7 +116,7 @@ export const useGovernanceList = () => {
                         const proposalId = id.toString();
                         const proposalType =
                             PROPOSAL_MESSAGE_TYPE[
-                            (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
+                                (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
                             ];
 
                         const depositEndTime = _proposal.deposit_end_time;
@@ -192,11 +192,10 @@ export const useProposalData = () => {
                     if (proposalData.data.proposalVote !== undefined) {
                         const _votingList = proposalData.data.proposalVote;
 
-                        const latestVotesByVoter = _
-                            .chain(_votingList)
+                        const latestVotesByVoter = _.chain(_votingList)
                             .groupBy('voter_address')
                             .values()
-                            .map((votes) => votes[votes.length - 1])
+                            .map(votes => votes[votes.length - 1])
                             .value();
 
                         votingList = latestVotesByVoter;
@@ -277,7 +276,7 @@ export const useProposalData = () => {
         const date = new Date(submitTime);
         date.setSeconds(date.getSeconds() + periodToDay);
 
-        return convertTime(date.toString(), true);
+        return convertTime(date, true);
     };
 
     const classifiedData = (content: any) => {
