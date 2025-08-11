@@ -26,6 +26,10 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
     const { wallet } = useAppSelector(state => state);
     const { requestIds, loading } = useAppSelector(state => state.common);
 
+    //? Added this progress state to prevent button enabled when switching modals
+    //? After clicking "next" button from vote modal, there is 100ms+ delay before tx modal opens.
+    const [progress, setProgress] = useState(false);
+
     const [votingGas, setVotingGas] = useState(getFirmaConfig().defaultGas);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
@@ -74,18 +78,24 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
             const result = await getEstimateGasVoting(wallet.name, proposalId, getVotingOption(selectedVote));
             setVotingGas(result);
             setAlertDescription('');
+            setProgress(true); // prevent modal transition gap makes vote button enabled
             CommonActions.handleLoadingProgress(false);
             wait(100).then(() => {
                 handleTransactionModal(true);
+                setProgress(false);
             });
         } catch (error) {
             console.log(error);
+            setProgress(true);
             CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
             wait(100).then(() => {
                 handleModalOpen(true);
+                setProgress(false);
             });
             throw error;
+        } finally {
+            if (progress) setProgress(false);
         }
     };
 
@@ -95,8 +105,17 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
         // + any of modal is not open
         // + requestIds is empty
         // + loading is false
-        return isVotingPeriod && !openVoteModal && !openTransactionModal && !isAlertModalOpen && requestIds.length === 0 && !loading;
-    }, [isVotingPeriod, openVoteModal, openTransactionModal, isAlertModalOpen, requestIds, loading]);
+        // + progress is false
+        return (
+            isVotingPeriod &&
+            !openVoteModal &&
+            !openTransactionModal &&
+            !isAlertModalOpen &&
+            requestIds.length === 0 &&
+            !loading &&
+            !progress
+        );
+    }, [isVotingPeriod, openVoteModal, openTransactionModal, isAlertModalOpen, requestIds, loading, progress]);
 
     return (
         <React.Fragment>

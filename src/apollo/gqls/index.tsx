@@ -1,5 +1,4 @@
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import { getClient } from '@/apollo';
 
 interface IQueryParam {
@@ -18,14 +17,18 @@ export const getProposalData = async ({ proposalId }: IQueryParam) => {
                 bonded_tokens
               }
             }
-            proposalVote: proposal_vote(where: {proposal_id: {_eq:  ${proposalId}}}) {
+            proposalVote: proposal_vote(
+                where: {proposal_id: {_eq: ${proposalId}}}
+                order_by: {height: asc}
+            ) {
                 option
                 voterAddress: voter_address
+                height
             }
           }
         `,
         notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'no-cache',
     });
 };
 
@@ -55,7 +58,7 @@ export const getHistoryByAddressData = async ({ address, offset, limit }: IQuery
         variables: {
             address,
             limit,
-            offset
-        }
+            offset,
+        },
     });
 };

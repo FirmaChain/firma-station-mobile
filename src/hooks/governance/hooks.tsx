@@ -182,6 +182,7 @@ export const useProposalData = () => {
             let bondedTokens: number | null = null;
             let votingList: Array<any> = [];
             try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 const proposalData = await getProposalData({ proposalId: _id });
                 if (proposalData.data.proposal[0] !== undefined) {
                     if (proposalData.data.proposal[0].staking_pool_snapshot) {
@@ -193,6 +194,7 @@ export const useProposalData = () => {
                         const _votingList = proposalData.data.proposalVote;
 
                         const latestVotesByVoter = _.chain(_votingList)
+                            .orderBy('height', 'asc')
                             .groupBy('voter_address')
                             .values()
                             .map(votes => votes[votes.length - 1])
