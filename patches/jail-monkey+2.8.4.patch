@@ -1,5 +1,5 @@
 diff --git a/node_modules/jail-monkey/android/src/main/AndroidManifest.xml b/node_modules/jail-monkey/android/src/main/AndroidManifest.xml
-index a2f47b6..c96f431 100644
+index a2f47b6..ebca982 100644
 --- a/node_modules/jail-monkey/android/src/main/AndroidManifest.xml
 +++ b/node_modules/jail-monkey/android/src/main/AndroidManifest.xml
 @@ -1,2 +1,2 @@

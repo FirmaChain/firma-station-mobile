@@ -2,11 +2,10 @@ import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
-import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber, wait } from './common';
+import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
 import { TOKEN_DENOM } from '@/constants/common';
 import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
-// import Long from 'long';
 
 export interface IWallet {
     name?: string;
@@ -270,7 +269,10 @@ export const getEstimateGasGrantStakeAuthorization = async (walletName: string, 
             getRestakeAddress(),
             validatorAddress,
             1,
-            date,
+            {
+                seconds: BigInt(Math.floor(date.getTime() / 1000)),
+                nanos: (date.getTime() % 1000) * 1000000,
+            },
             0
         );
         return gasEstimation;
@@ -569,7 +571,7 @@ export const getSigningInfo = async (address: string) => {
     try {
         const result = await getFirmaSDK().Slashing.getSigningInfo(address);
         return result;
-    } catch (error) {}
+    } catch (error) { }
 };
 
 export const getValidatorFromAddress = async (address: string) => {
@@ -673,10 +675,21 @@ export const grant = async (recoverValue: string, validatorAddress: string[], ma
         let date = new Date();
         date.setFullYear(date.getFullYear() + 1);
 
-        let result = await getFirmaSDK().Authz.grantStakeAuthorization(wallet, getRestakeAddress(), validatorAddress, 1, date, maxTokens, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
-        });
+        let result = await getFirmaSDK().Authz.grantStakeAuthorization(
+            wallet,
+            getRestakeAddress(),
+            validatorAddress,
+            1,
+            {
+                seconds: BigInt(Math.floor(date.getTime() / 1000)),
+                nanos: (date.getTime() % 1000) * 1000000,
+            },
+            maxTokens,
+            {
+                gas: estimatedGas,
+                fee: getFeesFromGas(estimatedGas),
+            }
+        );
 
         return result;
     } catch (error) {
@@ -855,8 +868,8 @@ export const getStaking = async (address: string) => {
         const delegated = convertToFctNumber(
             delegationBalanceList.length > 0
                 ? delegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
+                    return (convertNumber(prev) + convertNumber(current)).toString();
+                })
                 : 0
         );
 
@@ -872,8 +885,8 @@ export const getStaking = async (address: string) => {
         const undelegate = convertToFctNumber(
             undelegationBalanceList.length > 0
                 ? undelegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
+                    return (convertNumber(prev) + convertNumber(current)).toString();
+                })
                 : 0
         );
 
@@ -911,7 +924,7 @@ export const getNFTItemFromId = async (id: string) => {
 
 export const getProposals = async () => {
     try {
-        let result = await getFirmaSDK().Gov.getProposalList();
+        let result = await getFirmaSDK().Gov.getAllProposalList();
         return result;
     } catch (error) {
         throw error;
@@ -938,8 +951,14 @@ export const getProposalByProposalId = async (proposalId: string) => {
 
 export const getProposalTally = async (proposalId: string) => {
     try {
-        let result = await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId);
-        return result;
+        const result = await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId);
+
+        return {
+            yes: result.yes_count,
+            no: result.no_count,
+            no_with_veto: result.no_with_veto_count,
+            abstain: result.abstain_count,
+        };
     } catch (error) {
         throw error;
     }

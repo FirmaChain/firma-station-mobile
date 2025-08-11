@@ -28,7 +28,7 @@ const Proposal = ({ proposalId }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
-    const { wallet, common } = useAppSelector((state) => state);
+    const { wallet, common } = useAppSelector(state => state);
     const { proposalState, handleProposalPolling } = useProposalData();
 
     const proposalStates = useMemo(() => {
@@ -58,7 +58,7 @@ const Proposal = ({ proposalId }: IProps) => {
             address: wallet.address,
             proposalId: proposalId,
             votingOpt: votingOpt,
-            gas: gas
+            gas: gas,
         };
         navigation.navigate(Screens.Transaction, { state: transactionState });
     };

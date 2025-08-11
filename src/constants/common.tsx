@@ -249,6 +249,7 @@ export const UNLOCK_AUTH_TEXT = 'Enter your password to unlock.';
 
 // proposal
 export const PROPOSAL_NOT_REGISTERED = 'No proposal registered.';
+export const ERROR_FETCHING_PROPOSAL_DATA = 'Failed to fetch proposal data';
 
 export const PROPOSAL_STATUS: IKeyValue = {
     PROPOSAL_STATUS_DEPOSIT_PERIOD: 'DEPOSIT PERIOD',
@@ -386,11 +387,27 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txDepositLabel,
     },
+    '/cosmos.gov.v1.MsgDeposit': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txDepositLabel,
+    },
     '/cosmos.gov.v1beta1.MsgVote': {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txVoteLabel,
     },
+    '/cosmos.gov.v1.MsgVote': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txVoteLabel,
+    },
+    '/cosmos.gov.v1.MsgVoteWeighted ': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txVoteWeightedLabel,
+    },
     '/cosmos.gov.v1beta1.MsgSubmitProposal': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txSubmitProposalLabel,
+    },
+    '/cosmos.gov.v1.MsgSubmitProposal': {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txSubmitProposalLabel,
     },
@@ -398,6 +415,23 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
         tagTheme: TYPE_COLORS.seven,
         tagDisplay: LABELS.txCancelProposalLabel,
     },
+    '/cosmos.distribution.v1beta1.MsgCommunityPoolSpend': {
+        tagTheme: TYPE_COLORS.six,
+        tagDisplay: LABELS.txCommunityPoolSpendLabel,
+    },
+    '/cosmos.upgrade.v1.MsgSoftwareUpgrade': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txSoftwareUpgradeLabel,
+    },
+    '/cosmos.gov.v1.MsgUpdateParams': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txGovUpdateParamsLabel,
+    },
+    '/cosmos.staking.v1.MsgUpdateParams': {
+        tagTheme: TYPE_COLORS.seven,
+        tagDisplay: LABELS.txStakingUpdateParamsLabel,
+    },
+
     // ========================
     // ibc client
     // ========================
@@ -547,7 +581,7 @@ export const TRANSACTION_TYPE_MODEL: IKeyValue = {
         tagDisplay: LABELS.txFeegrantRevokeLabel,
     },
     '/cosmos.authz.v1beta1.MsgGrant': {
-        tagTheme: TYPE_COLORS.two,
+        tagTheme: TYPE_COLORS.two, // To match Station desktop
         tagDisplay: LABELS.txAuthzGrantLabel,
     },
     '/firmachain.firmachain.token.MsgCreateToken': {

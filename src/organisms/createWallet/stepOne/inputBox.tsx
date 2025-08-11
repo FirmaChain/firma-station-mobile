@@ -7,7 +7,7 @@ import {
     PLACEHOLDER_FOR_WALLET_NAME,
     WARNING_PASSWORD_IS_TOO_SHORT,
     WARNING_PASSWORD_NOT_MATCH,
-    WARNING_WALLET_NAME_IS_TOO_SHORT
+    WARNING_WALLET_NAME_IS_TOO_SHORT,
 } from '@/constants/common';
 import { PasswordValidationCheck, WalletNameValidationCheck } from '@/util/validationCheck';
 
@@ -15,7 +15,7 @@ interface IProps {
     walletInfo: (name: string, password: string, validation: boolean) => void;
 }
 
-const InputBox = ({ walletInfo }: IProps) => {
+const InputBox = ({ walletInfo: setWalletInfo }: IProps) => {
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
 
@@ -30,15 +30,15 @@ const InputBox = ({ walletInfo }: IProps) => {
 
     const walletNameText = {
         title: 'Wallet name',
-        placeholder: PLACEHOLDER_FOR_WALLET_NAME
+        placeholder: PLACEHOLDER_FOR_WALLET_NAME,
     };
     const passwordText = {
         title: 'Password',
-        placeholder: PLACEHOLDER_FOR_PASSWORD
+        placeholder: PLACEHOLDER_FOR_PASSWORD,
     };
     const confirmPasswordText = {
         title: 'Confirm password',
-        placeholder: PLACEHOLDER_FOR_PASSWORD_CONFIRM
+        placeholder: PLACEHOLDER_FOR_PASSWORD_CONFIRM,
     };
 
     const onChangeWalletName = async (value: string) => {
@@ -47,6 +47,7 @@ const InputBox = ({ walletInfo }: IProps) => {
 
         let msg = result && !nameCheck ? '' : nameCheck ? `"${value}" is already exists` : WARNING_WALLET_NAME_IS_TOO_SHORT;
         if (value.length === 0) msg = '';
+
         setWalletName(value);
         setNameValidation(result && !nameCheck);
         setNameMessage(msg);
@@ -74,11 +75,14 @@ const InputBox = ({ walletInfo }: IProps) => {
 
     useEffect(() => {
         if (nameValidation && pwValidation && confirm) {
-            walletInfo(walletName, password, true);
+            setWalletInfo(walletName, password, true);
         } else {
-            walletInfo(walletName, password, false);
+            setWalletInfo(walletName, password, false);
         }
-    }, [nameValidation, pwValidation, confirm]);
+
+        // When a name error exists, after completing the password and correcting the name, the error message disappears once but the name does not change anymore
+        // Add walletName, password to dependency array to fix this issue
+    }, [walletName, password, nameValidation, pwValidation, confirm]);
 
     return (
         <ScrollView>

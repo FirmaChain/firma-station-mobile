@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions } from '@/redux/actions';
@@ -23,9 +23,9 @@ const marginVertical = 5;
 const width = (Dimensions.get('window').width - 20) / cols - marginHorizontal * (cols + 1);
 
 const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
-    const { wallet } = useAppSelector((state) => state);
+    const { wallet } = useAppSelector(state => state);
+    const { requestIds, loading } = useAppSelector(state => state.common);
 
-    const [active, setActive] = useState(isVotingPeriod);
     const [votingGas, setVotingGas] = useState(getFirmaConfig().defaultGas);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alertDescription, setAlertDescription] = useState('');
@@ -69,14 +69,12 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
 
     const handleVoting = async () => {
         handleVoteModal(false);
-        setActive(false);
         CommonActions.handleLoadingProgress(true);
         try {
             const result = await getEstimateGasVoting(wallet.name, proposalId, getVotingOption(selectedVote));
             setVotingGas(result);
             setAlertDescription('');
             CommonActions.handleLoadingProgress(false);
-            setActive(true);
             wait(100).then(() => {
                 handleTransactionModal(true);
             });
@@ -84,7 +82,6 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
             console.log(error);
             CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
-            setActive(true);
             wait(100).then(() => {
                 handleModalOpen(true);
             });
@@ -92,10 +89,19 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
         }
     };
 
+    const enableButton = useMemo(() => {
+        // Enable button when
+        // + period is voting
+        // + any of modal is not open
+        // + requestIds is empty
+        // + loading is false
+        return isVotingPeriod && !openVoteModal && !openTransactionModal && !isAlertModalOpen && requestIds.length === 0 && !loading;
+    }, [isVotingPeriod, openVoteModal, openTransactionModal, isAlertModalOpen, requestIds, loading]);
+
     return (
         <React.Fragment>
             <View style={{ paddingHorizontal: 20, display: 'flex' }}>
-                {isVotingPeriod && <Button title="Vote" active={active} onPressEvent={() => handleVoteModal(true)} />}
+                {isVotingPeriod && <Button title="Vote" active={enableButton} onPressEvent={() => handleVoteModal(true)} />}
             </View>
             <CustomModal visible={openVoteModal} handleOpen={handleVoteModal}>
                 <View style={styles.modalTextContents}>
@@ -110,20 +116,18 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
                                         {
                                             borderColor: selectedVote === item ? WhiteColor : BoxColor,
                                             marginBottom: index < 2 ? marginVertical * 4 : 0,
-                                            marginLeft: index % 2 === 0 ? 0 : marginHorizontal * 2
-                                        }
+                                            marginLeft: index % 2 === 0 ? 0 : marginHorizontal * 2,
+                                        },
                                     ]}
-                                    onPress={() => setSelectedVote(item)}
-                                >
+                                    onPress={() => setSelectedVote(item)}>
                                     <Text
                                         style={[
                                             styles.vote,
                                             {
                                                 color: selectedVote === item ? WhiteColor : TextDarkGrayColor,
-                                                fontWeight: selectedVote === item ? '600' : 'normal'
-                                            }
-                                        ]}
-                                    >
+                                                fontWeight: selectedVote === item ? '600' : 'normal',
+                                            },
+                                        ]}>
                                         {item}
                                     </Text>
                                 </TouchableOpacity>
@@ -159,13 +163,13 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
 const styles = StyleSheet.create({
     modalTextContents: {
         width: '100%',
-        padding: 20
+        padding: 20,
     },
     title: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: 'bold',
-        color: TextDarkGrayColor
+        color: TextDarkGrayColor,
     },
     box: {
         flexDirection: 'row',
@@ -173,7 +177,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingTop: 10,
-        paddingBottom: 30
+        paddingBottom: 30,
     },
     borderBox: {
         width: width,
@@ -183,18 +187,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: BgColor
+        backgroundColor: BgColor,
     },
     voteItem: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextColor
+        color: TextColor,
     },
     vote: {
         width: 'auto',
         fontFamily: Lato,
-        fontSize: 16
-    }
+        fontSize: 16,
+    },
 });
 
 export default Voting;

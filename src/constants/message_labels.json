@@ -57,9 +57,15 @@
     "txCreateContractFileLabel": "Create Contract File",
     "txFeegrantGrantLabel": "Grant Allowance",
     "txFeegrantRevokeLabel": "Revoke Allowance",
-    "txAuthzGrantLabel": "Grant",
+    "txAuthzGrantLabel": "Authz Grant",
     "txTokenCreateLabel": "Token Create",
     "txTokenMintLabel": "Token Mint",
     "txTokenBurnLabel": "Token Burn",
-    "txTokenUpdateURILabel": "Token Update"
+    "txTokenUpdateURILabel": "Token Update",
+    "txCommunityPoolSpendLabel": "Community Pool Spend",
+    "txSoftwareUpgradeLabel": "Software Upgrade",
+    "txCancelUpgradeLabel": "Cancel Upgrade",
+    "txStakingUpdateParamsLabel": "Staking Params Update",
+    "txVoteWeightedLabel": "Vote Weighted",
+    "txGovUpdateParamsLabel": "Governance Params Update"
 }

@@ -1,8 +1,8 @@
 module.exports = {
     root: true,
-    extends: '@react-native-community',
+    extends: ['@react-native', 'prettier'],
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint', 'prettier'],
     overrides: [
         {
             files: ['*.ts', '*.tsx'],
@@ -10,8 +10,8 @@ module.exports = {
                 'prettier/prettier': ['error', { endOfLine: 'auto' }], // remove `␍` errors
                 '@typescript-eslint/no-shadow': ['error'],
                 'no-shadow': 'off',
-                'no-undef': 'off'
-            }
-        }
-    ]
+                'no-undef': 'off',
+            },
+        },
+    ],
 };

@@ -29,7 +29,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
 const AppStateManager = () => {
     const netInfo = useNetInfo();
-    const { wallet, storage, common, modal } = useAppSelector((state) => state);
+    const { wallet, storage, common, modal } = useAppSelector(state => state);
     const { minAppVer, maintenanceState, getMaintenanceData } = useServerMessage();
 
     const [maintenanceHealthCheck, setMaintenanceHealthCheck] = useState<boolean>(true);
@@ -180,7 +180,7 @@ const AppStateManager = () => {
         if (wallet.name === '') {
             return;
         }
-        let appStateListener = AppState.addEventListener('change', (nextAppState) => {
+        const appStateListener = AppState.addEventListener('change', nextAppState => {
             CommonActions.handleAppState(nextAppState);
 
             const key = Platform.OS === 'ios' ? 'inactive' : 'background';
@@ -194,7 +194,7 @@ const AppStateManager = () => {
     }, [wallet.name]);
 
     useEffect(() => {
-        const connect = netInfo.isConnected === null ? false : netInfo.isConnected;
+        const connect = netInfo.isConnected; // netInfo.isConnected === null ? false : netInfo.isConnected;
         if (connect === false) {
             SplashScreen.hide();
         }
@@ -264,8 +264,8 @@ const styles = StyleSheet.create({
         opacity: 1,
         top: 0,
         left: 0,
-        bottom: 0
-    }
+        bottom: 0,
+    },
 });
 
 export default AppStateManager;

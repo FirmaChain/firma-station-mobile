@@ -35,13 +35,12 @@ local.properties
 node_modules/
 npm-debug.log
 yarn-error.log
+.yarn
+!.yarn/releases
 
-# BUCK
-buck-out/
-\.buckd/
+# keystore
 *.keystore
 !debug.keystore
-
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
@@ -65,5 +64,8 @@ config.ts
 #Gemfile
 Gemfile.lock
 
-.yarn
-!.yarn/releases
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+
+# testing
+/coverage
