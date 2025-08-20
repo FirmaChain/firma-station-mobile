@@ -2,7 +2,7 @@ import { FirmaUtil } from '@firmachain/firma-js';
 import moment from 'moment';
 
 export const wait = (timeout: number) => {
-    return new Promise<void>((resolve) => setTimeout(() => resolve(), timeout));
+    return new Promise<void>(resolve => setTimeout(() => resolve(), timeout));
 };
 
 export const updateArray = (array: Array<any>, oldVal: any, newVal: any) => {
@@ -24,7 +24,17 @@ export const convertCurrent = (value: number | string) => {
     return val.join('.');
 };
 
-export const convertAmount = ({ value, isUfct = true, point = 2, decimal = null }: { value: string | number, isUfct?: boolean, point?: number, decimal?: number | null }) => {
+export const convertAmount = ({
+    value,
+    isUfct = true,
+    point = 2,
+    decimal = null,
+}: {
+    value: string | number;
+    isUfct?: boolean;
+    point?: number;
+    decimal?: number | null;
+}) => {
     if (decimal === null) {
         if (isUfct) return convertCurrent(makeDecimalPoint(convertToFctNumber(value), point));
         return convertCurrent(makeDecimalPoint(value, point));
@@ -36,7 +46,7 @@ export const convertAmount = ({ value, isUfct = true, point = 2, decimal = null 
 export const convertAmountByDecimal = (value: string | number, decimalPlaces: number): string => {
     const valueStr = value.toString();
     if (valueStr.length <= decimalPlaces) {
-        return "0." + "0".repeat(decimalPlaces - valueStr.length) + valueStr;
+        return '0.' + '0'.repeat(decimalPlaces - valueStr.length) + valueStr;
     }
 
     const integerPart = valueStr.slice(0, valueStr.length - decimalPlaces);
@@ -46,11 +56,11 @@ export const convertAmountByDecimal = (value: string | number, decimalPlaces: nu
         return integerPart;
     }
 
-    return integerPart + "." + decimalPart;
+    return integerPart + '.' + decimalPart;
 };
 
 export const convertAmountByDecimalToTx = (value: string | number, decimal: number) => {
-    const amount = value.toString()
+    const amount = value.toString();
     if (amount.includes('.')) {
         const [integerPart, fractionalPart] = amount.split('.');
         const fractionalLength = fractionalPart.length;
@@ -64,7 +74,7 @@ export const convertAmountByDecimalToTx = (value: string | number, decimal: numb
         const paddedAmount = amount + '0'.repeat(decimal);
         return paddedAmount;
     }
-}
+};
 
 export const convertToFctNumberForInput = (value: number | string) => {
     return makeDecimalPoint(convertToFctNumber(value), 6);
@@ -120,7 +130,7 @@ export const isValid = (data: any) => {
     return true;
 };
 
-export const convertTime = (time: string | number, fulltime: boolean, addTime?: boolean) => {
+export const convertTime = (time: string | number | Date, fulltime: boolean, addTime?: boolean) => {
     if (time === undefined) return '';
 
     const GMT = getGMT();
@@ -150,7 +160,7 @@ export const convertTimerText = (time: string) => {
 
     return {
         diff: diff,
-        time: timeResult
+        time: timeResult,
     };
 };
 

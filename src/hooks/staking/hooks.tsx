@@ -18,7 +18,7 @@ import {
     getStakingPoolState,
     getUndelegations,
     getValidatorFromAddress,
-    getValidators
+    getValidators,
 } from '@/util/firma';
 import { CHAIN_NETWORK } from '@/../config';
 import { DelegationInfo, FirmaUtil, PoolDataType, SlashingParam, ValidatorDataType } from '@firmachain/firma-js';
@@ -143,7 +143,7 @@ export interface IStakingState {
 }
 
 export const useDelegationData = () => {
-    const { wallet, staking, storage } = useAppSelector((state) => state);
+    const { wallet, staking, storage } = useAppSelector(state => state);
     const [delegationList, setDelegationList] = useState<Array<IStakeInfo>>([]);
     const [redelegationList, setRedelegationList] = useState<Array<IRedelegationInfo>>([]);
     const [undelegationList, setUndelegationList] = useState<Array<IUndelegationInfo>>([]);
@@ -151,7 +151,7 @@ export const useDelegationData = () => {
         list: [],
         count: 0,
         expire: '',
-        expiration: 0
+        expiration: 0,
     });
     const [stakingGrantActivation, setStakingGrantActivation] = useState<boolean | null>(null);
     const [validatorsList, setValidatorsList] = useState<Array<ValidatorDataType>>([]);
@@ -201,7 +201,7 @@ export const useDelegationData = () => {
 
             setDelegationList(
                 result.filter(
-                    (value) =>
+                    value =>
                         convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 ||
                         convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0
                 )
@@ -292,14 +292,14 @@ export const useDelegationData = () => {
                 list: list,
                 count: stakingGrantList.count,
                 expire: stakingGrantList.expire,
-                expiration: stakingGrantList.expiration
+                expiration: stakingGrantList.expiration,
             };
         }
         return {
             list: [],
             count: 0,
             expire: '',
-            expiration: 0
+            expiration: 0,
         };
     }, [stakingGrantList, validatorsList, validatorsAvatarList]);
 
@@ -311,7 +311,7 @@ export const useDelegationData = () => {
             list: [],
             count: 0,
             expire: '',
-            expiration: 0
+            expiration: 0,
         });
         handleDelegationPolling();
     }, [storage.network]);
@@ -327,7 +327,7 @@ export const useDelegationData = () => {
         handleUndelegationState,
         handleStakingGrantState,
         handleStakingGrantActivationState,
-        handleTotalDelegationPolling
+        handleTotalDelegationPolling,
     };
 };
 
@@ -353,32 +353,32 @@ export const StakingGrantData = (delegationList: Array<any>, stakingGrantList: I
     }
 
     let undelegatedList = grantList;
-    let restakeListWithDelegation = delegationList.map((dData) => {
-        undelegatedList = undelegatedList.filter((aData) => aData.includes(dData.validatorAddress) === false);
+    let restakeListWithDelegation = delegationList.map(dData => {
+        undelegatedList = undelegatedList.filter(aData => aData.includes(dData.validatorAddress) === false);
         return {
             validatorAddress: dData.validatorAddress,
             avatarURL: dData.avatarURL,
             moniker: dData.moniker,
             delegated: dData.amount,
             stakingReward: dData.reward,
-            isActive: grantList.includes(dData.validatorAddress)
+            isActive: grantList.includes(dData.validatorAddress),
         };
     });
 
-    let restakeListWithoutDelegation = undelegatedList.map((value) => {
+    let restakeListWithoutDelegation = undelegatedList.map(value => {
         return {
             validatorAddress: value,
             avatarURL: '',
             moniker: value,
             delegated: 0,
             stakingReward: 0,
-            isActive: true
+            isActive: true,
         };
     });
 
     let restakeCount = 0;
     if (restakeListWithDelegation.length > 0) {
-        restakeCount = restakeListWithDelegation.filter((value) => value.isActive === true).length;
+        restakeCount = restakeListWithDelegation.filter(value => value.isActive === true).length;
     }
 
     let list = restakeListWithDelegation.concat(restakeListWithoutDelegation);
@@ -387,12 +387,12 @@ export const StakingGrantData = (delegationList: Array<any>, stakingGrantList: I
         list: list,
         count: restakeCount,
         expire: expireDate,
-        expiration: expiration
+        expiration: expiration,
     };
 };
 
 export const useStakingData = () => {
-    const { wallet, storage } = useAppSelector((state) => state);
+    const { wallet, storage } = useAppSelector(state => state);
     const [stakingState, setStakingState] = useState<IStakingState | null>(null);
 
     const getStakingState = async () => {
@@ -428,7 +428,7 @@ export const useStakingData = () => {
                 available: 0,
                 delegated: 0,
                 undelegate: 0,
-                stakingReward: 0
+                stakingReward: 0,
             });
         }
         getStakingState();
@@ -437,7 +437,7 @@ export const useStakingData = () => {
     return {
         stakingState,
         getStakingState,
-        updateStakingState
+        updateStakingState,
     };
 };
 
@@ -447,14 +447,14 @@ export const useValidatorDescription = (
     validatorsAvatarList: Array<IValidatorProfileInfo> | []
 ) => {
     if (validators !== undefined && validators.length > 0) {
-        const result = delegations.map((value) => {
-            const desc = validators.find((val) => val.operator_address === value.validatorAddress);
+        const result = delegations.map(value => {
+            const desc = validators.find(val => val.operator_address === value.validatorAddress);
 
             const validatorDescription = organizeValidatorDescription(desc, validatorsAvatarList);
             return {
                 ...value,
                 moniker: validatorDescription.validatorMoniker,
-                avatarURL: validatorDescription.validatorAvatar
+                avatarURL: validatorDescription.validatorAvatar,
             };
         });
         return result;
@@ -468,9 +468,9 @@ export const useValidatorDescriptionForRedelegation = (
     validators: Array<ValidatorDataType>,
     validatorsAvatarList: Array<IValidatorProfileInfo> | []
 ) => {
-    const result = redelegations.map((value) => {
-        const src = validators.find((val) => val.operator_address === value.srcAddress);
-        const dst = validators.find((val) => val.operator_address === value.dstAddress);
+    const result = redelegations.map(value => {
+        const src = validators.find(val => val.operator_address === value.srcAddress);
+        const dst = validators.find(val => val.operator_address === value.dstAddress);
 
         const srcDescription = organizeValidatorDescription(src, validatorsAvatarList);
         const dstDescription = organizeValidatorDescription(dst, validatorsAvatarList);
@@ -479,7 +479,7 @@ export const useValidatorDescriptionForRedelegation = (
             srcAvatarURL: srcDescription.validatorAvatar,
             srcMoniker: srcDescription.validatorMoniker,
             dstAvatarURL: dstDescription.validatorAvatar,
-            dstMoniker: dstDescription.validatorMoniker
+            dstMoniker: dstDescription.validatorMoniker,
         };
     });
 
@@ -487,7 +487,7 @@ export const useValidatorDescriptionForRedelegation = (
 };
 
 export const useValidatorData = () => {
-    const { staking, storage } = useAppSelector((state) => state);
+    const { staking, storage } = useAppSelector(state => state);
     const [validators, setValidators] = useState<Array<IValidatorState> | []>([]);
     const [validatorsAvatarList, setValidatorsAvatarList] = useState<Array<IValidatorProfileInfo> | []>([]);
 
@@ -512,7 +512,7 @@ export const useValidatorData = () => {
                     const consensusPubkey = validator.consensus_pubkey;
                     const pubkey = consensusPubkey.key;
                     const valconsAddr = FirmaUtil.getValConsAddressFromAccAddress(pubkey);
-                    const signingInfo = signingInfos.find((info) => info.address === valconsAddr);
+                    const signingInfo = signingInfos.find(info => info.address === valconsAddr);
 
                     const jailed = validator.jailed;
                     const status = getValidatorStatus(validator.status);
@@ -527,7 +527,11 @@ export const useValidatorData = () => {
 
                     const votingPower = convertToFctNumber(validator.tokens);
                     const totalVotingPower = convertToFctNumber(stakingPool.bonded_tokens);
-                    const votingPowerPercent = makeDecimalPoint(convertNumber((votingPower / totalVotingPower).toFixed(5)) * 100, 2);
+
+                    //? Note: Changed the calculation method to rounding so the displayed value stays consistent with Explorer.
+                    // const votingPowerPercent = makeDecimalPoint(convertNumber((votingPower / totalVotingPower).toFixed(5)) * 100, 5);
+                    const votingPowerPercent = convertNumber((votingPower / totalVotingPower) * 100).toFixed(2);
+
                     const commission = convertNumber(validator.commission.commission_rates.rate);
                     const stakingState: IStakingsState = getStakingState(commonState, votingPower, storage.network);
                     const annualPercentageState = getAPRAPY(stakingState, commission);
@@ -552,7 +556,7 @@ export const useValidatorData = () => {
                         jailed,
                         tombstoned,
                         APR,
-                        APY
+                        APY,
                     };
                 });
 
@@ -576,7 +580,7 @@ export const useValidatorData = () => {
                           jailed: staking.validator.jailed,
                           tombstoned: staking.validator.tombstoned,
                           APR: staking.validator.percentageData.APR,
-                          APY: staking.validator.percentageData.APY
+                          APY: staking.validator.percentageData.APY,
                       }
                     : vd
             )
@@ -593,12 +597,12 @@ export const useValidatorData = () => {
 
     return {
         validators,
-        handleValidatorsPolling
+        handleValidatorsPolling,
     };
 };
 
 export const useValidatorDataFromAddress = (validatorAddress: string) => {
-    const { storage } = useAppSelector((state) => state);
+    const { storage } = useAppSelector(state => state);
 
     const [validatorState, setValidatorState] = useState<IValidatorDetailState>();
 
@@ -608,7 +612,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 getCommonState(),
                 getValidatorFromAddress(validatorAddress),
                 getDelegationListFromValidator(validatorAddress),
-                getSelfDelegateAddressFromValOperAddress(validatorAddress)
+                getSelfDelegateAddressFromValOperAddress(validatorAddress),
             ]);
 
             const consensusPubkey = validator.consensus_pubkey;
@@ -647,12 +651,12 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 identity: validator.description.identity,
                 moniker: validator.description.moniker,
                 description: validator.description.details,
-                website: validator.description.website
+                website: validator.description.website,
             };
 
             const address: IValidatorAddress = {
                 operatorAddress: operatorAddress,
-                accountAddress: selfDelegateAddress
+                accountAddress: selfDelegateAddress,
             };
 
             const percentageData: IValidatorData = {
@@ -662,13 +666,13 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
 
                 votingPower: {
                     data: votingPowerPercent,
-                    amount: votingPower
+                    amount: votingPower,
                 },
                 commission: {
-                    data: commission
+                    data: commission,
                 },
                 uptime: {
-                    data: condition
+                    data: condition,
                 },
                 state: [
                     {
@@ -676,28 +680,28 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                             {
                                 title: 'Voting Power',
                                 data: votingPowerPercent,
-                                amount: votingPower
+                                amount: votingPower,
                             },
                             {
                                 title: 'Self-Delegation',
                                 data: delegations.selfPercent,
-                                amount: delegations.self
-                            }
-                        ]
+                                amount: delegations.self,
+                            },
+                        ],
                     },
                     {
                         row: [
                             {
                                 title: 'Commission',
-                                data: makeDecimalPoint(commission * 100)
+                                data: makeDecimalPoint(commission * 100),
                             },
                             {
                                 title: 'Uptime',
-                                data: condition
-                            }
-                        ]
-                    }
-                ]
+                                data: condition,
+                            },
+                        ],
+                    },
+                ],
             };
 
             setValidatorState({
@@ -706,7 +710,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 tombstoned,
                 description,
                 address,
-                percentageData
+                percentageData,
             });
         } catch (error) {
             console.log(error);
@@ -723,7 +727,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
 
     return {
         validatorState,
-        handleValidatorPolling
+        handleValidatorPolling,
     };
 };
 
@@ -733,14 +737,14 @@ const getCommonState = async () => {
             getStakingPoolState(),
             getSlashingState(),
             getMintInflation(),
-            getBankSupply()
+            getBankSupply(),
         ]);
 
         return {
             stakingPool,
             slashing,
             mintInflation,
-            totalSupply
+            totalSupply,
         };
     } catch (error) {
         throw error;
@@ -748,7 +752,7 @@ const getCommonState = async () => {
 };
 
 export const useRestakeInfoData = () => {
-    const { storage } = useAppSelector((state) => state);
+    const { storage } = useAppSelector(state => state);
     const [restakeInfo, setRestakeInfo]: any = useState(null);
     const [info, setInfo]: any = useState(null);
 
@@ -780,7 +784,7 @@ export const useRestakeInfoData = () => {
                 round: info.round,
                 minimum_Rewards: convertToFctNumber(info.minimumRewards),
                 nextRoundDateTime: info.nextRoundDateTime,
-                expiry_Date: nextYear
+                expiry_Date: nextYear,
             });
         }
         setRestakeInfo({
@@ -788,7 +792,7 @@ export const useRestakeInfoData = () => {
             round: 0,
             minimum_Rewards: 10,
             nextRoundDateTime: '',
-            expiry_Date: nextYear
+            expiry_Date: nextYear,
         });
     }, [info]);
 
@@ -818,7 +822,7 @@ const getStakingState = (commonState: IStakingStateProps, tokens: number, networ
         totalVotingPower: totalVotingPower,
         votingPower: votingPower,
         signedBlocksWindow: signedBlockWindow,
-        mintCoinPerYear: mintCoinPerYear
+        mintCoinPerYear: mintCoinPerYear,
     };
 };
 
@@ -843,7 +847,7 @@ const getAPRAPY = (stakingState: IStakingsState, commission: number) => {
 
     return {
         APR: convertPercentage(APR),
-        APY: convertPercentage(APY)
+        APY: convertPercentage(APY),
     };
 };
 
@@ -869,7 +873,7 @@ const getSelfDelegationState = (delegation: DelegationInfo[], selfDelegateAddres
     return {
         self: convertToFctNumber(self),
         selfPercent,
-        delegationList
+        delegationList,
     };
 };
 
@@ -893,7 +897,7 @@ const organizeValidatorDescription = (
         validatorMoniker,
         validatorAvatar,
         validatorDetail,
-        validatorWebsite
+        validatorWebsite,
     };
 };
 

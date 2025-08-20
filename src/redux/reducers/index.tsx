@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 import commonReducer, { ICommonStateProps } from './commonReducer';
 import modalReducer, { IModalStateProps } from './modalReducer';
 import stakingReducer, { IStakingStateProps } from './stakingReducer';
@@ -18,7 +18,7 @@ const reducer = combineReducers({
     modal: modalReducer,
     staking: stakingReducer,
     storage: storageReducer,
-    wallet: walletReducer
+    wallet: walletReducer,
 });
 
 export type RootReducerState = ReturnType<typeof reducer>;

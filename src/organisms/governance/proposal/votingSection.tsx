@@ -20,26 +20,26 @@ const VotingSection = ({ data, isVotingPeriod }: IProps) => {
             return {
                 info: [
                     { title: 'Quorum', data: convertNumber(data.quorum * 100).toFixed(2) },
-                    { title: 'Current Turn out', data: (convertNumber(data.currentTurnout) * 100).toFixed(2) }
+                    { title: 'Current Turn out', data: (convertNumber(data.currentTurnout) * 100).toFixed(2) },
                 ],
                 voteInfo: {
                     quorum: convertPercentage(data.quorum),
                     totalVotingPower: data.totalVotingPower,
                     proposalTally: data.proposalTally,
-                    voters: data.voters
-                }
+                    voters: data.voters,
+                },
             };
         return {
             info: [
                 { title: 'Quorum', data: 0 },
-                { title: 'Current Turn out', data: 0 }
+                { title: 'Current Turn out', data: 0 },
             ],
             voteInfo: {
                 quorum: 0,
                 totalVotingPower: null,
                 proposalTally: null,
-                voters: null
-            }
+                voters: null,
+            },
         };
     }, [data]);
 
@@ -76,36 +76,36 @@ const VotingSection = ({ data, isVotingPeriod }: IProps) => {
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-        marginTop: 30
+        marginTop: 30,
     },
     box: {
         backgroundColor: BoxColor,
         borderRadius: 8,
         paddingHorizontal: 20,
         paddingTop: 24,
-        paddingBottom: 30
+        paddingBottom: 30,
     },
     boxH: {
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     boxV: {
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
     },
     title: {
         fontFamily: Lato,
         fontSize: 16,
         fontWeight: '600',
-        color: TextDarkGrayColor
+        color: TextDarkGrayColor,
     },
     desc: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: '600',
-        color: TextColor
-    }
+        color: TextColor,
+    },
 });
 
 export default VotingSection;

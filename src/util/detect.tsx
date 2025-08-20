@@ -21,7 +21,7 @@ export const removeAllData = async () => {
         }
 
         if (list) {
-            list.map(async (value) => {
+            list.map(async value => {
                 await removeWallet(value);
                 await removeUseBioAuth(value);
             });

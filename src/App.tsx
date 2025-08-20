@@ -7,9 +7,7 @@ import { store, persistor } from './redux/store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
-    LogBox.ignoreLogs([
-        "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
-    ]);
+    LogBox.ignoreLogs(['Selector unknown returned the root state when called. This can lead to unnecessary rerenders.']);
 
     return (
         <SafeAreaProvider>

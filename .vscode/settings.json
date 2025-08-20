@@ -9,5 +9,6 @@
     "[typescriptreact]": {
         "editor.formatOnSave": true,
     },
-    "editor.insertSpaces": true
+    "editor.insertSpaces": true,
+    "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
 }

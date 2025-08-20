@@ -22,7 +22,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 const DeepLinkManager = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { storage, wallet, common, modal } = useAppSelector((state) => state);
+    const { storage, wallet, common, modal } = useAppSelector(state => state);
     const { tokenList, ibcTokenConfig } = useIBCTokenContext();
     const [deepLink, setDeepLink] = useState('');
 
@@ -35,16 +35,16 @@ const DeepLinkManager = () => {
 
         const ibcArray = Object.entries(ibcTokenConfig).map(([key, value]) => ({
             ...value,
-            key
+            key,
         }));
 
         const list = ibcArray
-            .filter((value) => value.enable)
-            .map((value) => {
-                const token = tokenList.find((token) => token.denom.toLowerCase() === value.denom.toLowerCase());
+            .filter(value => value.enable)
+            .map(value => {
+                const token = tokenList.find(token => token.denom.toLowerCase() === value.denom.toLowerCase());
                 return {
                     ...value,
-                    amount: token ? token.amount : '0'
+                    amount: token ? token.amount : '0',
                 };
             });
 
@@ -60,7 +60,7 @@ const DeepLinkManager = () => {
             if (wallet.dstAddress !== '' && prevPath === Screens.Home.toString()) {
                 if (IBCToken !== null) {
                     if (wallet.dstAddress.includes('osmo1')) {
-                        const tokenData = IBCToken.find((value) => value.displayName.toLocaleLowerCase() === 'osmo');
+                        const tokenData = IBCToken.find(value => value.displayName.toLocaleLowerCase() === 'osmo');
                         if (tokenData !== undefined) {
                             return navigation.navigate(Screens.SendIBC, { tokenData });
                         }
@@ -73,13 +73,13 @@ const DeepLinkManager = () => {
     }, [wallet.dstAddress, IBCToken]);
 
     useEffect(() => {
-        Linking.getInitialURL().then((value) => {
+        Linking.getInitialURL().then(value => {
             if (value && deepLink !== value) {
                 setDeepLink(value);
             }
         });
 
-        let deepLinkLintener = Linking.addEventListener('url', (e) => {
+        let deepLinkLintener = Linking.addEventListener('url', e => {
             if (e.url && deepLink !== e.url) {
                 setDeepLink(e.url);
             }
@@ -164,10 +164,13 @@ const DeepLinkManager = () => {
                 let QRData = await connectClient.requestQRData(session, result);
                 const verification = await connectClient.verifyConnectedWallet(wallet.address, QRData);
                 if (verification === false) {
-                    return Toast.show({
+                    //? If verification has failed, show the error message and remove loading progress, and return false.
+                    Toast.show({
                         type: 'error',
-                        text1: DAPP_INVALID_QR
+                        text1: DAPP_INVALID_QR,
                     });
+                    CommonActions.handleLoadingProgress(false);
+                    return false;
                 }
 
                 let projectId = QRData.projectMetaData === undefined ? '' : QRData.projectMetaData.projectId;
@@ -191,7 +194,7 @@ const DeepLinkManager = () => {
                     let updateList = { list: [...list, projectId] };
                     ModalActions.handleModalData({
                         data: QRData,
-                        idState: updateList
+                        idState: updateList,
                     });
                     wait(500).then(() => {
                         ModalActions.handleDAppConnectModal(true);
@@ -203,7 +206,7 @@ const DeepLinkManager = () => {
                 ModalActions.handleDAppData(null);
                 return Toast.show({
                     type: 'error',
-                    text1: String(error)
+                    text1: String(error),
                 });
             }
         }
