@@ -28,7 +28,6 @@ import ProgressTransaction from './progressTransaction';
 import TransactionResult from './transactionResult';
 import ConnectClient from '@/util/connectClient';
 import { CHAIN_NETWORK } from '@/../config';
-import { fromByteArray } from 'react-native-quick-base64';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Transaction>;
 
@@ -86,11 +85,11 @@ const Transaction = ({ state }: IProps) => {
 
         try {
             switch (state.type) {
-                case TRANSACTION_TYPE['SEND']:
+                case TRANSACTION_TYPE.SEND:
                     const sendResult = await sendFCT(recoverValue, state.targetAddress, state.amount, state.gas, state.memo);
                     setTransactionResult({ ...transactionResult, code: sendResult.code, result: sendResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['SEND_TOKEN']:
+                case TRANSACTION_TYPE.SEND_TOKEN:
                     const sendTokenResult = await sendToken(
                         recoverValue,
                         state.targetAddress,
@@ -102,7 +101,7 @@ const Transaction = ({ state }: IProps) => {
                     );
                     setTransactionResult({ ...transactionResult, code: sendTokenResult.code, result: sendTokenResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['SEND_IBC']:
+                case TRANSACTION_TYPE.SEND_IBC:
                     const sendIBCResult = await sendIBC(
                         recoverValue,
                         'transfer',
@@ -116,11 +115,11 @@ const Transaction = ({ state }: IProps) => {
                     );
                     setTransactionResult({ ...transactionResult, code: sendIBCResult.code, result: sendIBCResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['DELEGATE']:
+                case TRANSACTION_TYPE.DELEGATE:
                     const delegateResult = await delegate(recoverValue, state.operatorAddressDst, state.amount, state.gas);
                     setTransactionResult({ ...transactionResult, code: delegateResult.code, result: delegateResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['REDELEGATE']:
+                case TRANSACTION_TYPE.REDELEGATE:
                     const redelegateResult = await redelegate(
                         recoverValue,
                         state.operatorAddressSrc,
@@ -134,7 +133,7 @@ const Transaction = ({ state }: IProps) => {
                         result: redelegateResult.transactionHash,
                     });
                     break;
-                case TRANSACTION_TYPE['UNDELEGATE']:
+                case TRANSACTION_TYPE.UNDELEGATE:
                     const undelegateResult = await undelegate(recoverValue, state.operatorAddressDst, state.amount, state.gas);
                     setTransactionResult({
                         ...transactionResult,
@@ -142,19 +141,19 @@ const Transaction = ({ state }: IProps) => {
                         result: undelegateResult.transactionHash,
                     });
                     break;
-                case TRANSACTION_TYPE['GRANT']:
+                case TRANSACTION_TYPE.GRANT:
                     const grantResult = await grant(recoverValue, state.validatorAddressList, state.maxTokens, state.gas);
                     setTransactionResult({ ...transactionResult, code: grantResult.code, result: grantResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['REVOKE']:
+                case TRANSACTION_TYPE.REVOKE:
                     const revokeResult = await revoke(recoverValue, state.gas);
                     setTransactionResult({ ...transactionResult, code: revokeResult.code, result: revokeResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['WITHDRAW']:
+                case TRANSACTION_TYPE.WITHDRAW:
                     const withdrawResult = await withdrawRewards(recoverValue, state.operatorAddress, state.gas);
                     setTransactionResult({ ...transactionResult, code: withdrawResult.code, result: withdrawResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['WITHDRAW_ALL']:
+                case TRANSACTION_TYPE.WITHDRAW_ALL:
                     const withdrawAllResult = await withdrawAllRewards(recoverValue, state.gas);
                     setTransactionResult({
                         ...transactionResult,
@@ -162,11 +161,11 @@ const Transaction = ({ state }: IProps) => {
                         result: withdrawAllResult.transactionHash,
                     });
                     break;
-                case TRANSACTION_TYPE['VOTING']:
+                case TRANSACTION_TYPE.VOTING:
                     const votingResult = await voting(recoverValue, state.proposalId, state.votingOpt, state.gas);
                     setTransactionResult({ ...transactionResult, code: votingResult.code, result: votingResult.transactionHash });
                     break;
-                case TRANSACTION_TYPE['DAPP']:
+                case TRANSACTION_TYPE.DAPP:
                     const Wallet = await recoverWallet(recoverValue);
                     let rawData = '';
 
@@ -215,7 +214,7 @@ const Transaction = ({ state }: IProps) => {
 
                     setTransactionResult({ ...transactionResult, code: code, result: resultMessage });
                     break;
-                case TRANSACTION_TYPE['SEND_CW20']:
+                case TRANSACTION_TYPE.SEND_CW20:
                     const sendCW20Result = await sendCW20(
                         recoverValue,
                         state.targetAddress,
@@ -226,7 +225,7 @@ const Transaction = ({ state }: IProps) => {
                     );
                     setTransactionResult({ ...transactionResult, code: sendCW20Result.code, result: sendCW20Result.transactionHash });
                     break;
-                case TRANSACTION_TYPE['SEND_CW721']:
+                case TRANSACTION_TYPE.SEND_CW721:
                     const sendCW721Result = await sendCW721NFT(
                         recoverValue,
                         state.targetAddress,
@@ -256,24 +255,24 @@ const Transaction = ({ state }: IProps) => {
 
     const handleBack = () => {
         switch (state.type) {
-            case TRANSACTION_TYPE['SEND']:
-            case TRANSACTION_TYPE['SEND_TOKEN']:
-            case TRANSACTION_TYPE['SEND_IBC']:
+            case TRANSACTION_TYPE.SEND:
+            case TRANSACTION_TYPE.SEND_TOKEN:
+            case TRANSACTION_TYPE.SEND_IBC:
                 navigation.reset({ routes: [{ name: Screens.Home }] });
                 break;
-            case TRANSACTION_TYPE['DELEGATE']:
-            case TRANSACTION_TYPE['REDELEGATE']:
-            case TRANSACTION_TYPE['UNDELEGATE']:
+            case TRANSACTION_TYPE.DELEGATE:
+            case TRANSACTION_TYPE.REDELEGATE:
+            case TRANSACTION_TYPE.UNDELEGATE:
                 navigation.navigate(Screens.Validator, {
                     validatorAddress: state.operatorAddressDst,
                 });
                 break;
-            case TRANSACTION_TYPE['GRANT']:
-            case TRANSACTION_TYPE['REVOKE']:
+            case TRANSACTION_TYPE.GRANT:
+            case TRANSACTION_TYPE.REVOKE:
                 navigation.navigate(Screens.Staking);
                 break;
-            case TRANSACTION_TYPE['SEND_CW20']:
-            case TRANSACTION_TYPE['SEND_CW721']:
+            case TRANSACTION_TYPE.SEND_CW20:
+            case TRANSACTION_TYPE.SEND_CW721:
                 navigation.navigate(Screens.DappDetail);
                 break;
             default:

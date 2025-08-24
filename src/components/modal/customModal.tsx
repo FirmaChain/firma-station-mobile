@@ -27,9 +27,9 @@ const CustomModal = ({
     bgColor = BoxColor,
     handleOpen,
     toastInModal = true,
-    children
+    children,
 }: IProps) => {
-    const { common } = useAppSelector((state) => state);
+    const { common } = useAppSelector(state => state);
 
     const closeModal = () => {
         if (lockBackButton) return;
@@ -43,8 +43,7 @@ const CustomModal = ({
                     <KeyboardAvoidingView
                         enabled={keyboardAvoiing}
                         behavior={Platform.select({ android: undefined, ios: 'padding' })}
-                        style={{ flex: 1 }}
-                    >
+                        style={{ flex: 1 }}>
                         <Pressable style={styles.modalContainer} onPress={() => closeModal()} />
                         <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
                             {children}
@@ -64,8 +63,7 @@ const CustomModal = ({
                     hideModalContentWhileAnimating={true}
                     onModalHide={closeModal}
                     onBackButtonPress={closeModal}
-                    style={{ marginHorizontal: 0, marginVertical: 0 }}
-                >
+                    style={{ marginHorizontal: 0, marginVertical: 0 }}>
                     <Pressable style={styles.modalContainer} onPress={() => closeModal()} />
                     {toastInModal && <CustomToast />}
                     <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        zIndex: 9999
+        zIndex: 9999,
     },
     modalBox: {
         width: '100%',
@@ -113,8 +111,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 4,
         paddingBottom: Platform.OS === 'ios' ? 30 : 10,
-        zIndex: 9999
-    }
+        zIndex: 9999,
+    },
 });
 
 export default CustomModal;

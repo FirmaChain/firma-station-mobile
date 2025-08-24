@@ -1,16 +1,14 @@
-import React from "react";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import Home from "@/organisms/home";
+import React from 'react';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import Home from '@/organisms/home';
 
 interface IProps {
-    route: {}
+    route: {};
 }
 
-const HomeScreen = (props:IProps) => {
+const HomeScreen = (props: IProps) => {
     const routeName = getFocusedRouteNameFromRoute(props.route);
-    return (
-        <Home title={routeName === undefined? "Wallet" : routeName} />
-    )
-}
+    return <Home title={routeName === undefined ? 'Wallet' : routeName} />;
+};
 
 export default React.memo(HomeScreen);

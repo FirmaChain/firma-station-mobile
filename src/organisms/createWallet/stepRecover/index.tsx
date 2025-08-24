@@ -12,7 +12,7 @@ import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import InputBox from './inputBox';
 import Toast from 'react-native-toast-message';
-import { mnemonicCheck, privateKeyCheck, recoverWallet } from '@/util/firma';
+import { mnemonicCheck, privateKeyCheck } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
@@ -33,10 +33,10 @@ const StepRecover = ({ type }: IProps) => {
         try {
             CommonActions.handleLoadingProgress(true);
             let recover = false;
-            if(type === 'mnemonic'){
+            if (type === 'mnemonic') {
                 recover = await mnemonicCheck(recoverValue);
             }
-            if(type === 'privateKey'){
+            if (type === 'privateKey') {
                 recover = await privateKeyCheck(recoverValue);
             }
 
@@ -45,7 +45,7 @@ const StepRecover = ({ type }: IProps) => {
                 let message = type === 'mnemonic' ? CHECK_MNEMONIC : CHECK_PRIVATEKEY;
                 return Toast.show({
                     type: 'error',
-                    text1: message
+                    text1: message,
                 });
             }
             navigation.navigate(Screens.CreateStepOne, { recoverValue: recoverValue });
@@ -53,14 +53,13 @@ const StepRecover = ({ type }: IProps) => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: RECOVER_WALLET_FAILED
+                text1: RECOVER_WALLET_FAILED,
             });
         }
     };
 
     const handleMoveToWeb = () => {
-        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["recoverWallet"]});
-        Linking.openURL(GUIDE_URI['recoverWallet']);
+        Linking.openURL(GUIDE_URI.recoverWallet);
     };
 
     const handleBack = () => {
@@ -84,17 +83,18 @@ const StepRecover = ({ type }: IProps) => {
 const styles = StyleSheet.create({
     container: {
         flex: 3,
-        padding: 20
+        padding: 20,
+        paddingBottom: 0,
     },
     wrapperH: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignContent: 'center'
+        alignContent: 'center',
     },
     title: {
         color: TextColor,
         fontFamily: Lato,
-        fontSize: 14
+        fontSize: 14,
     },
     inputWrapper: {
         height: 200,
@@ -102,12 +102,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: InputBgColor,
         borderWidth: 1,
-        borderRadius: 4
+        borderRadius: 4,
     },
     input: {
         color: TextColor,
-        flex: 1
-    }
+        flex: 1,
+    },
 });
 
 export default StepRecover;

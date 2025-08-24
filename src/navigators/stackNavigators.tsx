@@ -18,7 +18,7 @@ import HomeScreen from '../screens/home/home';
 
 import HistoryScreen from '@/screens/home/history/history';
 import SendScreen from '../screens/home/wallet/send';
-import SendIBCScreen from "@/screens/home/wallet/sendIBC";
+import SendIBCScreen from '@/screens/home/wallet/sendIBC';
 
 import ValidatorScreen from '../screens/home/staking/validator';
 import DelegateScreen from '../screens/home/staking/delegate';
@@ -36,8 +36,8 @@ import VersionScreen from '@/screens/setting/version';
 import TransactionScreen from '../screens/transaction/transaction';
 import DappDetailScreen from '@/screens/home/dapps/dapp/dappDetail';
 import NFTScreen from '@/screens/home/dapps/nft/nft';
-import SendCW20Screen from "@/screens/home/dapps/sendCW20/sendCW20";
-import SendCW721Screen from "@/screens/home/dapps/sendCW721/sendCW721";
+import SendCW20Screen from '@/screens/home/dapps/sendCW20/sendCW20';
+import SendCW721Screen from '@/screens/home/dapps/sendCW721/sendCW721';
 import AssetsScreen from '@/screens/home/assets/assets';
 import CW721Screen from '@/screens/home/assets/cw721';
 
@@ -55,16 +55,15 @@ const StackNavigator = () => {
                                 {
                                     translateX: current.progress.interpolate({
                                         inputRange: [0, 1],
-                                        outputRange: [layouts.screen.width, 0]
-                                    })
-                                }
-                            ]
-                        }
+                                        outputRange: [layouts.screen.width, 0],
+                                    }),
+                                },
+                            ],
+                        },
                     };
-                }
+                },
             }}
-            initialRouteName={Screens.LoginCheck}
-        >
+            initialRouteName={Screens.LoginCheck}>
             <Stack.Screen options={{ headerShown: false }} name={Screens.LoginCheck} component={LoginCheckScreen} />
             <Stack.Screen options={{ headerShown: false }} name={Screens.WebScreen} component={WebScreen} />
 

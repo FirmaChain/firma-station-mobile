@@ -26,13 +26,13 @@ interface ISendInfo {
     address: string;
     amount: number;
     memo: string;
-    chain: IBCChainState | null
+    chain: IBCChainState | null;
 }
 
 const Send = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { wallet } = useAppSelector((state) => state);
+    const { wallet } = useAppSelector(state => state);
     const { balance, getBalance } = useBalanceData();
 
     const denom = getFirmaConfig().denom;
@@ -42,7 +42,7 @@ const Send = () => {
         address: '',
         amount: 0,
         memo: '',
-        chain: null
+        chain: null,
     });
     const [resetInputValues, setInputResetValues] = useState(false);
 
@@ -54,9 +54,9 @@ const Send = () => {
     const handleSendInfo = (type: string, value: string | number | IBCChainState | null) => {
         let val: any = value;
         if (type === 'memo' && val === '') val = null;
-        setSendInfoState((prevState) => ({
+        setSendInfoState(prevState => ({
             ...prevState,
-            [type]: val
+            [type]: val,
         }));
     };
 
@@ -72,7 +72,7 @@ const Send = () => {
         handleTransactionModal(false);
         if (activeType === 'SEND_IBC') {
             const transactionState = {
-                type: TRANSACTION_TYPE['SEND_IBC'],
+                type: TRANSACTION_TYPE.SEND_IBC,
                 password: password,
                 targetAddress: sendInfoState.address,
                 amount: sendInfoState.amount,
@@ -80,18 +80,18 @@ const Send = () => {
                 denom: denom,
                 channel: sendInfoState.chain?.channel,
                 gas: gas,
-                memo: sendInfoState.memo
+                memo: sendInfoState.memo,
             };
             setInputResetValues(true);
             navigation.navigate(Screens.Transaction, { state: transactionState });
         } else {
             const transactionState = {
-                type: TRANSACTION_TYPE['SEND'],
+                type: TRANSACTION_TYPE.SEND,
                 password: password,
                 targetAddress: sendInfoState.address,
                 amount: sendInfoState.amount,
                 gas: gas,
-                memo: sendInfoState.memo
+                memo: sendInfoState.memo,
             };
             setInputResetValues(true);
             navigation.navigate(Screens.Transaction, { state: transactionState });
@@ -106,7 +106,15 @@ const Send = () => {
             if (isValidAddress) {
                 if (activeType === 'SEND_IBC') {
                     if (sendInfoState.chain === null) return;
-                    let gas = await getEstimateGasSendIBC(wallet.name, 'transfer', sendInfoState.chain.channel, denom, sendInfoState.address, sendInfoState.amount, 6);
+                    let gas = await getEstimateGasSendIBC(
+                        wallet.name,
+                        'transfer',
+                        sendInfoState.chain.channel,
+                        denom,
+                        sendInfoState.address,
+                        sendInfoState.amount,
+                        6
+                    );
                     setGas(gas);
                 } else {
                     let gas = await getEstimateGasSend(wallet.name, sendInfoState.address, sendInfoState.amount);
@@ -134,15 +142,15 @@ const Send = () => {
     };
 
     const handleMoveToWeb = () => {
-        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["send"]});
-        Linking.openURL(GUIDE_URI['send']);
+        Linking.openURL(GUIDE_URI.send);
     };
 
     const activeToSend = useMemo(() => {
         if (activeType === 'SEND_TOKEN') return Boolean(sendInfoState.address !== '' && convertNumber(sendInfoState.amount) > 0);
-        if (activeType === 'SEND_IBC') return Boolean(sendInfoState.chain !== null && sendInfoState.address !== '' && convertNumber(sendInfoState.amount) > 0);
-        return false
-    }, [sendInfoState, activeType])
+        if (activeType === 'SEND_IBC')
+            return Boolean(sendInfoState.chain !== null && sendInfoState.address !== '' && convertNumber(sendInfoState.amount) > 0);
+        return false;
+    }, [sendInfoState, activeType]);
 
     useFocusEffect(
         useCallback(() => {
@@ -168,11 +176,7 @@ const Send = () => {
                         </ScrollView>
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                        <Button
-                            title="Send"
-                            active={activeToSend}
-                            onPressEvent={() => handleSend()}
-                        />
+                        <Button title="Send" active={activeToSend} onPressEvent={() => handleSend()} />
                     </View>
                     <TransactionConfirmModal
                         transactionHandler={handleTransaction}
@@ -202,8 +206,8 @@ const Send = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 20
-    }
+        paddingHorizontal: 20,
+    },
 });
 
 export default Send;

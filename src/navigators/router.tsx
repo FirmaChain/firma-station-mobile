@@ -9,14 +9,15 @@ import Toast from 'react-native-toast-message';
 import { IBCTokenProvider } from '@/context/ibcTokenContext';
 import { DappsProvider } from '@/context/dappsContext';
 import { CWProvider } from '@/context/cwContext';
+import RootView from '@/components/parts/containers/rootView';
 
 const Router = () => {
-    const { common } = useAppSelector((state) => state);
+    const { common } = useAppSelector(state => state);
 
     const handleDataLoadDelayedToast = useCallback(() => {
         Toast.show({
             type: 'error',
-            text1: DATA_LOAD_DELAYED_NOTICE
+            text1: DATA_LOAD_DELAYED_NOTICE,
         });
     }, [common.dataLoadStatus]);
 
@@ -27,17 +28,19 @@ const Router = () => {
     }, [common.dataLoadStatus]);
 
     return (
-        <NavigationContainer theme={DarkTheme}>
-            <CWProvider>
-                <IBCTokenProvider>
-                    <DappsProvider>
-                        <StackNavigator />
-                        <AppStateManager />
-                        <CustomToast />
-                    </DappsProvider>
-                </IBCTokenProvider>
-            </CWProvider>
-        </NavigationContainer>
+        <RootView>
+            <NavigationContainer theme={DarkTheme}>
+                <CWProvider>
+                    <IBCTokenProvider>
+                        <DappsProvider>
+                            <StackNavigator />
+                            <AppStateManager />
+                            <CustomToast />
+                        </DappsProvider>
+                    </IBCTokenProvider>
+                </CWProvider>
+            </NavigationContainer>
+        </RootView>
     );
 };
 

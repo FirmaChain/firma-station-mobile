@@ -21,7 +21,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePa
 
 const ChangePassword = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet, storage } = useAppSelector((state) => state);
+    const { wallet, storage } = useAppSelector(state => state);
 
     const [status, setStatus] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +57,7 @@ const ChangePassword = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
         }
     };
@@ -90,8 +90,7 @@ const ChangePassword = () => {
     };
 
     const handleMoveToWeb = () => {
-        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["changePassword"]});
-        Linking.openURL(GUIDE_URI['changePassword']);
+        Linking.openURL(GUIDE_URI.changePassword);
     };
 
     const handleBack = () => {
@@ -130,18 +129,18 @@ const ChangePassword = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 3,
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     },
     wallet: {
         paddingVertical: 10,
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#aaa'
+        color: '#aaa',
     },
     buttonBox: {
         flex: 1,
-        justifyContent: 'flex-end'
-    }
+        justifyContent: 'flex-end',
+    },
 });
 
 export default ChangePassword;

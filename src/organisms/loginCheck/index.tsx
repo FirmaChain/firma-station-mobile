@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +14,7 @@ import {
     removeWalletWithAutoLogin,
     setBioAuth,
     setEncryptPassword,
-    setWalletWithAutoLogin
+    setWalletWithAutoLogin,
 } from '@/util/wallet';
 import { easeInAndOutAnim, fadeIn, LayoutAnim } from '@/util/animation';
 import { getAddressFromRecoverValue } from '@/util/firma';
@@ -38,7 +37,7 @@ const LoginCheck = () => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const fadeAnimEnterButton = useRef(new Animated.Value(0)).current;
 
-    const { wallet, common } = useAppSelector((state) => state);
+    const { wallet, common } = useAppSelector(state => state);
 
     const Title: string = 'LOGIN';
     const Desc: string = LOGIN_DESCRIPTION;
@@ -55,7 +54,7 @@ const LoginCheck = () => {
                 await setWalletWithAutoLogin(
                     JSON.stringify({
                         name: name,
-                        address: adr
+                        address: adr,
                     })
                 );
 
@@ -73,7 +72,7 @@ const LoginCheck = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
         }
     };
@@ -105,7 +104,7 @@ const LoginCheck = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
         }
     };
@@ -141,7 +140,7 @@ const LoginCheck = () => {
         if (common.maintenanceState === false) {
             if (common.connect && loading === false) {
                 if (wallet.name !== '') {
-                    getUseBioAuthState().then((res) => {
+                    getUseBioAuthState().then(res => {
                         setDimActive(res);
                         setUseBio(res);
                         wait(3000).then(() => fadeIn(Animated, fadeAnimEnterButton, 500));
@@ -178,7 +177,7 @@ const LoginCheck = () => {
                 }
             };
 
-            AsyncStorage.getItem('alreadyLaunched').then((value) => {
+            AsyncStorage.getItem('alreadyLaunched').then(value => {
                 if (value == null) {
                     removeAllData().then(() => getWalletForAutoLogin());
                     AsyncStorage.setItem('alreadyLaunched', 'Launched');
@@ -196,19 +195,14 @@ const LoginCheck = () => {
 
     return (
         <ViewContainer bgColor={BgColor}>
-            <KeyboardAvoidingView
-                enabled={true}
-                behavior={Platform.select({ android: undefined, ios: 'padding' })}
-                style={{ height: '100%' }}
-            >
+            <KeyboardAvoidingView enabled={true} behavior={Platform.select({ android: undefined, ios: 'padding' })}>
                 {wallet.name !== '' && (
                     <Pressable onPress={() => Keyboard.dismiss()}>
                         <Animated.View
                             style={[
                                 styles.viewContainer,
-                                { justifyContent: dimActive ? 'center' : 'space-between', paddingBottom: isKeyboardShown ? 20 : 0 }
-                            ]}
-                        >
+                                { justifyContent: dimActive ? 'center' : 'space-between', paddingBottom: isKeyboardShown ? 20 : 0 },
+                            ]}>
                             {dimActive === false && (
                                 <TouchableOpacity style={[styles.disconnect]} onPress={() => handleDisconnect()}>
                                     <Text style={styles.disconnectText}>Disconnect</Text>
@@ -233,28 +227,28 @@ const LoginCheck = () => {
 
 const styles = StyleSheet.create({
     viewContainer: {
-        height: '100%',
+        flex: 1,
         alignItems: 'flex-end',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     disconnect: {
         height: 25,
         justifyContent: 'center',
         alignItems: 'flex-end',
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     },
     disconnectText: {
         fontFamily: Lato,
         fontSize: 14,
-        color: TextCatTitleColor
+        color: TextCatTitleColor,
     },
     enterButtonBox: {
         position: 'absolute',
         bottom: 0,
         width: '100%',
         justifyContent: 'flex-end',
-        paddingHorizontal: 20
-    }
+        paddingHorizontal: 20,
+    },
 });
 
 export default LoginCheck;

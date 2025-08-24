@@ -1,10 +1,8 @@
-import React from "react";
-import Send from "@/organisms/wallet/send";
+import React from 'react';
+import Send from '@/organisms/wallet/send';
 
 const SendScreen = () => {
-    return (
-        <Send />
-    )
-}
+    return <Send />;
+};
 
 export default SendScreen;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, SafeAreaView, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
 interface IProps {
     bgColor?: string;
@@ -7,23 +7,25 @@ interface IProps {
     children: JSX.Element;
 }
 
-const ViewContainer = ({ bgColor, full = false, children }: IProps) => {
+const ViewContainer = ({ bgColor, children }: IProps) => {
     return (
-        <SafeAreaView
+        <View
             style={[
                 styles.viewContainer,
-                { backgroundColor: bgColor, paddingBottom: full ? 0 : Platform.select({ android: 30, ios: 50 }) }
-            ]}
-        >
+                {
+                    backgroundColor: bgColor,
+                },
+            ]}>
             {children}
-        </SafeAreaView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     viewContainer: {
-        flex: 6
-    }
+        paddingBottom: Platform.OS === 'android' ? 20 : 0,
+        flex: 6,
+    },
 });
 
 export default ViewContainer;

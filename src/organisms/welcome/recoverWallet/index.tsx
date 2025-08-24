@@ -20,7 +20,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWa
 const RecoverWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const { common, modal } = useAppSelector((state) => state);
+    const { common, modal } = useAppSelector(state => state);
 
     const recoverWalletViaQR = async (value: string) => {
         try {
@@ -35,7 +35,7 @@ const RecoverWallet = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
         }
     };
@@ -49,8 +49,7 @@ const RecoverWallet = () => {
     };
 
     const handleMoveToWeb = () => {
-        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["recoverWallet"]});
-        Linking.openURL(GUIDE_URI['recoverWallet']);
+        Linking.openURL(GUIDE_URI.recoverWallet);
     };
 
     const handleBack = () => {
@@ -84,8 +83,8 @@ const RecoverWallet = () => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20
-    }
+        padding: 20,
+    },
 });
 
 export default RecoverWallet;

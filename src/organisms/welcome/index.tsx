@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
+import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
@@ -21,7 +20,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>
 const Welcome = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { storage } = useAppSelector((state) => state);
+    const { storage } = useAppSelector(state => state);
 
     const [walletExist, setWalletExist] = useState(false);
 
@@ -87,11 +86,11 @@ const Welcome = () => {
 
 const styles = StyleSheet.create({
     viewContainer: {
-        height: '100%',
+        flex: 1,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingTop: Platform.select({ android: 0, ios: getStatusBarHeight() })
+        paddingTop: 10,
     },
     network: {
         width: '100%',
@@ -99,32 +98,32 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         textAlign: 'right',
-        color: FailedColor
+        color: FailedColor,
     },
     buttonBox: {
         width: '100%',
         paddingHorizontal: 20,
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
     },
     dividerWrapper: {
         height: 17,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 14
+        marginVertical: 14,
     },
     divider: {
         flex: 1,
         height: 1,
-        backgroundColor: DisableColor
+        backgroundColor: DisableColor,
     },
     dividerText: {
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: 'normal',
         color: TextGrayColor,
-        paddingHorizontal: 18
-    }
+        paddingHorizontal: 18,
+    },
 });
 
 export default Welcome;

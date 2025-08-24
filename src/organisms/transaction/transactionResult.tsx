@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, Lato, PointLightColor, TextAddressColor, TextColor, TextGrayColor, TextWarnColor } from '@/constants/theme';
 import { EXPLORER_URL } from '@/constants/common';
 import { FailCircle, SuccessCircle } from '@/components/icon/icon';
@@ -30,13 +30,11 @@ const TransactionResult = ({ result, handleExplorer, handleBack }: IProps) => {
                     {result.code === 0 && <Text style={[styles.hash, { color: TextGrayColor }]}>HASH: </Text>}
                     <TouchableOpacity
                         disabled={result.code !== 0}
-                        onPress={() => handleExplorer(EXPLORER_URL() + '/transactions/' + result.result)}
-                    >
+                        onPress={() => handleExplorer(EXPLORER_URL() + '/transactions/' + result.result)}>
                         <Text
                             numberOfLines={result.code === -1 ? 10 : 1}
                             ellipsizeMode={'middle'}
-                            style={[styles.hash, { color: result.code === 0 ? TextAddressColor : TextColor, paddingHorizontal: 5 }]}
-                        >
+                            style={[styles.hash, { color: result.code === 0 ? TextAddressColor : TextColor, paddingHorizontal: 5 }]}>
                             {result.result}
                         </Text>
                     </TouchableOpacity>
@@ -54,18 +52,17 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         backgroundColor: BgColor,
-        paddingBottom: Platform.select({ android: 30, ios: 50 }),
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     },
     resultBox: {
-        width: '100%'
+        width: '100%',
     },
     resultWrapper: {
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     },
     result: {
         fontFamily: Lato,
@@ -74,24 +71,24 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: PointLightColor,
         paddingTop: 10,
-        paddingBottom: 20
+        paddingBottom: 20,
     },
     hash: {
         fontFamily: Lato,
         fontSize: 14,
         textAlign: 'center',
-        paddingBottom: 20
+        paddingBottom: 20,
     },
     noticeBox: {
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
     },
     warnText: {
         fontSize: 14,
         lineHeight: 20,
-        paddingLeft: 10
-    }
+        paddingLeft: 10,
+    },
 });
 
 export default TransactionResult;

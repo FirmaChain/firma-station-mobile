@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { InputBgColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -37,15 +37,14 @@ const InputBox = ({ type, handleRecoverValue }: IProps) => {
             <View
                 style={[
                     type === 'mnemonic' ? styles.inputWrapper : styles.inputWrapperForPrivateKey,
-                    { borderColor: focus ? WhiteColor : 'transparent' }
-                ]}
-            >
+                    { borderColor: focus ? WhiteColor : 'transparent' },
+                ]}>
                 <TextInput
                     multiline={true}
                     style={styles.input}
                     value={recoverValue}
                     selectionColor={WhiteColor}
-                    onChangeText={(text) => handleRecoverValueInput(text)}
+                    onChangeText={text => handleRecoverValueInput(text)}
                     onFocus={() => setFocus(true)}
                     onBlur={() => setFocus(false)}
                 />
@@ -58,12 +57,12 @@ const styles = StyleSheet.create({
     wrapperH: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignContent: 'center'
+        alignContent: 'center',
     },
     title: {
         color: TextColor,
         fontFamily: Lato,
-        fontSize: 14
+        fontSize: 14,
     },
     inputWrapperForPrivateKey: {
         color: TextColor,
@@ -73,7 +72,7 @@ const styles = StyleSheet.create({
         backgroundColor: InputBgColor,
         borderWidth: 1,
         borderRadius: 4,
-        padding: 8
+        padding: 8,
     },
     inputWrapper: {
         height: 200,
@@ -81,12 +80,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: InputBgColor,
         borderWidth: 1,
-        borderRadius: 4
+        borderRadius: 4,
     },
     input: {
         color: TextColor,
-        flex: 1
-    }
+        flex: 1,
+    },
 });
 
 export default InputBox;

@@ -9,7 +9,7 @@ import {
     removePasswordViaBioAuth,
     removeUseBioAuth,
     setPasswordViaBioAuth,
-    setUseBioAuth
+    setUseBioAuth,
 } from '@/util/wallet';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import { useAppSelector } from '@/redux/hooks';
@@ -22,7 +22,7 @@ interface IProps {
 }
 
 const BioAuthRadio = ({ wallet }: IProps) => {
-    const { common } = useAppSelector((state) => state);
+    const { common } = useAppSelector(state => state);
 
     const [openBioModal, setOpenBioModal] = useState(false);
     const [useBio, setUseBio] = useState(false);
@@ -44,7 +44,7 @@ const BioAuthRadio = ({ wallet }: IProps) => {
     const handleToast = () => {
         Toast.show({
             type: 'info',
-            text1: BIOAUTH_ACTIVATE
+            text1: BIOAUTH_ACTIVATE,
         });
     };
 
@@ -69,7 +69,7 @@ const BioAuthRadio = ({ wallet }: IProps) => {
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
         }
     };
@@ -94,9 +94,8 @@ const BioAuthRadio = ({ wallet }: IProps) => {
                 <View
                     style={[
                         styles.radioWrapper,
-                        useBio ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor }
-                    ]}
-                >
+                        useBio ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor },
+                    ]}>
                     <View style={styles.radio} />
                 </View>
             </TouchableOpacity>
@@ -119,25 +118,25 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottomWidth: 0.5,
-        borderBottomColor: BgColor
+        borderBottomColor: BgColor,
     },
     itemTitle: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextColor
+        color: TextColor,
     },
     radioWrapper: {
         width: 45,
         borderRadius: 20,
         justifyContent: 'center',
-        padding: 3
+        padding: 3,
     },
     radio: {
         width: 18,
         height: 18,
         borderRadius: 50,
-        backgroundColor: WhiteColor
-    }
+        backgroundColor: WhiteColor,
+    },
 });
 
 export default BioAuthRadio;

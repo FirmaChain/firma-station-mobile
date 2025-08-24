@@ -87,10 +87,12 @@ const Progress = () => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'absolute',
+        bottom: 0,
+        top: 0,
+        flex: 1,
     },
     background: {
         position: 'absolute',

@@ -1,7 +1,6 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { BoxDarkColor } from '@/constants/theme';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '@/components/header/header';
 import TitleBar from '../titleBar';
 
@@ -24,27 +23,25 @@ const Container = ({
     step = 0,
     backEvent,
     handleGuide,
-    children
+    children,
 }: IProps) => {
-    const insets = useSafeAreaInsets();
-
     const handleMoveBack = () => {
         backEvent && backEvent();
     };
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: bgColor, paddingTop: insets.top }]}>
+        <View style={[styles.container, { backgroundColor: bgColor /*paddingTop: insets.top*/ }]}>
             <Header step={step} bgColor={bgColor} onPressEvent={() => handleMoveBack()} />
             {titleOn && <TitleBar title={title} subTitle={subTitle} handleGuide={handleGuide} />}
             {children}
-        </SafeAreaView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
-    }
+        flex: 1,
+    },
 });
 
 export default Container;
