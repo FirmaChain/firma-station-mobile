@@ -227,7 +227,7 @@ const LoginCheck = () => {
 
 const styles = StyleSheet.create({
     viewContainer: {
-        flex: 1,
+        height: '100%',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
     },
