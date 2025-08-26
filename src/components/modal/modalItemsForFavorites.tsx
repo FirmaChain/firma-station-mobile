@@ -15,6 +15,7 @@ import { RestakeActiveColor } from '@/constants/theme';
 import { ICON_ATOM_LOGO, ICON_OSMO_LOGO, LOADING_LOGO_3 } from '@/constants/images';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import FastImage from 'react-native-fast-image';
+import _ from 'lodash';
 
 interface IProps {
     initVal: string;
@@ -50,6 +51,10 @@ const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | n
         }
     }, [removeItem, item, fadeAnimForRemove]);
 };
+
+function removeObject<T>(arr: T[], target: T): T[] {
+    return _.filter(arr, item => !_.isEqual(item, target));
+}
 
 // Confirm Remove Box
 interface RemoveConfirmBoxProps {
@@ -165,8 +170,6 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
         wallet,
     } = useAppSelector((state: rootState) => state);
 
-    console.log('upper_selectedAddress', selectedAddress);
-
     // Internal Hooks
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -201,9 +204,7 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
     };
 
     const removeFavorite = (item: IFavoriteProps) => {
-        const newFavorite: IFavoriteProps[] = data.filter(
-            _item => _item.address !== item.address && _item.name !== item.name && _item.memo !== item.memo
-        );
+        const newFavorite: IFavoriteProps[] = removeObject(data, item);
 
         adjustFavoriteList(newFavorite);
         setRemoveItem(null);
