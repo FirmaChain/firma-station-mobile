@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 4,
-        paddingBottom: Platform.OS === 'ios' ? 30 : 10,
+        paddingBottom: Platform.OS === 'ios' ? 30 : 0,
         zIndex: 9999,
     },
 });

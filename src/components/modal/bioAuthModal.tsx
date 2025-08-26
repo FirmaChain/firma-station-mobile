@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     },
     buttonBox: {
         flex: 1,
-        paddingBottom: Platform.select({ android: 30, ios: 50 }),
+        paddingBottom: Platform.select({ android: 20, ios: 50 }),
         justifyContent: 'flex-end',
     },
 });
