@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT } from '@/constants/common';
 import { Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
 import { confirmViaBioAuth } from '@/util/bioAuth';
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     },
     buttonBox: {
         flex: 1,
-        paddingBottom: Platform.select({ android: 20, ios: 50 }),
+        paddingBottom: 20,
         justifyContent: 'flex-end',
     },
 });

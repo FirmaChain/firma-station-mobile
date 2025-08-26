@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 interface IProps {
     bgColor?: string;
@@ -23,7 +23,7 @@ const ViewContainer = ({ bgColor, children }: IProps) => {
 
 const styles = StyleSheet.create({
     viewContainer: {
-        paddingBottom: Platform.OS === 'android' ? 20 : 0,
+        paddingBottom: 20,
         flex: 6,
     },
 });

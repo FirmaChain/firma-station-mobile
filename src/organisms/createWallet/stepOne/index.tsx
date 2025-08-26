@@ -111,7 +111,6 @@ const StepOne = ({ recoverValue = null }: IProps) => {
     };
 
     const handleMoveToWeb = () => {
-        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[mnemonic?"recoverWallet":"newWallet"]});
         Linking.openURL(GUIDE_URI[recoverValue ? 'recoverWallet' : 'newWallet']);
     };
 
@@ -168,7 +167,6 @@ const styles = StyleSheet.create({
         marginTop: 30,
     },
     buttonBox: {
-        flex: 1,
         justifyContent: 'flex-end',
     },
 });

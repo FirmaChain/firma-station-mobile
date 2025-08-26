@@ -12,7 +12,7 @@ import {
     EXIST_NAME_IN_FAVORITE_WARN_TEXT,
     FAVORITE_ADD_SUCCESS,
     FAVORITE_ADJUST_SUCCESS,
-    WRONG_TARGET_ADDRESS_WARN_TEXT
+    WRONG_TARGET_ADDRESS_WARN_TEXT,
 } from '@/constants/common';
 import { addressCheck } from '@/util/firma';
 import Toast from 'react-native-toast-message';
@@ -82,18 +82,18 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
             if (favorites === undefined) {
                 addFirstFavorite();
             } else {
-                let myList = favorites.find((value) => value.ownerAddress === wallet.address);
+                let myList = favorites.find(value => value.ownerAddress === wallet.address);
                 if (myList === undefined) {
                     addNewFavorite(favorites);
                 } else {
                     let newFavorite = [...myList.favorite];
                     if (isAdjust) {
-                        let adjustList = newFavorite.map((value) => {
+                        let adjustList = newFavorite.map(value => {
                             if (value.address === addressValue) {
                                 return {
                                     name: nameValue,
                                     address: addressValue,
-                                    memo: memoValue
+                                    memo: memoValue,
                                 };
                             } else {
                                 return value;
@@ -104,7 +104,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         newFavorite.unshift({
                             name: nameValue,
                             address: addressValue,
-                            memo: memoValue
+                            memo: memoValue,
                         });
                         addNewFavoriteAtMine(favorites, newFavorite);
                     }
@@ -113,7 +113,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
 
             Toast.show({
                 type: 'info',
-                text1: isAdjust ? FAVORITE_ADJUST_SUCCESS : FAVORITE_ADD_SUCCESS
+                text1: isAdjust ? FAVORITE_ADJUST_SUCCESS : FAVORITE_ADD_SUCCESS,
             });
 
             handleOpenModalPrev(true);
@@ -121,7 +121,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
             console.log(error);
             return Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
         }
     };
@@ -134,10 +134,10 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                     {
                         name: nameValue,
                         address: addressValue,
-                        memo: memoValue
-                    }
-                ]
-            }
+                        memo: memoValue,
+                    },
+                ],
+            },
         ]);
     };
 
@@ -150,19 +150,19 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                     {
                         name: nameValue,
                         address: addressValue,
-                        memo: memoValue
-                    }
-                ]
-            }
+                        memo: memoValue,
+                    },
+                ],
+            },
         ]);
     };
 
     const addNewFavoriteAtMine = (favorites: IFavoriteState[], newFavorite: IFavoriteProps[]) => {
-        let newList = favorites.map((value) => {
+        let newList = favorites.map(value => {
             if (value.ownerAddress === wallet.address) {
                 return {
                     ownerAddress: value.ownerAddress,
-                    favorite: newFavorite
+                    favorite: newFavorite,
                 };
             } else {
                 return value;
@@ -187,11 +187,10 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
             let favorite = storage.favorite;
             if (favorite === undefined) return;
 
-            let result = favorite.find((value) => value.ownerAddress === wallet.address);
+            let result = favorite.find(value => value.ownerAddress === wallet.address);
             if (result !== undefined) {
-                if (result.favorite.find((value) => value.address === addressValue) !== undefined)
-                    throw EXIST_ADDRESS_IN_FAVORITE_WARN_TEXT;
-                if (result.favorite.find((value) => value.name === nameValue) !== undefined) throw EXIST_NAME_IN_FAVORITE_WARN_TEXT;
+                if (result.favorite.find(value => value.address === addressValue) !== undefined) throw EXIST_ADDRESS_IN_FAVORITE_WARN_TEXT;
+                if (result.favorite.find(value => value.name === nameValue) !== undefined) throw EXIST_NAME_IN_FAVORITE_WARN_TEXT;
             }
         } catch (error) {
             console.log(error);
@@ -203,10 +202,10 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
         if (isAdjust) {
             let address = modal.favoriteData;
             let favoriteList = storage.favorite;
-            let myList = favoriteList.find((value) => value.ownerAddress === wallet.address);
+            let myList = favoriteList.find(value => value.ownerAddress === wallet.address);
 
             if (myList !== undefined) {
-                let favorite = myList.favorite.find((value) => value.address === address);
+                let favorite = myList.favorite.find(value => value.address === address);
                 if (favorite !== undefined) {
                     setAddressValue(favorite.address);
                     setNameValue(favorite.name);
@@ -233,13 +232,12 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
             bgColor={BgColor}
             toastInModal={false}
             forceActive={true}
-            handleOpen={open === false ? () => null : handleOpenModal}
-        >
+            handleOpen={open === false ? () => null : handleOpenModal}>
             <View style={styles.modalContainer}>
                 <View style={styles.headerBox}>
                     <Text style={styles.headerTitle}>{isAdjust ? 'Edit Favorite' : 'Add Favorite'}</Text>
                 </View>
-                <View style={[styles.inputContainer, { marginTop: 15, marginBottom: 8 }]}>
+                <View style={[styles.inputContainer, { marginTop: 15 }]}>
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>{'Name'}</Text>
                     </View>
@@ -254,7 +252,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         selectionColor={WhiteColor}
                         onFocus={() => setNameFocus(true)}
                         onBlur={() => setNameFocus(false)}
-                        onChangeText={(text) => handleNameValue(text)}
+                        onChangeText={text => handleNameValue(text)}
                     />
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>{'Address'}</Text>
@@ -265,8 +263,8 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                             styles.input,
                             {
                                 color: isAdjust === false ? TextColor : TextDisableColor,
-                                borderColor: addressFocus ? WhiteColor : 'transparent'
-                            }
+                                borderColor: addressFocus ? WhiteColor : 'transparent',
+                            },
                         ]}
                         placeholder={'Address'}
                         placeholderTextColor={InputPlaceholderColor}
@@ -278,7 +276,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         editable={isAdjust === false}
                         onFocus={() => setAddressFocus(true)}
                         onBlur={() => setAddressFocus(false)}
-                        onChangeText={(text) => handleAddressValue(text)}
+                        onChangeText={text => handleAddressValue(text)}
                     />
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>
@@ -297,7 +295,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         selectionColor={WhiteColor}
                         onFocus={() => setMemoFocus(true)}
                         onBlur={() => setMemoFocus(false)}
-                        onChangeText={(text) => handleMemoValue(text)}
+                        onChangeText={text => handleMemoValue(text)}
                     />
                     <View style={styles.buttonBox}>
                         <View style={{ flex: 1 }}>
@@ -318,7 +316,8 @@ const styles = StyleSheet.create({
     modalContainer: {
         width: '100%',
         maxHeight: 500,
-        backgroundColor: BgColor
+        backgroundColor: BgColor,
+        paddingBottom: 20,
     },
     headerBox: {
         paddingHorizontal: 10,
@@ -326,43 +325,43 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: BoxColor
+        backgroundColor: BoxColor,
     },
     headerTitle: {
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
     },
     inputContainer: {
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     },
     textContainer: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        marginBottom: 8
+        marginBottom: 8,
     },
     text: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
-        color: TextCatTitleColor
+        color: TextCatTitleColor,
     },
     input: {
         color: TextColor,
         padding: 12,
         borderWidth: 1,
         backgroundColor: InputBgColor,
-        marginBottom: 13
+        marginBottom: 13,
     },
     buttonBox: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 20
-    }
+        marginTop: 20,
+    },
 });
 
 export default FavoritesCreateModal;
