@@ -1,10 +1,10 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Animated } from 'react-native';
 import { IFavoriteProps } from '@/redux/types';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { rootState } from '@/redux/reducers';
-import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { MenuIcon, Radio, RemoveIcon } from '../icon/icon';
 import { LayoutAnim, easeInAndOutCustomAnim, fadeIn, fadeOut } from '@/util/animation';
@@ -165,6 +165,8 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
         wallet,
     } = useAppSelector((state: rootState) => state);
 
+    console.log('upper_selectedAddress', selectedAddress);
+
     // Internal Hooks
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -190,8 +192,8 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
     }, [isEdit]);
 
     // Functions
-    const handleSelect = (address: string, memo: string, isEdit: boolean) => {
-        if (isEdit === false) {
+    const handleSelect = (address: string, memo: string, _isEdit: boolean) => {
+        if (_isEdit === false) {
             onPressEvent(address, memo);
         } else {
             onPressEventForEdit(address);
@@ -248,7 +250,7 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
                 </View>
             );
         },
-        [isEdit, removeItem]
+        [isEdit, removeItem, selectedAddress]
     );
 
     return (
