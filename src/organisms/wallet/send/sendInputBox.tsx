@@ -1,7 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BgColor, BoxColor, DisableColor, InputBgColor, InputPlaceholderColor, Lato, PointColor, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
-import { AUTO_ENTERED_AMOUNT_TEXT, CHAIN_SYMBOL, CW_TX_NOTICE_TEXT, FAVORITE_ADD_SUCCESS, FEE_INSUFFICIENT_NOTICE } from '@/constants/common';
+import {
+    BgColor,
+    BoxColor,
+    DisableColor,
+    InputBgColor,
+    InputPlaceholderColor,
+    Lato,
+    PointColor,
+    TextCatTitleColor,
+    TextColor,
+    WhiteColor,
+} from '@/constants/theme';
+import {
+    AUTO_ENTERED_AMOUNT_TEXT,
+    CHAIN_SYMBOL,
+    CW_TX_NOTICE_TEXT,
+    FAVORITE_ADD_SUCCESS,
+    FEE_INSUFFICIENT_NOTICE,
+} from '@/constants/common';
 import InputSetVerticalForAddress from '@/components/input/inputSetVerticalForAddress';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
 import InputSetVertical from '@/components/input/inputSetVertical';
@@ -64,10 +81,10 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
 
     const handleSendInfoState = (type: string, value: string | number | IBCChainState | null) => {
         handleSendInfo(type, value);
-        if (type === 'amount' && (typeof value === 'number')) setAmount(value);
+        if (type === 'amount' && typeof value === 'number') setAmount(value);
         if (type === 'address' && (typeof value === 'string' || typeof value === 'number')) setAddressValue(value.toString());
         if (type === 'memo' && (typeof value === 'string' || typeof value === 'number')) setMemoValue(value.toString());
-        if (type === 'chain' && (typeof value !== 'string' && typeof value !== 'number')) {
+        if (type === 'chain' && typeof value !== 'string' && typeof value !== 'number') {
             setSelectChain(value);
             setOpenChainSelectModal(false);
         }
@@ -137,7 +154,9 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
             <View style={[styles.chainContainer, { height: accordionHeight }]}>
                 <Text style={styles.chainTitle}>Destination Chain</Text>
                 <TouchableOpacity style={styles.chainSelectBox} onPress={() => setOpenChainSelectModal(true)}>
-                    <Text style={[styles.chain, { color: selectChain === null ? InputPlaceholderColor : TextColor }]}>{selectChain === null ? 'Select IBC chain' : `${selectChain.name.toUpperCase()} (${selectChain.channel})`}</Text>
+                    <Text style={[styles.chain, { color: selectChain === null ? InputPlaceholderColor : TextColor }]}>
+                        {selectChain === null ? 'Select IBC chain' : `${selectChain.name.toUpperCase()} (${selectChain.channel})`}
+                    </Text>
                     <DownArrow size={10} color={InputPlaceholderColor} />
                 </TouchableOpacity>
             </View>
@@ -173,9 +192,8 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
                     <View
                         style={[
                             styles.radioWrapper,
-                            safetyActive ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor }
-                        ]}
-                    >
+                            safetyActive ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor },
+                        ]}>
                         <View style={styles.radio} />
                     </View>
                 </TouchableOpacity>
@@ -190,11 +208,11 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
                     <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true} />
                 </View>
             )}
-            {safetyActive === false && available > 20000 &&
+            {safetyActive === false && available > 20000 && (
                 <View>
                     <WarnContainer text={CW_TX_NOTICE_TEXT} question={false} />
                 </View>
-            }
+            )}
 
             <FavoritesModal
                 open={openFavoriteModal}
@@ -231,29 +249,29 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor,
-        marginBottom: 5
+        marginBottom: 5,
     },
     radioBox: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        marginBottom: 10
+        marginBottom: 10,
     },
     radioWrapper: {
         width: 45,
         borderRadius: 20,
         justifyContent: 'center',
-        padding: 3
+        padding: 3,
     },
     radio: {
         width: 18,
         height: 18,
         borderRadius: 50,
-        backgroundColor: WhiteColor
+        backgroundColor: WhiteColor,
     },
     chainContainer: {
         marginBottom: 20,
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     chainTitle: {
         fontFamily: Lato,
@@ -262,8 +280,8 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     chainSelectBox: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
         padding: 15,
         backgroundColor: InputBgColor,
@@ -281,13 +299,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: BoxColor
+        backgroundColor: BoxColor,
     },
     modalHeaderTitle: {
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
     },
 });
 

@@ -4,7 +4,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { rootState } from '@/redux/reducers';
 import { ModalActions, StorageActions } from '@/redux/actions';
 import { IFavoriteProps, IFavoriteState } from '@/redux/types';
-import { TextDisableColor, WhiteColor } from '@/constants/theme';
+import { TextDisableColor, TextGrayColor, WhiteColor } from '@/constants/theme';
 import { InputPlaceholderColor } from '@/constants/theme';
 import { BgColor, BoxColor, InputBgColor, Lato, TextCatTitleColor, TextColor } from '@/constants/theme';
 import {
@@ -20,6 +20,7 @@ import CustomModal from '@/components/modal/customModal';
 import Button from '../button/button';
 import TextButton from '../button/textButton';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { useSelector } from 'react-redux';
 
 interface IProps {
     open: boolean;
@@ -29,6 +30,7 @@ interface IProps {
 }
 
 const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteModal }: IProps) => {
+    const isLoading = useSelector((v: rootState) => v.common.loading);
     const { storage, wallet, modal } = useAppSelector((state: rootState) => state);
     const [addressFocus, setAddressFocus] = useState(false);
     const [addressValue, setAddressValue] = useState('');
@@ -249,10 +251,11 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         keyboardType={'default'}
                         autoCapitalize="none"
                         value={nameValue}
-                        selectionColor={WhiteColor}
+                        selectionColor={TextGrayColor}
                         onFocus={() => setNameFocus(true)}
                         onBlur={() => setNameFocus(false)}
                         onChangeText={text => handleNameValue(text)}
+                        editable={!isLoading}
                     />
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>{'Address'}</Text>
@@ -272,8 +275,8 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         keyboardType={'default'}
                         autoCapitalize="none"
                         value={addressValue}
-                        selectionColor={WhiteColor}
-                        editable={isAdjust === false}
+                        selectionColor={TextGrayColor}
+                        editable={isAdjust === false && !isLoading}
                         onFocus={() => setAddressFocus(true)}
                         onBlur={() => setAddressFocus(false)}
                         onChangeText={text => handleAddressValue(text)}
@@ -292,10 +295,11 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         keyboardType={'default'}
                         autoCapitalize="none"
                         value={memoValue}
-                        selectionColor={WhiteColor}
+                        selectionColor={TextGrayColor}
                         onFocus={() => setMemoFocus(true)}
                         onBlur={() => setMemoFocus(false)}
                         onChangeText={text => handleMemoValue(text)}
+                        editable={!isLoading}
                     />
                     <View style={styles.buttonBox}>
                         <View style={{ flex: 1 }}>

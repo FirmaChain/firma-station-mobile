@@ -103,3 +103,9 @@ yarn run android  # for Android
 ## Environment Variables
 
 - Copy `.config.sample.ts` to `.config.ts` and set required values.
+
+---
+
+## Note
+
+- When build fails with updated deps, try `yarn install --immutable`

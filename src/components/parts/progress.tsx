@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from '@/constants/images';
-import { Animated, BackHandler, Platform, StyleSheet, Text, View } from 'react-native';
+import { Animated, BackHandler, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 import { fadeIn, fadeOut } from '@/util/animation';
 import { BgColor, Lato, TextCatTitleColor, TextColor } from '@/constants/theme';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,7 +19,10 @@ const Progress = () => {
 
     const animated = [fadeAnim_1, fadeAnim_2, fadeAnim_3];
     const [loadingDelayed, setLoadingDelayed] = useState(false);
+
     useEffect(() => {
+        Keyboard.dismiss();
+
         let index = -1;
         let inverse = true;
         let count = 0;

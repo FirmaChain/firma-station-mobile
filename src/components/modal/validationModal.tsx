@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message';
 import InputSetVertical from '../input/inputSetVertical';
 import ArrowButton from '../button/arrowButton';
 import CustomModal from './customModal';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface IProps {
     type: string;
@@ -26,7 +27,9 @@ interface IProps {
 }
 
 const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps) => {
-    const { wallet, common } = useAppSelector((state) => state);
+    const { wallet, common } = useAppSelector(state => state);
+
+    const insets = useSafeAreaInsets();
 
     const screenHeight = ScreenHeight();
     const [contentPosition, setContentPosition] = useState(0);
@@ -148,7 +151,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: String(error)
+                text1: String(error),
             });
             handleModal(false);
         }
@@ -208,28 +211,32 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
             bgColor={BgColor}
             lockBackButton={backbuttonLock}
             keyboardAvoiing={false}
-            handleOpen={handleModal}
-        >
+            handleOpen={handleModal}>
             <Pressable
                 style={styles.container}
                 onPress={() => {
                     Keyboard.dismiss();
-                }}
-            >
-                <View style={[styles.backArrowButton, { display: type === 'transaction' ? (backbuttonLock ? 'none' : 'flex') : 'none' }]}>
+                }}>
+                <View
+                    style={[
+                        styles.backArrowButton,
+                        {
+                            top: (Platform.OS === 'ios' ? insets.top : 0) + 2, // 2 is added to match slight gap between normal back btn.
+                            display: type === 'transaction' ? (backbuttonLock ? 'none' : 'flex') : 'none',
+                        },
+                    ]}>
                     <ArrowButton onPressEvent={() => handleModal(false)} />
                 </View>
                 <Animated.View
                     style={[styles.textBox, { paddingBottom: contentPaddingBottom }]}
-                    onLayout={(event) => {
+                    onLayout={event => {
                         const { y, height } = event.nativeEvent.layout;
                         if (dimActive === false) {
                             setContentPosition(y + height);
                         } else {
                             setContentPosition(0);
                         }
-                    }}
-                >
+                    }}>
                     <View style={{ alignItems: 'center' }}>
                         {renderIcon()}
                         <Text style={[styles.title, { fontWeight: 'bold' }]}>{titleText}</Text>
@@ -249,8 +256,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                             <TouchableOpacity
                                 style={styles.confirmButton}
                                 disabled={active === false}
-                                onPress={() => handleValidation(false)}
-                            >
+                                onPress={() => handleValidation(false)}>
                                 <SquareIcon size={55} color={active ? PointColor : DisableColor} />
                                 <View style={[styles.buttonArrow]}>
                                     <ForwardArrow size={25} color={active ? WhiteColor : BgColor} />
@@ -270,7 +276,7 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: BgColor
+        backgroundColor: BgColor,
     },
     dim: {
         width: '100%',
@@ -280,11 +286,11 @@ const styles = StyleSheet.create({
         opacity: Platform.select({ android: 0, ios: 0.5 }),
         top: 0,
         left: 0,
-        bottom: 0
+        bottom: 0,
     },
     textBox: {
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     title: {
         fontFamily: Lato,
@@ -292,31 +298,31 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: TextCatTitleColor,
         marginTop: 35,
-        marginBottom: 20
+        marginBottom: 20,
     },
     passwordBox: {
         width: '100%',
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     },
     backArrowButton: {
         position: 'absolute',
         top: Platform.select({ android: 0, ios: getStatusBarHeight() }),
-        left: 0
+        left: 0,
     },
     confirmButton: {
         marginLeft: 2,
-        marginBottom: 6
+        marginBottom: 6,
     },
     buttonArrow: {
         position: 'absolute',
         width: 25,
         height: 25,
         top: 17.5,
-        left: 14
-    }
+        left: 14,
+    },
 });
 
 export default ValidationModal;

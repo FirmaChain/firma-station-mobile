@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { InputBgColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
+import { InputBgColor, Lato, TextColor, TextGrayColor, WhiteColor } from '@/constants/theme';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TextButton from '@/components/button/textButton';
+import { useSelector } from 'react-redux';
+import { rootState } from '@/redux/reducers';
 
 interface IProps {
     type: 'mnemonic' | 'privateKey';
@@ -10,6 +12,8 @@ interface IProps {
 }
 
 const InputBox = ({ type, handleRecoverValue }: IProps) => {
+    const isLoading = useSelector((v: rootState) => v.common.loading);
+
     const [focus, setFocus] = useState(false);
     const [recoverValue, setRecoverValue] = useState('');
 
@@ -43,10 +47,11 @@ const InputBox = ({ type, handleRecoverValue }: IProps) => {
                     multiline={true}
                     style={styles.input}
                     value={recoverValue}
-                    selectionColor={WhiteColor}
+                    selectionColor={TextGrayColor}
                     onChangeText={text => handleRecoverValueInput(text)}
                     onFocus={() => setFocus(true)}
                     onBlur={() => setFocus(false)}
+                    editable={!isLoading}
                 />
             </View>
         </Pressable>

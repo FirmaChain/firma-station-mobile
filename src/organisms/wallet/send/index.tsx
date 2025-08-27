@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Keyboard, Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -99,6 +99,8 @@ const Send = () => {
     };
 
     const handleSend = async () => {
+        Keyboard.dismiss(); // Release keyboard from input, to prevent value change while loading
+
         if (sendInfoState.address === '' || sendInfoState.amount <= 0) return;
         const isValidAddress = addressCheck(sendInfoState.address);
         CommonActions.handleLoadingProgress(true);
