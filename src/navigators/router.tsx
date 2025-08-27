@@ -30,6 +30,13 @@ const Router = () => {
         }
     }, [common.dataLoadStatus]);
 
+    useEffect(() => {
+        //? Set curent route value to empty. for bottom view bg
+        return () => {
+            CommonActions.handleCurrentRoute('');
+        };
+    }, []);
+
     return (
         <NavigationContainer
             ref={navigationRef}

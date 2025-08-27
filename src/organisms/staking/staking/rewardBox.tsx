@@ -10,7 +10,7 @@ import {
     TextColor,
     TextLightGrayColor,
     TextPointDisableColor,
-    TextStakingReward
+    TextStakingReward,
 } from '@/constants/theme';
 import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
 import { getEstimateGasFromAllDelegations, getFeesFromGas, getFirmaConfig } from '@/util/firma';
@@ -18,7 +18,7 @@ import TransactionConfirmModal from '@/components/modal/transactionConfirmModal'
 import SmallButton from '@/components/button/smallButton';
 import AlertModal from '@/components/modal/alertModal';
 import { CHAIN_SYMBOL } from '@/constants/common';
-// import AnimatedNumber from "react-native-animated-number";
+import { Screens } from '@/navigators/appRoutes';
 
 interface IProps {
     walletName: string;
@@ -89,6 +89,16 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
         setStakingReward(convertAmount({ value: reward, isUfct: false }));
     }, [reward]);
 
+    //? Temp: set current route to modal for bottom view bg
+    // Todo: remove this after find solution for bottom view bg
+    useEffect(() => {
+        if (openModal) {
+            CommonActions.handleCurrentRoute('modal');
+        } else {
+            CommonActions.handleCurrentRoute(Screens.Staking);
+        }
+    }, [openModal]);
+
     return (
         <View style={styles.rewardBox}>
             <View style={styles.boxV}>
@@ -98,19 +108,6 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
                         {stakingReward}
                         <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
                     </Text>
-                    {/* <AnimatedNumber 
-                        style={[styles.desc, {fontSize: rewardTextSize, width: "auto", padding: 0}, Platform.OS === "android" && {height: rewardTextSize, textAlign: "right"}]} 
-                        steps={rewardInteger>0?35:0} 
-                        value={rewardInteger} 
-                        formatter={(value) => {
-                        return convertAmount(value, false, 0);
-                    }}/>
-                    <Text style={[styles.desc, {fontSize: rewardTextSize, width: "auto"}]}>.</Text>
-                    <AnimatedNumber 
-                        style={[styles.desc, {fontSize: rewardTextSize, width: "auto", padding: 0}, Platform.OS === "android" && {height: rewardTextSize, textAlign: "left"}]} 
-                        steps={rewardDecimal>0?35:0}
-                        value={rewardDecimal}/>
-                    <Text style={[styles.title, {fontSize: 14, fontWeight: "normal", paddingBottom: 3}]}> FCT</Text> */}
                 </View>
             </View>
             <SmallButton
@@ -153,33 +150,33 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: PointColor
+        backgroundColor: PointColor,
     },
     divider: {
         width: '100%',
         height: 1,
         marginBottom: 20,
-        backgroundColor: DisableColor
+        backgroundColor: DisableColor,
     },
     boxV: {},
     boxH: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingBottom: 10
+        paddingBottom: 10,
     },
     title: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: '600',
-        color: TextLightGrayColor
+        color: TextLightGrayColor,
     },
     desc: {
         fontFamily: Lato,
         fontSize: 28,
         fontWeight: '600',
-        color: TextColor
-    }
+        color: TextColor,
+    },
 });
 
 export default RewardBox;

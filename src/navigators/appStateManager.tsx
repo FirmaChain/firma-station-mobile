@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { AppState, Platform, StyleSheet, View } from 'react-native';
+import { AppState, Dimensions, Platform, StyleSheet, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { CommonActions, StorageActions } from '@/redux/actions';
 import { convertNumber, getTimeStamp, wait } from '@/util/common';
@@ -26,6 +26,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens, StackParamList } from './appRoutes';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
+
+const { width, height } = Dimensions.get('window');
 
 const AppStateManager = () => {
     const netInfo = useNetInfo();
@@ -257,14 +259,13 @@ const AppStateManager = () => {
 
 const styles = StyleSheet.create({
     dim: {
-        width: '100%',
-        height: '100%',
+        width,
+        height,
         position: 'absolute',
         backgroundColor: BgColor,
         opacity: 1,
         top: 0,
         left: 0,
-        bottom: 0,
     },
 });
 
