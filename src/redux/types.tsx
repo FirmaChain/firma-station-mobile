@@ -38,6 +38,7 @@ export const IS_NETWORK_CHANGED = 'IS_NETWORK_CHANGED';
 export const IS_CONNECTION = 'IS_CONNECTION';
 export const LOGGEDIN = 'LOGGEDIN';
 export const DATA_LOAD_STATUS = 'DATA_LOAD_STATUS';
+export const CURRENT_ROUTE = 'CURRENT_ROUTE';
 
 // modal
 export const HANDLE_RESET_MODAL = 'RESET_MODAL';

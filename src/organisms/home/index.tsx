@@ -41,7 +41,6 @@ const Home = ({ title }: IProps) => {
     };
 
     const handleMoveToWeb = () => {
-        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
     };
 
@@ -61,7 +60,7 @@ const Home = ({ title }: IProps) => {
 
     const verifyWallet = useCallback(() => {
         let list = walletJson.contactAddressList;
-        let exist = list.find((address) => address === wallet.address) !== undefined;
+        let exist = list.find(address => address === wallet.address) !== undefined;
         setExistOnJson(exist);
     }, [walletJson, wallet]);
 
@@ -82,8 +81,7 @@ const Home = ({ title }: IProps) => {
             title={title}
             handleGuide={key === 'dapps' ? undefined : handleMoveToWeb}
             settingNavEvent={moveToSetting}
-            historyNavEvent={moveToHistory}
-        >
+            historyNavEvent={moveToHistory}>
             <Fragment>
                 <TabNavigators />
                 {existOnJson && (
@@ -113,8 +111,8 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         textAlign: 'center',
         paddingVertical: 10,
-        color: TextAddressColor
-    }
+        color: TextAddressColor,
+    },
 });
 
 export default Home;

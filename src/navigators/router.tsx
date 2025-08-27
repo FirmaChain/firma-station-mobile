@@ -10,9 +10,12 @@ import { IBCTokenProvider } from '@/context/ibcTokenContext';
 import { DappsProvider } from '@/context/dappsContext';
 import { CWProvider } from '@/context/cwContext';
 import RootView from '@/components/parts/containers/rootView';
+import { CommonActions } from '@/redux/actions';
 
 const Router = () => {
     const { common } = useAppSelector(state => state);
+
+    const navigationRef = React.useRef<any>();
 
     const handleDataLoadDelayedToast = useCallback(() => {
         Toast.show({
@@ -28,8 +31,18 @@ const Router = () => {
     }, [common.dataLoadStatus]);
 
     return (
-        <RootView>
-            <NavigationContainer theme={DarkTheme}>
+        <NavigationContainer
+            ref={navigationRef}
+            theme={DarkTheme}
+            onStateChange={async () => {
+                const previousRouteName = common.currentRoute;
+                const currentRouteName = navigationRef.current?.getCurrentRoute()?.name;
+
+                if (previousRouteName !== currentRouteName) {
+                    CommonActions.handleCurrentRoute(currentRouteName);
+                }
+            }}>
+            <RootView>
                 <CWProvider>
                     <IBCTokenProvider>
                         <DappsProvider>
@@ -39,8 +52,8 @@ const Router = () => {
                         </DappsProvider>
                     </IBCTokenProvider>
                 </CWProvider>
-            </NavigationContainer>
-        </RootView>
+            </RootView>
+        </NavigationContainer>
     );
 };
 
