@@ -82,8 +82,8 @@ android {
         missingDimensionStrategy 'react-native-camera', 'mlkit', 'general'
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 44
-        versionName "1.0.28"
+        versionCode 45
+        versionName "1.0.29"
     }
     packagingOptions {
         pickFirst '**/libc++_shared.so'
