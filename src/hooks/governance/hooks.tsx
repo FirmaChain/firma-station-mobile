@@ -112,12 +112,15 @@ export const useGovernanceList = () => {
 
                         const firstMsg = messages[0] as any;
                         const firmsMsgContent = firstMsg?.content || null;
+                        // If Messages is empty, can be considered as Text Proposal
+                        const isEmptyMsg = Array.isArray(messages) ? messages.length === 0 : Boolean(messages);
 
                         const proposalId = id.toString();
-                        const proposalType =
-                            PROPOSAL_MESSAGE_TYPE[
-                                (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
-                            ];
+                        const proposalType = isEmptyMsg
+                            ? PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']
+                            : PROPOSAL_MESSAGE_TYPE[
+                                  (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
+                              ];
 
                         const depositEndTime = _proposal.deposit_end_time;
                         const votingStartTime = _proposal.voting_start_time;
@@ -210,12 +213,15 @@ export const useProposalData = () => {
             const _proposal = proposal as any;
             const firstMsg = proposal.messages[0] as any;
             const firmsMsgContent = firstMsg?.content || null;
+            const isEmptyMsg = Array.isArray(proposal.messages) ? proposal.messages.length === 0 : Boolean(proposal.messages);
 
             const proposalId = proposal.id.toString();
             const title = proposal.title;
             const status = proposal.status.toString();
-            const proposalType =
-                PROPOSAL_MESSAGE_TYPE[(firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')];
+            // If Messages is empty, can be considered as Text Proposal
+            const proposalType = isEmptyMsg
+                ? PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']
+                : PROPOSAL_MESSAGE_TYPE[(firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')];
             const submitTime = _proposal.submit_time;
             const description = proposal.summary;
             const classified = classifiedData(proposal.messages);
