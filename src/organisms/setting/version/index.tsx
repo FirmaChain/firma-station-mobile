@@ -1,21 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
 import { VERSION } from '@/../config';
+import { setApiAddress } from '@/api';
 import { setClient } from '@/apollo';
 import { setNetworkData } from '@/constants/common';
-import { BgColor, Lato, TextGrayColor } from '@/constants/theme';
-import { useChainVersion } from '@/hooks/common/hooks';
+import { BgColor, TextGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, ModalActions, StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { setFirmaSDK } from '@/util/firma';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { setApiAddress } from '@/api';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { useChainVersion } from '@/hooks/common/hooks';
 import CustomModal from '@/components/modal/customModal';
 import ModalItems from '@/components/modal/modalItems';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import TextMenuItem from '../setting/textMenuItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Version>;
@@ -24,21 +26,22 @@ const Version = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const { chainVer, sdkVer, handleChainInfo } = useChainVersion();
-    const { storage, common } = useAppSelector((state) => state);
 
-    // const networkList = ["MainNet", "TestNet"];
+    const { networkChangeActivate, chainVer: commonChainVer, sdkVer: commonSdkVer } = useAppSelector((state) => state.common);
+    const { network } = useAppSelector((state) => state.storage);
+
     const networkList = ['MainNet', 'TestNet', 'DevNet'];
     const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
     const [openNetworkSelectModal, setOpenNetworkSelectModal] = useState(false);
-    const [tabCount, setTabCount] = useState(common.networkChangeActivate ? 50 : 0);
+    const [tabCount, setTabCount] = useState(networkChangeActivate ? 50 : 0);
 
     const ChainVer = useMemo(() => {
-        return common.chainVer;
-    }, [common.chainVer]);
+        return commonChainVer;
+    }, [commonChainVer]);
 
     const SDKVer = useMemo(() => {
-        return common.sdkVer;
-    }, [common.sdkVer]);
+        return commonSdkVer;
+    }, [commonSdkVer]);
 
     const handleNetworkSelectModal = (open: boolean) => {
         if (tabCount >= 50) {
@@ -75,8 +78,8 @@ const Version = () => {
     }, [chainVer, sdkVer]);
 
     useEffect(() => {
-        for (var i = 0; i < networkList.length; i++) {
-            if (storage.network === networkList[i]) setSelectedNetworkIndex(i);
+        for (let i = 0; i < networkList.length; i++) {
+            if (network === networkList[i]) setSelectedNetworkIndex(i);
         }
     }, []);
 
@@ -102,33 +105,33 @@ const Version = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 3
-    },
-    listItem: {
-        padding: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottomWidth: 0.5,
-        borderBottomColor: BgColor
-    },
-    itemTitleBox: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
-    itemTitle: {
-        fontFamily: Lato,
-        fontSize: 16
-    },
-    contentWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    content: {
-        fontFamily: Lato,
-        fontSize: 16
     }
+    //   listItem: {
+    //     padding: 20,
+    //     flexDirection: 'row',
+    //     justifyContent: 'space-between',
+    //     alignItems: 'center',
+    //     borderBottomWidth: 0.5,
+    //     borderBottomColor: BgColor,
+    //   },
+    //   itemTitleBox: {
+    //     display: 'flex',
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     justifyContent: 'space-between',
+    //   },
+    //   itemTitle: {
+    //     fontFamily: Lato,
+    //     fontSize: 16,
+    //   },
+    //   contentWrapper: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //   },
+    //   content: {
+    //     fontFamily: Lato,
+    //     fontSize: 16,
+    //   },
 });
 
 export default Version;

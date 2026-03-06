@@ -1,4 +1,5 @@
 import { CHAIN_NETWORK } from '@/../config';
+
 import * as validator from './validator.api';
 
 let API_ADDRESS = CHAIN_NETWORK['MainNet'].FIRMACHAIN_CONFIG.restApiAddress;

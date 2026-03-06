@@ -1,5 +1,6 @@
-import JailMonkey from 'jail-monkey';
 import { WALLET_LIST } from '@/../config';
+import JailMonkey from 'jail-monkey';
+
 import { removeChain } from './secureKeyChain';
 import { getWalletList, removePasswordViaBioAuth, removeUseBioAuth, removeWallet, removeWalletWithAutoLogin } from './wallet';
 
@@ -21,7 +22,7 @@ export const removeAllData = async () => {
         }
 
         if (list) {
-            list.map(async value => {
+            list.map(async (value) => {
                 await removeWallet(value);
                 await removeUseBioAuth(value);
             });

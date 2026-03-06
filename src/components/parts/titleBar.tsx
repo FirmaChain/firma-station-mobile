@@ -1,7 +1,8 @@
 import React from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { GrayColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from '@/constants/theme';
 import { ScreenWidth } from '@/util/getScreenSize';
+import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
+
 import { QuestionFilledCircle } from '../icon/icon';
 
 interface IProps {

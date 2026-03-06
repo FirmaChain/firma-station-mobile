@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
-import InputSetVertical from '@/components/input/inputSetVertical';
 import {
     PLACEHOLDER_FOR_PASSWORD,
     PLACEHOLDER_FOR_PASSWORD_CONFIRM,
     PLACEHOLDER_FOR_WALLET_NAME,
     WARNING_PASSWORD_IS_TOO_SHORT,
     WARNING_PASSWORD_NOT_MATCH,
-    WARNING_WALLET_NAME_IS_TOO_SHORT,
+    WARNING_WALLET_NAME_IS_TOO_SHORT
 } from '@/constants/common';
 import { PasswordValidationCheck, WalletNameValidationCheck } from '@/util/validationCheck';
+import { ScrollView } from 'react-native';
+
+import InputSetVertical from '@/components/input/inputSetVertical';
 
 interface IProps {
     walletInfo: (name: string, password: string, validation: boolean) => void;
@@ -30,20 +31,20 @@ const InputBox = ({ walletInfo: setWalletInfo }: IProps) => {
 
     const walletNameText = {
         title: 'Wallet name',
-        placeholder: PLACEHOLDER_FOR_WALLET_NAME,
+        placeholder: PLACEHOLDER_FOR_WALLET_NAME
     };
     const passwordText = {
         title: 'Password',
-        placeholder: PLACEHOLDER_FOR_PASSWORD,
+        placeholder: PLACEHOLDER_FOR_PASSWORD
     };
     const confirmPasswordText = {
         title: 'Confirm password',
-        placeholder: PLACEHOLDER_FOR_PASSWORD_CONFIRM,
+        placeholder: PLACEHOLDER_FOR_PASSWORD_CONFIRM
     };
 
     const onChangeWalletName = async (value: string) => {
-        let result = value.length >= 5 && value.length <= 20;
-        let nameCheck = await WalletNameValidationCheck(value);
+        const result = value.length >= 5 && value.length <= 20;
+        const nameCheck = await WalletNameValidationCheck(value);
 
         let msg = result && !nameCheck ? '' : nameCheck ? `"${value}" is already exists` : WARNING_WALLET_NAME_IS_TOO_SHORT;
         if (value.length === 0) msg = '';
@@ -55,7 +56,7 @@ const InputBox = ({ walletInfo: setWalletInfo }: IProps) => {
 
     const onChangePassword = (value: string) => {
         const result = PasswordValidationCheck(value);
-        var msg = result ? '' : WARNING_PASSWORD_IS_TOO_SHORT;
+        let msg = result ? '' : WARNING_PASSWORD_IS_TOO_SHORT;
         if (value.length === 0) msg = '';
         setPassword(value);
         setPwValidation(result);
@@ -63,8 +64,8 @@ const InputBox = ({ walletInfo: setWalletInfo }: IProps) => {
     };
 
     const onChangeConfirmPassword = (value: string) => {
-        var result = value === password;
-        var msg = result ? '' : WARNING_PASSWORD_NOT_MATCH;
+        let result = value === password;
+        let msg = result ? '' : WARNING_PASSWORD_NOT_MATCH;
         if (value.length === 0) {
             msg = '';
             result = false;

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     notification: string;
@@ -24,7 +24,8 @@ const styles = StyleSheet.create({
         borderBottomEndRadius: 8,
         borderBottomStartRadius: 8,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flex: 1
     },
     noticeText: {
         fontFamily: Lato,

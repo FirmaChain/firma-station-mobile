@@ -1,7 +1,8 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BgColor, BorderColor } from '@/constants/theme';
 import { convertPercentage } from '@/util/common';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+
 import DataSection from '../list/dataSection';
 import MonikerSection from '../list/monikerSection';
 

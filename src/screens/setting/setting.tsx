@@ -1,10 +1,8 @@
-import React from "react";
-import Setting from "@/organisms/setting/setting";
+import React from 'react';
+import Setting from '@/organisms/setting/setting';
 
 const SettingScreen = () => {
-    return (
-        <Setting />
-    )
-}
+    return <Setting />;
+};
 
 export default SettingScreen;

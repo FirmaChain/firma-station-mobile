@@ -1,21 +1,21 @@
-import React, { useCallback, useRef, useState } from 'react';
-import {
-    NativeSyntheticEvent,
-    NativeScrollEvent,
-    View,
-    StyleSheet,
-    Animated,
-    TouchableOpacity,
-    RefreshControl,
-    ScrollView
-} from 'react-native';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { TextCatTitleColor, WhiteColor } from '@/constants/theme';
-import { ScrollToTop } from '../icon/icon';
-import { fadeIn, fadeOut } from '@/util/animation';
-import { useEffect } from 'react';
-import { useAppSelector } from '@/redux/hooks';
 import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { fadeIn, fadeOut } from '@/util/animation';
 import { useFocusEffect } from '@react-navigation/native';
+import {
+    Animated,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View
+} from 'react-native';
+
+import { ScrollToTop } from '../icon/icon';
 
 interface IProps {
     scrollEndFunc?: Function;
@@ -23,11 +23,18 @@ interface IProps {
     background?: string;
     scrollToTop?: boolean;
     toTopButton?: boolean;
-    children: JSX.Element;
+    children: ReactNode;
 }
 
-const RefreshScrollView = ({ scrollEndFunc, refreshFunc, background = 'transparent', scrollToTop = false, toTopButton = false, children }: IProps) => {
-    const { common: removeable } = useAppSelector((state) => state);
+const RefreshScrollView = ({
+    scrollEndFunc,
+    refreshFunc,
+    background = 'transparent',
+    scrollToTop = false,
+    toTopButton = false,
+    children
+}: IProps) => {
+    const { scrollToTop: commonScrollToTop } = useAppSelector((state) => state.common);
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
 
@@ -45,18 +52,18 @@ const RefreshScrollView = ({ scrollEndFunc, refreshFunc, background = 'transpare
         }
     };
 
-    const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        // if(Platform.OS === "android"){
-        //     if(event.nativeEvent.contentOffset.y >= 300){
-        //         setActiveButton(true);
-        //     } else {
-        //         setActiveButton(false);
-        //     }
-        // }
-    };
+    //   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    //     // if(Platform.OS === "android"){
+    //     //     if(event.nativeEvent.contentOffset.y >= 300){
+    //     //         setActiveButton(true);
+    //     //     } else {
+    //     //         setActiveButton(false);
+    //     //     }
+    //     // }
+    //   };
 
     const onScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        scrollEndFunc && scrollEndFunc(event);
+        if (scrollEndFunc) scrollEndFunc(event);
     };
 
     const handleScrollToTop = (animated: boolean) => {
@@ -73,10 +80,10 @@ const RefreshScrollView = ({ scrollEndFunc, refreshFunc, background = 'transpare
     }, [activeButton]);
 
     useEffect(() => {
-        if (removeable.scrollToTop) {
+        if (commonScrollToTop) {
             handleScrollToTop(true);
         }
-    }, [removeable.scrollToTop]);
+    }, [commonScrollToTop]);
 
     useFocusEffect(
         useCallback(() => {

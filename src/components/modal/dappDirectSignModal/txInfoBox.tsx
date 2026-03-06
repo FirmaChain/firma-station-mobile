@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { CHAIN_SYMBOL } from '@/constants/common';
 import { AddressTextColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import { convertAmount } from '@/util/common';
-import { CHAIN_SYMBOL } from '@/constants/common';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     defaultFee: number;
@@ -22,7 +22,12 @@ const TxInfoBox = ({ defaultFee, companyName, productName, productPrice, product
                 <View
                     style={[
                         styles.boxH,
-                        { width: '100%', justifyContent: 'space-between', paddingBottom: 12, display: companyName === '' ? 'none' : 'flex' }
+                        {
+                            width: '100%',
+                            justifyContent: 'space-between',
+                            paddingBottom: 12,
+                            display: companyName === '' ? 'none' : 'flex'
+                        }
                     ]}
                 >
                     <Text style={styles.catTitle}>{'Company'}</Text>
@@ -31,7 +36,12 @@ const TxInfoBox = ({ defaultFee, companyName, productName, productPrice, product
                 <View
                     style={[
                         styles.boxH,
-                        { width: '100%', justifyContent: 'space-between', paddingBottom: 12, display: productName === '' ? 'none' : 'flex' }
+                        {
+                            width: '100%',
+                            justifyContent: 'space-between',
+                            paddingBottom: 12,
+                            display: productName === '' ? 'none' : 'flex'
+                        }
                     ]}
                 >
                     <Text style={styles.catTitle}>{'Plan'}</Text>
@@ -44,11 +54,18 @@ const TxInfoBox = ({ defaultFee, companyName, productName, productPrice, product
                 <View
                     style={[
                         styles.boxH,
-                        { width: '100%', justifyContent: 'space-between', paddingBottom: 12, display: productName === '' ? 'flex' : 'none' }
+                        {
+                            width: '100%',
+                            justifyContent: 'space-between',
+                            paddingBottom: 12,
+                            display: productName === '' ? 'flex' : 'none'
+                        }
                     ]}
                 >
                     <Text style={styles.catTitle}>{'Amount'}</Text>
-                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({ value: productPrice, isUfct: false, point: productPrice > 0 ? 6 : 0 })} ${productPriceSymbol}`}</Text>
+                    <Text
+                        style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}
+                    >{`${convertAmount({ value: productPrice, isUfct: false, point: productPrice > 0 ? 6 : 0 })} ${productPriceSymbol}`}</Text>
                 </View>
             </View>
         </Fragment>

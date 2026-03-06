@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ForwardArrow } from '@/components/icon/icon';
-import { DarkGrayColor, Lato, TextColor } from '@/constants/theme';
-import { Image, StyleSheet, Text, View } from 'react-native';
 import { VALIDATOR_PROFILE } from '@/constants/images';
-import FastImage from 'react-native-fast-image';
+import { DarkGrayColor, Lato, TextColor } from '@/constants/theme';
+import FastImage from '@d11/react-native-fast-image';
+import { Image, StyleSheet, Text, View } from 'react-native';
+
+import { ForwardArrow } from '@/components/icon/icon';
 
 interface IProps {
     validator: {

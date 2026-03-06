@@ -1,10 +1,15 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { DATA_RELOAD_INTERVAL, IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from '@/constants/common';
+import { BgColor, BoxColor, FailedColor, Lato } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, StakingActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
+import { getStakingFromvalidator } from '@/util/firma';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { useInterval } from '@/hooks/common/hooks';
 import {
     IStakingState,
     IValidatorData,
@@ -12,18 +17,15 @@ import {
     useDelegationData,
     useValidatorDataFromAddress
 } from '@/hooks/staking/hooks';
-import { getStakingFromvalidator } from '@/util/firma';
-import { BgColor, BoxColor, FailedColor, Lato } from '@/constants/theme';
-import { DATA_RELOAD_INTERVAL, IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from '@/constants/common';
-import { useInterval } from '@/hooks/common/hooks';
-import RefreshScrollView from '@/components/parts/refreshScrollView';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import DescriptionBox from './descriptionBox';
-import DelegationBox from './delegationBox';
-import PercentageBox from './percentageBox';
-import AddressBox from './addressBox';
 import Progress from '@/components/parts/progress';
+import RefreshScrollView from '@/components/parts/refreshScrollView';
+
+import AddressBox from './addressBox';
+import DelegationBox from './delegationBox';
+import DescriptionBox from './descriptionBox';
+import PercentageBox from './percentageBox';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Validator>;
 
@@ -32,9 +34,11 @@ interface IProps {
 }
 
 const Validator = ({ validatorAddress }: IProps) => {
+    const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { dataLoadStatus } = useAppSelector((state) => state.common);
+
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { wallet, common } = useAppSelector((state) => state);
     const { validatorState, handleValidatorPolling } = useValidatorDataFromAddress(validatorAddress);
     const { delegationState, handleTotalDelegationPolling } = useDelegationData();
 
@@ -108,7 +112,7 @@ const Validator = ({ validatorAddress }: IProps) => {
     };
 
     const moveToDelegate = (type: string) => {
-        let delegateState: IKeyValue = {
+        const delegateState: IKeyValue = {
             type: type,
             operatorAddress: validatorAddress
         };
@@ -118,7 +122,7 @@ const Validator = ({ validatorAddress }: IProps) => {
 
     const handleDelegateState = async () => {
         try {
-            const state = await getStakingFromvalidator(wallet.address, validatorAddress);
+            const state = await getStakingFromvalidator(walletAddress, validatorAddress);
 
             setStakingState({
                 available: state.available,
@@ -135,7 +139,7 @@ const Validator = ({ validatorAddress }: IProps) => {
         try {
             await Promise.all([handleDelegateState(), handleTotalDelegationPolling(), handleValidatorPolling()]);
         } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             console.log(error);
         }
     };
@@ -144,7 +148,7 @@ const Validator = ({ validatorAddress }: IProps) => {
         () => {
             refreshStates();
         },
-        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 
@@ -198,7 +202,7 @@ const Validator = ({ validatorAddress }: IProps) => {
                                 </View>
                                 <DescriptionBox validator={ValidatorDescription} />
                                 <DelegationBox
-                                    walletName={wallet.name}
+                                    walletName={walletName}
                                     validatorAddress={validatorAddress}
                                     stakingState={stakingState}
                                     delegations={delegationLength}

@@ -1,11 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextGrayColor } from '@/constants/theme';
-import { Animated, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
+import {
+    BoxDarkColor,
+    CW721BackgroundColor,
+    CW721Color,
+    Lato,
+    TextCatTitleColor,
+    TextColor,
+    TextDarkGrayColor,
+    TextGrayColor
+} from '@/constants/theme';
 import { easeInAndOutCustomAnim, fadeOut, LayoutAnim } from '@/util/animation';
-import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
+import FastImage from '@d11/react-native-fast-image';
+import { Animated, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
+import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 import SquareSkeleton from '@/components/skeleton/squareSkeleton';
-import FastImage from 'react-native-fast-image';
 
 interface IProps {
     data: any;
@@ -82,14 +92,12 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
                     <Text style={styles.label}>CW721</Text>
                 </View>
                 <View style={[styles.box, { paddingBottom: 5 }]}>
-                    <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.contentTitle]}>
+                    <Text numberOfLines={2} ellipsizeMode="tail" style={styles.contentTitle}>
                         {data.name}
                     </Text>
                 </View>
                 <View style={styles.box}>
-                    <Text style={[styles.tokenIdTitle]}>
-                        {`#${data.tokenId}`}
-                    </Text>
+                    <Text style={styles.tokenIdTitle}>{`#${data.tokenId}`}</Text>
                 </View>
             </View>
             <View style={[styles.descBox, { paddingBottom: openAccordion ? 20 : 0 }]}>

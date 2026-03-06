@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ExclamationCircle, QuestionCircle } from '@/components/icon/icon';
 import { BoxColor, Lato, TextWarnColor } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { ExclamationCircle, QuestionCircle } from '@/components/icon/icon';
 
 interface IProps {
     text: string;

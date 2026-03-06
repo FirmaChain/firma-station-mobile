@@ -1,22 +1,24 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { BgColor } from '@/constants/theme';
-import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
-import { addressCheck, getCW20Balance, getEstimateGasSendCW20, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { convertAmount, convertNumber } from '@/util/common';
+import { addressCheck, getCW20Balance, getEstimateGasSendCW20, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import { useBalanceData } from '@/hooks/wallet/hooks';
+import Button from '@/components/button/button';
+import AlertModal from '@/components/modal/alertModal';
+import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
+import BalanceInfo from '@/components/parts/balanceInfo';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import Button from '@/components/button/button';
-import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
-import AlertModal from '@/components/modal/alertModal';
-import BalanceInfo from '@/components/parts/balanceInfo';
+
 import SendInputBox from './sendInputBox';
-import { useBalanceData } from '@/hooks/wallet/hooks';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SendCW20>;
 
@@ -34,7 +36,8 @@ interface IProps {
 const SendCW20 = ({ contract, symbol }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { wallet } = useAppSelector((state) => state);
+    const { name: walletName, address: walletAddress, dstAddress: walletDstAddress } = useAppSelector((state) => state.wallet);
+
     const { balance, getBalance } = useBalanceData();
 
     const [gas, setGas] = useState(getFirmaConfig().defaultGas);
@@ -52,7 +55,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
 
     const getTokenBalance = async () => {
         try {
-            const _tokenBalance = await getCW20Balance(contract, wallet.address);
+            const _tokenBalance = await getCW20Balance(contract, walletAddress);
             setTokenBalance(_tokenBalance);
             getBalance();
         } catch (error) {
@@ -87,7 +90,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
             targetAddress: sendInfoState.address,
             amount: sendInfoState.amount,
             memo: sendInfoState.memo,
-            gas: gas,
+            gas: gas
         };
         setInputResetValues(true);
         navigation.navigate(Screens.Transaction, { state: transactionState });
@@ -99,7 +102,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
         CommonActions.handleLoadingProgress(true);
         try {
             if (isValidAddress) {
-                let gas = await getEstimateGasSendCW20(wallet.name, contract, sendInfoState.address, sendInfoState.amount);
+                const gas = await getEstimateGasSendCW20(walletName, contract, sendInfoState.address, sendInfoState.amount);
                 setGas(gas);
             } else {
                 setAlertDescription(WRONG_TARGET_ADDRESS_WARN_TEXT);
@@ -123,8 +126,13 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
     };
 
     const activeSend = useMemo(() => {
-        return !Boolean(sendInfoState.address === "" || convertNumber(sendInfoState.amount) <= 0 || tokenBalance <= 0 || convertNumber(convertAmount({ value: balance })) < 0.02);
-    }, [sendInfoState, tokenBalance, balance])
+        return !(
+            sendInfoState.address === '' ||
+            convertNumber(sendInfoState.amount) <= 0 ||
+            tokenBalance <= 0 ||
+            convertNumber(convertAmount({ value: balance })) < 0.02
+        );
+    }, [sendInfoState, tokenBalance, balance]);
 
     useFocusEffect(
         useCallback(() => {
@@ -138,22 +146,24 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
                 <View style={styles.container}>
                     <View style={{ flex: 6 }}>
                         <ScrollView keyboardShouldPersistTaps={'handled'}>
-                            <BalanceInfo available={tokenBalance} symbol={symbol} showSubBalance={true} subTitle={'FCT Balance'} subAvailable={balance} />
+                            <BalanceInfo
+                                available={tokenBalance}
+                                symbol={symbol}
+                                showSubBalance={true}
+                                subTitle={'FCT Balance'}
+                                subAvailable={balance}
+                            />
                             <SendInputBox
                                 handleSendInfo={handleSendInfo}
                                 available={tokenBalance}
-                                dstAddress={wallet.dstAddress}
+                                dstAddress={walletDstAddress}
                                 reset={resetInputValues}
                                 symbol={symbol}
                             />
                         </ScrollView>
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                        <Button
-                            title="Send"
-                            active={activeSend}
-                            onPressEvent={() => handleSend()}
-                        />
+                        <Button title="Send" active={activeSend} onPressEvent={() => handleSend()} />
                     </View>
 
                     <TransactionConfirmModal

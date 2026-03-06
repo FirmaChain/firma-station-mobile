@@ -1,4 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
+
 import { HANDLE_DST_ADDRESS, HANDLE_WALLET_ADDRESS, HANDLE_WALLET_NAME } from '../types';
 
 export interface IWalletStateProps {

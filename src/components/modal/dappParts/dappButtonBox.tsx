@@ -1,6 +1,7 @@
-import Button from '@/components/button/button';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import Button from '@/components/button/button';
 
 interface IProps {
     active: boolean;

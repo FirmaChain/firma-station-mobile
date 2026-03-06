@@ -1,10 +1,8 @@
-import Assets from "@/organisms/wallet/assets";
-import React from "react";
+import React from 'react';
+import Assets from '@/organisms/wallet/assets';
 
 const AssetsScreen = () => {
-    return (
-        <Assets />
-    )
-}
+    return <Assets />;
+};
 
 export default AssetsScreen;

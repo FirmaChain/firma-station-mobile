@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { ICON_VOTE_CHECK } from '@/constants/images';
 import {
     AbstainColor,
     BgColor,
@@ -10,46 +10,55 @@ import {
     TextCatTitleColor,
     TextColor,
     WhiteColor,
-    YesColor,
+    YesColor
 } from '@/constants/theme';
-import { convertAmount, convertNumber, makeDecimalPoint } from '@/util/common';
-import { UpArrow } from '@/components/icon/icon';
-import { ScreenWidth } from '@/util/getScreenSize';
 import { useAppSelector } from '@/redux/hooks';
-import { ICON_VOTE_CHECK } from '@/constants/images';
+import { convertAmount, convertNumber, makeDecimalPoint } from '@/util/common';
+import { ScreenWidth } from '@/util/getScreenSize';
 import { FirmaUtil } from '@firmachain/firma-js';
+import { Image, StyleSheet, Text, View } from 'react-native';
+
 import { IProposalTallyState } from '@/hooks/governance/hooks';
+import { UpArrow } from '@/components/icon/icon';
 
 interface IProps {
     data: any;
 }
 
 const VotingPercentage = ({ data }: IProps) => {
-    const { wallet } = useAppSelector(state => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
 
     const tally = useMemo(() => {
-        let tallyResult: IProposalTallyState = data.proposalTally;
+        const tallyResult: IProposalTallyState = data.proposalTally;
         if (tallyResult !== undefined)
             return [
                 { title: 'YES', vote: convertNumber(tallyResult.yes), option: 'VOTE_OPTION_YES' },
                 { title: 'NO', vote: convertNumber(tallyResult.no), option: 'VOTE_OPTION_NO' },
-                { title: 'NoWithVeto', vote: convertNumber(tallyResult.no_with_veto), option: 'VOTE_OPTION_NO_WITH_VETO' },
-                { title: 'Abstain', vote: convertNumber(tallyResult.abstain), option: 'VOTE_OPTION_ABSTAIN' },
+                {
+                    title: 'NoWithVeto',
+                    vote: convertNumber(tallyResult.no_with_veto),
+                    option: 'VOTE_OPTION_NO_WITH_VETO'
+                },
+                {
+                    title: 'Abstain',
+                    vote: convertNumber(tallyResult.abstain),
+                    option: 'VOTE_OPTION_ABSTAIN'
+                }
             ];
 
         return [
             { title: 'YES', vote: 0, option: 'VOTE_OPTION_YES' },
             { title: 'NO', vote: 0, option: 'VOTE_OPTION_NO' },
             { title: 'NoWithVeto', vote: 0, option: 'VOTE_OPTION_NO_WITH_VETO' },
-            { title: 'Abstain', vote: 0, option: 'VOTE_OPTION_ABSTAIN' },
+            { title: 'Abstain', vote: 0, option: 'VOTE_OPTION_ABSTAIN' }
         ];
     }, [data]);
 
     const myVote = useMemo(() => {
-        const result = tally.map(value => {
+        const result = tally.map((value) => {
             const vote = data.voters
                 .filter((voter: any) => voter.option === value.option)
-                .find((voter: any) => voter.voterAddress === wallet.address);
+                .find((voter: any) => voter.voterAddress === walletAddress);
             if (vote !== undefined) {
                 return true;
             } else {
@@ -61,7 +70,7 @@ const VotingPercentage = ({ data }: IProps) => {
 
     const totalVote = () => {
         let total: number = 0;
-        tally.filter(type => type.title !== 'Abstain').map(item => (total += convertNumber(item.vote)));
+        tally.filter((type) => type.title !== 'Abstain').map((item) => (total += convertNumber(item.vote)));
 
         return total;
     };
@@ -81,8 +90,8 @@ const VotingPercentage = ({ data }: IProps) => {
 
     //! Refactor: remove decimal point, graph ratio was not correct
     const calculateRatio = (value: number, max: number | string) => {
-        let voteValue = convertNumber(FirmaUtil.getFCTStringFromUFCT(value));
-        let totalValue = convertNumber(FirmaUtil.getFCTStringFromUFCT(convertNumber(max)));
+        const voteValue = convertNumber(FirmaUtil.getFCTStringFromUFCT(value));
+        const totalValue = convertNumber(FirmaUtil.getFCTStringFromUFCT(convertNumber(max)));
 
         if (voteValue <= 0 || totalValue <= 0 || totalValue === undefined) return 0;
 
@@ -107,8 +116,8 @@ const VotingPercentage = ({ data }: IProps) => {
                                         flex: ratio,
                                         marginLeft: -10,
                                         paddingLeft: 10,
-                                        zIndex: 5 - index,
-                                    },
+                                        zIndex: 5 - index
+                                    }
                                 ]}
                             />
                         );
@@ -127,13 +136,20 @@ const VotingPercentage = ({ data }: IProps) => {
                     <UpArrow size={20} color={WhiteColor} />
                 </View>
             </View>
-            <View style={[styles.box]}>
+            <View style={styles.box}>
                 {tally.map((item, index) => {
                     const odd = (index + 1) % 2;
                     return (
                         <View
                             key={index}
-                            style={[styles.voteBox, { marginRight: ScreenWidth() > 153 * 4 ? 11 : odd === 1 ? 11 : 0, marginBottom: 20 }]}>
+                            style={[
+                                styles.voteBox,
+                                {
+                                    marginRight: ScreenWidth() > 153 * 4 ? 11 : odd === 1 ? 11 : 0,
+                                    marginBottom: 20
+                                }
+                            ]}
+                        >
                             <View style={[styles.boxH, { paddingBottom: 8 }]}>
                                 <View style={[styles.voteDot, { backgroundColor: votingColor(item.title) }]} />
                                 <Text style={[styles.vote, { color: votingColor(item.title) }]}>{item.title}</Text>
@@ -160,7 +176,7 @@ const VotingPercentage = ({ data }: IProps) => {
 const styles = StyleSheet.create({
     wrapper: {
         width: '100%',
-        paddingTop: 25,
+        paddingTop: 25
     },
     background: {
         flex: 100,
@@ -170,21 +186,21 @@ const styles = StyleSheet.create({
         backgroundColor: BorderColor,
         borderRadius: 8,
         position: 'relative',
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
     percentage: {
         height: 12,
-        borderRadius: 8,
+        borderRadius: 8
     },
     quorumWrapper: {
         flex: 100,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        marginBottom: 47,
+        marginBottom: 47
     },
     quorum: {
         position: 'absolute',
-        alignItems: 'flex-end',
+        alignItems: 'flex-end'
     },
     quorumLine: {
         position: 'absolute',
@@ -194,19 +210,19 @@ const styles = StyleSheet.create({
         // backgroundColor: WhiteColor,
         borderColor: WhiteColor,
         borderWidth: 1,
-        borderStyle: 'dashed',
+        borderStyle: 'dashed'
     },
     box: {
         flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     boxH: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start'
     },
     voteBox: {
         flex: 1,
@@ -215,49 +231,49 @@ const styles = StyleSheet.create({
         paddingVertical: 27,
         borderRadius: 8,
         backgroundColor: BgColor,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     vote: {
         width: 'auto',
         fontFamily: Lato,
         fontWeight: '600',
-        fontSize: 16,
+        fontSize: 16
     },
     voteDot: {
         width: 8,
         height: 8,
         borderRadius: 50,
         marginRight: 4,
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
     dataBox: {
         height: 43,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     percent: {
         fontFamily: Lato,
         fontSize: 18,
         fontWeight: 'bold',
         color: TextColor,
-        paddingBottom: 6,
+        paddingBottom: 6
     },
     amount: {
         fontFamily: Lato,
         fontSize: 12,
-        color: TextCatTitleColor,
+        color: TextCatTitleColor
     },
     stampWrapper: {
         position: 'absolute',
         marginTop: -14,
         borderRadius: 50,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     stamp: {
         width: 32,
-        height: 32,
-    },
+        height: 32
+    }
 });
 
 export default VotingPercentage;

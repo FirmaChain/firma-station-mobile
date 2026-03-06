@@ -1,12 +1,12 @@
-import QRCodeScannerModal from './qrCodeScannerModal';
 import DappConnectModal from './dappConnectModal';
-import DappSignModal from './dappSignModal';
 import DappDirectSignModal from './dappDirectSignModal';
-import UpdateModal from './updateModal';
+import DappSignModal from './dappSignModal';
+import FavoritesCreateModal from './favoritesCreateModal';
+import FavoritesModal from './favoritesModal';
 import MaintenanceModal from './maintenanceModal';
 import ModalWalletList from './modalWalletList';
-import FavoritesModal from './favoritesModal';
-import FavoritesCreateModal from './favoritesCreateModal';
+import QRCodeScannerModal from './qrCodeScannerModal';
+import UpdateModal from './updateModal';
 
 export {
     QRCodeScannerModal,

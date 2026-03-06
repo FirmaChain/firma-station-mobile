@@ -1,17 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { BgColor, DarkGrayColor, DisableColor, GrayColor, Lato, TextGrayColor, WhiteColor } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
+
 import { DownArrow, ForwardArrow } from '../icon/icon';
-import TextSkeleton from './textSkeleton';
 import CircleSkeleton from './circleSkeleton';
+import TextSkeleton from './textSkeleton';
 
-interface IProps {
-    visible: boolean;
-}
-
-const StakingSkeleton = ({ visible }: IProps) => {
+const StakingSkeleton = () => {
     return (
-        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+        <View style={[styles.container, { display: 'flex' }]}>
             <View style={styles.tabBox}>
                 <View style={[styles.tab, { borderBottomColor: WhiteColor }]}></View>
                 <View style={[styles.tab, { borderBottomColor: 'transparent' }]}></View>
@@ -36,7 +33,15 @@ const StakingSkeleton = ({ visible }: IProps) => {
             </View>
             <View style={styles.item}>
                 <View style={styles.wrapperHorizontal}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', flex: 2, paddingRight: 20 }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'flex-start',
+                            alignItems: 'center',
+                            flex: 2,
+                            paddingRight: 20
+                        }}
+                    >
                         <CircleSkeleton size={32} marginBottom={0} />
                         <View style={{ width: '90%', paddingLeft: 10 }}>
                             <TextSkeleton height={20} />
@@ -68,13 +73,13 @@ const StakingSkeleton = ({ visible }: IProps) => {
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        overflow: 'hidden',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        paddingVertical: 15,
-        paddingHorizontal: 20
+        // width: '100%',
+        // overflow: 'hidden',
+        // position: 'absolute',
+        // top: 0,
+        // left: 0,
+        // paddingVertical: 15,
+        // paddingHorizontal: 20,
     },
     tabBox: {
         width: '100%',

@@ -1,7 +1,7 @@
 import React, { Fragment, ReactNode, useEffect } from 'react';
-import { Modal, TouchableOpacity, StyleSheet, Text, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
 import { BoxColor, FailedColor, Lato, PointColor, TextCatTitleColor, TextColor } from '@/constants/theme';
+import { useAppSelector } from '@/redux/hooks';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
     visible: boolean;
@@ -15,17 +15,17 @@ interface IProps {
 }
 
 const AlertModal = ({ visible, handleOpen, title, desc, children = <Fragment />, confirmTitle, type, forcedActive = false }: IProps) => {
-    const { common } = useAppSelector((state) => state);
+    const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
 
     const closeModal = () => {
-        handleOpen && handleOpen(false);
+        if (handleOpen) handleOpen(false);
     };
 
     useEffect(() => {
         if (forcedActive === false) {
-            if (common.appState !== 'active' && common.isBioAuthInProgress === false) closeModal();
+            if (appState !== 'active' && isBioAuthInProgress === false) closeModal();
         }
-    }, [common.appState]);
+    }, [appState]);
 
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none', flex: visible ? 1 : 0 }]}>

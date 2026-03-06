@@ -1,23 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { GUIDE_URI } from '@/../config';
+import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
+import { BgColor, BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, TextColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { BgColor, BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
+import { fadeOut } from '@/util/animation';
 import { addressCheck, getEstimateGasSendCW721, getFeesFromGas, getFirmaConfig } from '@/util/firma';
-import { GUIDE_URI } from '@/../config';
+import FastImage from '@d11/react-native-fast-image';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Animated, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import Button from '@/components/button/button';
+import AlertModal from '@/components/modal/alertModal';
+import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import Button from '@/components/button/button';
-import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
-import AlertModal from '@/components/modal/alertModal';
-import SendInputBox from './sendInputBox';
-import FastImage from 'react-native-fast-image';
-import { fadeOut } from '@/util/animation';
 import SquareSkeleton from '@/components/skeleton/squareSkeleton';
+
+import SendInputBox from './sendInputBox';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SendCW20>;
 
@@ -38,7 +40,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const fadeAnimImage = useRef(new Animated.Value(1)).current;
 
-    const { wallet } = useAppSelector((state) => state);
+    const { name: walletName, dstAddress: walletDstAddress } = useAppSelector((state) => state.wallet);
 
     const [gas, setGas] = useState(getFirmaConfig().defaultGas);
     const [imageLoading, setImageLoading] = useState(true);
@@ -80,7 +82,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
             targetAddress: sendInfoState.address,
             tokenId: sendInfoState.tokenId,
             memo: sendInfoState.memo,
-            gas: gas,
+            gas: gas
         };
         setInputResetValues(true);
         navigation.navigate(Screens.Transaction, { state: transactionState });
@@ -92,7 +94,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
         CommonActions.handleLoadingProgress(true);
         try {
             if (isValidAddress) {
-                let gas = await getEstimateGasSendCW721(wallet.name, contract, sendInfoState.address, sendInfoState.tokenId);
+                const gas = await getEstimateGasSendCW721(walletName, contract, sendInfoState.address, sendInfoState.tokenId);
                 setGas(gas);
             } else {
                 setAlertDescription(WRONG_TARGET_ADDRESS_WARN_TEXT);
@@ -119,7 +121,6 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["send"]});
         Linking.openURL(GUIDE_URI['send']);
     };
-
 
     useEffect(() => {
         if (imageLoading === false) {
@@ -151,16 +152,12 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
                                     <Text style={styles.label}>CW721</Text>
                                 </View>
                                 <View style={styles.box}>
-                                    <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.nftName]}>
+                                    <Text numberOfLines={2} ellipsizeMode="tail" style={styles.nftName}>
                                         {nftName}
                                     </Text>
                                 </View>
                             </View>
-                            <SendInputBox
-                                handleSendInfo={handleSendInfo}
-                                dstAddress={wallet.dstAddress}
-                                reset={resetInputValues}
-                            />
+                            <SendInputBox handleSendInfo={handleSendInfo} dstAddress={walletDstAddress} reset={resetInputValues} />
                         </ScrollView>
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -175,7 +172,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
                         title={'Send CW721'}
                         fee={getFeesFromGas(gas)}
                         amount={0}
-                        extraData={{ 'NFT': `#${tokenId} ${nftName}` }}
+                        extraData={{ NFT: `#${tokenId} ${nftName}` }}
                         open={openTransactionModal}
                         setOpenModal={handleTransactionModal}
                     />
@@ -213,20 +210,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        flex: 1,
+        flex: 1
     },
     nftName: {
         fontSize: 20,
         fontFamily: Lato,
         fontWeight: 'bold',
-        color: TextColor,
+        color: TextColor
     },
-    tokenId: {
-        fontSize: 18,
-        fontFamily: Lato,
-        color: TextDarkGrayColor,
-        paddingLeft: 10,
-    },
+    // tokenId: {
+    //   fontSize: 18,
+    //   fontFamily: Lato,
+    //   color: TextDarkGrayColor,
+    //   paddingLeft: 10,
+    // },
     label: {
         fontFamily: Lato,
         fontSize: 12,
@@ -238,7 +235,7 @@ const styles = StyleSheet.create({
         paddingVertical: 3,
         color: CW721Color,
         backgroundColor: CW721BackgroundColor
-    },
+    }
 });
 
 export default SendCW721;

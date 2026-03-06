@@ -1,21 +1,20 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { CONTACT, GUIDE_URI } from '@/../config';
+import { UNABLE_TO_RETRIEVE_WALLET } from '@/constants/common';
+import { Lato, TextAddressColor } from '@/constants/theme';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import TabNavigators from '@/navigators/tabNavigators';
+import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { wait } from '@/util/common';
+import { removeWalletWithAutoLogin } from '@/util/wallet';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { CommonActions, ModalActions } from '@/redux/actions';
-import { CONTACT, GUIDE_URI } from '@/../config';
 import { Linking, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import TabContainer from '@/components/parts/containers/tabContainer';
-import TabNavigators from '@/navigators/tabNavigators';
+
 import { useWalletJSON } from '@/hooks/common/hooks';
-import { useAppSelector } from '@/redux/hooks';
-import { rootState } from '@/redux/reducers';
 import AlertModal from '@/components/modal/alertModal';
-import { UNABLE_TO_RETRIEVE_WALLET } from '@/constants/common';
-import { removeWalletWithAutoLogin } from '@/util/wallet';
-import { Lato } from '@/constants/theme';
-import { TextAddressColor } from '@/constants/theme';
-import { wait } from '@/util/common';
+import TabContainer from '@/components/parts/containers/tabContainer';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
@@ -24,7 +23,8 @@ interface IProps {
 }
 
 const Home = ({ title }: IProps) => {
-    const { wallet } = useAppSelector((state: rootState) => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+
     const { walletJson, getWalletJsonData } = useWalletJSON();
 
     const navigation: ScreenNavgationProps = useNavigation();
@@ -59,10 +59,10 @@ const Home = ({ title }: IProps) => {
     };
 
     const verifyWallet = useCallback(() => {
-        let list = walletJson.contactAddressList;
-        let exist = list.find(address => address === wallet.address) !== undefined;
+        const list = walletJson.contactAddressList;
+        const exist = list.find((address) => address === walletAddress) !== undefined;
         setExistOnJson(exist);
-    }, [walletJson, wallet]);
+    }, [walletJson, walletAddress]);
 
     useEffect(() => {
         verifyWallet();
@@ -81,7 +81,8 @@ const Home = ({ title }: IProps) => {
             title={title}
             handleGuide={key === 'dapps' ? undefined : handleMoveToWeb}
             settingNavEvent={moveToSetting}
-            historyNavEvent={moveToHistory}>
+            historyNavEvent={moveToHistory}
+        >
             <Fragment>
                 <TabNavigators />
                 {existOnJson && (
@@ -91,14 +92,13 @@ const Home = ({ title }: IProps) => {
                         handleOpen={handleDisconnectWallet}
                         title={'Notice'}
                         desc={UNABLE_TO_RETRIEVE_WALLET}
-                        children={
-                            <TouchableOpacity onPress={() => Linking.openURL(`mailto:${CONTACT}`)}>
-                                <Text style={styles.contact}>{`[ ${CONTACT} ]`}</Text>
-                            </TouchableOpacity>
-                        }
                         confirmTitle={'OK'}
                         type={'CONFIRM'}
-                    />
+                    >
+                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${CONTACT}`)}>
+                            <Text style={styles.contact}>{`[ ${CONTACT} ]`}</Text>
+                        </TouchableOpacity>
+                    </AlertModal>
                 )}
             </Fragment>
         </TabContainer>
@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         textAlign: 'center',
         paddingVertical: 10,
-        color: TextAddressColor,
-    },
+        color: TextAddressColor
+    }
 });
 
 export default Home;

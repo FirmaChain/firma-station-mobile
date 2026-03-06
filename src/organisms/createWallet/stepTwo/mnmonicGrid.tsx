@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ScreenWidth } from '@/util/getScreenSize';
-import { BgColor, BoxColor, Lato, TextColor, TextDisableColor, TextGrayColor } from '@/constants/theme';
 import { COPIED_CLIPBOARD, MNEMONIC_WARN_MESSAGE } from '@/constants/common';
+import { BgColor, BoxColor, Lato, TextColor, TextDisableColor, TextGrayColor } from '@/constants/theme';
+import { ScreenWidth } from '@/util/getScreenSize';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { StyleSheet, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
 import TextButton from '@/components/button/textButton';
 import WarnContainer from '@/components/parts/containers/warnContainer';
-import Clipboard from '@react-native-clipboard/clipboard';
-import Toast from 'react-native-toast-message';
 
 interface IProps {
     mnemonic: string;

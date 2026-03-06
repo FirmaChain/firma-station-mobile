@@ -1,14 +1,15 @@
 import React, { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, Text, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import { FIRMA_LOGO, VALIDATOR_PROFILE } from '@/constants/images';
-import { Lato, TextAddressColor, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
-import { wait } from '@/util/common';
 import { CHAIN_NETWORK } from '@/../config';
+import { FIRMA_LOGO, VALIDATOR_PROFILE } from '@/constants/images';
+import { Lato, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
+import { useAppSelector } from '@/redux/hooks';
 import { fadeIn } from '@/util/animation';
-import TextSkeleton from '@/components/skeleton/textSkeleton';
-import CircleSkeleton from '@/components/skeleton/circleSkeleton';
+import { wait } from '@/util/common';
 import { getCW721NFTItemFromId } from '@/util/firma';
+import { Animated, Image, StyleSheet, Text, View } from 'react-native';
+
+import CircleSkeleton from '@/components/skeleton/circleSkeleton';
+import TextSkeleton from '@/components/skeleton/textSkeleton';
 
 interface IProps {
     data: any;
@@ -22,10 +23,10 @@ interface IDataRenderProps {
 }
 
 const InfoBox = ({ data }: IProps) => {
-    const { storage } = useAppSelector((state) => state);
+    const { network } = useAppSelector((state) => state.storage);
 
-    const isCW721 = !Boolean(data.cw721Contract === '');
-    const [owner, setOwner] = useState<string>("");
+    const isCW721 = !(data.cw721Contract === '');
+    const [owner, setOwner] = useState<string>('');
 
     const getNFTOwner = useCallback(async () => {
         try {
@@ -36,14 +37,14 @@ const InfoBox = ({ data }: IProps) => {
         } catch (error) {
             console.log('getNFTOwner : ', error);
         }
-    }, [data, isCW721])
+    }, [data, isCW721]);
 
     useEffect(() => {
         getNFTOwner();
-    }, [data, isCW721])
+    }, [data, isCW721]);
 
     const chainID = useMemo(() => {
-        return `(${CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.chainID})`;
+        return `(${CHAIN_NETWORK[network].FIRMACHAIN_CONFIG.chainID})`;
     }, []);
 
     const createdBy = useMemo(() => {
@@ -113,7 +114,15 @@ const InfoBox = ({ data }: IProps) => {
         <View style={{ paddingBottom: 10 }}>
             <View style={styles.box}>
                 <Text style={styles.title}>Blockchain</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 4, paddingLeft: 2 }}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        flex: 4,
+                        paddingLeft: 2
+                    }}
+                >
                     <Image source={FIRMA_LOGO} style={{ width: 15, height: 15, borderRadius: 50, marginRight: 3 }} />
                     <Text style={[styles.value, { flex: 0 }]}>
                         {'FIRMACHAIN '}
@@ -123,9 +132,14 @@ const InfoBox = ({ data }: IProps) => {
             </View>
             <View style={[styles.box, { maxHeight: collection.name === '' ? 0 : 100 }]}>
                 <Text style={styles.title}>Collection</Text>
-                <InfoDataRender title={collection.name === null ? '' : collection.name} imageURI={collection.icon} color={WhiteColor} loading={collection.name === null} />
+                <InfoDataRender
+                    title={collection.name === null ? '' : collection.name}
+                    imageURI={collection.icon}
+                    color={WhiteColor}
+                    loading={collection.name === null}
+                />
             </View>
-            {isCW721 ?
+            {isCW721 ? (
                 <Fragment>
                     <View style={styles.box}>
                         <Text style={styles.title}>Contract</Text>
@@ -136,12 +150,12 @@ const InfoBox = ({ data }: IProps) => {
                         <InfoDataRender title={owner} color={WhiteColor} imageURI={''} loading={owner === ''} />
                     </View>
                 </Fragment>
-                :
+            ) : (
                 <View style={styles.box}>
                     <Text style={styles.title}>Created by</Text>
                     <InfoDataRender title={createdBy} color={WhiteColor} loading={createdBy === ''} />
                 </View>
-            }
+            )}
         </View>
     );
 };
@@ -173,13 +187,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: TextColor,
         textAlign: 'right'
-    },
-    linkWrapper: {
-        backgroundColor: TextAddressColor + '20',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        borderRadius: 4
     }
+    //   linkWrapper: {
+    //     backgroundColor: TextAddressColor + '20',
+    //     paddingVertical: 5,
+    //     paddingHorizontal: 10,
+    //     borderRadius: 4,
+    //   },
 });
 
 export default memo(InfoBox);

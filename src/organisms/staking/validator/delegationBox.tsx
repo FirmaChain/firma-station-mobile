@@ -1,16 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { degree, LayoutAnim, easeInAndOutCustomAnim, TurnToOpposite, TurnToOriginal } from '@/util/animation';
-import { getEstimateGasFromDelegation, getFeesFromGas, getFirmaConfig } from '@/util/firma';
-import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
+import { CHAIN_SYMBOL } from '@/constants/common';
 import { ARROW_ACCORDION } from '@/constants/images';
 import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from '@/constants/theme';
+import { CommonActions } from '@/redux/actions';
+import { degree, easeInAndOutCustomAnim, LayoutAnim, TurnToOpposite, TurnToOriginal } from '@/util/animation';
+import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
+import { getEstimateGasFromDelegation, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { IStakingState } from '@/hooks/staking/hooks';
-import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 import SmallButton from '@/components/button/smallButton';
 import AlertModal from '@/components/modal/alertModal';
-import { CHAIN_SYMBOL } from '@/constants/common';
-import { CommonActions } from '@/redux/actions';
+import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 
 interface IProps {
     walletName: string;
@@ -75,7 +76,7 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
     const getGasFromDelegation = async () => {
         try {
             CommonActions.handleLoadingProgress(true);
-            let gas = await getEstimateGasFromDelegation(walletName, validatorAddress);
+            const gas = await getEstimateGasFromDelegation(walletName, validatorAddress);
             CommonActions.handleLoadingProgress(false);
             setWithdrawGas(gas);
             setAlertDescription('');

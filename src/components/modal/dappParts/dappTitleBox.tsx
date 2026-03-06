@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
 import { Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { convertNumber } from '@/util/common';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     title: string;
@@ -18,7 +18,7 @@ const DappTitleBox = ({ title, descExist, desc = '', iconURL }: IProps) => {
             Image.getSize(
                 iconURL,
                 (width, height) => {
-                    let ratio = convertNumber(height / width);
+                    const ratio = convertNumber(height / width);
                     setIconHeight(115 * ratio);
                 },
                 (error) => {

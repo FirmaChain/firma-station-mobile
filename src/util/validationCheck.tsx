@@ -17,7 +17,7 @@ export function PasswordValidationCheck(password: string) {
 export const PasswordCheck = async (walletName: string, password: string) => {
     try {
         if (password.length >= 10) {
-            let nameCheck = await WalletNameValidationCheck(walletName);
+            const nameCheck = await WalletNameValidationCheck(walletName);
 
             let recoverValue = null;
             if (nameCheck) {

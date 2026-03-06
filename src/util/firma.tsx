@@ -1,11 +1,13 @@
-import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
-import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
-import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
+import { TOKEN_DENOM } from '@/constants/common';
+import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
+import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
+import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
+
+import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
+
 import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
-import { TOKEN_DENOM } from '@/constants/common';
-import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
 
 export interface IWallet {
     name?: string;
@@ -62,7 +64,11 @@ export const getChainInfo = async () => {
 // Wallet
 export const createNewWallet = async () => {
     try {
-        let wallet = await getFirmaSDK().Wallet.newWallet();
+        console.log('CreateNewWallet');
+
+        const wallet = await getFirmaSDK().Wallet.newWallet();
+        console.log('wallet??', wallet);
+
         return organizeWallet(wallet);
     } catch (error) {
         console.log('createNewWallet error : ' + error);
@@ -72,7 +78,7 @@ export const createNewWallet = async () => {
 
 export const mnemonicCheck = async (mnemonic: string) => {
     try {
-        let valid = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+        const valid = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
         return true;
     } catch (error) {
         console.log('error : ' + error);
@@ -93,7 +99,7 @@ export const privateKeyCheck = async (privateKey: string) => {
 export const recoverWallet = async (recoverValue: string) => {
     try {
         let wallet;
-        let isMnemonic = await mnemonicCheck(recoverValue);
+        const isMnemonic = await mnemonicCheck(recoverValue);
         if (isMnemonic) {
             wallet = await getFirmaSDK().Wallet.fromMnemonic(recoverValue);
         } else {
@@ -107,8 +113,8 @@ export const recoverWallet = async (recoverValue: string) => {
 
 export const getPrivateKeyFromMnemonic = async (mnemonic: string) => {
     try {
-        let wallet = await recoverWallet(mnemonic);
-        let privateKey = wallet.getPrivateKey();
+        const wallet = await recoverWallet(mnemonic);
+        const privateKey = wallet.getPrivateKey();
         return privateKey;
     } catch (error) {
         console.log('getPrivateKeyFromMnemonic error : ' + error);
@@ -118,8 +124,8 @@ export const getPrivateKeyFromMnemonic = async (mnemonic: string) => {
 
 export const getAddressFromRecoverValue = async (recoverValue: string) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let address = wallet.getAddress();
+        const wallet = await recoverWallet(recoverValue);
+        const address = wallet.getAddress();
         return address;
     } catch (error) {
         console.log('getAddressFromRecoverValue error : ' + error);
@@ -129,7 +135,7 @@ export const getAddressFromRecoverValue = async (recoverValue: string) => {
 
 export const getBalanceFromAdr = async (address: string) => {
     try {
-        let balance = await getFirmaSDK().Bank.getBalance(address);
+        const balance = await getFirmaSDK().Bank.getBalance(address);
         return balance;
     } catch (error) {
         console.log('getBalanceFromAdr error : ' + error);
@@ -151,10 +157,10 @@ export const getTokenList = async (address: string) => {
 export const getTokenBalance = async (address: string, denom: string) => {
     try {
         let balance = 0;
-        let allList = await getFirmaSDK().Bank.getTokenBalanceList(address);
+        const allList = await getFirmaSDK().Bank.getTokenBalanceList(address);
         allList
-            .filter(token => token.denom === denom)
-            .map(value => {
+            .filter((token) => token.denom === denom)
+            .map((value) => {
                 return (balance += Number(value.amount));
             });
 
@@ -167,17 +173,17 @@ export const getTokenBalance = async (address: string, denom: string) => {
 
 const organizeWallet = async (wallet: FirmaWalletService) => {
     try {
-        let _mnemonic = wallet.getMnemonic();
-        let _privateKey = wallet.getPrivateKey();
-        let _address = await wallet.getAddress();
+        const _mnemonic = wallet.getMnemonic();
+        const _privateKey = wallet.getPrivateKey();
+        const _address = await wallet.getAddress();
 
-        let _balance = await getBalanceFromAdr(_address);
+        const _balance = await getBalanceFromAdr(_address);
 
         const result = {
             mnemonic: _mnemonic,
             privateKey: _privateKey,
             address: _address,
-            balance: _balance,
+            balance: _balance
         };
         return result;
     } catch (error) {
@@ -188,9 +194,9 @@ const organizeWallet = async (wallet: FirmaWalletService) => {
 
 export const getDecryptWalletInfo = async (walletName: string) => {
     try {
-        let password = await getDecryptPassword();
-        let result = await getRecoverValue(walletName, password);
-        let recoverValue = result === null ? '' : result;
+        const password = await getDecryptPassword();
+        const result = await getRecoverValue(walletName, password);
+        const recoverValue = result === null ? '' : result;
         return await recoverWallet(recoverValue);
     } catch (error) {
         throw error;
@@ -199,7 +205,7 @@ export const getDecryptWalletInfo = async (walletName: string) => {
 
 export const getEstimateGasFromAllDelegations = async (walletName: string) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList;
         const estimatedGas = await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewardsFromAllValidator(wallet, delegationList);
         return estimatedGas;
@@ -210,7 +216,7 @@ export const getEstimateGasFromAllDelegations = async (walletName: string) => {
 
 export const getEstimateGasFromDelegation = async (walletName: string, validatorAddress: string) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const estimatedGas = await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewards(wallet, validatorAddress);
         return estimatedGas;
     } catch (error) {
@@ -220,7 +226,7 @@ export const getEstimateGasFromDelegation = async (walletName: string, validator
 
 export const getEstimateGasDelegate = async (walletName: string, validatorAddress: string, amount: number) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Staking.getGasEstimationDelegate(wallet, validatorAddress, amount);
         return gasEstimation;
     } catch (error) {
@@ -230,7 +236,7 @@ export const getEstimateGasDelegate = async (walletName: string, validatorAddres
 
 export const getEstimateGasUndelegate = async (walletName: string, validatorAddress: string, amount: number) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Staking.getGasEstimationUndelegate(wallet, validatorAddress, amount);
         return gasEstimation;
     } catch (error) {
@@ -245,7 +251,7 @@ export const getEstimateGasRedelegate = async (
     amount: number
 ) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Staking.getGasEstimationRedelegate(
             wallet,
             validatorSrcAddress,
@@ -260,8 +266,8 @@ export const getEstimateGasRedelegate = async (
 
 export const getEstimateGasGrantStakeAuthorization = async (walletName: string, validatorAddress: string[]) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
-        let date = new Date();
+        const wallet = await getDecryptWalletInfo(walletName);
+        const date = new Date();
         date.setFullYear(date.getFullYear() + 1);
 
         const gasEstimation = await getFirmaSDK().Authz.getGasEstimationGrantStakeAuthorization(
@@ -271,7 +277,7 @@ export const getEstimateGasGrantStakeAuthorization = async (walletName: string, 
             1,
             {
                 seconds: BigInt(Math.floor(date.getTime() / 1000)),
-                nanos: (date.getTime() % 1000) * 1000000,
+                nanos: (date.getTime() % 1000) * 1000000
             },
             0
         );
@@ -283,7 +289,7 @@ export const getEstimateGasGrantStakeAuthorization = async (walletName: string, 
 
 export const getEstimateGasRevokeStakeAuthorization = async (walletName: string) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Authz.getGasEstimationRevokeStakeAuthorization(wallet, getRestakeAddress(), 1);
         return gasEstimation;
     } catch (error) {
@@ -293,7 +299,7 @@ export const getEstimateGasRevokeStakeAuthorization = async (walletName: string)
 
 export const getEstimateGasSend = async (walletName: string, address: string, amount: number) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Bank.getGasEstimationSend(wallet, address, amount);
         return gasEstimation;
     } catch (error) {
@@ -303,7 +309,7 @@ export const getEstimateGasSend = async (walletName: string, address: string, am
 
 export const getEstimateGasSendToken = async (walletName: string, address: string, tokenId: string, amount: number, decimal: number) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Bank.getGasEstimationSendToken(wallet, address, tokenId, amount, decimal);
         return gasEstimation;
     } catch (error) {
@@ -321,7 +327,7 @@ export const getEstimateGasSendIBC = async (
     decimal: number
 ) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const _amount = convertAmountByDecimalToTx(amount, decimal);
         const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
         const timeStamp = (Date.now() + 600000).toString() + '000000';
@@ -331,7 +337,7 @@ export const getEstimateGasSendIBC = async (
             // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
             //     Long.fromNumber(1000)
             // ),
-            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number),
+            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number)
             // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
         };
 
@@ -374,7 +380,7 @@ export const getEstimateGasSendCW721 = async (walletName: string, contract: stri
 
 export const getEstimateGasVoting = async (walletName: string, proposalId: number, votingOpt: number) => {
     try {
-        let wallet = await getDecryptWalletInfo(walletName);
+        const wallet = await getDecryptWalletInfo(walletName);
         const gasEstimation = await getFirmaSDK().Gov.getGasEstimationVote(wallet, proposalId, votingOpt);
         return gasEstimation;
     } catch (error) {
@@ -389,11 +395,11 @@ export const getFeesFromGas = (estimatedGas: number) => {
 
 export const sendFCT = async (recoverValue: string, target: string, amount: number, estimatedGas: number, memo?: string) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let send = await getFirmaSDK().Bank.send(wallet, target, amount, {
+        const wallet = await recoverWallet(recoverValue);
+        const send = await getFirmaSDK().Bank.send(wallet, target, amount, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
         return send;
     } catch (error) {
@@ -411,11 +417,11 @@ export const sendToken = async (
     memo?: string
 ) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let send = await getFirmaSDK().Bank.sendToken(wallet, target, tokenId, amount, decimal, {
+        const wallet = await recoverWallet(recoverValue);
+        const send = await getFirmaSDK().Bank.sendToken(wallet, target, tokenId, amount, decimal, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
         return send;
     } catch (error) {
@@ -435,7 +441,7 @@ export const sendIBC = async (
     memo?: string
 ) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
+        const wallet = await recoverWallet(recoverValue);
         const _amount = convertAmountByDecimalToTx(amount, decimal);
         const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
         const timeStamp = (Date.now() + 600000).toString() + '000000';
@@ -445,13 +451,13 @@ export const sendIBC = async (
             // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
             //     Long.fromNumber(1000)
             // ),
-            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number),
+            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number)
             // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
         };
-        let send = await getFirmaSDK().Ibc.transfer(wallet, port, channel, denom, _amount, target, height, timeoutTimeStamp, {
+        const send = await getFirmaSDK().Ibc.transfer(wallet, port, channel, denom, _amount, target, height, timeoutTimeStamp, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
         return send;
     } catch (error) {
@@ -541,7 +547,7 @@ export const getValidators = async () => {
     try {
         const validatorList = await getFirmaSDK().Staking.getValidatorList();
 
-        let dataList: ValidatorDataType[] = validatorList.dataList;
+        const dataList: ValidatorDataType[] = validatorList.dataList;
         let nextKey: string = validatorList.pagination.next_key;
 
         while (nextKey !== null) {
@@ -571,7 +577,7 @@ export const getSigningInfo = async (address: string) => {
     try {
         const result = await getFirmaSDK().Slashing.getSigningInfo(address);
         return result;
-    } catch (error) { }
+    } catch (error) {}
 };
 
 export const getValidatorFromAddress = async (address: string) => {
@@ -606,10 +612,10 @@ export const getStakingFromvalidator = async (address: string, validatorAddress:
         const balance = await getBalanceFromAdr(address);
 
         const totalReward = await getTotalReward(address);
-        const reward = totalReward.rewards.find(value => value.validator_address === validatorAddress);
+        const reward = totalReward.rewards.find((value) => value.validator_address === validatorAddress);
 
         const delegateListOrigin = await getDelegateList(address);
-        const delegation = delegateListOrigin.find(value => value.delegation.validator_address === validatorAddress);
+        const delegation = delegateListOrigin.find((value) => value.delegation.validator_address === validatorAddress);
 
         const available = convertToFctNumber(convertNumber(balance));
         const delegated = convertToFctNumber(delegation ? delegation.balance.amount : 0);
@@ -620,7 +626,7 @@ export const getStakingFromvalidator = async (address: string, validatorAddress:
             available,
             delegated,
             undelegate,
-            stakingReward,
+            stakingReward
         };
 
         return values;
@@ -631,10 +637,10 @@ export const getStakingFromvalidator = async (address: string, validatorAddress:
 
 export const delegate = async (recoverValue: string, address: string, amount: number, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let result = await getFirmaSDK().Staking.delegate(wallet, address, amount, {
+        const wallet = await recoverWallet(recoverValue);
+        const result = await getFirmaSDK().Staking.delegate(wallet, address, amount, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
         return result;
     } catch (error) {
@@ -644,10 +650,10 @@ export const delegate = async (recoverValue: string, address: string, amount: nu
 
 export const redelegate = async (recoverValue: string, srcAddress: string, dstAddress: string, amount: number, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let result = await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
+        const wallet = await recoverWallet(recoverValue);
+        const result = await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
         return result;
     } catch (error) {
@@ -657,10 +663,10 @@ export const redelegate = async (recoverValue: string, srcAddress: string, dstAd
 
 export const undelegate = async (recoverValue: string, address: string, amount: number, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let result = await getFirmaSDK().Staking.undelegate(wallet, address, amount, {
+        const wallet = await recoverWallet(recoverValue);
+        const result = await getFirmaSDK().Staking.undelegate(wallet, address, amount, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
 
         return result;
@@ -671,23 +677,23 @@ export const undelegate = async (recoverValue: string, address: string, amount: 
 
 export const grant = async (recoverValue: string, validatorAddress: string[], maxTokens: number, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let date = new Date();
+        const wallet = await recoverWallet(recoverValue);
+        const date = new Date();
         date.setFullYear(date.getFullYear() + 1);
 
-        let result = await getFirmaSDK().Authz.grantStakeAuthorization(
+        const result = await getFirmaSDK().Authz.grantStakeAuthorization(
             wallet,
             getRestakeAddress(),
             validatorAddress,
             1,
             {
                 seconds: BigInt(Math.floor(date.getTime() / 1000)),
-                nanos: (date.getTime() % 1000) * 1000000,
+                nanos: (date.getTime() % 1000) * 1000000
             },
             maxTokens,
             {
                 gas: estimatedGas,
-                fee: getFeesFromGas(estimatedGas),
+                fee: getFeesFromGas(estimatedGas)
             }
         );
 
@@ -699,10 +705,10 @@ export const grant = async (recoverValue: string, validatorAddress: string[], ma
 
 export const revoke = async (recoverValue: string, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
-        let result = await getFirmaSDK().Authz.revokeStakeAuthorization(wallet, getRestakeAddress(), 1, {
+        const wallet = await recoverWallet(recoverValue);
+        const result = await getFirmaSDK().Authz.revokeStakeAuthorization(wallet, getRestakeAddress(), 1, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
 
         return result;
@@ -713,10 +719,10 @@ export const revoke = async (recoverValue: string, estimatedGas: number) => {
 
 export const withdrawRewards = async (recoverValue: string, address: string, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
+        const wallet = await recoverWallet(recoverValue);
         const result = await getFirmaSDK().Distribution.withdrawAllRewards(wallet, address, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
 
         return result;
@@ -727,12 +733,12 @@ export const withdrawRewards = async (recoverValue: string, address: string, est
 
 export const withdrawAllRewards = async (recoverValue: string, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
+        const wallet = await recoverWallet(recoverValue);
 
         const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList;
         const result = await getFirmaSDK().Distribution.withdrawAllRewardsFromAllValidator(wallet, delegationList, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
 
         return result;
@@ -743,10 +749,10 @@ export const withdrawAllRewards = async (recoverValue: string, estimatedGas: num
 
 export const voting = async (recoverValue: string, proposalId: number, votingOpt: number, estimatedGas: number) => {
     try {
-        let wallet = await recoverWallet(recoverValue);
+        const wallet = await recoverWallet(recoverValue);
         const result = await getFirmaSDK().Gov.vote(wallet, proposalId, votingOpt, {
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
 
         return result;
@@ -760,16 +766,16 @@ export const getDelegations = async (address: string) => {
         const totalReward = await getTotalReward(address);
         const delegateListOrigin = await getDelegateList(address);
         const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
-        const delegateList = delegateListSort.map(value => {
+        const delegateList = delegateListSort.map((value) => {
             return {
                 validatorAddress: value.delegation.validator_address,
                 delegatorAddress: value.delegation.delegator_address,
                 amount: convertNumber(value.balance.amount),
                 reward: convertNumber(
-                    totalReward.rewards.find(adr => adr.validator_address === value.delegation.validator_address)?.amount
+                    totalReward.rewards.find((adr) => adr.validator_address === value.delegation.validator_address)?.amount
                 ),
                 moniker: value.delegation.validator_address,
-                avatarURL: '',
+                avatarURL: ''
             };
         });
         return delegateList;
@@ -783,9 +789,9 @@ export const getRedelegations = async (address: string) => {
     try {
         const redelegationListOrigin = await getRedelegationList(address);
 
-        let redelegationList: IRedelegationInfo[] = [];
-        redelegationListOrigin.map(redelegation => {
-            redelegation.entries.map(entry => {
+        const redelegationList: IRedelegationInfo[] = [];
+        redelegationListOrigin.map((redelegation) => {
+            redelegation.entries.map((entry) => {
                 redelegationList.push({
                     srcAddress: redelegation.redelegation.validator_src_address,
                     srcMoniker: '',
@@ -794,7 +800,7 @@ export const getRedelegations = async (address: string) => {
                     dstMoniker: '',
                     dstAvatarURL: '',
                     balance: convertNumber(entry.redelegation_entry.shares_dst),
-                    completionTime: entry.redelegation_entry.completion_time,
+                    completionTime: entry.redelegation_entry.completion_time
                 });
             });
         });
@@ -814,15 +820,15 @@ export const getUndelegations = async (address: string) => {
     try {
         const undelegationListOrigin = await getUndelegateList(address);
 
-        let undelegationList: IUndelegationInfo[] = [];
-        undelegationListOrigin.map(undelegation => {
-            undelegation.entries.map(entry => {
+        const undelegationList: IUndelegationInfo[] = [];
+        undelegationListOrigin.map((undelegation) => {
+            undelegation.entries.map((entry) => {
                 undelegationList.push({
                     validatorAddress: undelegation.validator_address,
                     moniker: '',
                     avatarURL: '',
                     balance: convertNumber(entry.balance),
-                    completionTime: entry.completion_time,
+                    completionTime: entry.completion_time
                 });
             });
         });
@@ -855,27 +861,27 @@ export const getStaking = async (address: string) => {
             getBalanceFromAdr(address),
             getTotalReward(address),
             getDelegateList(address),
-            getUndelegateList(address),
+            getUndelegateList(address)
         ]);
 
         const available = convertNumber(balance);
         const stakingReward = convertToFctNumber(totalReward.total);
 
         const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
-        const delegationBalanceList = delegateListSort.map(value => {
+        const delegationBalanceList = delegateListSort.map((value) => {
             return value.balance.amount;
         });
         const delegated = convertToFctNumber(
             delegationBalanceList.length > 0
                 ? delegationBalanceList.reduce((prev: string, current: string) => {
-                    return (convertNumber(prev) + convertNumber(current)).toString();
-                })
+                      return (convertNumber(prev) + convertNumber(current)).toString();
+                  })
                 : 0
         );
 
-        const undelegationBalanceList = undelegateListOrigin.map(value => {
+        const undelegationBalanceList = undelegateListOrigin.map((value) => {
             return value.entries
-                .map(value => {
+                .map((value) => {
                     return value.balance;
                 })
                 .reduce((prev: string, current: string) => {
@@ -885,8 +891,8 @@ export const getStaking = async (address: string) => {
         const undelegate = convertToFctNumber(
             undelegationBalanceList.length > 0
                 ? undelegationBalanceList.reduce((prev: string, current: string) => {
-                    return (convertNumber(prev) + convertNumber(current)).toString();
-                })
+                      return (convertNumber(prev) + convertNumber(current)).toString();
+                  })
                 : 0
         );
 
@@ -894,7 +900,7 @@ export const getStaking = async (address: string) => {
             available,
             delegated,
             undelegate,
-            stakingReward,
+            stakingReward
         };
         return staking;
     } catch (error) {
@@ -904,7 +910,7 @@ export const getStaking = async (address: string) => {
 
 export const getNFTIdListOfOwner = async (address: string) => {
     try {
-        let result = await getFirmaSDK().Nft.getNftIdListOfOwner(address);
+        const result = await getFirmaSDK().Nft.getNftIdListOfOwner(address);
         return result;
     } catch (error) {
         console.log(error);
@@ -914,7 +920,7 @@ export const getNFTIdListOfOwner = async (address: string) => {
 
 export const getNFTItemFromId = async (id: string) => {
     try {
-        let nft = await getFirmaSDK().Nft.getNftItem(id);
+        const nft = await getFirmaSDK().Nft.getNftItem(id);
         return nft;
     } catch (error) {
         console.log('error');
@@ -924,7 +930,7 @@ export const getNFTItemFromId = async (id: string) => {
 
 export const getProposals = async () => {
     try {
-        let result = await getFirmaSDK().Gov.getAllProposalList();
+        const result = await getFirmaSDK().Gov.getAllProposalList();
         return result;
     } catch (error) {
         throw error;
@@ -933,7 +939,7 @@ export const getProposals = async () => {
 
 export const getProposalParams = async () => {
     try {
-        let result = await getFirmaSDK().Gov.getParam();
+        const result = await getFirmaSDK().Gov.getParam();
         return result;
     } catch (error) {
         throw error;
@@ -942,7 +948,7 @@ export const getProposalParams = async () => {
 
 export const getProposalByProposalId = async (proposalId: string) => {
     try {
-        let result = await getFirmaSDK().Gov.getProposal(proposalId);
+        const result = await getFirmaSDK().Gov.getProposal(proposalId);
         return result;
     } catch (error) {
         throw error;
@@ -957,7 +963,7 @@ export const getProposalTally = async (proposalId: string) => {
             yes: result.yes_count,
             no: result.no_count,
             no_with_veto: result.no_with_veto_count,
-            abstain: result.abstain_count,
+            abstain: result.abstain_count
         };
     } catch (error) {
         throw error;
@@ -1007,7 +1013,7 @@ export const getCW721NftIdList = async (contract: string, address: string, start
 
 export const getCW721NFTItemFromId = async (contract: string, id: string) => {
     try {
-        let nft = await getFirmaSDK().Cw721.getNftData(contract, id);
+        const nft = await getFirmaSDK().Cw721.getNftData(contract, id);
         return nft;
     } catch (error) {
         console.log(error);
@@ -1029,7 +1035,7 @@ export const sendCW20 = async (
         const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
         return send;
     } catch (error) {
@@ -1050,7 +1056,7 @@ export const sendCW721NFT = async (
         const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, {
             memo: memo,
             gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas),
+            fee: getFeesFromGas(estimatedGas)
         });
         return send;
     } catch (error) {
@@ -1117,7 +1123,7 @@ export const getCW20ExtraInfo = async (contract: string) => {
         const marketing = await getFirmaSDK().Cw20.getMarketingInfo(contract);
 
         return {
-            marketing,
+            marketing
         };
     } catch (error) {
         console.log(error);
@@ -1142,7 +1148,7 @@ export const getCW721TotalNFTs = async (contract: string) => {
 
         return {
             totalSupply,
-            totalNFTIds,
+            totalNFTIds
         };
     } catch (error) {
         console.log(error);

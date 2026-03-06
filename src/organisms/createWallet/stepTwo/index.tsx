@@ -1,14 +1,16 @@
 import React from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
+import { GUIDE_URI } from '@/../config';
 import { BgColor } from '@/constants/theme';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+
+import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import Button from '@/components/button/button';
+
 import MnemonicGrid from './mnmonicGrid';
-import { GUIDE_URI } from '@/../config';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 
@@ -49,12 +51,12 @@ const StepTwo = ({ wallet }: IProps) => {
 
 const styles = StyleSheet.create({
     contentBox: {
-        marginVertical: 20,
+        marginVertical: 20
     },
     buttonBox: {
         justifyContent: 'flex-end',
-        paddingHorizontal: 20,
-    },
+        paddingHorizontal: 20
+    }
 });
 
 export default StepTwo;

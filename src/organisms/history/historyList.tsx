@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ForwardArrow } from '@/components/icon/icon';
+import { EXPLORER_URL } from '@/constants/common';
 import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { convertTime } from '@/util/common';
-import { EXPLORER_URL } from '@/constants/common';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { ForwardArrow } from '@/components/icon/icon';
 import RectangleSkeleton from '@/components/skeleton/rectangleSkeleton';
 
 interface IProps {

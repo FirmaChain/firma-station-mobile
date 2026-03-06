@@ -1,16 +1,17 @@
-import { Alert, Linking, Platform } from 'react-native';
-import ReactNativeBiometrics from 'react-native-biometrics';
 import { BIOMETRICS_PERMISSION_ALERT } from '@/constants/common';
 import { CommonActions } from '@/redux/actions';
+import { isSensorAvailable, simplePrompt } from '@sbaiahmed1/react-native-biometrics';
+import { Alert, Linking, Platform } from 'react-native';
+
 import { wait } from './common';
 
 export const confirmViaBioAuth = async () => {
     CommonActions.handleBioAuthInProgress(true);
     let authResult: boolean = false;
-    const { biometryType, available } = await ReactNativeBiometrics.isSensorAvailable();
+    const { biometryType, available } = await isSensorAvailable();
 
     try {
-        const result = await ReactNativeBiometrics.simplePrompt({ promptMessage: 'Confirm ' + biometryType });
+        const result = await simplePrompt('Confirm ' + biometryType);
         wait(Platform.OS === 'ios' ? 2300 : 800).then(() => CommonActions.handleBioAuthInProgress(false));
         authResult = result.success;
     } catch (error) {
@@ -32,13 +33,13 @@ export const confirmViaBioAuth = async () => {
 };
 
 export const checkBioMetrics = async () => {
-    let result = ReactNativeBiometrics.isSensorAvailable().then((resultObject) => {
+    const result = isSensorAvailable().then((resultObject) => {
         const { available, biometryType } = resultObject;
-        if (available && biometryType === ReactNativeBiometrics.TouchID) {
+        if (available && biometryType === 'TouchID') {
             return true;
-        } else if (available && biometryType === ReactNativeBiometrics.FaceID) {
+        } else if (available && biometryType === 'FaceID') {
             return true;
-        } else if (available && biometryType === ReactNativeBiometrics.Biometrics) {
+        } else if (available && biometryType === 'Biometrics') {
             return true;
         } else {
             return false;

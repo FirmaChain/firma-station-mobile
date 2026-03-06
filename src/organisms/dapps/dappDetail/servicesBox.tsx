@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BgColor, BoxColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
 import { DAPP_NO_SERVICE } from '@/constants/common';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { BgColor, BoxColor, Lato, PointLightColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
 import { fadeIn } from '@/util/animation';
+import { ServiceMetaData } from '@/util/connectClient';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Animated, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import SquareSkeleton from '@/components/skeleton/squareSkeleton';
-import { ServiceData, ServiceMetaData } from '@/util/connectClient';
 
 interface IProps {
     visible: boolean;
@@ -22,15 +23,17 @@ const itemCountPerLine = 3;
 const ServicesBox = ({ visible, identity, data }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const fadeAnimImage = useRef(new Animated.Value(0)).current;
-    const { storage } = useAppSelector((state) => state);
+
+    const { dappServicesVolume } = useAppSelector((state) => state.storage);
+
     const [containerSize, setContainerSize] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
 
     const itemsSkeleton = useMemo(() => {
-        if (storage.dappServicesVolume[identity] === undefined) return [];
-        let array = Array.from({ length: Number(storage.dappServicesVolume[identity]) });
+        if (dappServicesVolume[identity] === undefined) return [];
+        const array = Array.from({ length: Number(dappServicesVolume[identity]) });
         return array;
-    }, [storage.dappServicesVolume[identity]]);
+    }, [dappServicesVolume[identity]]);
 
     const serviceList = useMemo(() => {
         return data;
@@ -73,7 +76,7 @@ const ServicesBox = ({ visible, identity, data }: IProps) => {
     );
 
     useEffect(() => {
-        if (itemLength >= storage.dappServicesVolume[identity] || servicesExist) {
+        if (itemLength >= dappServicesVolume[identity] || servicesExist) {
             setIsLoaded(true);
             fadeIn(Animated, fadeAnimImage, 500);
         } else {
@@ -108,7 +111,15 @@ const ServicesBox = ({ visible, identity, data }: IProps) => {
                                 })
                             )
                         ) : (
-                            <View style={{ flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center', paddingVertical: 30 }}>
+                            <View
+                                style={{
+                                    flex: 1,
+                                    height: '100%',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    paddingVertical: 30
+                                }}
+                            >
                                 <Text style={styles.notice}>{DAPP_NO_SERVICE}</Text>
                             </View>
                         )}

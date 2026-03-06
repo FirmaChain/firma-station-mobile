@@ -1,10 +1,8 @@
-import Version from "@/organisms/setting/version";
-import React from "react";
+import React from 'react';
+import Version from '@/organisms/setting/version';
 
 const VersionScreen = () => {
-    return (
-        <Version />
-    )
-}
+    return <Version />;
+};
 
 export default VersionScreen;

@@ -1,19 +1,21 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { useAppSelector } from '@/redux/hooks';
-import { CommonActions } from '@/redux/actions';
-import { useDelegationData, useStakingData } from '@/hooks/staking/hooks';
-import { BgColor, BoxColor } from '@/constants/theme';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DATA_RELOAD_INTERVAL, TRANSACTION_TYPE } from '@/constants/common';
+import { BgColor, BoxColor } from '@/constants/theme';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet, View } from 'react-native';
+
 import { useInterval } from '@/hooks/common/hooks';
+import { useDelegationData, useStakingData } from '@/hooks/staking/hooks';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
-import RewardBox from './rewardBox';
+
 import BalanceBox from './balanceBox';
-import StakingLists from './stakingLists';
 import RestakeInfoBox from './restakeInfoBox';
+import RewardBox from './rewardBox';
+import StakingLists from './stakingLists';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>;
 
@@ -21,7 +23,10 @@ const Staking = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
-    const { wallet, staking, common } = useAppSelector((state) => state);
+    const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { stakingReward: stakingRewardState } = useAppSelector((state) => state.staking);
+    const { isNetworkChanged, dataLoadStatus, connect } = useAppSelector((state) => state.common);
+
     const { stakingState, getStakingState } = useStakingData();
     const { stakingGrantActivation, handleStakingGrantActivationState } = useDelegationData();
 
@@ -29,31 +34,31 @@ const Staking = () => {
     const [stakingReward, setStakingReward] = useState(0);
 
     const handleStakingReward = useCallback(async () => {
-        setStakingReward(staking.stakingReward);
-    }, [staking.stakingReward]);
+        setStakingReward(stakingRewardState);
+    }, [stakingRewardState]);
 
     useEffect(() => {
         handleStakingReward();
-    }, [staking.stakingReward]);
+    }, [stakingRewardState]);
 
     const refreshStates = useCallback(async () => {
-        if (isListRefresh === false && common.isNetworkChanged === false) {
+        if (isListRefresh === false && isNetworkChanged === false) {
             try {
                 await Promise.all([getStakingState(), handleStakingGrantActivationState()]);
                 handleIsRefresh(true);
                 CommonActions.handleDataLoadStatus(0);
             } catch (error) {
-                CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+                CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
                 console.log(error);
             }
         }
-    }, [isListRefresh, common.isNetworkChanged]);
+    }, [isListRefresh, isNetworkChanged]);
 
     const handleWithdrawAll = (password: string, gas: number) => {
         const transactionState = {
             type: TRANSACTION_TYPE['WITHDRAW_ALL'],
             password: password,
-            address: wallet.address,
+            address: walletAddress,
             gas: gas
         };
         navigation.navigate(Screens.Transaction, { state: transactionState });
@@ -80,7 +85,7 @@ const Staking = () => {
         () => {
             refreshStates();
         },
-        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 
@@ -93,22 +98,21 @@ const Staking = () => {
     return (
         <View style={styles.container}>
             <RefreshScrollView background={BgColor} refreshFunc={refreshStates}>
-                <Fragment>
-                    {common.connect && common.isNetworkChanged === false && (
-                        <View>
-                            <View style={styles.box}>
-                                <RewardBox walletName={wallet.name} reward={stakingReward} transactionHandler={handleWithdrawAll} />
-                                <BalanceBox stakingValues={stakingState} />
-                                <RestakeInfoBox
-                                    stakingState={stakingState}
-                                    grantStates={stakingGrantActivation}
-                                    moveToRestake={moveToRestake}
-                                />
-                            </View>
-                            <StakingLists isRefresh={isListRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={moveToValidator} />
+                {connect && isNetworkChanged === false && (
+                    <>
+                        <View style={styles.box}>
+                            <RewardBox walletName={walletName} reward={stakingReward} transactionHandler={handleWithdrawAll} />
+                            <BalanceBox stakingValues={stakingState} />
+                            <RestakeInfoBox
+                                stakingState={stakingState}
+                                grantStates={stakingGrantActivation}
+                                moveToRestake={moveToRestake}
+                            />
                         </View>
-                    )}
-                </Fragment>
+
+                        <StakingLists isRefresh={isListRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={moveToValidator} />
+                    </>
+                )}
             </RefreshScrollView>
         </View>
     );
@@ -120,10 +124,8 @@ const styles = StyleSheet.create({
         backgroundColor: BoxColor
     },
     box: {
-        marginTop: -10,
-        paddingTop: 42,
         paddingHorizontal: 20,
-        paddingBottom: 20,
+        paddingVertical: 15,
         backgroundColor: BgColor
     }
 });

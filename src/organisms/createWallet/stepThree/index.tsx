@@ -1,20 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { GUIDE_URI } from '@/../config';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
-import { BgColor } from '@/constants/theme';
 import { wait } from '@/util/common';
+import { getAddressFromRecoverValue } from '@/util/firma';
 import { setPasswordViaBioAuth, setRecoverType, setUseBioAuth, setWalletWithBioAuth } from '@/util/wallet';
-import { GUIDE_URI } from '@/../config';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
 import Button from '@/components/button/button';
 import BioAuthModal from '@/components/modal/bioAuthModal';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import MnemonicQuiz from './mnemonicQuiz';
-import { getAddressFromRecoverValue } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
@@ -25,7 +27,9 @@ interface IProps {
 const StepThree = ({ walletInfo }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { wallet, common, storage } = useAppSelector((state) => state);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+    const { recoverType } = useAppSelector((state) => state.storage);
+    const { appState, lockStation, isBioAuthInProgress } = useAppSelector((state) => state.common);
 
     const [confirm, setConfirm] = useState(false);
     const [openBioAuthModal, setOpenBioAuthModal] = useState(false);
@@ -42,7 +46,7 @@ const StepThree = ({ walletInfo }: IProps) => {
         try {
             const useBioAuth = await setWalletWithBioAuth(walletInfo.name, walletInfo.password, walletInfo.mnemonic);
             const address = await getAddressFromRecoverValue(walletInfo.mnemonic);
-            await setRecoverType(storage.recoverType, walletInfo.mnemonic, address);
+            await setRecoverType(recoverType, walletInfo.mnemonic, address);
             if (useBioAuth) {
                 handleOpenBioAuthModal(true);
             } else {
@@ -89,20 +93,20 @@ const StepThree = ({ walletInfo }: IProps) => {
     };
 
     useEffect(() => {
-        if (common.appState !== 'active') {
-            if (common.isBioAuthInProgress === false) {
+        if (appState !== 'active') {
+            if (isBioAuthInProgress === false) {
                 handleOpenBioAuthModal(false);
             }
         } else {
-            if (wallet.name !== '') {
-                if (common.lockStation === false) {
+            if (walletName !== '') {
+                if (lockStation === false) {
                     handleOpenBioAuthModal(true);
                 } else {
                     handleOpenBioAuthModal(false);
                 }
             }
         }
-    }, [common.lockStation, common.appState]);
+    }, [lockStation, appState]);
 
     return (
         <Container title="Confirm seed phrase" step={3} handleGuide={handleMoveToWeb} backEvent={handleBack}>

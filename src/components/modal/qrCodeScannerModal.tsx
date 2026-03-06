@@ -1,133 +1,111 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BarCodeReadEvent } from 'react-native-camera';
-import { CommonActions, ModalActions } from '@/redux/actions';
-import { ScreenHeight, ScreenWidth } from '@/util/getScreenSize';
 import { QRCODE_SCANNER_MODAL_TEXT } from '@/constants/common';
 import { BlackColor, Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
+import { CommonActions, ModalActions } from '@/redux/actions';
+import { ScreenHeight, ScreenWidth } from '@/util/getScreenSize';
+import { Modal, PixelRatio, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
+import { Camera, Code, useCameraDevice, useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
+
 import { FailFilledCircle } from '../icon/icon';
-import { checkCameraPermission } from '@/util/permission';
-import QRCodeScanner from 'react-native-qrcode-scanner';
 import CustomToast from '../toast/customToast';
+
+const screenWidth = ScreenWidth();
+const screenHeight = ScreenHeight();
+const transparentColor = 'rgba(0,0,0,0)';
+const overlayColor = 'rgba(0,0,0,0.5)';
+
+const rectDimensions = PixelRatio.roundToNearestPixel(screenWidth * 0.65);
+const rectLeft = PixelRatio.roundToNearestPixel((screenWidth - rectDimensions) / 2);
+const rectTop = PixelRatio.roundToNearestPixel((screenHeight - rectDimensions) / 2);
+
+const cornerSize = 20;
+const cornerOffset = -4;
+const cornerThickness = 4;
 
 const QRCodeScannerModal = () => {
     const [visible, setVisible] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const handleCameraPermission = async () => {
-        let permissionGranted = await checkCameraPermission();
-        setVisible(permissionGranted);
-    };
+    const safeAreaInsets = useSafeAreaInsets();
+    const device = useCameraDevice('back');
+    const { hasPermission, requestPermission } = useCameraPermission();
 
-    useEffect(() => {
-        handleCameraPermission();
-    }, []);
+    const codeScanner = useCodeScanner({
+        codeTypes: ['qr'],
+        onCodeScanned: (codes: Code[]) => {
+            const first = codes[0];
+            if (!first || first.type !== 'qr' || !first.value) {
+                return;
+            }
 
-    const handleReader = (event: BarCodeReadEvent) => {
-        CommonActions.handleLoadingProgress(true);
-        ModalActions.handleModalData({ result: event.data });
-        closeModal();
-    };
+            CommonActions.handleLoadingProgress(true);
+            ModalActions.handleModalData({ result: first.value });
+            closeModal();
+        }
+    });
 
     const closeModal = () => {
+        setVisible(false);
         ModalActions.handleQRScannerModal(false);
     };
 
+    useEffect(() => {
+        const init = async () => {
+            if (hasPermission) {
+                setVisible(true);
+                setLoading(false);
+                return;
+            }
+
+            const granted = await requestPermission();
+            if (granted) {
+                setVisible(true);
+            } else {
+                setVisible(false);
+                ModalActions.handleQRScannerModal(false);
+            }
+            setLoading(false);
+        };
+
+        void init();
+    }, []);
+
     return (
-        <Modal animationType="fade" transparent={true} onRequestClose={closeModal} visible={visible}>
+        <Modal animationType="fade" transparent visible={visible} onRequestClose={closeModal}>
             <View style={styles.container}>
-                <QRCodeScanner
-                    reactivate={true}
-                    showMarker={true}
-                    onRead={handleReader}
-                    cameraStyle={{ height: ScreenHeight() }}
-                    customMarker={
-                        <View style={styles.rectangleContainer}>
-                            <View style={styles.topOverlay}>
-                                <View style={{ width: '100%', paddingVertical: 40, paddingHorizontal: 20, alignItems: 'flex-start' }}>
-                                    <TouchableOpacity style={{ width: 30, height: 30, borderRadius: 50 }} onPress={() => closeModal()}>
-                                        <View
-                                            style={{
-                                                width: 20,
-                                                height: 20,
-                                                position: 'absolute',
-                                                top: 5,
-                                                left: 5,
-                                                backgroundColor: WhiteColor
-                                            }}
-                                        />
-                                        <FailFilledCircle size={30} color={BlackColor} />
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={styles.titleWrapper}>
-                                    <Text style={styles.title}>{QRCODE_SCANNER_MODAL_TEXT}</Text>
-                                </View>
-                            </View>
-                            <View style={{ flexDirection: 'row' }}>
-                                <View style={styles.leftAndRightOverlay} />
-                                <View style={styles.rectangle}>
-                                    <View
-                                        style={{
-                                            width: 20,
-                                            height: 20,
-                                            position: 'absolute',
-                                            top: -4,
-                                            left: -4,
-                                            borderTopWidth: 4,
-                                            borderLeftWidth: 4,
-                                            borderTopColor: WhiteColor,
-                                            borderLeftColor: WhiteColor
-                                        }}
-                                    />
+                {!loading && device ? <Camera style={StyleSheet.absoluteFill} device={device} isActive={visible} codeScanner={codeScanner} /> : null}
 
-                                    <View
-                                        style={{
-                                            width: 20,
-                                            height: 20,
-                                            position: 'absolute',
-                                            top: -4,
-                                            right: -4,
-                                            borderTopWidth: 4,
-                                            borderRightWidth: 4,
-                                            borderTopColor: WhiteColor,
-                                            borderRightColor: WhiteColor
-                                        }}
-                                    />
+                <Svg pointerEvents="none" style={StyleSheet.absoluteFill}>
+                    <Path
+                        fill={overlayColor}
+                        fillRule="evenodd"
+                        d={`M0 0H${screenWidth}V${screenHeight}H0Z M${rectLeft} ${rectTop}H${rectLeft + rectDimensions}V${rectTop + rectDimensions}H${rectLeft}Z`}
+                    />
+                </Svg>
 
-                                    <View
-                                        style={{
-                                            width: 20,
-                                            height: 20,
-                                            position: 'absolute',
-                                            bottom: -4,
-                                            left: -4,
-                                            borderBottomWidth: 4,
-                                            borderLeftWidth: 4,
-                                            borderBottomColor: WhiteColor,
-                                            borderLeftColor: WhiteColor
-                                        }}
-                                    />
+                <View style={[styles.header, { paddingTop: safeAreaInsets.top + 20 }]}>
+                    <View style={styles.closeRow}>
+                        <TouchableOpacity style={styles.closeButton} onPress={closeModal} activeOpacity={0.7}>
+                            <View style={styles.closeIconBackground} />
+                            <FailFilledCircle size={30} color={BlackColor} />
+                        </TouchableOpacity>
+                    </View>
 
-                                    <View
-                                        style={{
-                                            width: 20,
-                                            height: 20,
-                                            position: 'absolute',
-                                            bottom: -4,
-                                            right: -4,
-                                            borderBottomWidth: 4,
-                                            borderRightWidth: 4,
-                                            borderBottomColor: WhiteColor,
-                                            borderRightColor: WhiteColor
-                                        }}
-                                    />
-                                </View>
-                                <View style={styles.leftAndRightOverlay} />
-                            </View>
-                            <View style={styles.bottomOverlay} />
-                            <CustomToast />
-                        </View>
-                    }
-                />
+                    <View style={styles.titleWrapper}>
+                        <Text style={styles.title}>{QRCODE_SCANNER_MODAL_TEXT}</Text>
+                    </View>
+                </View>
+
+                <View style={styles.rectangle}>
+                    <View style={[styles.corner, styles.topLeft]} />
+                    <View style={[styles.corner, styles.topRight]} />
+                    <View style={[styles.corner, styles.bottomLeft]} />
+                    <View style={[styles.corner, styles.bottomRight]} />
+                </View>
+
+                <CustomToast />
             </View>
         </Modal>
     );
@@ -135,20 +113,43 @@ const QRCodeScannerModal = () => {
 
 export default QRCodeScannerModal;
 
-// const overlayColor = 'rgba(255,255,255,0.5)';
-const overlayColor = 'rgba(0,0,0,0.5)';
-
-const rectDimensions = ScreenWidth() * 0.65;
-const rectBorderWidth = ScreenWidth() * 0.005;
-
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
         top: 0,
         left: 0,
-        backgroundColor: overlayColor,
+        width: screenWidth,
+        height: screenHeight,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: transparentColor
+    },
+    header: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        zIndex: 10
+    },
+    closeRow: {
+        width: '100%',
+        paddingHorizontal: 20,
+        paddingVertical: 40,
+        alignItems: 'flex-start'
+    },
+    closeButton: {
+        width: 30,
+        height: 30,
+        borderRadius: 50
+    },
+    closeIconBackground: {
+        position: 'absolute',
+        width: 20,
+        height: 20,
+        top: 5,
+        left: 5,
+        backgroundColor: WhiteColor
     },
     titleWrapper: {
         borderRadius: 18,
@@ -162,43 +163,42 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: TextCatTitleColor
     },
-    rectangleContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent'
-    },
-
     rectangle: {
-        height: rectDimensions,
+        position: 'absolute',
+        top: rectTop,
+        left: rectLeft,
         width: rectDimensions,
-        borderWidth: 4,
-        borderColor: overlayColor,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent'
+        height: rectDimensions,
+        backgroundColor: transparentColor
     },
-
-    topOverlay: {
-        flex: 1,
-        height: ScreenWidth(),
-        width: ScreenWidth(),
-        backgroundColor: overlayColor,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 30
+    corner: {
+        width: cornerSize,
+        height: cornerSize,
+        position: 'absolute',
+        borderColor: WhiteColor
     },
-
-    bottomOverlay: {
-        flex: 1,
-        height: ScreenWidth(),
-        width: ScreenWidth(),
-        backgroundColor: overlayColor,
-        paddingBottom: ScreenWidth() * 0.1
+    topLeft: {
+        top: cornerOffset,
+        left: cornerOffset,
+        borderTopWidth: cornerThickness,
+        borderLeftWidth: cornerThickness
     },
-
-    leftAndRightOverlay: {
-        flex: 1,
-        backgroundColor: overlayColor
+    topRight: {
+        top: cornerOffset,
+        right: cornerOffset,
+        borderTopWidth: cornerThickness,
+        borderRightWidth: cornerThickness
+    },
+    bottomLeft: {
+        bottom: cornerOffset,
+        left: cornerOffset,
+        borderBottomWidth: cornerThickness,
+        borderLeftWidth: cornerThickness
+    },
+    bottomRight: {
+        bottom: cornerOffset,
+        right: cornerOffset,
+        borderBottomWidth: cornerThickness,
+        borderRightWidth: cornerThickness
     }
 });

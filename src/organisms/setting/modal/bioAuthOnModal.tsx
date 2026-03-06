@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { decrypt, keyEncrypt } from '@/util/keystore';
 import { getChain } from '@/util/secureKeyChain';
 import { WalletNameValidationCheck } from '@/util/validationCheck';
+import { StyleSheet, Text, View } from 'react-native';
+
 import Button from '@/components/button/button';
 import InputSetVertical from '@/components/input/inputSetVertical';
 import CustomModal from '@/components/modal/customModal';
@@ -24,17 +25,20 @@ interface IProps {
 const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: IProps) => {
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
+    const pending = useRef(false);
+
+    const enabled = active && !pending.current;
 
     const handleInputChange = async (val: string) => {
         setPassword(val);
         if (val.length >= 10) {
-            let nameCheck = await WalletNameValidationCheck(walletName);
+            const nameCheck = await WalletNameValidationCheck(walletName);
             if (nameCheck) {
                 const key: string = keyEncrypt(walletName, val);
                 try {
                     const result = await getChain(walletName);
                     if (result) {
-                        let w = decrypt(result.password, key);
+                        const w = decrypt(result.password, key);
                         setActive(w !== '');
                     }
                 } catch (error) {
@@ -48,7 +52,8 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
     };
 
     const handleBioAuth = () => {
-        if (active === false) return;
+        if (active === false || pending.current) return;
+        pending.current = true;
         bioAuthhandler(password);
     };
 
@@ -60,6 +65,7 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
         if (open === false) {
             setPassword('');
             setActive(false);
+            pending.current = false;
         }
     }, [open]);
 
@@ -80,7 +86,7 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
                         onChangeEvent={handleInputChange}
                     />
                 </View>
-                <Button title={book.confirmTitle} active={active} onPressEvent={handleBioAuth} />
+                <Button title={book.confirmTitle} active={enabled} onPressEvent={handleBioAuth} />
             </View>
         </CustomModal>
     );
@@ -102,17 +108,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: TextCatTitleColor,
         marginBottom: -5
-    },
-    modalPWBox: {
-        paddingVertical: 20
-    },
-    input: {
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        borderRadius: 8,
-        borderWidth: 1,
-        backgroundColor: '#fff',
-        marginBottom: 5
     }
 });
 

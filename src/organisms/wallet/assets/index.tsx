@@ -1,8 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import {
     BgColor,
     BoxColor,
@@ -14,23 +10,31 @@ import {
     TextColor,
     WhiteColor
 } from '@/constants/theme';
+import { useCWContext } from '@/context/cwContext';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
 import { ScreenWidth } from '@/util/getScreenSize';
-import { useSelector } from 'react-redux';
-import { rootState } from '@/redux/reducers';
-import { ModalActions, StorageActions } from '@/redux/actions';
-import Container from '@/components/parts/containers/conatainer';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
+import { useCW20, useCW721 } from '@/hooks/assets/hooks';
 import AddCWContractModal from '@/components/modal/addCWContractModal';
+import Container from '@/components/parts/containers/conatainer';
+
 import CW20List from './cw20List';
 import CW721List from './cw721List';
-import Toast from 'react-native-toast-message';
-import { useCWContext } from '@/context/cwContext';
-import { useCW20, useCW721 } from '@/hooks/assets/hooks';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Assets>;
 
 const Assets = () => {
+    const { addCWContractModal } = useAppSelector((state) => state.modal);
+    const { cw20Contracts } = useAppSelector((state) => state.storage);
+    const { address } = useAppSelector((state) => state.wallet);
+
     const navigation: ScreenNavgationProps = useNavigation();
-    const { modal, storage, wallet } = useSelector((state: rootState) => state);
     const { cw20Data, cw721Data } = useCWContext();
 
     const { handleCW721ContractsInfo } = useCW721();
@@ -38,11 +42,11 @@ const Assets = () => {
 
     useEffect(() => {
         handleCW20ContractsInfo();
-    }, [storage.cw20Contracts]);
+    }, [cw20Contracts]);
 
     useEffect(() => {
         handleCW721ContractsInfo();
-    }, [storage.cw721Contracts, wallet]);
+    }, [cw20Contracts, address]);
 
     const [tab, setTab] = useState(0);
     const [isEdit, setIsEdit] = useState(false);
@@ -69,8 +73,8 @@ const Assets = () => {
     };
 
     const openAddCWContractModal = useMemo(() => {
-        return modal.addCWContractModal;
-    }, [modal.addCWContractModal]);
+        return addCWContractModal;
+    }, [addCWContractModal]);
 
     const setOpenAddCWContractModal = (active: boolean) => {
         ModalActions.handleAddCWContractModal(active);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 interface IProps {
     bgColor?: string;
@@ -13,9 +13,10 @@ const ViewContainer = ({ bgColor, children }: IProps) => {
             style={[
                 styles.viewContainer,
                 {
-                    backgroundColor: bgColor,
-                },
-            ]}>
+                    backgroundColor: bgColor
+                }
+            ]}
+        >
             {children}
         </View>
     );
@@ -24,8 +25,8 @@ const ViewContainer = ({ bgColor, children }: IProps) => {
 const styles = StyleSheet.create({
     viewContainer: {
         paddingBottom: 20,
-        flex: 6,
-    },
+        flex: 6
+    }
 });
 
 export default ViewContainer;

@@ -1,25 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
+import { CHAIN_NETWORK } from '@/../config';
+// import { Lato, TextCatTitleColor, TextDarkGrayColor } from '@/constants/theme';
+import { DAPP_SIGNATURE_REQUEST, DAPP_SIGNATURE_REQUEST_DESCRIPTION, TRANSACTION_TYPE } from '@/constants/common';
 import { CommonActions, ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import ConnectClient from '@/util/connectClient';
 import { getFirmaSDK } from '@/util/firma';
 import { getDAppConnectSession } from '@/util/wallet';
-import { Lato, TextCatTitleColor, TextDarkGrayColor } from '@/constants/theme';
-import { DAPP_SIGNATURE_REQUEST, DAPP_SIGNATURE_REQUEST_DESCRIPTION, TRANSACTION_TYPE } from '@/constants/common';
-import { CHAIN_NETWORK } from '@/../config';
-import ConnectClient from '@/util/connectClient';
-import CustomModal from './customModal';
-import ValidationModal from './validationModal';
+import { StyleSheet, View } from 'react-native';
+
 import { useDappCertified } from '@/hooks/dapps/hooks';
-import DappURLBox from './dappParts/dappURLBox';
-import DappTitleBox from './dappParts/dappTitleBox';
+
+import CustomModal from './customModal';
 import DappButtonBox from './dappParts/dappButtonBox';
+import DappTitleBox from './dappParts/dappTitleBox';
+import DappURLBox from './dappParts/dappURLBox';
 import DappWalletInfoBox from './dappParts/dappWalletInfoBox';
+import ValidationModal from './validationModal';
 
 const DappSignModal = () => {
-    const { common, wallet, storage, modal } = useAppSelector((state) => state);
+    const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
+    const { network } = useAppSelector((state) => state.storage);
+    const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { dappSignModal, modalData } = useAppSelector((state) => state.modal);
+
     const { Certified } = useDappCertified();
-    const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const connectClient = new ConnectClient(CHAIN_NETWORK[network].RELAY_HOST);
 
     const [openValidationModal, setOpenValidationModal] = useState(false);
     const [url, setUrl] = useState('');
@@ -31,8 +37,8 @@ const DappSignModal = () => {
     const [userSession, setUserSession] = useState(null);
 
     const isVisible = useMemo(() => {
-        return modal.dappSignModal;
-    }, [modal.dappSignModal]);
+        return dappSignModal;
+    }, [dappSignModal]);
 
     useEffect(() => {
         CommonActions.handleLoadingProgress(false);
@@ -40,10 +46,10 @@ const DappSignModal = () => {
 
     const QRData = useMemo(() => {
         if (isVisible) {
-            return modal.modalData;
+            return modalData;
         }
         return null;
-    }, [modal.modalData, isVisible]);
+    }, [modalData, isVisible]);
 
     const handleModal = (open: boolean) => {
         ModalActions.handleModalData(null);
@@ -62,13 +68,13 @@ const DappSignModal = () => {
     };
 
     const handleValidation = async (open: boolean) => {
-        if (common.appState === 'active') {
+        if (appState === 'active') {
             setOpenValidationModal(open);
         }
     };
 
     const handleTransaction = async (result: string) => {
-        if (common.appState === 'active') {
+        if (appState === 'active') {
             ModalActions.handleDAppData({
                 type: TRANSACTION_TYPE['DAPP'],
                 password: result,
@@ -84,7 +90,7 @@ const DappSignModal = () => {
         const initializeModalData = async () => {
             try {
                 setChainId(getFirmaSDK().Config.chainID);
-                let session = await getDAppConnectSession(wallet.name + storage.network);
+                const session = await getDAppConnectSession(walletName + network);
                 setUserSession(session);
             } catch (error) {
                 console.log(error);
@@ -112,8 +118,8 @@ const DappSignModal = () => {
     }, [isVisible]);
 
     useEffect(() => {
-        if (common.appState !== 'active' && common.isBioAuthInProgress === false) handleModal(false);
-    }, [common.appState]);
+        if (appState !== 'active' && isBioAuthInProgress === false) handleModal(false);
+    }, [appState]);
 
     return (
         <CustomModal visible={isVisible} handleOpen={handleModal}>
@@ -123,7 +129,7 @@ const DappSignModal = () => {
                         <DappURLBox certifiedState={isCertified} url={url} />
                         <DappTitleBox title={DAPP_SIGNATURE_REQUEST} descExist={true} desc={description} iconURL={iconUrl} />
                     </View>
-                    <DappWalletInfoBox name={wallet.name} address={wallet.address} />
+                    <DappWalletInfoBox name={walletName} address={walletAddress} />
                     <DappButtonBox
                         active={true}
                         rejectTitle={'Reject'}
@@ -148,27 +154,27 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 20
     },
-    boxH: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center'
-    },
+    //   boxH: {
+    //     flexDirection: 'row',
+    //     justifyContent: 'flex-start',
+    //     alignItems: 'center',
+    //   },
     boxV: {
         width: '100%',
         alignItems: 'flex-start'
-    },
-    desc: {
-        fontFamily: Lato,
-        fontSize: 14,
-        lineHeight: 17,
-        color: TextDarkGrayColor,
-        paddingBottom: 20
-    },
-    balance: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextCatTitleColor
     }
+    //   desc: {
+    //     fontFamily: Lato,
+    //     fontSize: 14,
+    //     lineHeight: 17,
+    //     color: TextDarkGrayColor,
+    //     paddingBottom: 20,
+    //   },
+    //   balance: {
+    //     fontFamily: Lato,
+    //     fontSize: 14,
+    //     color: TextCatTitleColor,
+    //   },
 });
 
 export default DappSignModal;

@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT } from '@/constants/common';
 import { Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import { getUseBioAuth } from '@/util/wallet';
+import { StyleSheet, Text, View } from 'react-native';
+
+import Button from '@/components/button/button';
 import { FingerPrint } from '@/components/icon/icon';
 import CustomModal from '@/components/modal/customModal';
-import Button from '@/components/button/button';
 
 interface IProps {
     walletName: string;
@@ -63,32 +64,32 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
     textBox: {
         flex: 6,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     title: {
         fontFamily: Lato,
         fontSize: 20,
         textAlign: 'center',
         color: TextCatTitleColor,
-        marginVertical: 15,
+        marginVertical: 15
     },
     desc: {
         fontFamily: Lato,
         fontSize: 14,
         textAlign: 'center',
         color: TextColor,
-        marginBottom: 15,
+        marginBottom: 15
     },
     buttonBox: {
         flex: 1,
         paddingBottom: 20,
-        justifyContent: 'flex-end',
-    },
+        justifyContent: 'flex-end'
+    }
 });
 
 export default BioAuthModal;

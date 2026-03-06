@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { convertAmount, resizeFontSize } from '@/util/common';
-import { BgColor, Lato, RestakeActiveColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { BgColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
+import { convertAmount, resizeFontSize } from '@/util/common';
 import { getCW20Balance, getTokenBalance } from '@/util/firma';
 import { useIsFocused } from '@react-navigation/native';
-import { ITokenState } from '.';
+import { Image, StyleSheet, Text, View } from 'react-native';
+
 import SmallButton from '@/components/button/smallButton';
-import { Image } from 'react-native';
+
+import { ITokenState } from '.';
 
 interface IProps {
     tokenData: ITokenState | null;
@@ -20,7 +21,7 @@ interface IProps {
 const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSendScreen }: IProps) => {
     const isFocused = useIsFocused();
 
-    const { wallet } = useAppSelector((state) => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
     const [balanceTextSize, setBalanceTextSize] = useState(20);
     const [balance, setBalance] = useState(0);
 
@@ -38,9 +39,9 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
         try {
             let result = 0;
             if (cw20Contract === null || cw20Contract === '0x' || cw20Contract === '') {
-                result = await getTokenBalance(wallet.address, tokenDenom);
+                result = await getTokenBalance(walletAddress, tokenDenom);
             } else {
-                result = await getCW20Balance(cw20Contract, wallet.address);
+                result = await getCW20Balance(cw20Contract, walletAddress);
             }
             setBalanceTextSize(resizeFontSize(result, 100000000000, 20));
             setBalance(result);
@@ -50,9 +51,8 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
     };
 
     const isCW20 = useMemo(() => {
-        return !Boolean(cw20Contract === null || cw20Contract === '0x' || cw20Contract === '')
-    }, [cw20Contract])
-
+        return !(cw20Contract === null || cw20Contract === '0x' || cw20Contract === '');
+    }, [cw20Contract]);
 
     useEffect(() => {
         if (isFocused) {
@@ -66,7 +66,7 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
         <View style={styles.container}>
             <View style={styles.box}>
                 <View>
-                    {isCW20 ?
+                    {isCW20 ? (
                         <View style={styles.boxV}>
                             <View style={[styles.cw20Titlewrap, { paddingBottom: 5 }]}>
                                 <Text style={styles.title}>My Token</Text>
@@ -76,21 +76,25 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
                                     <Image style={styles.logo} source={{ uri: marketingLogo === null ? '' : marketingLogo }} />
                                     <Text style={[styles.balance, { fontSize: balanceTextSize }]}>
                                         {convertAmount({ value: balance, isUfct: false, decimal: decimal })}
-                                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${tokenSymbol.toUpperCase()}`}</Text>
+                                        <Text
+                                            style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}
+                                        >{` ${tokenSymbol.toUpperCase()}`}</Text>
                                     </Text>
                                 </View>
                                 <SmallButton title="Send" active={balance > 0 && isCW20} size={90} onPressEvent={moveToSendScreen} />
                             </View>
                         </View>
-                        :
+                    ) : (
                         <View style={styles.boxH}>
                             <Text style={styles.title}>My Token</Text>
                             <Text style={[styles.balance, { fontSize: balanceTextSize }]}>
                                 {convertAmount({ value: balance })}
-                                <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${tokenSymbol.toUpperCase()}`}</Text>
+                                <Text
+                                    style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}
+                                >{` ${tokenSymbol.toUpperCase()}`}</Text>
                             </Text>
                         </View>
-                    }
+                    )}
                 </View>
             </View>
         </View>
@@ -125,13 +129,13 @@ const styles = StyleSheet.create({
     },
     cw20Titlewrap: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     },
-    buttonBox: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        paddingHorizontal: 20
-    },
+    //   buttonBox: {
+    //     flex: 1,
+    //     justifyContent: 'flex-end',
+    //     paddingHorizontal: 20,
+    //   },
     title: {
         fontFamily: Lato,
         fontWeight: '600',

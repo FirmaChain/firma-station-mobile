@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { GUIDE_URI } from '@/../config';
+import { CREATE_WALLET_FAILED } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { wait } from '@/util/common';
-import { setPasswordViaBioAuth, setRecoverType, setUseBioAuth, setWalletWithBioAuth } from '@/util/wallet';
 import { createNewWallet, getAddressFromRecoverValue, IWallet } from '@/util/firma';
-import { CREATE_WALLET_FAILED } from '@/constants/common';
-import { BgColor } from '@/constants/theme';
-import { GUIDE_URI } from '@/../config';
-import Container from '@/components/parts/containers/conatainer';
-import ViewContainer from '@/components/parts/containers/viewContainer';
+import { setPasswordViaBioAuth, setRecoverType, setUseBioAuth, setWalletWithBioAuth } from '@/util/wallet';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
 import Button from '@/components/button/button';
 import BioAuthModal from '@/components/modal/bioAuthModal';
+import Container from '@/components/parts/containers/conatainer';
+import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import InputBox from './inputBox';
-import Toast from 'react-native-toast-message';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
@@ -26,7 +28,10 @@ interface IProps {
 
 const StepOne = ({ recoverValue = null }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet, common, storage } = useAppSelector(state => state);
+
+    const { name: savedWalletName } = useAppSelector((state) => state.wallet);
+    const { appState, lockStation, isBioAuthInProgress } = useAppSelector((state) => state.common);
+    const { recoverType } = useAppSelector((state) => state.storage);
 
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
@@ -50,20 +55,20 @@ const StepOne = ({ recoverValue = null }: IProps) => {
                 CommonActions.handleLoadingProgress(false);
                 return Toast.show({
                     type: 'error',
-                    text1: CREATE_WALLET_FAILED,
+                    text1: CREATE_WALLET_FAILED
                 });
             }
             const newWallet: IWallet = {
                 name: walletName,
                 password: password,
-                mnemonic: result.mnemonic,
+                mnemonic: result.mnemonic
             };
             navigation.navigate(Screens.CreateStepTwo, { wallet: newWallet });
         } catch (error) {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: CREATE_WALLET_FAILED,
+                text1: CREATE_WALLET_FAILED
             });
         }
     };
@@ -73,7 +78,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
             const useBioAuth = await setWalletWithBioAuth(walletName, password, recoverValue);
 
             const address = await getAddressFromRecoverValue(recoverValue);
-            await setRecoverType(storage.recoverType, recoverValue, address);
+            await setRecoverType(recoverType, recoverValue, address);
             if (useBioAuth) {
                 handleOpenBioAuthModal(true);
             } else {
@@ -82,7 +87,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: CREATE_WALLET_FAILED,
+                text1: CREATE_WALLET_FAILED
             });
         }
     };
@@ -105,7 +110,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
         }
     };
@@ -119,23 +124,24 @@ const StepOne = ({ recoverValue = null }: IProps) => {
     };
 
     useEffect(() => {
-        if (common.appState !== 'active') {
-            if (common.isBioAuthInProgress === false) {
+        if (appState !== 'active') {
+            if (isBioAuthInProgress === false) {
                 handleOpenBioAuthModal(false);
             }
         } else {
-            if (wallet.name !== '' && common.lockStation === false) {
+            if (savedWalletName !== '' && lockStation === false) {
                 handleOpenBioAuthModal(true);
             }
         }
-    }, [common.lockStation, common.appState]);
+    }, [lockStation, appState]);
 
     return (
         <Container
             title={recoverValue ? 'Recover Wallet' : 'New Wallet'}
             handleGuide={handleMoveToWeb}
             step={recoverValue ? 0 : 1}
-            backEvent={handleBack}>
+            backEvent={handleBack}
+        >
             <ViewContainer bgColor={BgColor}>
                 <Pressable style={styles.contentBox} onPress={() => Keyboard.dismiss()}>
                     <InputBox walletInfo={handleWalletInfo} />
@@ -164,11 +170,11 @@ const styles = StyleSheet.create({
     contentBox: {
         flex: 3,
         paddingHorizontal: 20,
-        marginTop: 30,
+        marginTop: 30
     },
     buttonBox: {
-        justifyContent: 'flex-end',
-    },
+        justifyContent: 'flex-end'
+    }
 });
 
 export default StepOne;

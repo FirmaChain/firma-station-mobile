@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BoxColor, DividerColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { CHAIN_SYMBOL, PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from '@/constants/common';
-import { convertAmount, convertTime } from '@/util/common';
-import { IProposalDescriptionState } from '@/hooks/governance/hooks';
 import { ICON_LINK_ARROW } from '@/constants/images';
+import { BoxColor, DividerColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { convertAmount, convertTime } from '@/util/common';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IProposalDescriptionState } from '@/hooks/governance/hooks';
 
 interface IProps {
     data: IProposalDescriptionState;
@@ -23,11 +24,23 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
             return [
                 { title: 'Proposal Type', data: PROPOSAL_MESSAGE_TYPE[data.proposalType] },
                 { title: 'Submit Time', data: convertTime(data.submitTime, true) },
-                { title: 'Voting Start Time', data: isDepositPeriod ? null : convertTime(data.votingStartTime, true) },
-                { title: 'Voting End Time', data: isDepositPeriod ? null : convertTime(data.votingEndTime, true) },
+                {
+                    title: 'Voting Start Time',
+                    data: isDepositPeriod ? null : convertTime(data.votingStartTime, true)
+                },
+                {
+                    title: 'Voting End Time',
+                    data: isDepositPeriod ? null : convertTime(data.votingEndTime, true)
+                },
                 { title: 'Deposit Period', data: isDepositPeriod ? data.depositPeriod : null },
-                { title: 'Min Deposit Amount', data: isDepositPeriod ? `${convertAmount({ value: data.minDeposit })} ${_CHAIN_SYMBOL}` : null },
-                { title: 'Current Deposit', data: isDepositPeriod ? `${convertAmount({ value: data.proposalDeposit })} ${_CHAIN_SYMBOL}` : null }
+                {
+                    title: 'Min Deposit Amount',
+                    data: isDepositPeriod ? `${convertAmount({ value: data.minDeposit })} ${_CHAIN_SYMBOL}` : null
+                },
+                {
+                    title: 'Current Deposit',
+                    data: isDepositPeriod ? `${convertAmount({ value: data.proposalDeposit })} ${_CHAIN_SYMBOL}` : null
+                }
             ];
         return [
             { title: 'Proposal Type', data: '' },
@@ -89,7 +102,9 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
                     </View>
                     <View style={[styles.boxV, { paddingTop: 30 }]}>
                         <Text style={[styles.title, styles.titleV]}>Amount</Text>
-                        <Text style={[styles.desc, { fontSize: 16 }]}>{`${convertAmount({ value: classified.amount })} ${_CHAIN_SYMBOL}`}</Text>
+                        <Text
+                            style={[styles.desc, { fontSize: 16 }]}
+                        >{`${convertAmount({ value: classified.amount })} ${_CHAIN_SYMBOL}`}</Text>
                     </View>
                 </View>
             );

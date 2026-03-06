@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { BoxDarkColor, DisableButtonColor, WhiteColor } from '@/constants/theme';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { BoxDarkColor, DisableButtonColor, WhiteColor } from '@/constants/theme';
-import { BackArrow, Close, ForwardArrow, RefreshIcon } from '@/components/icon/icon';
+import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import WebView, { WebViewNavigation } from 'react-native-webview';
+
+import { BackArrow, Close, ForwardArrow, RefreshIcon } from '@/components/icon/icon';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.WebScreen>;
 
@@ -78,14 +79,16 @@ const Web = ({ uri }: IProps) => {
                         disabled={backArrowActive === false}
                         onPress={() => onPressTools('back')}
                         hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-                        style={{ marginRight: 20 }}>
+                        style={{ marginRight: 20 }}
+                    >
                         <BackArrow size={25} color={backArrowActive ? WhiteColor : DisableButtonColor} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         disabled={forwardArrowActive === false}
                         onPress={() => onPressTools('forward')}
                         hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-                        style={{ marginRight: 20 }}>
+                        style={{ marginRight: 20 }}
+                    >
                         <ForwardArrow size={25} color={forwardArrowActive ? WhiteColor : DisableButtonColor} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => onPressRefresh()}>
@@ -97,7 +100,7 @@ const Web = ({ uri }: IProps) => {
                 ref={webViewRef}
                 onNavigationStateChange={setNavState}
                 source={{ uri: uri }}
-                onMessage={message => {
+                onMessage={(message) => {
                     setMessageFromWeb(message.nativeEvent.data);
                 }}
             />
@@ -107,14 +110,14 @@ const Web = ({ uri }: IProps) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1
     },
     box: {
         height: 50,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-    },
+        justifyContent: 'space-between'
+    }
 });
 
 export default Web;

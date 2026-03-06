@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { FirmaUtil } from '@firmachain/firma-js';
-import { DownArrow, ForwardArrow } from '@/components/icon/icon';
-import { IStakingGrantState } from '@/hooks/staking/hooks';
-import { convertAmount, convertNumber, convertTimerText, createOrdinal } from '@/util/common';
+import { CHAIN_NETWORK } from '@/../config';
 import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
 import { BoxColor, GrayColor, Lato, RestakeActiveColor, TextCatTitleColor, TextGrayColor } from '@/constants/theme';
-import { CHAIN_NETWORK } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
+import { convertAmount, convertNumber, convertTimerText, createOrdinal } from '@/util/common';
+import { FirmaUtil } from '@firmachain/firma-js';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IStakingGrantState } from '@/hooks/staking/hooks';
+import { DownArrow, ForwardArrow } from '@/components/icon/icon';
 
 interface IProps {
     grantState: IStakingGrantState;
@@ -20,7 +21,9 @@ interface IProps {
 
 const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, handleOpenListModal, handleRefresh }: IProps) => {
     const defaultColor = RESTAKE_STATUS['NO_DELEGATION'].color;
-    const { storage } = useAppSelector((state) => state);
+
+    const { network } = useAppSelector((state) => state.storage);
+
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [nextRoundDateTime, setNextRoundTime] = useState('00:00:00');
@@ -31,7 +34,7 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
         if (nextRoundTime !== '') {
             const handleProgress = () => {
                 refreshTimer = refreshTimer + 1;
-                let result = convertTimerText(nextRoundTime);
+                const result = convertTimerText(nextRoundTime);
                 setNextRoundTime(result.time);
                 if (result.diff < 0) {
                     refreshTimer = 0;
@@ -52,7 +55,7 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
 
     const grantExist = useMemo(() => {
         if (grantState.list.length > 0) {
-            let activation = grantState.list.filter((value) => value.isActive);
+            const activation = grantState.list.filter((value) => value.isActive);
             return activation.length > 0;
         }
     }, [grantState]);
@@ -85,7 +88,7 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
     }, [totalCount, grantState]);
 
     const handleMoveToWeb = () => {
-        Linking.openURL(CHAIN_NETWORK[storage.network].RESTAKE_URL);
+        Linking.openURL(CHAIN_NETWORK[network].RESTAKE_URL);
     };
 
     return (
@@ -169,19 +172,19 @@ const styles = StyleSheet.create({
     textButton: {
         flexDirection: 'row',
         alignItems: 'center'
-    },
-    boxH: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    arrowIcon: {
-        width: 16,
-        maxWidth: 16,
-        height: 16,
-        overflow: 'hidden',
-        marginLeft: 2
     }
+    //   boxH: {
+    //     width: '100%',
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //   },
+    //   arrowIcon: {
+    //     width: 16,
+    //     maxWidth: 16,
+    //     height: 16,
+    //     overflow: 'hidden',
+    //     marginLeft: 2,
+    //   },
 });
 
 export default NextRoundCard;

@@ -1,16 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { DATA_RELOAD_INTERVAL } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { wait } from '@/util/common';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useAppSelector } from '@/redux/hooks';
-import { CommonActions } from '@/redux/actions';
-import { IProposalItemState, useGovernanceList } from '@/hooks/governance/hooks';
-import { BgColor } from '@/constants/theme';
-import { wait } from '@/util/common';
+import { StyleSheet, View } from 'react-native';
+
 import { useInterval } from '@/hooks/common/hooks';
-import { DATA_RELOAD_INTERVAL } from '@/constants/common';
+import { IProposalItemState, useGovernanceList } from '@/hooks/governance/hooks';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
+
 import ProposalList from './proposalList';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governance>;
@@ -19,16 +21,17 @@ const Governance = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
-    const { common, storage } = useAppSelector((state) => state);
+    const { dataLoadStatus, isNetworkChanged, connect } = useAppSelector((state) => state.common);
+    const { contentVolume } = useAppSelector((state) => state.storage);
 
     const { governanceState, handleGovernanceListPolling } = useGovernanceList();
 
     const [proposalList, setProposalList] = useState<Array<IProposalItemState>>([]);
 
     const proposalVolumes = useMemo(() => {
-        if (storage.contentVolume?.proposals === undefined) return null;
-        return storage.contentVolume.proposals;
-    }, [storage.contentVolume]);
+        if (contentVolume?.proposals === undefined) return null;
+        return contentVolume.proposals;
+    }, [contentVolume]);
 
     const handleMoveToDetail = (proposalId: number) => {
         navigation.navigate(Screens.Proposal, { proposalId: proposalId });
@@ -38,7 +41,7 @@ const Governance = () => {
         try {
             await handleGovernanceListPolling();
         } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             console.log(error);
         }
     };
@@ -57,19 +60,19 @@ const Governance = () => {
         () => {
             refreshStates();
         },
-        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 
     useEffect(() => {
-        if (isFocused && common.isNetworkChanged === false) {
+        if (isFocused && isNetworkChanged === false) {
             refreshStates();
         }
     }, [isFocused]);
 
     return (
         <View style={styles.container}>
-            {common.connect && common.isNetworkChanged === false && (
+            {connect && isNetworkChanged === false && (
                 <View style={styles.listBox}>
                     <RefreshScrollView refreshFunc={refreshStates}>
                         <ProposalList volumes={proposalVolumes} proposals={proposalList} handleDetail={handleMoveToDetail} />

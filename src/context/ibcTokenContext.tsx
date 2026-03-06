@@ -1,5 +1,6 @@
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Token } from '@firmachain/firma-js';
-import React, { createContext, useState, ReactNode, useContext, useEffect } from 'react';
+
 import { IBCConfig } from '../../config';
 
 interface IBCTokenContextType {
@@ -14,11 +15,10 @@ export const IBCTokenContext = createContext<IBCTokenContextType | undefined>(un
 export const useIBCTokenContext = () => {
     const context = useContext(IBCTokenContext);
     if (!context) {
-        throw new Error("useIBCTokenContext must be used within a IBCTokenProvider");
+        throw new Error('useIBCTokenContext must be used within a IBCTokenProvider');
     }
     return context;
 };
-
 
 interface IBCTokenProviderProps {
     children: ReactNode;

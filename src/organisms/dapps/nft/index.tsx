@@ -1,13 +1,15 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { DividerColor } from '@/constants/theme';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
 import { INFTProps, useNFT } from '@/hooks/dapps/hooks';
-import { DividerColor } from '@/constants/theme';
 import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import DescriptionBox from './descriptionBox';
 import InfoBox from './infoBox';
 import PropertiesBox from './propertiesBox';
@@ -33,8 +35,8 @@ interface IMetaData {
 const NFT = ({ data }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const isCW721 = !Boolean(data.cw721Contract === '' || data.cw721Contract === '0x' || data.cw721Contract === null);
-    const cw721Contract = isCW721 ? data.cw721Contract : "";
+    const isCW721 = !(data.cw721Contract === '' || data.cw721Contract === '0x' || data.cw721Contract === null);
+    const cw721Contract = isCW721 ? data.cw721Contract : '';
 
     const { getNFTMetaData } = useNFT();
 
@@ -48,8 +50,6 @@ const NFT = ({ data }: IProps) => {
     });
 
     const NFTData = useMemo(() => {
-        console.log(data);
-
         return data.nft;
     }, [data]);
 
@@ -67,7 +67,7 @@ const NFT = ({ data }: IProps) => {
     const handleMetaData = useCallback(async () => {
         try {
             if (NFTData === undefined) return;
-            let result = await getNFTMetaData(NFTData.metaURI);
+            const result = await getNFTMetaData(NFTData.metaURI);
 
             metaData['name'] = result.name === undefined ? NFTData.name : result.name;
             metaData['description'] = result.description === undefined ? NFTData.description : result.description;
@@ -92,9 +92,14 @@ const NFT = ({ data }: IProps) => {
     const onClickSend = useCallback(() => {
         if (isCW721) {
             if (data.nft === undefined || data.cw721Contract === null) return;
-            return navigation.navigate(Screens.SendCW721, { imageURL: data.nft.image, tokenId: data.nft.id, nftName: data.nft.name, contract: data.cw721Contract });
+            return navigation.navigate(Screens.SendCW721, {
+                imageURL: data.nft.image,
+                tokenId: data.nft.id,
+                nftName: data.nft.name,
+                contract: data.cw721Contract
+            });
         }
-    }, [isCW721, data])
+    }, [isCW721, data]);
 
     return (
         <Container titleOn={false} backEvent={handleBack}>

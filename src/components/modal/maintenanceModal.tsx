@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import AlertModal from '@/components/modal/alertModal';
+
 import { useInterval } from '@/hooks/common/hooks';
+import AlertModal from '@/components/modal/alertModal';
 
 interface IProps {
     data: any;
@@ -13,7 +14,7 @@ const MaintenanceModal = ({ data, refreshData }: IProps) => {
     const [buttonText, setButtonText] = useState('OK');
 
     const handleRefreshCount = useCallback(() => {
-        let count = refreshCount - 1;
+        const count = refreshCount - 1;
         setRefreshCount(count);
     }, [refreshCount]);
 

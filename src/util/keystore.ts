@@ -14,7 +14,7 @@ export const keyEncrypt = (name: string, password: string): string => {
         const key = CryptoJS.enc.Utf8.parse(password);
         const iv = CryptoJS.enc.Utf8.parse(name);
 
-        var encObj = CryptoJS.AES.encrypt('key', key, { iv: iv });
+        const encObj = CryptoJS.AES.encrypt('key', key, { iv: iv });
 
         return encObj.toString();
     } catch (error) {
@@ -49,7 +49,7 @@ export const encrypt = (originalMessage: string, pass: string): string => {
 export const decrypt = (encryptedMessage: string, pass: string): any => {
     try {
         if (encryptedMessage.length < 64) {
-            throw new Error("Invalid encrypted message length.");
+            throw new Error('Invalid encrypted message length.');
         }
 
         const salt = CryptoJS.enc.Hex.parse(encryptedMessage.substring(0, 32));
@@ -68,7 +68,7 @@ export const decrypt = (encryptedMessage: string, pass: string): any => {
         }).toString(CryptoJS.enc.Utf8);
 
         if (!decrypted) {
-            throw new Error("Decryption failed.");
+            throw new Error('Decryption failed.');
         }
 
         return decrypted;

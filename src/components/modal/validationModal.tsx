@@ -1,23 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Animated, Keyboard, KeyboardEvent, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
-import { useAppSelector } from '@/redux/hooks';
-import { BgColor, DisableColor, Lato, PointColor, TextCatTitleColor, WhiteColor } from '@/constants/theme';
 import { PLACEHOLDER_FOR_PASSWORD, TRANSACTION_AUTH_TEXT, UNLOCK_AUTH_TEXT } from '@/constants/common';
-import { getPasswordViaBioAuth, getUseBioAuth } from '@/util/wallet';
-import { WalletNameValidationCheck } from '@/util/validationCheck';
-import { getChain } from '@/util/secureKeyChain';
-import { decrypt, keyEncrypt } from '@/util/keystore';
+import { BgColor, DisableColor, Lato, PointColor, TextCatTitleColor, WhiteColor } from '@/constants/theme';
+// import { getStatusBarHeight } from 'react-native-status-bar-height';
+import { useAppSelector } from '@/redux/hooks';
+import { easeInAndOutAnim, LayoutAnim } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
-import { LayoutAnim, easeInAndOutAnim } from '@/util/animation';
-import { ScreenHeight } from '@/util/getScreenSize';
 import { wait } from '@/util/common';
-import { ForwardArrow, LockIcon, SendIcon, SquareIcon } from '../icon/icon';
-import Toast from 'react-native-toast-message';
-import InputSetVertical from '../input/inputSetVertical';
-import ArrowButton from '../button/arrowButton';
-import CustomModal from './customModal';
+import { ScreenHeight } from '@/util/getScreenSize';
+import { decrypt, keyEncrypt } from '@/util/keystore';
+import { getChain } from '@/util/secureKeyChain';
+import { WalletNameValidationCheck } from '@/util/validationCheck';
+import { getPasswordViaBioAuth, getUseBioAuth } from '@/util/wallet';
+import { Animated, Keyboard, KeyboardEvent, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
+
+import ArrowButton from '../button/arrowButton';
+import { ForwardArrow, LockIcon, SendIcon, SquareIcon } from '../icon/icon';
+import InputSetVertical from '../input/inputSetVertical';
+import CustomModal from './customModal';
 
 interface IProps {
     type: string;
@@ -27,7 +28,8 @@ interface IProps {
 }
 
 const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps) => {
-    const { wallet, common } = useAppSelector(state => state);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+    const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
 
     const insets = useSafeAreaInsets();
 
@@ -67,7 +69,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
     };
 
     const getUseBioAuthState = async () => {
-        const result = await getUseBioAuth(wallet.name);
+        const result = await getUseBioAuth(walletName);
         setDimActive(result);
         setUseBio(result);
         handleBackbuttonLockByUseBio(result);
@@ -99,13 +101,13 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
 
         if (val.length >= 10) {
             try {
-                let nameCheck = await WalletNameValidationCheck(wallet.name);
+                const nameCheck = await WalletNameValidationCheck(walletName);
                 if (nameCheck) {
-                    const key: string = keyEncrypt(wallet.name, val);
+                    const key: string = keyEncrypt(walletName, val);
                     try {
-                        const result = await getChain(wallet.name);
+                        const result = await getChain(walletName);
                         if (result) {
-                            let w = decrypt(result.password, key);
+                            const w = decrypt(result.password, key);
                             setActive(w !== '');
                         }
                     } catch (error) {
@@ -141,7 +143,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                     return;
                 }
             }
-            let validatedPassword = active ? password : '';
+            const validatedPassword = active ? password : '';
             const result = viaBioAuth ? passwordFromBio : validatedPassword;
             isProcessing = false;
             validationHandler(result);
@@ -151,7 +153,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
             handleModal(false);
         }
@@ -182,18 +184,18 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
     }, [open]);
 
     useEffect(() => {
-        if (common.appState === 'background') {
+        if (appState === 'background') {
             if (type === 'transaction') {
                 handleModal(false);
             }
         }
 
-        if (common.appState === 'active' && common.isBioAuthInProgress === false) {
+        if (appState === 'active' && isBioAuthInProgress === false) {
             if (type === 'lock') {
                 handleValidation(useBio);
             }
         }
-    }, [common.appState]);
+    }, [appState]);
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);
@@ -211,32 +213,36 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
             bgColor={BgColor}
             lockBackButton={backbuttonLock}
             keyboardAvoiing={false}
-            handleOpen={handleModal}>
+            handleOpen={handleModal}
+        >
             <Pressable
                 style={styles.container}
                 onPress={() => {
                     Keyboard.dismiss();
-                }}>
+                }}
+            >
                 <View
                     style={[
                         styles.backArrowButton,
                         {
                             top: (Platform.OS === 'ios' ? insets.top : 0) + 2, // 2 is added to match slight gap between normal back btn.
-                            display: type === 'transaction' ? (backbuttonLock ? 'none' : 'flex') : 'none',
-                        },
-                    ]}>
+                            display: type === 'transaction' ? (backbuttonLock ? 'none' : 'flex') : 'none'
+                        }
+                    ]}
+                >
                     <ArrowButton onPressEvent={() => handleModal(false)} />
                 </View>
                 <Animated.View
                     style={[styles.textBox, { paddingBottom: contentPaddingBottom }]}
-                    onLayout={event => {
+                    onLayout={(event) => {
                         const { y, height } = event.nativeEvent.layout;
                         if (dimActive === false) {
                             setContentPosition(y + height);
                         } else {
                             setContentPosition(0);
                         }
-                    }}>
+                    }}
+                >
                     <View style={{ alignItems: 'center' }}>
                         {renderIcon()}
                         <Text style={[styles.title, { fontWeight: 'bold' }]}>{titleText}</Text>
@@ -256,9 +262,10 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                             <TouchableOpacity
                                 style={styles.confirmButton}
                                 disabled={active === false}
-                                onPress={() => handleValidation(false)}>
+                                onPress={() => handleValidation(false)}
+                            >
                                 <SquareIcon size={55} color={active ? PointColor : DisableColor} />
-                                <View style={[styles.buttonArrow]}>
+                                <View style={styles.buttonArrow}>
                                     <ForwardArrow size={25} color={active ? WhiteColor : BgColor} />
                                 </View>
                             </TouchableOpacity>
@@ -276,21 +283,21 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: BgColor,
+        backgroundColor: BgColor
     },
-    dim: {
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        backgroundColor: '#000000',
-        opacity: Platform.select({ android: 0, ios: 0.5 }),
-        top: 0,
-        left: 0,
-        bottom: 0,
-    },
+    // dim: {
+    //   width: '100%',
+    //   height: '100%',
+    //   position: 'absolute',
+    //   backgroundColor: '#000000',
+    //   opacity: Platform.select({ android: 0, ios: 0.5 }),
+    //   top: 0,
+    //   left: 0,
+    //   bottom: 0,
+    // },
     textBox: {
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     title: {
         fontFamily: Lato,
@@ -298,31 +305,31 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: TextCatTitleColor,
         marginTop: 35,
-        marginBottom: 20,
+        marginBottom: 20
     },
     passwordBox: {
         width: '100%',
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
     backArrowButton: {
         position: 'absolute',
-        top: Platform.select({ android: 0, ios: getStatusBarHeight() }),
-        left: 0,
+        // top: Platform.select({ android: 0, ios: getStatusBarHeight() }),
+        left: 0
     },
     confirmButton: {
         marginLeft: 2,
-        marginBottom: 6,
+        marginBottom: 6
     },
     buttonArrow: {
         position: 'absolute',
         width: 25,
         height: 25,
         top: 17.5,
-        left: 14,
-    },
+        left: 14
+    }
 });
 
 export default ValidationModal;

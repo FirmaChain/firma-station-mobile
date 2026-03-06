@@ -1,4 +1,5 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { CW_REMOVE_WARN_TEXT, CW20_NOT_EXIST, CW20_REMOVE_SUCCESS, EXPLORER_URL } from '@/constants/common';
 import {
     BgColor,
     BorderColor,
@@ -14,25 +15,25 @@ import {
     TextWarnColor,
     WhiteColor
 } from '@/constants/theme';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { rootState } from '@/redux/reducers';
 import { ICW20ContractState, useCWContext } from '@/context/cwContext';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import FastImage, { Source } from 'react-native-fast-image';
-import { ForwardArrow, MenuIcon, RemoveIcon } from '@/components/icon/icon';
-import { convertAmount } from '@/util/common';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StorageActions } from '@/redux/actions';
-import { CW20_NOT_EXIST, CW20_REMOVE_SUCCESS, CW_REMOVE_WARN_TEXT, EXPLORER_URL } from '@/constants/common';
-import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
+import { useAppSelector } from '@/redux/hooks';
 import { ICWContractsState } from '@/redux/types';
+import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
+import { convertAmount } from '@/util/common';
+import FastImage, { Source } from '@d11/react-native-fast-image';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
+
+import { ForwardArrow, MenuIcon, RemoveIcon } from '@/components/icon/icon';
+
 import DataSection from './common/dataSection';
 import NoticeItem from './common/noticeItem';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Assets>;
 
@@ -42,12 +43,13 @@ interface IProps {
 }
 
 const CW20List = ({ isEdit, data }: IProps) => {
+    const { address } = useAppSelector((state) => state.wallet);
+    const { network, cw20Contracts } = useAppSelector((state) => state.storage);
+
     const flatListRef = useRef<any>(null);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const navigation: ScreenNavgationProps = useNavigation();
-    const { address } = useSelector((state: rootState) => state.wallet);
-    const { network } = useSelector((state: rootState) => state.storage);
-    const { cw20Contracts } = useSelector((state: rootState) => state.storage);
+
     const nonExist20StoreValue = Boolean(cw20Contracts === undefined || cw20Contracts[address] === undefined);
     const { handleUpdateCW20WholeData } = useCWContext();
 
@@ -76,7 +78,10 @@ const CW20List = ({ isEdit, data }: IProps) => {
                 network: one.network
             }));
 
-            StorageActions.handleCW20Contracts({ ...cw20Contracts, [address]: [...contractsInsideNetwork, ...contractsOutsideNetwork] });
+            StorageActions.handleCW20Contracts({
+                ...cw20Contracts,
+                [address]: [...contractsInsideNetwork, ...contractsOutsideNetwork]
+            });
         }
 
         setRemoveItemAddr('');
@@ -135,7 +140,13 @@ const CW20List = ({ isEdit, data }: IProps) => {
 
             return (
                 <TouchableOpacity disabled={true} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                    <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            justifyContent: 'space-between'
+                        }}
+                    >
                         <Animated.View
                             style={{
                                 opacity: fadeAnim,

@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BoxColor, Lato, TextCatTitleColor } from '@/constants/theme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { ForwardArrow } from '@/components/icon/icon';
 
 interface IProps {
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: TextCatTitleColor
-    },
+    }
 });
 
 export default AssetsBox;

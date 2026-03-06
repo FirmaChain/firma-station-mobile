@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor } from '@/constants/theme';
-import { ForwardArrow, ForwardArrowWithTail } from '@/components/icon/icon';
-import { IRedelegationInfo } from '@/hooks/staking/hooks';
 import { VALIDATOR_PROFILE } from '@/constants/images';
+import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor } from '@/constants/theme';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IRedelegationInfo } from '@/hooks/staking/hooks';
+import { ForwardArrow, ForwardArrowWithTail } from '@/components/icon/icon';
 
 interface IProps {
     validators: IRedelegationInfo;

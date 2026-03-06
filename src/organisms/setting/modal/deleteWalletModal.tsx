@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PLACEHOLDER_FOR_PASSWORD, SETTING_DELETE_WALLET_TEXT } from '@/constants/common';
 import { BgColor, FailedColor, Lato, TextCatTitleColor, TextWarnColor } from '@/constants/theme';
-import { WalletNameValidationCheck } from '@/util/validationCheck';
 import { decrypt, keyEncrypt } from '@/util/keystore';
 import { getChain } from '@/util/secureKeyChain';
-import CustomModal from '@/components/modal/customModal';
+import { WalletNameValidationCheck } from '@/util/validationCheck';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import InputSetVertical from '@/components/input/inputSetVertical';
+import CustomModal from '@/components/modal/customModal';
 
 interface IProps {
     walletName: string;
@@ -22,13 +23,13 @@ const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IPr
     const handleInputChange = async (val: string) => {
         setPassword(val);
         if (val.length >= 10) {
-            let nameCheck = await WalletNameValidationCheck(walletName);
+            const nameCheck = await WalletNameValidationCheck(walletName);
             if (nameCheck) {
                 const key: string = keyEncrypt(walletName, val);
                 try {
                     const result = await getChain(walletName);
                     if (result) {
-                        let w = decrypt(result.password, key);
+                        const w = decrypt(result.password, key);
                         setActive(w !== '');
                     }
                 } catch (error) {

@@ -1,6 +1,6 @@
-import { IBCConnectedColor } from "@/constants/theme";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from 'react';
+import { IBCConnectedColor } from '@/constants/theme';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 const ConnectedSign = () => {
     const sizeAnim = useRef(new Animated.Value(5)).current;
@@ -10,22 +10,21 @@ const ConnectedSign = () => {
             Animated.timing(sizeAnim, {
                 toValue: 12,
                 duration: 500,
-                useNativeDriver: false,
+                useNativeDriver: false
             }),
             Animated.timing(sizeAnim, {
                 toValue: 5,
                 duration: 500,
-                useNativeDriver: false,
-            }),
+                useNativeDriver: false
+            })
         ]);
 
         Animated.loop(Animated.parallel([animateSize])).start();
     }, [sizeAnim]);
 
-
     const animatedStyle = {
         width: sizeAnim,
-        height: sizeAnim,
+        height: sizeAnim
     };
 
     return (
@@ -36,11 +35,10 @@ const ConnectedSign = () => {
             </View>
             <Text style={styles.connectedTitle}>{'LIVE'}</Text>
         </View>
-    )
-}
+    );
+};
 
 export default ConnectedSign;
-
 
 const styles = StyleSheet.create({
     connectedWrap: {
@@ -58,7 +56,7 @@ const styles = StyleSheet.create({
     },
     dotWrap: {
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     dotShadow: {
         position: 'absolute',
@@ -71,4 +69,4 @@ const styles = StyleSheet.create({
         backgroundColor: IBCConnectedColor,
         borderRadius: 100
     }
-})
+});

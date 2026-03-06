@@ -1,12 +1,14 @@
 import React, { Fragment, memo, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { BgColor, Lato, TextGrayColor } from '@/constants/theme';
 import { DAPP_LOADING_NFT, DAPP_NO_NFT } from '@/constants/common';
+import { BgColor, Lato, TextGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet, Text, View } from 'react-native';
+
 import { INFTProps, useCW721NFT, useNFT } from '@/hooks/dapps/hooks';
 import SmallProgress from '@/components/parts/smallProgress';
+
 import NftItem from './nftItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
@@ -29,7 +31,7 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
     const { MyNFTS, handleNFTIdList, handleIdentity, isFetching } = useNFT();
     const { MyCW721NFTS, handleCW721NFTIdList, isFetching: isCW721Fetching } = useCW721NFT({ contractAddress: cw721Contract });
 
-    const isCW721 = !Boolean(!cw721Contract || cw721Contract === '0x')
+    const isCW721 = !(!cw721Contract || cw721Contract === '0x');
 
     const [containerSize, setContainerSize] = useState(0);
     const [NFTList, setNFTList] = useState<Array<INFTProps> | null>(null);
@@ -37,23 +39,23 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
     const fetchNFTs = useCallback(() => {
         if (!cw721Contract || cw721Contract === '0x') {
             if (!isFetching && MyNFTS) {
-                setNFTList(prevList => {
+                setNFTList((prevList) => {
                     if (prevList) {
-                        const newList = MyNFTS.filter(nft => !prevList.some(existingNFT => existingNFT.id === nft.id));
+                        const newList = MyNFTS.filter((nft) => !prevList.some((existingNFT) => existingNFT.id === nft.id));
                         return [...prevList, ...newList];
                     } else {
-                        return MyNFTS
+                        return MyNFTS;
                     }
                 });
             }
         } else {
             if (!isCW721Fetching && MyCW721NFTS) {
-                setNFTList(prevList => {
+                setNFTList((prevList) => {
                     if (prevList) {
-                        const newList = MyCW721NFTS.filter(nft => !prevList.some(existingNFT => existingNFT.id === nft.id));
+                        const newList = MyCW721NFTS.filter((nft) => !prevList.some((existingNFT) => existingNFT.id === nft.id));
                         return [...prevList, ...newList];
                     } else {
-                        return MyCW721NFTS
+                        return MyCW721NFTS;
                     }
                 });
             }
@@ -61,9 +63,12 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
     }, [MyNFTS, MyCW721NFTS, isFetching, isCW721Fetching, NFTList]);
 
     const RefreshNFTs = () => {
-        if (NFTList === null || NFTList.length === 0) { handleCW721NFTIdList('0'); }
-        else { handleCW721NFTIdList(NFTList[NFTList.length - 1].id); }
-    }
+        if (NFTList === null || NFTList.length === 0) {
+            handleCW721NFTIdList('0');
+        } else {
+            handleCW721NFTIdList(NFTList[NFTList.length - 1].id);
+        }
+    };
 
     useEffect(() => {
         fetchNFTs();
@@ -73,12 +78,12 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
         if (cw721Contract && cw721Contract !== '0x' && isScrollEnd) {
             RefreshNFTs();
         }
-    }, [isScrollEnd, cw721Contract])
+    }, [isScrollEnd, cw721Contract]);
 
     useEffect(() => {
         if (isFocused) {
             if (cw721Contract && cw721Contract !== '0x') {
-                RefreshNFTs();;
+                RefreshNFTs();
             } else {
                 handleNFTIdList();
             }
@@ -104,7 +109,6 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
         }
     }, [isFocused, identity, cw721Contract]);
 
-
     const moveToNFTDetail = useCallback(
         (id: any) => {
             if (NFTList !== null) {
@@ -121,17 +125,24 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
                 <Fragment>
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
                         {NFTList !== null ? (
-                            NFTList.length > 0 ?
+                            NFTList.length > 0 ? (
                                 <Fragment>
                                     {NFTList.map((value, key) => {
-                                        return <NftItem key={key} item={value} size={(containerSize - 20) / itemCountPerLine} moveToNFTDetail={moveToNFTDetail} />
+                                        return (
+                                            <NftItem
+                                                key={key}
+                                                item={value}
+                                                size={(containerSize - 20) / itemCountPerLine}
+                                                moveToNFTDetail={moveToNFTDetail}
+                                            />
+                                        );
                                     })}
                                     <View style={[styles.moreWrap, { opacity: isCW721 && isCW721Fetching ? 1 : 0 }]}>
                                         <SmallProgress />
                                         <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
                                     </View>
                                 </Fragment>
-                                :
+                            ) : (
                                 <View
                                     style={{
                                         flex: 1,
@@ -143,6 +154,7 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
                                 >
                                     <Text style={styles.notice}>{DAPP_NO_NFT}</Text>
                                 </View>
+                            )
                         ) : (
                             <View
                                 style={{
@@ -150,7 +162,7 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
                                     height: '100%',
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
+                                    justifyContent: 'center'
                                 }}
                             >
                                 <SmallProgress />
@@ -223,7 +235,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
-    },
+    }
 });
 
 export default memo(NFTsBox);

@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { IValidatorDescription } from '@/hooks/staking/hooks';
 import { VALIDATOR_PROFILE } from '@/constants/images';
+import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IValidatorDescription } from '@/hooks/staking/hooks';
 
 interface IProps {
     validator: IValidatorDescription | undefined;

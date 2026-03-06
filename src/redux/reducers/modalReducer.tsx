@@ -1,18 +1,19 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
+
 import {
-    HANDLE_RESET_MODAL,
-    HANDLE_MODAL_DATA,
-    HANDLE_DAPP_DATA,
-    VALIDATION_MODAL,
-    QR_SCANNER_MODAL,
+    ADD_CW_CONTRACT_MODAL,
     DAPP_CONNECT_MODAL,
-    DAPP_SIGN_MODAL,
     DAPP_DIRECT_SIGN_MODAL,
     DAPP_SERVICE_REG_MODAL,
-    FAVORITE_MODAL,
+    DAPP_SIGN_MODAL,
     FAVORITE_CREATE_MODAL,
+    FAVORITE_MODAL,
+    HANDLE_DAPP_DATA,
     HANDLE_FAVORITE_DATA,
-    ADD_CW_CONTRACT_MODAL
+    HANDLE_MODAL_DATA,
+    HANDLE_RESET_MODAL,
+    QR_SCANNER_MODAL,
+    VALIDATION_MODAL
 } from '../types';
 
 export interface IModalStateProps {
@@ -79,7 +80,7 @@ export const ACTIONS = {
 
 const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ACTION_CREATORS.HANDLE_RESET_MODAL, (state, { payload }) => {
-        (state.modalData = null), (state.dappData = null);
+        ((state.modalData = null), (state.dappData = null));
     });
     builder.addCase(ACTION_CREATORS.HANDLE_MODAL_DATA, (state, { payload }) => {
         state.modalData = payload;

@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { BoxColor, DividerColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { getGMT } from '@/util/common';
 import ContentLoader, { Rect } from 'react-content-loader/native';
+import { StyleSheet, Text, View } from 'react-native';
 
 const RecentHistorySkeleton = () => {
     const skeleton = () => {
@@ -50,7 +50,7 @@ const RecentHistorySkeleton = () => {
             </View>
 
             <View style={[styles.wrapper, { paddingBottom: 0 }]}>
-                <View style={[styles.historyWrapper]}>
+                <View style={styles.historyWrapper}>
                     <Text style={[styles.contentTitle, { fontSize: 14 }]}>Hash</Text>
                     {skeleton()}
                 </View>

@@ -1,5 +1,5 @@
-import { Cw20MarketingInfo } from '@firmachain/firma-js';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { Cw20MarketingInfo } from '@firmachain/firma-js';
 
 interface ICWContractState {
     address: string;

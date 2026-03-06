@@ -1,9 +1,9 @@
 import React from 'react';
-import DappDetail from '@/organisms/dapps/dappDetail';
 import { useDappsContext } from '@/context/dappsContext';
+import DappDetail from '@/organisms/dapps/dappDetail';
 
 const DappDetailScreen = () => {
-    const { data } = useDappsContext()
+    const { data } = useDappsContext();
 
     return <DappDetail data={data} />;
 };

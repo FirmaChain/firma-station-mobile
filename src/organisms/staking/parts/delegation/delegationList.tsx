@@ -1,43 +1,43 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { StakingActions } from '@/redux/actions';
-import { useAppSelector } from '@/redux/hooks';
-import { IRedelegationInfo, IStakeInfo, IUndelegationInfo, useDelegationData } from '@/hooks/staking/hooks';
-import { convertToFctNumber, wait } from '@/util/common';
-import { DownArrow } from '@/components/icon/icon';
-import { BgColor, BorderColor, GrayColor, Lato, PointLightColor, TextGrayColor } from '@/constants/theme';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { DELEGATE_NOT_EXIST, REDELEGATE_NOT_EXIST, UNDELEGATE_NOT_EXIST } from '@/constants/common';
+import { BgColor, BorderColor, GrayColor, Lato, PointLightColor, TextGrayColor } from '@/constants/theme';
+import { StakingActions } from '@/redux/actions';
+import { convertToFctNumber } from '@/util/common';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IRedelegationInfo, IStakeInfo, IUndelegationInfo } from '@/hooks/staking/hooks';
+import { DownArrow } from '@/components/icon/icon';
 import CustomModal from '@/components/modal/customModal';
 import ModalItems from '@/components/modal/modalItems';
+
 import DelegateItem from './delegateItem';
+import NoticeItem from './noticeItem';
 import RedelegateItem from './redelegateItem';
 import UndelegateItem from './undelegateItem';
-import NoticeItem from './noticeItem';
 
 interface IProps {
-    visible: boolean;
     delegationState: Array<IStakeInfo>;
     redelegationState: Array<IRedelegationInfo>;
     undelegationState: Array<IUndelegationInfo>;
     navigateValidator: (address: string) => void;
 }
 
-const DelegationList = ({ visible, delegationState, redelegationState, undelegationState, navigateValidator }: IProps) => {
+const chkLastItem = (index: number, length: number) => {
+    if (length > 1 && index === length - 1) {
+        return true;
+    }
+    return false;
+};
+
+const DelegationList = ({ delegationState, redelegationState, undelegationState, navigateValidator }: IProps) => {
     const sortItems = ['Delegate', 'Redelegate', 'Undelegate'];
     const [selected, setSelected] = useState(0);
     const [openModal, setOpenModal] = useState(false);
 
-    const delegationList = useMemo(() => {
-        return delegationState;
-    }, [delegationState]);
-
-    const redelegationList = useMemo(() => {
-        return redelegationState;
-    }, [redelegationState]);
-
-    const undelegationList = useMemo(() => {
-        return undelegationState;
-    }, [undelegationState]);
+    // Remove unnecessary useMemo - direct assignment is more efficient
+    const delegationList = delegationState;
+    const redelegationList = redelegationState;
+    const undelegationList = undelegationState;
 
     const allReward = useMemo(() => {
         let reward = 0;
@@ -75,78 +75,8 @@ const DelegationList = ({ visible, delegationState, redelegationState, undelegat
         }
     }, [selected, delegationList, redelegationList, undelegationList]);
 
-    const ClassifyByType = () => {
-        if (visible) {
-            switch (selected) {
-                case 0:
-                    return delegate();
-                case 1:
-                    return redelegate();
-                case 2:
-                    return undelegate();
-            }
-        }
-    };
-
-    const delegate = useCallback(() => {
-        return (
-            <View>
-                {delegationList.length > 0 ? (
-                    delegationList.map((value, index) => {
-                        const isLastItem = index === delegationList.length - 1;
-                        return (
-                            <View key={index} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                                <DelegateItem data={value} navigate={navigateValidator} />
-                            </View>
-                        );
-                    })
-                ) : (
-                    <NoticeItem notification={DELEGATE_NOT_EXIST} />
-                )}
-            </View>
-        );
-    }, [delegationList]);
-
-    const redelegate = useCallback(() => {
-        return (
-            <View>
-                {redelegationList.length > 0 ? (
-                    redelegationList.map((value, index) => {
-                        const isLastItem = index === redelegationList.length - 1;
-                        return (
-                            <View key={index} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                                <RedelegateItem data={value} navigate={navigateValidator} />
-                            </View>
-                        );
-                    })
-                ) : (
-                    <NoticeItem notification={REDELEGATE_NOT_EXIST} />
-                )}
-            </View>
-        );
-    }, [redelegationList]);
-
-    const undelegate = useCallback(() => {
-        return (
-            <View>
-                {undelegationList.length > 0 ? (
-                    undelegationList.map((value, index) => {
-                        const isLastItem = index === undelegationList.length - 1;
-                        return (
-                            <View key={index} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                                <UndelegateItem data={value} navigate={navigateValidator} />
-                            </View>
-                        );
-                    })
-                ) : (
-                    <NoticeItem notification={UNDELEGATE_NOT_EXIST} />
-                )}
-            </View>
-        );
-    }, [undelegationList]);
-
     return (
-        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+        <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>
                     List
@@ -159,7 +89,19 @@ const DelegationList = ({ visible, delegationState, redelegationState, undelegat
                     </TouchableOpacity>
                 </View>
             </View>
-            {ClassifyByType()}
+
+            <View
+                style={{
+                    backgroundColor: BgColor,
+                    flex: 1,
+                    borderBottomLeftRadius: 8,
+                    borderBottomRightRadius: 8
+                }}
+            >
+                {selected === 0 && <Delegate delegationList={delegationList} navigateValidator={navigateValidator} />}
+                {selected === 1 && <ReDelegate redelegationList={redelegationList} navigateValidator={navigateValidator} />}
+                {selected === 2 && <UnDelegate undelegationList={undelegationList} navigateValidator={navigateValidator} />}
+            </View>
             <CustomModal bgColor={BgColor} visible={openModal} handleOpen={handleOpenModal}>
                 <ModalItems initVal={selected} data={sortItems} onPressEvent={handleSelectSort} />
             </CustomModal>
@@ -167,13 +109,89 @@ const DelegationList = ({ visible, delegationState, redelegationState, undelegat
     );
 };
 
+const Delegate = ({
+    delegationList,
+    navigateValidator
+}: {
+    delegationList: IStakeInfo[];
+    navigateValidator: (address: string) => void;
+}) => {
+    return (
+        <>
+            {delegationList.length > 0 ? (
+                delegationList.map((value, index) => {
+                    const isLastItem = chkLastItem(index, delegationList.length);
+
+                    return (
+                        <View key={index} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
+                            <DelegateItem data={value} navigate={navigateValidator} />
+                        </View>
+                    );
+                })
+            ) : (
+                <NoticeItem notification={DELEGATE_NOT_EXIST} />
+            )}
+        </>
+    );
+};
+
+const ReDelegate = ({
+    redelegationList,
+    navigateValidator
+}: {
+    redelegationList: IRedelegationInfo[];
+    navigateValidator: (address: string) => void;
+}) => {
+    return (
+        <>
+            {redelegationList.length > 0 ? (
+                redelegationList.map((value, index) => {
+                    const isLastItem = chkLastItem(index, redelegationList.length);
+
+                    return (
+                        <View key={index} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
+                            <RedelegateItem data={value} navigate={navigateValidator} />
+                        </View>
+                    );
+                })
+            ) : (
+                <NoticeItem notification={REDELEGATE_NOT_EXIST} />
+            )}
+        </>
+    );
+};
+
+const UnDelegate = ({
+    undelegationList,
+    navigateValidator
+}: {
+    undelegationList: IUndelegationInfo[];
+    navigateValidator: (address: string) => void;
+}) => {
+    return (
+        <>
+            {undelegationList.length > 0 ? (
+                undelegationList.map((value, index) => {
+                    const isLastItem = chkLastItem(index, undelegationList.length);
+
+                    return (
+                        <View key={index} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
+                            <UndelegateItem data={value} navigate={navigateValidator} />
+                        </View>
+                    );
+                })
+            ) : (
+                <NoticeItem notification={UNDELEGATE_NOT_EXIST} />
+            )}
+        </>
+    );
+};
+
 const styles = StyleSheet.create({
     container: {
-        borderRadius: 4,
         overflow: 'hidden',
-        justifyContent: 'center',
-        marginBottom: 20,
-        paddingHorizontal: 20
+        justifyContent: 'flex-start',
+        flex: 1
     },
     header: {
         height: 48,

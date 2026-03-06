@@ -1,8 +1,9 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { convertAmount, convertDelegateAmount } from '@/util/common';
-import { BgColor, TextColor, TextDisableColor } from '@/constants/theme';
 import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
+import { BgColor, TextColor, TextDisableColor } from '@/constants/theme';
+import { convertAmount, convertDelegateAmount } from '@/util/common';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+
 import DataSection from '../list/dataSection';
 import MonikerSection from '../list/monikerSection';
 
@@ -32,12 +33,15 @@ const RestakeItem = ({ data, navigate }: IProps) => {
                 color: TextColor + '65',
                 value: 'Not yet'
             };
-        return { color: TextDisableColor, value: `${convertAmount({ value: data.latestReward, point: 6 })} ${_CHAIN_SYMBOL}` };
+        return {
+            color: TextDisableColor,
+            value: `${convertAmount({ value: data.latestReward, point: 6 })} ${_CHAIN_SYMBOL}`
+        };
     }, [data]);
 
     return (
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
-            <View style={[styles.item]}>
+            <View style={styles.item}>
                 <MonikerSection validator={data} />
                 <DataSection title="Delegated" data={`${convertDelegateAmount(data.delegated)} ${_CHAIN_SYMBOL}`} />
                 <DataSection title="Reward" data={`${convertAmount({ value: data.stakingReward, point: 6 })} ${_CHAIN_SYMBOL}`} />

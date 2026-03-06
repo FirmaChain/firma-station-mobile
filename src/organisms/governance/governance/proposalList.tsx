@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PROPOSAL_NOT_REGISTERED, PROPOSAL_STATUS, PROPOSAL_STATUS_DEPOSIT_PERIOD, STATUS_COLOR } from '@/constants/common';
 import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextDisableColor, TextGrayColor } from '@/constants/theme';
-import { convertNumber, convertTime } from '@/util/common';
-import { IProposalItemState } from '@/hooks/governance/hooks';
 import { fadeIn } from '@/util/animation';
+import { convertNumber, convertTime } from '@/util/common';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IProposalItemState } from '@/hooks/governance/hooks';
 import ProposalSkeleton from '@/components/skeleton/proposalSkeleton';
 
 interface IProps {

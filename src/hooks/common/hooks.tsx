@@ -1,11 +1,8 @@
-import { CHAIN_NETWORK } from '@/../config';
-import { MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CHAIN_NETWORK, MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
-import { rootState } from '@/redux/reducers';
 import { getChainInfo } from '@/util/firma';
 import axios from 'axios';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 interface IMaintenanceState {
     isShow: boolean;
@@ -25,11 +22,11 @@ interface IProposalJSONProps {
 }
 
 export const useWalletJSON = () => {
-    const { network } = useSelector((state: rootState) => state.storage);
+    const { network } = useAppSelector((state) => state.storage);
 
     const [walletJson, setWalletJson] = useState<IWalletJSONProps>({
         contactAddressList: [],
-        timestamp: '',
+        timestamp: ''
     });
 
     const getWalletJsonData = useCallback(async () => {
@@ -39,8 +36,8 @@ export const useWalletJSON = () => {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-store',
                     Pragma: 'no-store',
-                    Expires: '0',
-                },
+                    Expires: '0'
+                }
             });
             const data: IWalletJSONProps = await response.json();
             setWalletJson(data);
@@ -74,25 +71,26 @@ export const useChainVersion = () => {
     return {
         handleChainInfo,
         chainVer,
-        sdkVer,
+        sdkVer
     };
 };
 
 export const useServerMessage = () => {
-    const { storage } = useAppSelector(state => state);
+    const { network } = useAppSelector((state) => state.storage);
+
     const [minAppVer, setMinAppVer] = useState<string | null | undefined>(null);
     const [currentAppVer, setCurrentAppVer] = useState<string | null | undefined>(null);
     const [maintenanceState, setMaintenanceState] = useState<IMaintenanceState | null | undefined>(null);
 
     const getMaintenanceData = useCallback(async () => {
         try {
-            const { data } = await axios.get(`${MAINTENANCE_API}/${MAINTENANCE_PATH[storage.network]}`, {
+            const { data } = await axios.get(`${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-store',
                     Pragma: 'no-store',
-                    Expires: '0',
-                },
+                    Expires: '0'
+                }
             });
 
             setMinAppVer(data.minAppVer);
@@ -114,7 +112,7 @@ export const useServerMessage = () => {
         minAppVer,
         currentAppVer,
         maintenanceState,
-        getMaintenanceData,
+        getMaintenanceData
     };
 };
 
@@ -144,7 +142,7 @@ export const useInterval = (callback: () => void, delay: number | null, startAft
 
         if (delay !== null) {
             tick();
-            let id = setInterval(tick, delay);
+            const id = setInterval(tick, delay);
             return () => {
                 delayed = 0;
                 clearInterval(id);

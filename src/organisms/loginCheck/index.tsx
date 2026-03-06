@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNavigation } from '@react-navigation/native';
-import { useAppSelector } from '@/redux/hooks';
-import { CommonActions, WalletActions } from '@/redux/actions';
-import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { LOGIN_DESCRIPTION } from '@/constants/common';
+import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { CommonActions, WalletActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { easeInAndOutAnim, fadeIn, LayoutAnim } from '@/util/animation';
+import { confirmViaBioAuth } from '@/util/bioAuth';
+import { wait } from '@/util/common';
+import { removeAllData } from '@/util/detect';
+import { getAddressFromRecoverValue } from '@/util/firma';
 import {
     getPasswordViaBioAuth,
     getUseBioAuth,
@@ -14,20 +16,20 @@ import {
     removeWalletWithAutoLogin,
     setBioAuth,
     setEncryptPassword,
-    setWalletWithAutoLogin,
+    setWalletWithAutoLogin
 } from '@/util/wallet';
-import { easeInAndOutAnim, fadeIn, LayoutAnim } from '@/util/animation';
-import { getAddressFromRecoverValue } from '@/util/firma';
-import { confirmViaBioAuth } from '@/util/bioAuth';
-import { removeAllData } from '@/util/detect';
-import { wait } from '@/util/common';
-import SplashScreen from 'react-native-splash-screen';
-import Toast from 'react-native-toast-message';
-import ViewContainer from '@/components/parts/containers/viewContainer';
-import Description from '../welcome/description';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import InputBox from './inputBox';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
+// import SplashScreen from 'react-native-splash-screen';
+import Toast from 'react-native-toast-message';
+
 import Button from '@/components/button/button';
+import ViewContainer from '@/components/parts/containers/viewContainer';
+
+import Description from '../welcome/description';
+import InputBox from './inputBox';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
@@ -37,7 +39,8 @@ const LoginCheck = () => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const fadeAnimEnterButton = useRef(new Animated.Value(0)).current;
 
-    const { wallet, common } = useAppSelector(state => state);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+    const { maintenanceState, connect } = useAppSelector((state) => state.common);
 
     const Title: string = 'LOGIN';
     const Desc: string = LOGIN_DESCRIPTION;
@@ -49,12 +52,12 @@ const LoginCheck = () => {
 
     const handleLogin = async (recoverValue: string, name: string, password: string) => {
         try {
-            let adr = await getAddressFromRecoverValue(recoverValue);
+            const adr = await getAddressFromRecoverValue(recoverValue);
             if (adr) {
                 await setWalletWithAutoLogin(
                     JSON.stringify({
                         name: name,
-                        address: adr,
+                        address: adr
                     })
                 );
 
@@ -72,7 +75,7 @@ const LoginCheck = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
         }
     };
@@ -104,13 +107,13 @@ const LoginCheck = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
         }
     };
 
     const getUseBioAuthState = async () => {
-        const useBio = await getUseBioAuth(wallet.name);
+        const useBio = await getUseBioAuth(walletName);
         return useBio;
     };
 
@@ -137,10 +140,10 @@ const LoginCheck = () => {
     };
 
     useEffect(() => {
-        if (common.maintenanceState === false) {
-            if (common.connect && loading === false) {
-                if (wallet.name !== '') {
-                    getUseBioAuthState().then(res => {
+        if (maintenanceState === false) {
+            if (connect && loading === false) {
+                if (walletName !== '') {
+                    getUseBioAuthState().then((res) => {
                         setDimActive(res);
                         setUseBio(res);
                         wait(3000).then(() => fadeIn(Animated, fadeAnimEnterButton, 500));
@@ -151,22 +154,23 @@ const LoginCheck = () => {
                 }
             }
         }
-    }, [loading, common.connect, common.maintenanceState]);
+    }, [loading, connect, maintenanceState]);
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);
         const hideSubscription = Keyboard.addListener('keyboardWillHide', onKeyboardDidHide);
 
-        SplashScreen.hide();
+        // SplashScreen.hide();
 
-        if (common.maintenanceState === false) {
+        if (maintenanceState === false) {
             const getWalletForAutoLogin = async () => {
                 try {
                     const result = await getWalletWithAutoLogin();
+
                     if (result !== '') {
-                        const wallet = JSON.parse(result);
-                        WalletActions.handleWalletName(wallet.name);
-                        WalletActions.handleWalletAddress(wallet.address);
+                        const parsed = JSON.parse(result);
+                        WalletActions.handleWalletName(parsed.name);
+                        WalletActions.handleWalletAddress(parsed.address);
                     } else {
                         handleDisconnect();
                     }
@@ -177,7 +181,7 @@ const LoginCheck = () => {
                 }
             };
 
-            AsyncStorage.getItem('alreadyLaunched').then(value => {
+            AsyncStorage.getItem('alreadyLaunched').then((value) => {
                 if (value == null) {
                     removeAllData().then(() => getWalletForAutoLogin());
                     AsyncStorage.setItem('alreadyLaunched', 'Launched');
@@ -191,20 +195,24 @@ const LoginCheck = () => {
             showSubscription.remove();
             hideSubscription.remove();
         };
-    }, [common.maintenanceState]);
+    }, [maintenanceState]);
 
     return (
         <ViewContainer bgColor={BgColor}>
             <KeyboardAvoidingView enabled={true} behavior={Platform.select({ android: undefined, ios: 'padding' })}>
-                {wallet.name !== '' && (
+                {walletName !== '' && (
                     <Pressable onPress={() => Keyboard.dismiss()}>
                         <Animated.View
                             style={[
                                 styles.viewContainer,
-                                { justifyContent: dimActive ? 'center' : 'space-between', paddingBottom: isKeyboardShown ? 20 : 0 },
-                            ]}>
+                                {
+                                    justifyContent: dimActive ? 'center' : 'space-between',
+                                    paddingBottom: isKeyboardShown ? 20 : 0
+                                }
+                            ]}
+                        >
                             {dimActive === false && (
-                                <TouchableOpacity style={[styles.disconnect]} onPress={() => handleDisconnect()}>
+                                <TouchableOpacity style={styles.disconnect} onPress={() => handleDisconnect()}>
                                     <Text style={styles.disconnectText}>Disconnect</Text>
                                 </TouchableOpacity>
                             )}
@@ -215,7 +223,7 @@ const LoginCheck = () => {
                                 </Animated.View>
                             )}
                             {dimActive === false && (
-                                <InputBox walletName={wallet.name} useBio={useBio} fadeIn={fadeAnim} loginHandler={handleLogin} />
+                                <InputBox walletName={walletName} useBio={useBio} fadeIn={fadeAnim} loginHandler={handleLogin} />
                             )}
                         </Animated.View>
                     </Pressable>
@@ -229,26 +237,26 @@ const styles = StyleSheet.create({
     viewContainer: {
         height: '100%',
         alignItems: 'flex-end',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     disconnect: {
         height: 25,
         justifyContent: 'center',
         alignItems: 'flex-end',
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
     disconnectText: {
         fontFamily: Lato,
         fontSize: 14,
-        color: TextCatTitleColor,
+        color: TextCatTitleColor
     },
     enterButtonBox: {
         position: 'absolute',
         bottom: 0,
         width: '100%',
         justifyContent: 'flex-end',
-        paddingHorizontal: 20,
-    },
+        paddingHorizontal: 20
+    }
 });
 
 export default LoginCheck;

@@ -1,19 +1,20 @@
 import { IKeyValue } from '@/constants/common';
 import { createAction, createReducer } from '@reduxjs/toolkit';
+
 import {
-    HANDLE_CURRENCY,
-    HANDLE_NETWORK,
     HANDLE_CONTENT_VOLUME,
-    HANDLE_HISTORY_VOLUME,
+    HANDLE_CURRENCY,
+    HANDLE_CW20_CONTRACTS,
+    HANDLE_CW721_CONTRACTS,
     HANDLE_DAPP_SERVICES_VOLUME,
+    HANDLE_FAVORITE,
+    HANDLE_HISTORY_VOLUME,
+    HANDLE_LAST_SELECTED_WALLET_INDEX,
+    HANDLE_NETWORK,
     HANDLE_RECOVER_TYPE,
     HANDLE_VALIDATORS_PROFILE_INFO,
-    HANDLE_LAST_SELECTED_WALLET_INDEX,
-    IFavoriteState,
-    HANDLE_FAVORITE,
     ICWContractsState,
-    HANDLE_CW721_CONTRACTS,
-    HANDLE_CW20_CONTRACTS
+    IFavoriteState
 } from '../types';
 
 export interface IContentVolume {

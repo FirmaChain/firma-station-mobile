@@ -1,10 +1,8 @@
-import Dapps from "@/organisms/dapps";
-import React from "react";
+import React from 'react';
+import Dapps from '@/organisms/dapps';
 
 const DappsScreen = () => {
-    return (
-        <Dapps />
-    )
-}
+    return <Dapps />;
+};
 
 export default React.memo(DappsScreen);

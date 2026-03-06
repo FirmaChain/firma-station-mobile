@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
-import { IStakingState } from '@/hooks/staking/hooks';
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor } from '@/constants/theme';
+import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
 import { FirmaUtil } from '@firmachain/firma-js';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { IStakingState } from '@/hooks/staking/hooks';
 
 interface IProps {
     stakingValues: IStakingState | null;
@@ -47,12 +48,17 @@ const BalanceBox = ({ stakingValues }: IProps) => {
                             style={[
                                 styles.box,
                                 { flex: 1 },
-                                index < StakingValues.length - 1 && { borderRightColor: DisableColor, borderRightWidth: 1 }
+                                index < StakingValues.length - 1 && {
+                                    borderRightColor: DisableColor,
+                                    borderRightWidth: 1
+                                }
                             ]}
                         >
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, { fontSize: resize }]}>{convertAmount({ value: item.data, isUfct: item.ufct })}</Text>
+                                <Text style={[styles.desc, { fontSize: resize }]}>
+                                    {convertAmount({ value: item.data, isUfct: item.ufct })}
+                                </Text>
                             </View>
                         </View>
                     );

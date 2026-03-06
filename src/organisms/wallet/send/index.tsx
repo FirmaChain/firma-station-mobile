@@ -1,24 +1,26 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Keyboard, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { GUIDE_URI, IBCChainState } from '@/../config';
+import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { useBalanceData } from '@/hooks/wallet/hooks';
-import { BgColor } from '@/constants/theme';
-import { TRANSACTION_TYPE, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
-import { addressCheck, getEstimateGasSend, getEstimateGasSendIBC, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { convertNumber } from '@/util/common';
-import { GUIDE_URI, IBCChainState } from '@/../config';
+import { addressCheck, getEstimateGasSend, getEstimateGasSendIBC, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Keyboard, Linking, ScrollView, StyleSheet, View } from 'react-native';
+
+import { useBalanceData } from '@/hooks/wallet/hooks';
+import Button from '@/components/button/button';
+import AlertModal from '@/components/modal/alertModal';
+import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
+import BalanceInfo from '@/components/parts/balanceInfo';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import Button from '@/components/button/button';
-import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
-import AlertModal from '@/components/modal/alertModal';
-import SendInputBox from './sendInputBox';
-import BalanceInfo from '@/components/parts/balanceInfo';
+
 import SendTypeSelector, { SendType } from '../common/senTypeSelector';
+import SendInputBox from './sendInputBox';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Send>;
 
@@ -32,7 +34,8 @@ interface ISendInfo {
 const Send = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { wallet } = useAppSelector(state => state);
+    const { name: walletName, dstAddress: walletDstAddress } = useAppSelector((state) => state.wallet);
+
     const { balance, getBalance } = useBalanceData();
 
     const denom = getFirmaConfig().denom;
@@ -42,7 +45,7 @@ const Send = () => {
         address: '',
         amount: 0,
         memo: '',
-        chain: null,
+        chain: null
     });
     const [resetInputValues, setInputResetValues] = useState(false);
 
@@ -54,9 +57,9 @@ const Send = () => {
     const handleSendInfo = (type: string, value: string | number | IBCChainState | null) => {
         let val: any = value;
         if (type === 'memo' && val === '') val = null;
-        setSendInfoState(prevState => ({
+        setSendInfoState((prevState) => ({
             ...prevState,
-            [type]: val,
+            [type]: val
         }));
     };
 
@@ -80,7 +83,7 @@ const Send = () => {
                 denom: denom,
                 channel: sendInfoState.chain?.channel,
                 gas: gas,
-                memo: sendInfoState.memo,
+                memo: sendInfoState.memo
             };
             setInputResetValues(true);
             navigation.navigate(Screens.Transaction, { state: transactionState });
@@ -91,7 +94,7 @@ const Send = () => {
                 targetAddress: sendInfoState.address,
                 amount: sendInfoState.amount,
                 gas: gas,
-                memo: sendInfoState.memo,
+                memo: sendInfoState.memo
             };
             setInputResetValues(true);
             navigation.navigate(Screens.Transaction, { state: transactionState });
@@ -108,8 +111,8 @@ const Send = () => {
             if (isValidAddress) {
                 if (activeType === 'SEND_IBC') {
                     if (sendInfoState.chain === null) return;
-                    let gas = await getEstimateGasSendIBC(
-                        wallet.name,
+                    const gas = await getEstimateGasSendIBC(
+                        walletName,
                         'transfer',
                         sendInfoState.chain.channel,
                         denom,
@@ -119,7 +122,7 @@ const Send = () => {
                     );
                     setGas(gas);
                 } else {
-                    let gas = await getEstimateGasSend(wallet.name, sendInfoState.address, sendInfoState.amount);
+                    const gas = await getEstimateGasSend(walletName, sendInfoState.address, sendInfoState.amount);
                     setGas(gas);
                 }
             } else {
@@ -172,7 +175,7 @@ const Send = () => {
                                 handleSendInfo={handleSendInfo}
                                 type={activeType}
                                 available={balance}
-                                dstAddress={wallet.dstAddress}
+                                dstAddress={walletDstAddress}
                                 reset={resetInputValues}
                             />
                         </ScrollView>
@@ -208,8 +211,8 @@ const Send = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 20,
-    },
+        paddingHorizontal: 20
+    }
 });
 
 export default Send;

@@ -1,23 +1,24 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { configureStore } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist';
+
 import reducers from './reducers';
 
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    whitelist: ['storage'],
+    whitelist: ['storage']
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = configureStore({
     reducer: persistedReducer,
-    middleware: getDefaultMiddleware =>
+    middleware: (getDefaultMiddleware) =>
         // disable serializable check
         getDefaultMiddleware({
-            serializableCheck: false,
-        }),
+            serializableCheck: false
+        })
 });
 
 const persistor = persistStore(store);

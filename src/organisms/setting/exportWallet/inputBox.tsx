@@ -1,6 +1,7 @@
 import React from 'react';
-import { Keyboard, Pressable, StyleSheet } from 'react-native';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
+import { Keyboard, Pressable, StyleSheet } from 'react-native';
+
 import InputSetVertical from '@/components/input/inputSetVertical';
 
 interface IProps {

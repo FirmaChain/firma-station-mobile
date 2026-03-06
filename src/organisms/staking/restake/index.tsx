@@ -1,28 +1,35 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { FirmaUtil } from '@firmachain/firma-js';
-import { CommonActions } from '@/redux/actions';
-import { useAppSelector } from '@/redux/hooks';
-import { useDelegationData, useRestakeInfoData, useStakingData } from '@/hooks/staking/hooks';
-import { convertAmount } from '@/util/common';
-import { getEstimateGasGrantStakeAuthorization, getEstimateGasRevokeStakeAuthorization, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import { GUIDE_URI } from '@/../config';
 import { CHAIN_SYMBOL, RESTAKE_NOTICE_TEXT, RESTAKE_TYPE, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor, TextCatTitleColor } from '@/constants/theme';
-import { GUIDE_URI } from '@/../config';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { convertAmount } from '@/util/common';
+import {
+    getEstimateGasGrantStakeAuthorization,
+    getEstimateGasRevokeStakeAuthorization,
+    getFeesFromGas,
+    getFirmaConfig
+} from '@/util/firma';
+import { FirmaUtil } from '@firmachain/firma-js';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+
+import { useDelegationData, useRestakeInfoData, useStakingData } from '@/hooks/staking/hooks';
 import Button from '@/components/button/button';
+import AlertModal from '@/components/modal/alertModal';
+import RestakeValidatorListModal from '@/components/modal/restakeValidatorListModal';
+import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
+import BalanceInfoMultiLine from '@/components/parts/balanceInfoMultiLine';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import WarnContainer from '@/components/parts/containers/warnContainer';
-import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
-import AlertModal from '@/components/modal/alertModal';
-import BalanceInfoMultiLine from '@/components/parts/balanceInfoMultiLine';
-import StatusBox from './statusBox';
+
 import NextRoundCard from './nextRoundCard';
-import RestakeValidatorListModal from '@/components/modal/restakeValidatorListModal';
 import RestakeValidators from './restakeValidators';
+import StatusBox from './statusBox';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Restake>;
 let restakeType: string = 'GRANT';
@@ -30,7 +37,8 @@ let restakeType: string = 'GRANT';
 const Restake = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { wallet } = useAppSelector((state) => state);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [gas, setGas] = useState(getFirmaConfig().defaultGas);
@@ -55,7 +63,7 @@ const Restake = () => {
 
     const grantExist = useMemo(() => {
         if (stakingGrantState.list.length > 0) {
-            let activation = stakingGrantState.list.filter((value) => value.isActive);
+            const activation = stakingGrantState.list.filter((value) => value.isActive);
             return activation.length > 0;
         }
         return false;
@@ -77,7 +85,7 @@ const Restake = () => {
     }, [delegationState]);
 
     const restakeUpdateInfo = useMemo(() => {
-        var json = restakeInfo;
+        let json = restakeInfo;
         if (json) {
             const { nextRoundDateTime, round, ...other } = restakeInfo;
             json = {
@@ -90,8 +98,7 @@ const Restake = () => {
 
     const nextRound = useMemo(() => {
         if (restakeInfo) {
-            let round = restakeInfo.round + 1;
-            return round;
+            return restakeInfo.round + 1;
         }
         return 0;
     }, [restakeInfo]);
@@ -148,12 +155,12 @@ const Restake = () => {
         try {
             if (TRANSACTION_TYPE[restakeType] === TRANSACTION_TYPE['GRANT']) {
                 if (validatorAddressList !== null) {
-                    const result = await getEstimateGasGrantStakeAuthorization(wallet.name, validatorAddressList);
+                    const result = await getEstimateGasGrantStakeAuthorization(walletName, validatorAddressList);
                     setGas(result);
                 }
             }
             if (TRANSACTION_TYPE[restakeType] === TRANSACTION_TYPE['REVOKE']) {
-                const result = await getEstimateGasRevokeStakeAuthorization(wallet.name);
+                const result = await getEstimateGasRevokeStakeAuthorization(walletName);
                 setGas(result);
             }
             setAlertDescription('');

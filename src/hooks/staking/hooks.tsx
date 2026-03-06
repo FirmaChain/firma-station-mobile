@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAppSelector } from '@/redux/hooks';
+import { CHAIN_NETWORK } from '@/../config';
+import { BLOCKS_PER_YEAR } from '@/constants/common';
 import { StakingActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { IValidatorProfileInfo } from '@/redux/reducers/storageReducer';
 import { convertNumber, convertPercentage, convertTime, convertToFctNumber, makeDecimalPoint } from '@/util/common';
 import {
     getBalanceFromAdr,
@@ -18,12 +21,9 @@ import {
     getStakingPoolState,
     getUndelegations,
     getValidatorFromAddress,
-    getValidators,
+    getValidators
 } from '@/util/firma';
-import { CHAIN_NETWORK } from '@/../config';
 import { DelegationInfo, FirmaUtil, PoolDataType, SlashingParam, ValidatorDataType } from '@firmachain/firma-js';
-import { IValidatorProfileInfo } from '@/redux/reducers/storageReducer';
-import { BLOCKS_PER_YEAR } from '@/constants/common';
 
 export interface IValidatorState {
     validatorAddress: string;
@@ -143,7 +143,10 @@ export interface IStakingState {
 }
 
 export const useDelegationData = () => {
-    const { wallet, staking, storage } = useAppSelector(state => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { network, validatorsProfile } = useAppSelector((state) => state.storage);
+    const { delegate } = useAppSelector((state) => state.staking);
+
     const [delegationList, setDelegationList] = useState<Array<IStakeInfo>>([]);
     const [redelegationList, setRedelegationList] = useState<Array<IRedelegationInfo>>([]);
     const [undelegationList, setUndelegationList] = useState<Array<IUndelegationInfo>>([]);
@@ -151,34 +154,24 @@ export const useDelegationData = () => {
         list: [],
         count: 0,
         expire: '',
-        expiration: 0,
+        expiration: 0
     });
     const [stakingGrantActivation, setStakingGrantActivation] = useState<boolean | null>(null);
     const [validatorsList, setValidatorsList] = useState<Array<ValidatorDataType>>([]);
-    const [validatorsAvatarList, setValidatorsAvatarList] = useState<Array<IValidatorProfileInfo> | []>([]);
 
-    useEffect(() => {
-        if (storage.validatorsProfile === undefined) return;
-        setValidatorsAvatarList(storage.validatorsProfile.profileInfos);
-    }, [storage.validatorsProfile]);
+    const validatorsAvatarList: IValidatorProfileInfo[] = Array.isArray(validatorsProfile?.profileInfos)
+        ? validatorsProfile.profileInfos
+        : [];
 
     const handleDelegationPolling = async () => {
-        try {
-            await handleValidators();
-            await handleDelegationState();
-        } catch (error) {
-            throw error;
-        }
+        await handleValidators();
+        await handleDelegationState();
     };
 
     const handleTotalDelegationPolling = async () => {
-        try {
-            await handleRedelegationState();
-            await handleUndelegationState();
-            await handleStakingGrantState();
-        } catch (error) {
-            throw error;
-        }
+        await handleRedelegationState();
+        await handleUndelegationState();
+        await handleStakingGrantState();
     };
 
     const handleValidators = async () => {
@@ -192,72 +185,51 @@ export const useDelegationData = () => {
                 return jailed === false && status === 3 && tombstoned === false;
             });
             setValidatorsList(list);
-        } catch (error) {}
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleDelegationState = async () => {
-        try {
-            const result: Array<IStakeInfo> = await getDelegations(wallet.address);
+        const result: IStakeInfo[] = await getDelegations(walletAddress);
 
-            setDelegationList(
-                result.filter(
-                    value =>
-                        convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 ||
-                        convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0
-                )
-            );
-        } catch (error) {
-            throw error;
-        }
+        setDelegationList(
+            result.filter(
+                (value) =>
+                    convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 ||
+                    convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0
+            )
+        );
     };
 
     const handleRedelegationState = async () => {
-        try {
-            const redelegationResult: Array<IRedelegationInfo> = await getRedelegations(wallet.address);
-            setRedelegationList(redelegationResult);
-        } catch (error) {
-            throw error;
-        }
+        const redelegationResult: IRedelegationInfo[] = await getRedelegations(walletAddress);
+        setRedelegationList(redelegationResult);
     };
 
     const handleUndelegationState = async () => {
-        try {
-            const undelegateionResult: Array<IUndelegationInfo> = await getUndelegations(wallet.address);
-            setUndelegationList(undelegateionResult);
-        } catch (error) {
-            throw error;
-        }
+        const undelegateionResult: IUndelegationInfo[] = await getUndelegations(walletAddress);
+        setUndelegationList(undelegateionResult);
     };
 
     const handleStakingGrantState = useCallback(async () => {
-        try {
-            const grantStakeResult: Array<any> = await getStakingGrant(wallet.address);
-            setStakingGrantList(StakingGrantData(delegationList, grantStakeResult[0]));
-        } catch (error) {
-            throw error;
-        }
+        const grantStakeResult: any[] = await getStakingGrant(walletAddress);
+        setStakingGrantList(StakingGrantData(delegationList, grantStakeResult[0]));
     }, [delegationList]);
 
     const handleStakingGrantActivationState = async () => {
-        try {
-            const grantStakingResult: Array<any> = await getStakingGrant(wallet.address);
-            let grantExist =
-                grantStakingResult[0] === undefined ? false : grantStakingResult[0].authorization.allow_list.address.length > 0;
-            setStakingGrantActivation(grantExist);
-        } catch (error) {
-            throw error;
-        }
+        const grantStakingResult: any[] = await getStakingGrant(walletAddress);
+        const grantExist = grantStakingResult[0] === undefined ? false : grantStakingResult[0].authorization.allow_list.address.length > 0;
+        setStakingGrantActivation(grantExist);
     };
 
     useEffect(() => {
         setDelegationList(
             delegationList.map((vd: any) =>
-                staking.delegate !== null && vd.validatorAddress === staking.delegate.address
-                    ? { ...vd, reward: staking.delegate.reward }
-                    : vd
+                delegate !== null && vd.validatorAddress === delegate.address ? { ...vd, reward: delegate.reward } : vd
             )
         );
-    }, [staking.delegate]);
+    }, [delegate]);
 
     useEffect(() => {
         handleTotalDelegationPolling();
@@ -265,41 +237,41 @@ export const useDelegationData = () => {
 
     const delegationState: Array<IStakeInfo> = useMemo(() => {
         if (validatorsList.length > 0) {
-            return useValidatorDescription(delegationList, validatorsList, validatorsAvatarList);
+            return parseValidatorDescription(delegationList, validatorsList, validatorsAvatarList);
         }
         return [];
     }, [delegationList, validatorsList, validatorsAvatarList]);
 
     const redelegationState: Array<IRedelegationInfo> = useMemo(() => {
         if (validatorsList.length > 0) {
-            return useValidatorDescriptionForRedelegation(redelegationList, validatorsList, validatorsAvatarList);
+            return parseValidatorDescriptionForRedelegation(redelegationList, validatorsList, validatorsAvatarList);
         }
         return [];
     }, [redelegationList, validatorsList, validatorsAvatarList]);
 
     const undelegationState: Array<IUndelegationInfo> = useMemo(() => {
         if (validatorsList.length > 0) {
-            return useValidatorDescription(undelegationList, validatorsList, validatorsAvatarList);
+            return parseValidatorDescription(undelegationList, validatorsList, validatorsAvatarList);
         }
         return [];
     }, [undelegationList, validatorsList, validatorsAvatarList]);
 
     const stakingGrantState: IStakingGrantState = useMemo(() => {
         if (validatorsList.length > 0 && stakingGrantList.list.length > 0) {
-            let list = useValidatorDescription(stakingGrantList.list, validatorsList, validatorsAvatarList);
+            const list = parseValidatorDescription(stakingGrantList.list, validatorsList, validatorsAvatarList);
 
             return {
                 list: list,
                 count: stakingGrantList.count,
                 expire: stakingGrantList.expire,
-                expiration: stakingGrantList.expiration,
+                expiration: stakingGrantList.expiration
             };
         }
         return {
             list: [],
             count: 0,
             expire: '',
-            expiration: 0,
+            expiration: 0
         };
     }, [stakingGrantList, validatorsList, validatorsAvatarList]);
 
@@ -311,10 +283,10 @@ export const useDelegationData = () => {
             list: [],
             count: 0,
             expire: '',
-            expiration: 0,
+            expiration: 0
         });
         handleDelegationPolling();
-    }, [storage.network]);
+    }, [network]);
 
     return {
         delegationState,
@@ -327,7 +299,7 @@ export const useDelegationData = () => {
         handleUndelegationState,
         handleStakingGrantState,
         handleStakingGrantActivationState,
-        handleTotalDelegationPolling,
+        handleTotalDelegationPolling
     };
 };
 
@@ -353,108 +325,102 @@ export const StakingGrantData = (delegationList: Array<any>, stakingGrantList: I
     }
 
     let undelegatedList = grantList;
-    let restakeListWithDelegation = delegationList.map(dData => {
-        undelegatedList = undelegatedList.filter(aData => aData.includes(dData.validatorAddress) === false);
+    const restakeListWithDelegation = delegationList.map((dData) => {
+        undelegatedList = undelegatedList.filter((aData) => aData.includes(dData.validatorAddress) === false);
         return {
             validatorAddress: dData.validatorAddress,
             avatarURL: dData.avatarURL,
             moniker: dData.moniker,
             delegated: dData.amount,
             stakingReward: dData.reward,
-            isActive: grantList.includes(dData.validatorAddress),
+            isActive: grantList.includes(dData.validatorAddress)
         };
     });
 
-    let restakeListWithoutDelegation = undelegatedList.map(value => {
+    const restakeListWithoutDelegation = undelegatedList.map((value) => {
         return {
             validatorAddress: value,
             avatarURL: '',
             moniker: value,
             delegated: 0,
             stakingReward: 0,
-            isActive: true,
+            isActive: true
         };
     });
 
     let restakeCount = 0;
     if (restakeListWithDelegation.length > 0) {
-        restakeCount = restakeListWithDelegation.filter(value => value.isActive === true).length;
+        restakeCount = restakeListWithDelegation.filter((value) => value.isActive === true).length;
     }
 
-    let list = restakeListWithDelegation.concat(restakeListWithoutDelegation);
+    const list = restakeListWithDelegation.concat(restakeListWithoutDelegation);
 
     return {
         list: list,
         count: restakeCount,
         expire: expireDate,
-        expiration: expiration,
+        expiration: expiration
     };
 };
 
 export const useStakingData = () => {
-    const { wallet, storage } = useAppSelector(state => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { network } = useAppSelector((state) => state.storage);
+
     const [stakingState, setStakingState] = useState<IStakingState | null>(null);
 
     const getStakingState = async () => {
-        try {
-            const result = await getStaking(wallet.address);
-            setStakingState(result);
-            StakingActions.updateStakingRewardState(result.stakingReward);
-        } catch (error) {
-            throw error;
-        }
+        const result = await getStaking(walletAddress);
+        setStakingState(result);
+        StakingActions.updateStakingRewardState(result.stakingReward);
     };
 
     const updateStakingState = useCallback(
         async (stakingReward: number) => {
-            try {
-                const balance = await getBalanceFromAdr(wallet.address);
-                if (stakingState !== null) {
-                    stakingState['available'] = convertNumber(balance);
-                    stakingState['stakingReward'] = stakingReward;
+            const balance = await getBalanceFromAdr(walletAddress);
+            if (stakingState !== null) {
+                stakingState['available'] = convertNumber(balance);
+                stakingState['stakingReward'] = stakingReward;
 
-                    setStakingState({ ...stakingState });
-                }
-            } catch (error) {
-                throw error;
+                setStakingState({ ...stakingState });
             }
         },
         [stakingState]
     );
 
     useEffect(() => {
-        if (wallet.address === '' || wallet.address === undefined) {
+        if (walletAddress === '' || walletAddress === undefined) {
             return setStakingState({
                 available: 0,
                 delegated: 0,
                 undelegate: 0,
-                stakingReward: 0,
+                stakingReward: 0
             });
         }
         getStakingState();
-    }, [storage.network]);
+    }, [network]);
 
     return {
         stakingState,
         getStakingState,
-        updateStakingState,
+        updateStakingState
     };
 };
 
-export const useValidatorDescription = (
+export const parseValidatorDescription = (
     delegations: Array<any>,
     validators: Array<ValidatorDataType>,
     validatorsAvatarList: Array<IValidatorProfileInfo> | []
 ) => {
     if (validators !== undefined && validators.length > 0) {
-        const result = delegations.map(value => {
-            const desc = validators.find(val => val.operator_address === value.validatorAddress);
+        const result = delegations.map((value) => {
+            const desc = validators.find((val) => val.operator_address === value.validatorAddress);
 
             const validatorDescription = organizeValidatorDescription(desc, validatorsAvatarList);
             return {
                 ...value,
                 moniker: validatorDescription.validatorMoniker,
-                avatarURL: validatorDescription.validatorAvatar,
+                avatarURL: validatorDescription.validatorAvatar
             };
         });
         return result;
@@ -463,14 +429,14 @@ export const useValidatorDescription = (
     }
 };
 
-export const useValidatorDescriptionForRedelegation = (
+export const parseValidatorDescriptionForRedelegation = (
     redelegations: Array<IRedelegationInfo>,
     validators: Array<ValidatorDataType>,
     validatorsAvatarList: Array<IValidatorProfileInfo> | []
 ) => {
-    const result = redelegations.map(value => {
-        const src = validators.find(val => val.operator_address === value.srcAddress);
-        const dst = validators.find(val => val.operator_address === value.dstAddress);
+    const result = redelegations.map((value) => {
+        const src = validators.find((val) => val.operator_address === value.srcAddress);
+        const dst = validators.find((val) => val.operator_address === value.dstAddress);
 
         const srcDescription = organizeValidatorDescription(src, validatorsAvatarList);
         const dstDescription = organizeValidatorDescription(dst, validatorsAvatarList);
@@ -479,7 +445,7 @@ export const useValidatorDescriptionForRedelegation = (
             srcAvatarURL: srcDescription.validatorAvatar,
             srcMoniker: srcDescription.validatorMoniker,
             dstAvatarURL: dstDescription.validatorAvatar,
-            dstMoniker: dstDescription.validatorMoniker,
+            dstMoniker: dstDescription.validatorMoniker
         };
     });
 
@@ -487,14 +453,14 @@ export const useValidatorDescriptionForRedelegation = (
 };
 
 export const useValidatorData = () => {
-    const { staking, storage } = useAppSelector(state => state);
-    const [validators, setValidators] = useState<Array<IValidatorState> | []>([]);
-    const [validatorsAvatarList, setValidatorsAvatarList] = useState<Array<IValidatorProfileInfo> | []>([]);
+    const { network, validatorsProfile } = useAppSelector((state) => state.storage);
+    const { validator } = useAppSelector((state) => state.staking);
 
-    useEffect(() => {
-        if (storage.validatorsProfile === undefined) return;
-        setValidatorsAvatarList(storage.validatorsProfile.profileInfos);
-    }, [storage.validatorsProfile]);
+    const [validators, setValidators] = useState<Array<IValidatorState> | []>([]);
+
+    const validatorsAvatarList: IValidatorProfileInfo[] = Array.isArray(validatorsProfile?.profileInfos)
+        ? validatorsProfile.profileInfos
+        : [];
 
     const handleValidatorsState = useCallback(async () => {
         try {
@@ -512,7 +478,7 @@ export const useValidatorData = () => {
                     const consensusPubkey = validator.consensus_pubkey;
                     const pubkey = consensusPubkey.key;
                     const valconsAddr = FirmaUtil.getValConsAddressFromAccAddress(pubkey);
-                    const signingInfo = signingInfos.find(info => info.address === valconsAddr);
+                    const signingInfo = signingInfos.find((info) => info.address === valconsAddr);
 
                     const jailed = validator.jailed;
                     const status = getValidatorStatus(validator.status);
@@ -533,7 +499,7 @@ export const useValidatorData = () => {
                     const votingPowerPercent = convertNumber((votingPower / totalVotingPower) * 100).toFixed(2);
 
                     const commission = convertNumber(validator.commission.commission_rates.rate);
-                    const stakingState: IStakingsState = getStakingState(commonState, votingPower, storage.network);
+                    const stakingState: IStakingsState = getStakingState(commonState, votingPower, network);
                     const annualPercentageState = getAPRAPY(stakingState, commission);
                     const APR = annualPercentageState.APR;
                     const APY = annualPercentageState.APY;
@@ -556,7 +522,7 @@ export const useValidatorData = () => {
                         jailed,
                         tombstoned,
                         APR,
-                        APY,
+                        APY
                     };
                 });
 
@@ -573,19 +539,19 @@ export const useValidatorData = () => {
     useEffect(() => {
         setValidators(
             validators.map((vd: any) =>
-                staking.validator !== null && vd.validatorAddress === staking.validator.address.operatorAddress
+                validator !== null && vd.validatorAddress === validator.address.operatorAddress
                     ? {
                           ...vd,
-                          status: staking.validator.status,
-                          jailed: staking.validator.jailed,
-                          tombstoned: staking.validator.tombstoned,
-                          APR: staking.validator.percentageData.APR,
-                          APY: staking.validator.percentageData.APY,
+                          status: validator.status,
+                          jailed: validator.jailed,
+                          tombstoned: validator.tombstoned,
+                          APR: validator.percentageData.APR,
+                          APY: validator.percentageData.APY
                       }
                     : vd
             )
         );
-    }, [staking.validator]);
+    }, [validator]);
 
     const handleValidatorsPolling = async () => {
         await handleValidatorsState();
@@ -593,16 +559,16 @@ export const useValidatorData = () => {
 
     useEffect(() => {
         setValidators([]);
-    }, [storage.network]);
+    }, [network]);
 
     return {
         validators,
-        handleValidatorsPolling,
+        handleValidatorsPolling
     };
 };
 
 export const useValidatorDataFromAddress = (validatorAddress: string) => {
-    const { storage } = useAppSelector(state => state);
+    const { network, validatorsProfile } = useAppSelector((state) => state.storage);
 
     const [validatorState, setValidatorState] = useState<IValidatorDetailState>();
 
@@ -612,7 +578,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 getCommonState(),
                 getValidatorFromAddress(validatorAddress),
                 getDelegationListFromValidator(validatorAddress),
-                getSelfDelegateAddressFromValOperAddress(validatorAddress),
+                getSelfDelegateAddressFromValOperAddress(validatorAddress)
             ]);
 
             const consensusPubkey = validator.consensus_pubkey;
@@ -625,7 +591,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
 
             const operatorAddress = validator.operator_address;
             const delegations = getSelfDelegationState(delegation, selfDelegateAddress);
-            const validatorsAvatarList = storage.validatorsProfile.profileInfos;
+            const validatorsAvatarList = validatorsProfile.profileInfos;
             const avatarURL = getValidatorAvatarURL(validatorsAvatarList, operatorAddress);
 
             const votingPower = convertToFctNumber(validator.tokens);
@@ -638,7 +604,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
             const jailed = validator.jailed;
             const tombstoned = signingInfo === undefined ? false : signingInfo.tombstoned;
 
-            const stakingState: IStakingsState = getStakingState(commonState, votingPower, storage.network);
+            const stakingState: IStakingsState = getStakingState(commonState, votingPower, network);
             const annualPercentageState = getAPRAPY(stakingState, commission);
 
             let condition = '-';
@@ -651,12 +617,12 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 identity: validator.description.identity,
                 moniker: validator.description.moniker,
                 description: validator.description.details,
-                website: validator.description.website,
+                website: validator.description.website
             };
 
             const address: IValidatorAddress = {
                 operatorAddress: operatorAddress,
-                accountAddress: selfDelegateAddress,
+                accountAddress: selfDelegateAddress
             };
 
             const percentageData: IValidatorData = {
@@ -666,13 +632,13 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
 
                 votingPower: {
                     data: votingPowerPercent,
-                    amount: votingPower,
+                    amount: votingPower
                 },
                 commission: {
-                    data: commission,
+                    data: commission
                 },
                 uptime: {
-                    data: condition,
+                    data: condition
                 },
                 state: [
                     {
@@ -680,28 +646,28 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                             {
                                 title: 'Voting Power',
                                 data: votingPowerPercent,
-                                amount: votingPower,
+                                amount: votingPower
                             },
                             {
                                 title: 'Self-Delegation',
                                 data: delegations.selfPercent,
-                                amount: delegations.self,
-                            },
-                        ],
+                                amount: delegations.self
+                            }
+                        ]
                     },
                     {
                         row: [
                             {
                                 title: 'Commission',
-                                data: makeDecimalPoint(commission * 100),
+                                data: makeDecimalPoint(commission * 100)
                             },
                             {
                                 title: 'Uptime',
-                                data: condition,
-                            },
-                        ],
-                    },
-                ],
+                                data: condition
+                            }
+                        ]
+                    }
+                ]
             };
 
             setValidatorState({
@@ -710,12 +676,12 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 tombstoned,
                 description,
                 address,
-                percentageData,
+                percentageData
             });
         } catch (error) {
             console.log(error);
         }
-    }, [validatorAddress, storage.validatorsProfile]);
+    }, [validatorAddress, validatorsProfile]);
 
     const handleValidatorPolling = async () => {
         try {
@@ -727,38 +693,35 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
 
     return {
         validatorState,
-        handleValidatorPolling,
+        handleValidatorPolling
     };
 };
 
 const getCommonState = async () => {
-    try {
-        const [stakingPool, slashing, mintInflation, totalSupply] = await Promise.all([
-            getStakingPoolState(),
-            getSlashingState(),
-            getMintInflation(),
-            getBankSupply(),
-        ]);
+    const [stakingPool, slashing, mintInflation, totalSupply] = await Promise.all([
+        getStakingPoolState(),
+        getSlashingState(),
+        getMintInflation(),
+        getBankSupply()
+    ]);
 
-        return {
-            stakingPool,
-            slashing,
-            mintInflation,
-            totalSupply,
-        };
-    } catch (error) {
-        throw error;
-    }
+    return {
+        stakingPool,
+        slashing,
+        mintInflation,
+        totalSupply
+    };
 };
 
 export const useRestakeInfoData = () => {
-    const { storage } = useAppSelector(state => state);
+    const { network } = useAppSelector((state) => state.storage);
+
     const [restakeInfo, setRestakeInfo]: any = useState(null);
     const [info, setInfo]: any = useState(null);
 
     const handleRestakeInfo = async () => {
         try {
-            const result = await fetch(CHAIN_NETWORK[storage.network].RESTAKE_API);
+            const result = await fetch(CHAIN_NETWORK[network].RESTAKE_API);
             const json = await result.json();
             setInfo(json);
         } catch (error) {
@@ -784,7 +747,7 @@ export const useRestakeInfoData = () => {
                 round: info.round,
                 minimum_Rewards: convertToFctNumber(info.minimumRewards),
                 nextRoundDateTime: info.nextRoundDateTime,
-                expiry_Date: nextYear,
+                expiry_Date: nextYear
             });
         }
         setRestakeInfo({
@@ -792,7 +755,7 @@ export const useRestakeInfoData = () => {
             round: 0,
             minimum_Rewards: 10,
             nextRoundDateTime: '',
-            expiry_Date: nextYear,
+            expiry_Date: nextYear
         });
     }, [info]);
 
@@ -822,7 +785,7 @@ const getStakingState = (commonState: IStakingStateProps, tokens: number, networ
         totalVotingPower: totalVotingPower,
         votingPower: votingPower,
         signedBlocksWindow: signedBlockWindow,
-        mintCoinPerYear: mintCoinPerYear,
+        mintCoinPerYear: mintCoinPerYear
     };
 };
 
@@ -847,7 +810,7 @@ const getAPRAPY = (stakingState: IStakingsState, commission: number) => {
 
     return {
         APR: convertPercentage(APR),
-        APY: convertPercentage(APY),
+        APY: convertPercentage(APY)
     };
 };
 
@@ -867,13 +830,16 @@ const getSelfDelegationState = (delegation: DelegationInfo[], selfDelegateAddres
 
     selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
     delegationList = delegation.map((value: any) => {
-        return { address: value.delegation.delegator_address, amount: convertNumber(value.balance.amount) };
+        return {
+            address: value.delegation.delegator_address,
+            amount: convertNumber(value.balance.amount)
+        };
     });
 
     return {
         self: convertToFctNumber(self),
         selfPercent,
-        delegationList,
+        delegationList
     };
 };
 
@@ -897,7 +863,7 @@ const organizeValidatorDescription = (
         validatorMoniker,
         validatorAvatar,
         validatorDetail,
-        validatorWebsite,
+        validatorWebsite
     };
 };
 

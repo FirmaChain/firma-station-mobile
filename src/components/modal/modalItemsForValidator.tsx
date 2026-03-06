@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, ScrollView, Text, Image, View } from 'react-native';
-import { IStakeInfo } from '@/hooks/staking/hooks';
-import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from '@/constants/theme';
-import { ExclamationCircle, Radio } from '../icon/icon';
 import { VALIDATOR_PROFILE } from '@/constants/images';
-import FastImage from 'react-native-fast-image';
+import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from '@/constants/theme';
+import FastImage from '@d11/react-native-fast-image';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { IStakeInfo } from '@/hooks/staking/hooks';
+
+import { ExclamationCircle, Radio } from '../icon/icon';
 
 interface IProps {
     title: string;
@@ -53,7 +55,7 @@ const ModalItemsForValidator = ({ title, initVal, data, myAddress, onPressEvent 
                                     </View>
                                     <View style={[styles.noticeBox, { display: mine ? 'flex' : 'none' }]}>
                                         <ExclamationCircle size={15} color={TextWarnColor} />
-                                        <Text style={[styles.notice]}>Not allowed to same validator</Text>
+                                        <Text style={styles.notice}>Not allowed to same validator</Text>
                                     </View>
                                 </Pressable>
                             </View>

@@ -1,11 +1,12 @@
 import { bindActionCreators } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
-import { store } from './store';
+
 import { ACTIONS as commonActions } from './reducers/commonReducer';
 import { ACTIONS as modalActions } from './reducers/modalReducer';
 import { ACTIONS as stakingActions } from './reducers/stakingReducer';
 import { ACTIONS as storageActions } from './reducers/storageReducer';
 import { ACTIONS as walletActions } from './reducers/walletReducer';
+import { store } from './store';
 
 const { dispatch } = store;
 

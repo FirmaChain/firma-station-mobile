@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { IStakingGrantState } from '@/hooks/staking/hooks';
-import ValidatorSection from './validatorSection';
-import Button from '@/components/button/button';
 import { BgColor, BoxColor } from '@/constants/theme';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import { IStakingGrantState } from '@/hooks/staking/hooks';
+import Button from '@/components/button/button';
+
+import ValidatorSection from './validatorSection';
 
 interface IProps {
     grantState: IStakingGrantState;

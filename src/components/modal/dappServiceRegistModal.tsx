@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import { CommonActions, ModalActions } from '@/redux/actions';
-import { BgColor, Lato, TextCatTitleColor, TextDarkGrayColor, TextWarnColor, WhiteColor } from '@/constants/theme';
 import { DAPP_SERVICE_EXIST_NOTICE, DAPP_SERVICE_REGIST, DAPP_SERVICE_REGIST_SUCCESS, IKeyValue } from '@/constants/common';
+import { BgColor, Lato, TextCatTitleColor, TextDarkGrayColor, TextWarnColor, WhiteColor } from '@/constants/theme';
+import { CommonActions, ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
 import { getDAppServiceId, setDAppServiceId } from '@/util/wallet';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
 import Button from '../button/button';
 import CustomModal from './customModal';
-import Toast from 'react-native-toast-message';
 
 interface IProjectState {
     icon: string;
@@ -21,13 +22,16 @@ interface IServiceState {
     serviceId: string;
 }
 
-interface IDappServiceState {
-    identity: string;
-    serviceId: string;
-}
+// interface IDappServiceState {
+//   identity: string;
+//   serviceId: string;
+// }
 
 const DappServiceRegistModal = () => {
-    const { common, storage, wallet, modal } = useAppSelector((state) => state);
+    const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
+    const { network } = useAppSelector((state) => state.storage);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+    const { dappServiceRegModal, modalData } = useAppSelector((state) => state.modal);
 
     const [project, setProject] = useState<IProjectState>();
     const [service, setService] = useState<IServiceState>();
@@ -35,8 +39,8 @@ const DappServiceRegistModal = () => {
     const [storageServiceData, setStorageServiceData] = useState<IKeyValue>({});
 
     const isVisible = useMemo(() => {
-        return modal.dappServiceRegModal;
-    }, [modal.dappServiceRegModal]);
+        return dappServiceRegModal;
+    }, [dappServiceRegModal]);
 
     useEffect(() => {
         CommonActions.handleLoadingProgress(false);
@@ -44,10 +48,10 @@ const DappServiceRegistModal = () => {
 
     const QRData = useMemo(() => {
         if (isVisible) {
-            return modal.modalData.data;
+            return modalData.data;
         }
         return null;
-    }, [modal.modalData, isVisible]);
+    }, [modalData, isVisible]);
 
     useEffect(() => {
         const checkDappServiceRegistered = async () => {
@@ -56,10 +60,10 @@ const DappServiceRegistModal = () => {
                     setProject(QRData.project);
                     setService(QRData.service);
 
-                    let result = await getDAppServiceId(wallet.name);
-                    let service: IKeyValue = JSON.parse(result);
+                    const result = await getDAppServiceId(walletName);
+                    const service: IKeyValue = JSON.parse(result);
                     setStorageServiceData(service === undefined ? [] : service);
-                    let exist = isStoragedServiceId(service);
+                    const exist = isStoragedServiceId(service);
                     setServiceRegistered(exist);
                 } catch (error) {
                     console.log(error);
@@ -71,7 +75,7 @@ const DappServiceRegistModal = () => {
     }, [QRData]);
 
     const isStoragedServiceId = (service: IKeyValue) => {
-        return service !== null && service[storage.network] !== undefined;
+        return service !== null && service[network] !== undefined;
     };
 
     const handleModal = (open: boolean) => {
@@ -87,9 +91,12 @@ const DappServiceRegistModal = () => {
         try {
             let serviceId: IKeyValue = {};
             if (project !== undefined && service !== undefined) {
-                serviceId = { ...storageServiceData, [storage.network]: { identity: project.projectId, serviceId: service.serviceId } };
+                serviceId = {
+                    ...storageServiceData,
+                    [network]: { identity: project.projectId, serviceId: service.serviceId }
+                };
             }
-            await setDAppServiceId(wallet.name, JSON.stringify(serviceId));
+            await setDAppServiceId(walletName, JSON.stringify(serviceId));
 
             Toast.show({
                 type: 'success',
@@ -102,15 +109,15 @@ const DappServiceRegistModal = () => {
     };
 
     useEffect(() => {
-        if (common.appState !== 'active' && common.isBioAuthInProgress === false) handleCloseModal();
-    }, [common.appState]);
+        if (appState !== 'active' && isBioAuthInProgress === false) handleCloseModal();
+    }, [appState]);
 
     return (
         <CustomModal visible={isVisible} handleOpen={handleModal} toastInModal={false}>
             <View style={styles.modalTextContents}>
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
                     {project !== undefined && (
-                        <View style={[styles.projectBox]}>
+                        <View style={styles.projectBox}>
                             <Image
                                 style={{ width: 14, height: 14, resizeMode: 'contain', borderRadius: 10 }}
                                 source={{ uri: project.icon }}

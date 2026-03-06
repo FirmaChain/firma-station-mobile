@@ -1,32 +1,36 @@
 import React, { useEffect } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { GUIDE_URI } from '@/../config';
+import { CHECK_RECOVER_VALUE, RECOVER_INFO_MESSAGE } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { mnemonicCheck, privateKeyCheck } from '@/util/firma';
-import { CHECK_RECOVER_VALUE, RECOVER_INFO_MESSAGE } from '@/constants/common';
-import { BgColor } from '@/constants/theme';
-import { GUIDE_URI } from '@/../config';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import WarnContainer from '@/components/parts/containers/warnContainer';
+
 import RecoverMenus from './recoverMenus';
-import Toast from 'react-native-toast-message';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
 
 const RecoverWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const { common, modal } = useAppSelector(state => state);
+
+    const { appState } = useAppSelector((state) => state.common);
+    const { modalData } = useAppSelector((state) => state.modal);
 
     const recoverWalletViaQR = async (value: string) => {
         try {
             CommonActions.handleLoadingProgress(true);
-            let isMnemonic = await mnemonicCheck(value);
-            let isPrivateKey = await privateKeyCheck(value);
+            const isMnemonic = await mnemonicCheck(value);
+            const isPrivateKey = await privateKeyCheck(value);
 
             if (isMnemonic === false && isPrivateKey === false) throw CHECK_RECOVER_VALUE;
             CommonActions.handleLoadingProgress(false);
@@ -35,7 +39,7 @@ const RecoverWallet = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
         }
     };
@@ -57,17 +61,17 @@ const RecoverWallet = () => {
     };
 
     useEffect(() => {
-        if (isFocused && modal.modalData) {
-            recoverWalletViaQR(modal.modalData.result);
+        if (isFocused && modalData) {
+            recoverWalletViaQR(modalData.result);
             ModalActions.handleResetModal({});
         }
-    }, [isFocused, modal.modalData]);
+    }, [isFocused, modalData]);
 
     useEffect(() => {
-        if (common.appState !== 'active') {
+        if (appState !== 'active') {
             handleRecoverViaQR(false);
         }
-    }, [common.appState]);
+    }, [appState]);
 
     return (
         <Container title="Recover Wallet" handleGuide={handleMoveToWeb} backEvent={handleBack}>
@@ -83,8 +87,8 @@ const RecoverWallet = () => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
-    },
+        padding: 20
+    }
 });
 
 export default RecoverWallet;

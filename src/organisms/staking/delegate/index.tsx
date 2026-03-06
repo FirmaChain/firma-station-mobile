@@ -1,22 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { GUIDE_URI } from '@/../config';
+import { DATA_RELOAD_INTERVAL, MAXIMUM_UNDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE } from '@/constants/common';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { useDelegationData } from '@/hooks/staking/hooks';
-import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { convertNumber } from '@/util/common';
-import { DATA_RELOAD_INTERVAL, MAXIMUM_UNDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE } from '@/constants/common';
-import { GUIDE_URI } from '@/../config';
-import Container from '@/components/parts/containers/conatainer';
-import ViewContainer from '@/components/parts/containers/viewContainer';
+import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+
+import { useInterval } from '@/hooks/common/hooks';
+import { useDelegationData } from '@/hooks/staking/hooks';
 import Button from '@/components/button/button';
 import AlertModal from '@/components/modal/alertModal';
 import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
+import Container from '@/components/parts/containers/conatainer';
+import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import InputBox from './inputBox';
-import { useInterval } from '@/hooks/common/hooks';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Delegate>;
 
@@ -44,7 +46,9 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
-    const { wallet, common } = useAppSelector((state) => state);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+    const { dataLoadStatus } = useAppSelector((state) => state.common);
+
     const { delegationState, undelegationState, handleDelegationState, handleUndelegationState } = useDelegationData();
 
     const [resetInputValues, setInputResetValues] = useState(false);
@@ -120,15 +124,15 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         try {
             switch (type) {
                 case 'Delegate':
-                    let amount = standardAvailable > delegateState.amount ? delegateState.amount : standardAvailable;
-                    gas = await getEstimateGasDelegate(wallet.name, delegateState.operatorAddressDst, amount);
+                    const amount = standardAvailable > delegateState.amount ? delegateState.amount : standardAvailable;
+                    gas = await getEstimateGasDelegate(walletName, delegateState.operatorAddressDst, amount);
                     break;
                 case 'Undelegate':
-                    gas = await getEstimateGasUndelegate(wallet.name, delegateState.operatorAddressDst, delegateState.amount);
+                    gas = await getEstimateGasUndelegate(walletName, delegateState.operatorAddressDst, delegateState.amount);
                     break;
                 case 'Redelegate':
                     gas = await getEstimateGasRedelegate(
-                        wallet.name,
+                        walletName,
                         delegateState.operatorAddressSrc,
                         delegateState.operatorAddressDst,
                         delegateState.amount
@@ -174,13 +178,13 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
             setInputResetValues(false);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             console.log(error);
         }
     };
 
     const handleMoveToWeb = () => {
-        let key = type.toLowerCase();
+        const key = type.toLowerCase();
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
     };
@@ -197,7 +201,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         () => {
             refreshStates();
         },
-        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 

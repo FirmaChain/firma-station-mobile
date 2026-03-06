@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, ScrollView, Text, Platform, View, Pressable } from "react-native";
-import { BgColor, BoxDarkColor, Lato, TextColor, WhiteColor } from "@/constants/theme";
-import { Radio } from "../icon/icon";
-import { IBCChainState } from "../../../config";
+import React, { useEffect, useState } from 'react';
+import { BgColor, BoxDarkColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { IBCChainState } from '../../../config';
+import { Radio } from '../icon/icon';
 
 interface IProps {
     data: IBCChainState[];
@@ -15,9 +16,9 @@ const ModalIBCChain = ({ data, selectChain, onPressEvent }: IProps) => {
 
     useEffect(() => {
         if (selectChain === null) return;
-        const index = data.findIndex(chain => chain.channel === selectChain.channel);
+        const index = data.findIndex((chain) => chain.channel === selectChain.channel);
         setSelected(index < 0 ? null : index);
-    }, [selectChain, data])
+    }, [selectChain, data]);
 
     return (
         <ScrollView style={styles.modalContainer}>
@@ -29,49 +30,49 @@ const ModalIBCChain = ({ data, selectChain, onPressEvent }: IProps) => {
                         </View>
                         <Radio size={20} color={WhiteColor} active={index === selected} />
                     </Pressable>
-                )
+                );
             })}
         </ScrollView>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     modalContainer: {
         width: '100%',
         marginBottom: Platform.select({ android: 0, ios: 25 }),
         maxHeight: 500,
-        backgroundColor: BoxDarkColor,
+        backgroundColor: BoxDarkColor
     },
     modalContentBox: {
         width: '100%',
         paddingVertical: 20,
         paddingHorizontal: 20,
         flexDirection: 'row',
-        alignItems: "center",
+        alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 1,
-        backgroundColor: BgColor,
+        backgroundColor: BgColor
     },
     itemWrapper: {
-        flexDirection: "row",
-        alignItems: "flex-end",
-        justifyContent: "flex-start",
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-start'
     },
     itemTitle: {
         fontFamily: Lato,
         fontSize: 16,
-        fontWeight: "normal",
-        color: TextColor,
+        fontWeight: 'normal',
+        color: TextColor
     },
     itemSubTitle: {
         fontFamily: Lato,
         fontSize: 11,
-        fontWeight: "normal",
+        fontWeight: 'normal',
         color: TextColor,
-        opacity: .5,
+        opacity: 0.5,
         paddingLeft: 5,
-        paddingBottom: 1,
+        paddingBottom: 1
     }
-})
+});
 
 export default ModalIBCChain;

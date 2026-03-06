@@ -1,27 +1,31 @@
 import React, { useCallback, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { CommonActions } from '@/redux/actions';
-import { useAppSelector } from '@/redux/hooks';
-import { removePasswordViaBioAuth, removeRecoverType, removeWallet, setBioAuth, setNewWallet, setRecoverType } from '@/util/wallet';
+import { GUIDE_URI } from '@/../config';
 import { PASSWORD_CHANGE_FAIL, PASSWORD_CHANGE_SUCCESS } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
-import { GUIDE_URI } from '@/../config';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { getAddressFromRecoverValue } from '@/util/firma';
+import { removePasswordViaBioAuth, removeRecoverType, removeWallet, setBioAuth, setNewWallet, setRecoverType } from '@/util/wallet';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
 import Button from '@/components/button/button';
 import AlertModal from '@/components/modal/alertModal';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import InputBox from './inputBox';
-import { getAddressFromRecoverValue } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePassword>;
 
 const ChangePassword = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet, storage } = useAppSelector(state => state);
+
+    const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { recoverType } = useAppSelector((state) => state.storage);
 
     const [status, setStatus] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +61,7 @@ const ChangePassword = () => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
         }
     };
@@ -65,23 +69,23 @@ const ChangePassword = () => {
     const removeCurrentPassword = useCallback(async () => {
         try {
             await getAddressFromRecoverValue(recoverValue);
-            removeRecoverType(storage.recoverType, wallet.address);
-            await removeWallet(wallet.name);
+            removeRecoverType(recoverType, walletAddress);
+            await removeWallet(walletName);
             await removePasswordViaBioAuth();
         } catch (error) {
             console.log(error);
             throw error;
         }
-    }, [storage.recoverType, wallet.name, recoverValue]);
+    }, [recoverType, walletName, recoverValue]);
 
     const createNewPassword = async () => {
         try {
-            const result = await setNewWallet(wallet.name, newPassword, recoverValue, false);
-            await setRecoverType(storage.recoverType, recoverValue, wallet.address);
+            const result = await setNewWallet(walletName, newPassword, recoverValue, false);
+            await setRecoverType(recoverType, recoverValue, walletAddress);
             if (result) {
                 setStatus(1);
                 setIsModalOpen(true);
-                setBioAuth(wallet.name, newPassword);
+                setBioAuth(walletName, newPassword);
             }
         } catch (error) {
             console.log(error);
@@ -102,7 +106,7 @@ const ChangePassword = () => {
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
                     <InputBox
-                        wallet={wallet}
+                        walletName={walletName}
                         validate={handleActiveButton}
                         newPassword={handleNewPassword}
                         recoverValue={handleRecoverValue}
@@ -129,18 +133,18 @@ const ChangePassword = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 3,
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
-    wallet: {
-        paddingVertical: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#aaa',
-    },
+    // wallet: {
+    //     paddingVertical: 10,
+    //     fontSize: 20,
+    //     fontWeight: 'bold',
+    //     color: '#aaa',
+    // },
     buttonBox: {
         flex: 1,
-        justifyContent: 'flex-end',
-    },
+        justifyContent: 'flex-end'
+    }
 });
 
 export default ChangePassword;

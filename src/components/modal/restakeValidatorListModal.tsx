@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
+
 import CustomModal from './customModal';
 
 interface IRestakeValidatorListModalProps {

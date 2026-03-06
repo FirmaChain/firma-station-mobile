@@ -1,5 +1,5 @@
-import { BgColor, BoxColor, DividerColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextGrayColor } from '@/constants/theme';
 import React, { useMemo, useState } from 'react';
+import { BgColor, BoxColor, DividerColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor, TextGrayColor } from '@/constants/theme';
 import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
@@ -21,7 +21,7 @@ const PropertiesBox = ({ data }: IProps) => {
     const dataKeys = useMemo(() => {
         if (attributesData.length > 0) {
             let keyArray: any = [];
-            for (let key in attributesData) {
+            for (const key in attributesData) {
                 keyArray = keyArray.concat(key);
             }
             return keyArray;
@@ -30,9 +30,9 @@ const PropertiesBox = ({ data }: IProps) => {
     }, [attributesData]);
 
     const handleCapitalize = (value: string | number) => {
-        let values = value.toString().split('_');
+        const values = value.toString().split('_');
         let result = '';
-        for (var i = 0; i < values.length; i++) {
+        for (let i = 0; i < values.length; i++) {
             result = result + values[i].charAt(0).toUpperCase() + values[i].slice(1);
             if (i !== values.length - 1) result = result + ' ';
         }
@@ -42,12 +42,12 @@ const PropertiesBox = ({ data }: IProps) => {
     const PropertiesItem = ({ item, size }: any) => {
         return (
             <View style={[styles.itemBox, { width: size }]}>
-                <View style={[styles.itemWrapper]}>
-                    <Text style={[styles.key]}>{handleCapitalize(item.key)}</Text>
+                <View style={styles.itemWrapper}>
+                    <Text style={styles.key}>{handleCapitalize(item.key)}</Text>
                     <View style={styles.divider} />
                     <View style={styles.valueWapper}>
-                        <Text style={[styles.value]}>{handleCapitalize(item.value)}</Text>
-                        {item.description !== "" && <Text style={[styles.description]}>{handleCapitalize(item.description)}</Text>}
+                        <Text style={styles.value}>{handleCapitalize(item.value)}</Text>
+                        {item.description !== '' && <Text style={styles.description}>{handleCapitalize(item.description)}</Text>}
                     </View>
                 </View>
             </View>

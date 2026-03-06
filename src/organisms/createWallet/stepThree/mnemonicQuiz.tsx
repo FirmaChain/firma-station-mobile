@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import MnemonicItems from './mnemonicItems';
 import QuestionItem from './questionItem';
 
@@ -9,7 +10,7 @@ interface IProps {
 }
 
 const MnemonicQuiz = ({ mnemonic, handleConfirm }: IProps) => {
-    const [answer, setAnswer] = useState<String[]>([]);
+    const [answer, setAnswer] = useState<string[]>([]);
     const [selectQuiz, setSelectQuiz] = useState(0);
     const [selectAnswer, setSelectAnswer] = useState({
         first: 'select',
@@ -18,7 +19,7 @@ const MnemonicQuiz = ({ mnemonic, handleConfirm }: IProps) => {
 
     const mnemonicArr = mnemonic.split(' ');
     const randomIndex = useMemo(() => {
-        let result = [];
+        const result = [];
         let random = Math.round(Math.random() * (mnemonicArr.length - 1 - 0));
 
         result.push(random);
@@ -34,11 +35,11 @@ const MnemonicQuiz = ({ mnemonic, handleConfirm }: IProps) => {
     }, []);
 
     const mnemonicItems = useMemo(() => {
-        let result: string[] = [];
+        const result: string[] = [];
         randomIndex.map((item) => result.push(mnemonicArr[item]));
 
         do {
-            let random = Math.round(Math.random() * (mnemonicArr.length - 1 - 0));
+            const random = Math.round(Math.random() * (mnemonicArr.length - 1 - 0));
             if (!result.includes(mnemonicArr[random])) result.push(mnemonicArr[random]);
         } while (result.length < 6);
         result.sort(() => Math.random() - 0.5);
@@ -46,7 +47,7 @@ const MnemonicQuiz = ({ mnemonic, handleConfirm }: IProps) => {
         return result;
     }, [randomIndex]);
 
-    const getOrdinal = (number: Number) => {
+    const getOrdinal = (number: number) => {
         const numString = number.toString().split('');
         const lastNum = numString[numString.length - 1];
 

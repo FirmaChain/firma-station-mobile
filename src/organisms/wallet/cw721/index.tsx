@@ -1,21 +1,23 @@
-import Container from "@/components/parts/containers/conatainer";
-import ViewContainer from "@/components/parts/containers/viewContainer";
-import { BoxColor, BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, TextColor, TextGrayColor } from "@/constants/theme";
-import { useCWContext } from "@/context/cwContext";
-import { Screens, StackParamList } from "@/navigators/appRoutes";
-import AddressBox from "@/organisms/staking/validator/addressBox";
-import { ValidCWType } from "@/util/firma";
-import { ScreenWidth } from "@/util/getScreenSize";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from "react-native";
-import DataSection from "../assets/common/dataSection";
-import { INFTProps, useCW721NFT, useNFT } from "@/hooks/dapps/hooks";
-import RefreshScrollView from "@/components/parts/refreshScrollView";
-import NftItem from "@/organisms/dapps/dappDetail/nftItem";
-import SmallProgress from "@/components/parts/smallProgress";
-import { DAPP_LOADING_NFT, DAPP_NO_NFT } from "@/constants/common";
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { DAPP_LOADING_NFT, DAPP_NO_NFT } from '@/constants/common';
+import { BoxColor, BoxDarkColor, CW721BackgroundColor, CW721Color, Lato, TextColor, TextGrayColor } from '@/constants/theme';
+import { useCWContext } from '@/context/cwContext';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import NftItem from '@/organisms/dapps/dappDetail/nftItem';
+import AddressBox from '@/organisms/staking/validator/addressBox';
+import { ValidCWType } from '@/util/firma';
+import { ScreenWidth } from '@/util/getScreenSize';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { INFTProps, useCW721NFT, useNFT } from '@/hooks/dapps/hooks';
+import Container from '@/components/parts/containers/conatainer';
+import ViewContainer from '@/components/parts/containers/viewContainer';
+import RefreshScrollView from '@/components/parts/refreshScrollView';
+import SmallProgress from '@/components/parts/smallProgress';
+
+import DataSection from '../assets/common/dataSection';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CW721>;
 
@@ -45,25 +47,28 @@ const CW721 = ({ contract }: IProps) => {
         const result = cw721Data.find((item) => item.address === contract);
         if (result === undefined) return null;
         return result;
-    }, [cw721Data, contract])
+    }, [cw721Data, contract]);
 
     const fetchNFTs = useCallback(() => {
         if (!isCW721Fetching && MyCW721NFTS) {
-            setNFTList(prevList => {
+            setNFTList((prevList) => {
                 if (prevList) {
-                    const newList = MyCW721NFTS.filter(nft => !prevList.some(existingNFT => existingNFT.id === nft.id));
+                    const newList = MyCW721NFTS.filter((nft) => !prevList.some((existingNFT) => existingNFT.id === nft.id));
                     return [...prevList, ...newList];
                 } else {
-                    return MyCW721NFTS
+                    return MyCW721NFTS;
                 }
             });
         }
     }, [MyCW721NFTS, isCW721Fetching, NFTList]);
 
     const RefreshNFTs = () => {
-        if (NFTList === null || NFTList.length === 0) { handleCW721NFTIdList('0'); }
-        else { handleCW721NFTIdList(NFTList[NFTList.length - 1].id); }
-    }
+        if (NFTList === null || NFTList.length === 0) {
+            handleCW721NFTIdList('0');
+        } else {
+            handleCW721NFTIdList(NFTList[NFTList.length - 1].id);
+        }
+    };
 
     useEffect(() => {
         fetchNFTs();
@@ -73,15 +78,13 @@ const CW721 = ({ contract }: IProps) => {
         if (isBottom) {
             RefreshNFTs();
         }
-    }, [isBottom])
-
+    }, [isBottom]);
 
     useFocusEffect(
         useCallback(() => {
             RefreshNFTs();
         }, [])
-    )
-
+    );
 
     const handleBack = () => {
         navigation.goBack();
@@ -96,12 +99,15 @@ const CW721 = ({ contract }: IProps) => {
             <ViewContainer>
                 <RefreshScrollView refreshFunc={RefreshNFTs} scrollToTop={true} scrollEndFunc={handleScroll}>
                     <Fragment>
-
-                        {ContractInfo &&
+                        {ContractInfo && (
                             <Fragment>
                                 <View style={styles.titleBox}>
-                                    <Text style={[styles.label, { color: CW721Color, backgroundColor: CW721BackgroundColor }]}>{'CW721'}</Text>
-                                    <Text numberOfLines={1} style={styles.title} ellipsizeMode={"tail"}>{ContractInfo.name}</Text>
+                                    <Text style={[styles.label, { color: CW721Color, backgroundColor: CW721BackgroundColor }]}>
+                                        {'CW721'}
+                                    </Text>
+                                    <Text numberOfLines={1} style={styles.title} ellipsizeMode={'tail'}>
+                                        {ContractInfo.name}
+                                    </Text>
                                 </View>
                                 <AddressBox
                                     title={'Contract address'}
@@ -123,17 +129,25 @@ const CW721 = ({ contract }: IProps) => {
                                             <Text style={[styles.contentTitle, { paddingVertical: 12 }]}>{'My NFTs'}</Text>
                                             <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
                                                 {NFTList !== null ? (
-                                                    NFTList.length > 0 ?
+                                                    NFTList.length > 0 ? (
                                                         <Fragment>
                                                             {NFTList.map((value, key) => {
-                                                                return <NftItem key={key} disabled={true} item={value} size={(containerSize - 20) / itemCountPerLine} moveToNFTDetail={() => null} />
+                                                                return (
+                                                                    <NftItem
+                                                                        key={key}
+                                                                        disabled={true}
+                                                                        item={value}
+                                                                        size={(containerSize - 20) / itemCountPerLine}
+                                                                        moveToNFTDetail={() => null}
+                                                                    />
+                                                                );
                                                             })}
                                                             <View style={[styles.moreWrap, { opacity: isCW721Fetching ? 1 : 0 }]}>
                                                                 <SmallProgress />
                                                                 <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
                                                             </View>
                                                         </Fragment>
-                                                        :
+                                                    ) : (
                                                         <View
                                                             style={{
                                                                 flex: 1,
@@ -144,6 +158,7 @@ const CW721 = ({ contract }: IProps) => {
                                                         >
                                                             <Text style={styles.notice}>{DAPP_NO_NFT}</Text>
                                                         </View>
+                                                    )
                                                 ) : (
                                                     <View
                                                         style={{
@@ -163,14 +178,13 @@ const CW721 = ({ contract }: IProps) => {
                                     </View>
                                 </View>
                             </Fragment>
-                        }
+                        )}
                     </Fragment>
                 </RefreshScrollView>
             </ViewContainer>
         </Container>
-    )
-}
-
+    );
+};
 
 const styles = StyleSheet.create({
     titleBox: {
@@ -180,14 +194,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         paddingBottom: 18,
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
     title: {
         flexShrink: 1,
         fontFamily: Lato,
         fontSize: 24,
         fontWeight: 'bold',
-        color: TextColor,
+        color: TextColor
     },
     contentTitle: {
         flexShrink: 1,
@@ -211,19 +225,19 @@ const styles = StyleSheet.create({
     },
     box: {
         paddingHorizontal: 20,
-        marginBottom: 16,
+        marginBottom: 16
     },
     infoBox: {
         justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 8,
-        backgroundColor: BoxColor,
+        backgroundColor: BoxColor
     },
     nftBox: {
         paddingBottom: 18,
         paddingTop: 20,
-        backgroundColor: BoxColor,
+        backgroundColor: BoxColor
     },
     wrapBox: {
         flex: 1,
@@ -244,7 +258,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-})
+    }
+});
 
 export default CW721;

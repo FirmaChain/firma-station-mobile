@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { CommonActions } from '@/redux/actions';
 import StepTwo from '@/organisms/createWallet/stepTwo';
+import { CommonActions } from '@/redux/actions';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface IProps {
     route: { params: CreateStepTwoParams };

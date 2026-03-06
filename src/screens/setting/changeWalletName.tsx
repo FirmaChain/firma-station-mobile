@@ -1,10 +1,8 @@
-import React from "react";
-import ChangeWalletName from "@/organisms/setting/changeWalletName";
+import React from 'react';
+import ChangeWalletName from '@/organisms/setting/changeWalletName';
 
 const ChangeWalletNameScreen = () => {
-    return (
-        <ChangeWalletName />
-    )
-}
+    return <ChangeWalletName />;
+};
 
 export default ChangeWalletNameScreen;

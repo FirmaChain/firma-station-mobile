@@ -1,42 +1,42 @@
 import React, { useMemo } from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
-import { useAppSelector } from '@/redux/hooks';
-import { AddressBoxColor, BgColor, TextCatTitleColor } from '@/constants/theme';
-import { removeWalletWithAutoLogin } from '@/util/wallet';
 import { GUIDE_URI } from '@/../config';
+import { AddressBoxColor, BgColor, TextCatTitleColor } from '@/constants/theme';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { removeWalletWithAutoLogin } from '@/util/wallet';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import BioAuthRadio from './bioAuthRadio';
-import MenuItem from './menuItem';
-import Disconnect from './disconnect';
 import Delete from './delete';
+import Disconnect from './disconnect';
+import MenuItem from './menuItem';
 import TextMenuItem from './textMenuItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
 
 const Setting = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet, storage } = useAppSelector((state) => state);
+
+    const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { recoverType } = useAppSelector((state) => state.storage);
 
     const settingList = useMemo(() => {
-        let settingList = [
+        const settingList = [
             { title: 'Change Password', path: 'ChangePW' },
             { title: 'Export Private Key', path: 'ExportPK' }
         ];
-        if (
-            storage.recoverType === undefined ||
-            storage.recoverType[wallet.address] === undefined ||
-            storage.recoverType[wallet.address] === 'mnemonic'
-        ) {
+        if (recoverType === undefined || recoverType[walletAddress] === undefined || recoverType[walletAddress] === 'mnemonic') {
             settingList.splice(1, 0, { title: 'Export Mnemonic', path: 'ExportMN' });
         }
 
         return settingList;
-    }, [storage.recoverType]);
+    }, [recoverType]);
 
     const handleMenus = (path: string) => {
         switch (path) {
@@ -82,7 +82,7 @@ const Setting = () => {
                         <View style={styles.topButtonsBox}>
                             <TextMenuItem
                                 title="Wallet"
-                                content={wallet.name}
+                                content={walletName}
                                 bgColor={AddressBoxColor}
                                 icon={true}
                                 iconColor={TextCatTitleColor}
@@ -92,7 +92,7 @@ const Setting = () => {
                                 onPressEvent={() => handleMenus('ChangeWN')}
                             />
                         </View>
-                        <BioAuthRadio wallet={wallet} />
+                        <BioAuthRadio walletName={walletName} />
                         {settingList.map((item, index) => {
                             return <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />;
                         })}
@@ -101,7 +101,7 @@ const Setting = () => {
                         </View>
                         <View style={styles.bottomButtonsBox}>
                             <Disconnect handleDisconnect={disconnectWallet} />
-                            <Delete wallet={wallet} handleDisconnect={disconnectWallet} />
+                            <Delete walletName={walletName} walletAddress={walletAddress} handleDisconnect={disconnectWallet} />
                         </View>
                     </ScrollView>
                 </View>

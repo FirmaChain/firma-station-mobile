@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import { IStakingState } from '@/hooks/staking/hooks';
-import { convertCurrent, makeDecimalPoint } from '@/util/common';
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { ForwardArrow } from '@/components/icon/icon';
+import { useAppSelector } from '@/redux/hooks';
+import { convertCurrent, makeDecimalPoint } from '@/util/common';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { IStakingState } from '@/hooks/staking/hooks';
+import { ForwardArrow } from '@/components/icon/icon';
 
 interface IProps {
     stakingValues: IStakingState | null;
@@ -13,7 +13,7 @@ interface IProps {
 }
 
 const StakingBox = ({ stakingValues, handleStaking }: IProps) => {
-    const { staking } = useAppSelector((state) => state);
+    const { stakingReward: stakingRewardState } = useAppSelector((state) => state.staking);
 
     const delegated = useMemo(() => {
         if (stakingValues === null) return 0;
@@ -26,11 +26,10 @@ const StakingBox = ({ stakingValues, handleStaking }: IProps) => {
     }, [stakingValues]);
 
     const reward = useMemo(() => {
-        return convertCurrent(makeDecimalPoint(staking.stakingReward));
-    }, [staking.stakingReward]);
+        return convertCurrent(makeDecimalPoint(stakingRewardState));
+    }, [stakingRewardState]);
 
     return (
-
         <View style={styles.container}>
             <TouchableOpacity style={[styles.box, { paddingHorizontal: 0 }]} onPress={() => handleStaking()}>
                 <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }]}>
@@ -55,9 +54,8 @@ const StakingBox = ({ stakingValues, handleStaking }: IProps) => {
                 </View>
             </TouchableOpacity>
         </View>
-    )
-}
-
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -106,7 +104,7 @@ const styles = StyleSheet.create({
         width: 0.5,
         height: 50,
         backgroundColor: DisableColor
-    },
+    }
 });
 
 export default StakingBox;

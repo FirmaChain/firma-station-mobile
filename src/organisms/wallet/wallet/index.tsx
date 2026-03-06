@@ -1,25 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { DATA_RELOAD_INTERVAL } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
+import { useIBCTokenContext } from '@/context/ibcTokenContext';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { BgColor } from '@/constants/theme';
-import { useHistoryData } from '@/hooks/wallet/hooks';
-import { useStakingData } from '@/hooks/staking/hooks';
-import { useInterval } from '@/hooks/common/hooks';
-import { DATA_RELOAD_INTERVAL } from '@/constants/common';
-import { useIBCTokenContext } from '@/context/ibcTokenContext';
 import { getTokenList } from '@/util/firma';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
+import { useInterval } from '@/hooks/common/hooks';
+import { useStakingData } from '@/hooks/staking/hooks';
+import { useHistoryData } from '@/hooks/wallet/hooks';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
+
+import { IBC_CONFIG } from '../../../../config';
 import AddressBox from './addressBox';
+import AssetsBox from './assetsBox';
 import BalanceBox from './balanceBox';
 import HistoryBox from './historyBox';
-import Toast from 'react-native-toast-message';
-import { IBC_CONFIG } from '../../../../config';
-import AssetsBox from './assetsBox';
 import StakingBox from './stakingBox';
+
 export interface IBCDataState {
     enable: boolean;
     displayName: string;
@@ -36,7 +39,10 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 const Wallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const { storage, wallet, common } = useAppSelector((state) => state);
+
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { dataLoadStatus, isNetworkChanged, connect } = useAppSelector((state) => state.common);
+    const { historyVolume: storageHistoryVolume } = useAppSelector((state) => state.storage);
 
     const { recentHistory, handleHisotyPolling } = useHistoryData();
     const { stakingState, getStakingState } = useStakingData();
@@ -45,17 +51,17 @@ const Wallet = () => {
     const [isInit, setIsInit] = useState(false);
 
     const historyVolume = useMemo(() => {
-        if (storage.historyVolume === undefined) return null;
-        if (storage.historyVolume[wallet.address] === undefined) return null;
-        return storage.historyVolume[wallet.address];
-    }, [storage.historyVolume]);
+        if (storageHistoryVolume === undefined) return null;
+        if (storageHistoryVolume[walletAddress] === undefined) return null;
+        return storageHistoryVolume[walletAddress];
+    }, [storageHistoryVolume]);
 
     const moveToSendScreen = () => {
         navigation.navigate(Screens.Send);
     };
     const moveToSendIBCScrees = (token: IBCDataState) => {
         navigation.navigate(Screens.SendIBC, { tokenData: token });
-    }
+    };
     const moveToStakingTab = () => {
         navigation.navigate(Screens.Staking);
     };
@@ -72,7 +78,7 @@ const Wallet = () => {
 
     const getIBCTokenList = async () => {
         try {
-            const list = await getTokenList(wallet.address);
+            const list = await getTokenList(walletAddress);
             setTokenList(list);
         } catch (error) {
             console.log(error);
@@ -81,7 +87,7 @@ const Wallet = () => {
                 text1: String(error)
             });
         }
-    }
+    };
 
     const refreshStates = async () => {
         try {
@@ -89,7 +95,7 @@ const Wallet = () => {
             setIbcTokenConfig(IBC_CONFIG);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             console.log(error);
             throw error;
         }
@@ -99,7 +105,7 @@ const Wallet = () => {
         () => {
             refreshStates();
         },
-        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 
@@ -114,21 +120,18 @@ const Wallet = () => {
 
     return (
         <View style={styles.container}>
-            {common.connect && common.isNetworkChanged === false && (
+            {connect && isNetworkChanged === false && (
                 <RefreshScrollView refreshFunc={refreshStates}>
                     <View style={styles.content}>
-                        <AddressBox address={wallet.address} />
+                        <AddressBox address={walletAddress} />
                         <BalanceBox
                             stakingValues={stakingState}
                             handleSend={moveToSendScreen}
                             handleSendIBC={moveToSendIBCScrees}
                             handleStaking={moveToStakingTab}
                         />
-                        <AssetsBox
-                            handleAssets={moveToAssetsScrees} />
-                        <StakingBox
-                            stakingValues={stakingState}
-                            handleStaking={moveToStakingTab} />
+                        <AssetsBox handleAssets={moveToAssetsScrees} />
+                        <StakingBox stakingValues={stakingState} handleStaking={moveToStakingTab} />
                         <HistoryBox
                             handleHistory={moveToHistoryScreen}
                             historyVolume={historyVolume}
@@ -147,13 +150,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: BgColor
     },
-    wallet: {
-        paddingBottom: 10,
-        paddingHorizontal: 20,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#aaa'
-    },
+    //   wallet: {
+    //     paddingBottom: 10,
+    //     paddingHorizontal: 20,
+    //     fontSize: 20,
+    //     fontWeight: 'bold',
+    //     color: '#aaa',
+    //   },
     content: {
         paddingTop: 32
     }

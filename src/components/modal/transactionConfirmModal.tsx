@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { convertAmount, convertNumber } from '@/util/common';
+import { CHAIN_SYMBOL } from '@/constants/common';
 import {
     BgColor,
     BorderColor,
@@ -9,13 +8,15 @@ import {
     TextCatTitleColor,
     TextDarkGrayColor,
     TextDisableColor,
-    WhiteColor,
+    WhiteColor
 } from '@/constants/theme';
+import { useAppSelector } from '@/redux/hooks';
+import { convertAmount, convertNumber } from '@/util/common';
+import { StyleSheet, Text, View } from 'react-native';
+
 import Button from '../button/button';
 import CustomModal from './customModal';
 import ValidationModal from './validationModal';
-import { useAppSelector } from '@/redux/hooks';
-import { CHAIN_SYMBOL } from '@/constants/common';
 
 interface IProps {
     title: string;
@@ -40,13 +41,13 @@ const TransactionConfirmModal = ({
     open,
     setOpenModal,
     symbol = CHAIN_SYMBOL(),
-    transactionHandler,
+    transactionHandler
 }: IProps) => {
-    const { common } = useAppSelector(state => state);
+    const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
 
     const signMoalText = {
         title: title,
-        confirmTitle: 'Confirm',
+        confirmTitle: 'Confirm'
     };
 
     const SEND_TOKEN_SYMBOL = symbol;
@@ -60,7 +61,7 @@ const TransactionConfirmModal = ({
     };
 
     const handleTransaction = (result: string) => {
-        if (common.appState === 'active') {
+        if (appState === 'active') {
             setTransactionStart(result !== '');
             transactionHandler(result);
         }
@@ -68,13 +69,13 @@ const TransactionConfirmModal = ({
     };
 
     const handleModal = (open: boolean) => {
-        setOpenModal && setOpenModal(open);
+        if (setOpenModal) setOpenModal(open);
     };
 
     const handleCapitalize = (value: string) => {
-        let values = value.split('_');
+        const values = value.split('_');
         let result = '';
-        for (var i = 0; i < values.length; i++) {
+        for (let i = 0; i < values.length; i++) {
             result = result + values[i].charAt(0).toUpperCase() + values[i].slice(1);
             if (i !== values.length - 1) result = result + ' ';
         }
@@ -84,7 +85,7 @@ const TransactionConfirmModal = ({
     useEffect(() => {
         if (extraData) {
             let keyArray: any = [];
-            for (let key in extraData) {
+            for (const key in extraData) {
                 keyArray = keyArray.concat(key);
             }
             setExtraKey(keyArray);
@@ -100,8 +101,8 @@ const TransactionConfirmModal = ({
     }, [open]);
 
     useEffect(() => {
-        if (common.appState !== 'active' && common.isBioAuthInProgress === false) handleModal(false);
-    }, [common.appState]);
+        if (appState !== 'active' && isBioAuthInProgress === false) handleModal(false);
+    }, [appState]);
 
     return (
         <CustomModal visible={open} bgColor={BgColor} handleOpen={handleModal}>
@@ -122,16 +123,15 @@ const TransactionConfirmModal = ({
                                 style={[
                                     styles.boxH,
                                     styles.receiptDesc,
-                                    { borderBottomWidth: memo !== '' ? 0 : 1, borderBottomColor: BorderColor },
-                                ]}>
+                                    { borderBottomWidth: memo !== '' ? 0 : 1, borderBottomColor: BorderColor }
+                                ]}
+                            >
                                 <Text style={styles.itemTitle}>Amount</Text>
                                 <Text style={styles.itemBalance}>
                                     {convertAmount({ value: amount, isUfct: false, point: 6 })}
                                     <Text
-                                        style={[
-                                            styles.itemTitle,
-                                            { fontSize: 14, color: TextDisableColor },
-                                        ]}>{` ${SEND_TOKEN_SYMBOL}`}</Text>
+                                        style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}
+                                    >{` ${SEND_TOKEN_SYMBOL}`}</Text>
                                 </Text>
                             </View>
                         )}
@@ -139,8 +139,14 @@ const TransactionConfirmModal = ({
                             <View
                                 style={[
                                     styles.boxH,
-                                    { alignItems: 'flex-end', paddingBottom: 15, borderBottomWidth: 1, borderBottomColor: BorderColor },
-                                ]}>
+                                    {
+                                        alignItems: 'flex-end',
+                                        paddingBottom: 15,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: BorderColor
+                                    }
+                                ]}
+                            >
                                 <Text style={styles.itemTitle}>Memo</Text>
                                 <Text style={[styles.itemBalance, { fontSize: 14 }]} numberOfLines={1} ellipsizeMode="tail">
                                     {memo}
@@ -151,12 +157,18 @@ const TransactionConfirmModal = ({
                             <View
                                 style={[
                                     styles.receiptDesc,
-                                    { paddingTop: 5, paddingBottom: 15, borderBottomWidth: 1, borderBottomColor: BorderColor },
-                                ]}>
+                                    {
+                                        paddingTop: 5,
+                                        paddingBottom: 15,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: BorderColor
+                                    }
+                                ]}
+                            >
                                 {extraKey.map((value, index) => {
                                     return (
                                         <View key={index} style={[styles.boxH, styles.receiptDesc, { paddingTop: 10 }]}>
-                                            <Text style={[styles.itemTitle]}>{handleCapitalize(value)}</Text>
+                                            <Text style={styles.itemTitle}>{handleCapitalize(value)}</Text>
                                             <Text style={styles.itemBalance} numberOfLines={1} ellipsizeMode="tail">
                                                 {extraData[value]}
                                             </Text>
@@ -191,40 +203,40 @@ const TransactionConfirmModal = ({
 const styles = StyleSheet.create({
     modalTextContents: {
         width: '100%',
-        padding: 20,
+        padding: 20
     },
-    desc: {
-        fontSize: 14,
-    },
+    // desc: {
+    //     fontSize: 14,
+    // },
     boxH: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     modalButtonBox: {
-        paddingTop: 30,
+        paddingTop: 30
     },
     receiptBox: {
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 4,
-        backgroundColor: DisableColor,
+        backgroundColor: DisableColor
     },
     receiptTitle: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: 'bold',
         color: TextDarkGrayColor,
-        paddingBottom: 20,
+        paddingBottom: 20
     },
     receiptDesc: {
-        paddingVertical: 15,
+        paddingVertical: 15
     },
     itemTitle: {
         fontFamily: Lato,
         color: TextCatTitleColor,
         fontWeight: 'normal',
         fontSize: 16,
-        paddingRight: 20,
+        paddingRight: 20
     },
     itemBalance: {
         width: '100%',
@@ -233,8 +245,8 @@ const styles = StyleSheet.create({
         color: WhiteColor,
         fontWeight: 'normal',
         textAlign: 'right',
-        fontSize: 16,
-    },
+        fontSize: 16
+    }
 });
 
 export default TransactionConfirmModal;

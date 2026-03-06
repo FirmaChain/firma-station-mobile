@@ -1,4 +1,6 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { CW_REMOVE_WARN_TEXT, CW721_NOT_EXIST, CW721_REMOVE_SUCCESS } from '@/constants/common';
+import { ICON_CW_NFT_THUMBNAIL } from '@/constants/images';
 import {
     BgColor,
     BorderColor,
@@ -13,27 +15,25 @@ import {
     TextWarnColor,
     WhiteColor
 } from '@/constants/theme';
-import { ImageStore, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { rootState } from '@/redux/reducers';
 import { ICW721ContractState, useCWContext } from '@/context/cwContext';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ForwardArrow, MenuIcon, RemoveIcon } from '@/components/icon/icon';
-import { Animated } from 'react-native';
-import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
-import { CW721_NOT_EXIST, CW721_REMOVE_SUCCESS, CW_REMOVE_WARN_TEXT } from '@/constants/common';
-import { StorageActions } from '@/redux/actions';
-import { ICWContractsState } from '@/redux/types';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import FastImage, { Source } from 'react-native-fast-image';
-import DataSection from './common/dataSection';
-import Toast from 'react-native-toast-message';
-import NoticeItem from './common/noticeItem';
-import { useNavigation } from '@react-navigation/native';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StorageActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { ICWContractsState } from '@/redux/types';
+import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
 import { getCW721NFTImage } from '@/util/firma';
-import { ICON_CW_NFT_THUMBNAIL } from '@/constants/images';
+import FastImage, { Source } from '@d11/react-native-fast-image';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
+
+import { ForwardArrow, MenuIcon, RemoveIcon } from '@/components/icon/icon';
+
+import DataSection from './common/dataSection';
+import NoticeItem from './common/noticeItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Assets>;
 
@@ -43,12 +43,12 @@ interface IProps {
 }
 
 const CW721List = ({ data, isEdit }: IProps) => {
+    const { address } = useAppSelector((state) => state.wallet);
+    const { network, cw721Contracts } = useAppSelector((state) => state.storage);
+
     const flatListRef = useRef<any>(null);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const navigation: ScreenNavgationProps = useNavigation();
-    const { address } = useSelector((state: rootState) => state.wallet);
-    const { network } = useSelector((state: rootState) => state.storage);
-    const { cw721Contracts } = useSelector((state: rootState) => state.storage);
     const { handleUpdateCW721WholeData, cw721Thumbnail, handleCw721Thumbnail } = useCWContext();
     const nonExistStoreValue = Boolean(cw721Contracts === undefined || cw721Contracts[address] === undefined);
 
@@ -87,7 +87,10 @@ const CW721List = ({ data, isEdit }: IProps) => {
                 network: one.network
             }));
 
-            StorageActions.handleCW721Contracts({ ...cw721Contracts, [address]: [...contractsInsideNetwork, ...contractsOutsideNetwork] });
+            StorageActions.handleCW721Contracts({
+                ...cw721Contracts,
+                [address]: [...contractsInsideNetwork, ...contractsOutsideNetwork]
+            });
         }
 
         setRemoveItemAddr('');
@@ -228,7 +231,13 @@ const CW721List = ({ data, isEdit }: IProps) => {
 
             return (
                 <TouchableOpacity onPress={moveToCW721Detail} disabled={isEdit} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                    <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            justifyContent: 'space-between'
+                        }}
+                    >
                         <Animated.View
                             style={{
                                 opacity: fadeAnim,

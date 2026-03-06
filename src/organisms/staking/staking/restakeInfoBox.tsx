@@ -1,13 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BorderColor, BoxColor, Lato, PointLightColor, TextCatTitleColor, TextColor } from '@/constants/theme';
-import { RESTAKE_STATUS } from '@/constants/common';
-import { ForwardArrow } from '@/components/icon/icon';
-import { IStakingState } from '@/hooks/staking/hooks';
-import { useIsFocused } from '@react-navigation/native';
-import { convertTimerText } from '@/util/common';
-import { useAppSelector } from '@/redux/hooks';
 import { CHAIN_NETWORK } from '@/../config';
+import { RESTAKE_STATUS } from '@/constants/common';
+import {
+    //   BorderColor,
+    BoxColor,
+    Lato,
+    //   PointLightColor,
+    TextCatTitleColor,
+    TextColor
+} from '@/constants/theme';
+import { useAppSelector } from '@/redux/hooks';
+import { convertTimerText } from '@/util/common';
+import { useIsFocused } from '@react-navigation/native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IStakingState } from '@/hooks/staking/hooks';
+import { ForwardArrow } from '@/components/icon/icon';
 
 interface IProps {
     moveToRestake: () => void;
@@ -18,8 +26,10 @@ interface IProps {
 const defaultColor = RESTAKE_STATUS['NO_DELEGATION'].color;
 
 const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) => {
+    const { network } = useAppSelector((state) => state.storage);
+
     const isFocused = useIsFocused();
-    const { storage } = useAppSelector((state) => state);
+
     const [restakeInfoJson, setRestakeInfoJson]: any = useState(null);
     const [nextRoundDateTime, setNextRoundTime] = useState('00:00:00');
 
@@ -51,7 +61,7 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
 
     const getRestakeInfo = async () => {
         try {
-            const result = await fetch(CHAIN_NETWORK[storage.network].RESTAKE_API);
+            const result = await fetch(CHAIN_NETWORK[network].RESTAKE_API);
             const json = await result.json();
             setRestakeInfoJson(json);
         } catch (error) {
@@ -60,7 +70,7 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
     };
 
     const handleRestakeProgress = useCallback(() => {
-        let result = convertTimerText(restakeInfoJson.nextRoundDateTime);
+        const result = convertTimerText(restakeInfoJson.nextRoundDateTime);
         if (result.diff <= 0) {
             getRestakeInfo();
             return;
@@ -117,11 +127,11 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
 };
 
 const styles = StyleSheet.create({
-    restakeEmptyButtonBox: {
-        padding: 0,
-        marginTop: 0,
-        maxHeight: 0
-    },
+    //   restakeEmptyButtonBox: {
+    //     padding: 0,
+    //     marginTop: 0,
+    //     maxHeight: 0,
+    //   },
     restakeButtonBox: {
         padding: 20,
         marginTop: 12,
@@ -132,12 +142,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         maxHeight: 500
     },
-    activeInfoBox: {
-        flex: 1,
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
-        marginRight: 15
-    },
+    //   activeInfoBox: {
+    //     flex: 1,
+    //     alignItems: 'flex-start',
+    //     justifyContent: 'flex-start',
+    //     marginRight: 15,
+    //   },
     infoBox: {
         flex: 1,
         flexDirection: 'row',
@@ -158,22 +168,22 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         paddingHorizontal: 10,
         paddingVertical: 3
-    },
-    background: {
-        flex: 100,
-        height: 6,
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        backgroundColor: BorderColor,
-        borderRadius: 8,
-        position: 'relative',
-        overflow: 'hidden'
-    },
-    percentage: {
-        height: 6,
-        borderRadius: 8,
-        backgroundColor: PointLightColor
     }
+    //   background: {
+    //     flex: 100,
+    //     height: 6,
+    //     flexDirection: 'row',
+    //     justifyContent: 'flex-start',
+    //     backgroundColor: BorderColor,
+    //     borderRadius: 8,
+    //     position: 'relative',
+    //     overflow: 'hidden',
+    //   },
+    //   percentage: {
+    //     height: 6,
+    //     borderRadius: 8,
+    //     backgroundColor: PointLightColor,
+    //   },
 });
 
 export default React.memo(RestakeInfoBox);

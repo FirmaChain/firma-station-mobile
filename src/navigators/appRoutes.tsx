@@ -1,19 +1,20 @@
-import { CreateStepOneParams } from '../screens/createWallet/stepOne';
-import { CreateStepTwoParams } from '../screens/createWallet/stepTwo';
-import { CreateStepThreeParams } from '../screens/createWallet/stepThree';
-import { ExportWalletParams } from '../screens/setting/exportWallet';
-import { ValidatorParams } from '../screens/home/staking/validator';
-import { ProposalParams } from '../screens/home/governance/proposal';
-import { DelegateParams } from '../screens/home/staking/delegate';
-import { DepositParams } from '@/screens/home/governance/deposit';
-import { TransactionParams } from '@/screens/transaction/transaction';
-import { WebParams } from '@/screens/webScreen';
-import { NFTParams } from '@/screens/home/dapps/nft/nft';
 import { CreateStepRecoverParams } from '@/screens/createWallet/stepRecover';
+import { CW721Params } from '@/screens/home/assets/cw721';
+import { NFTParams } from '@/screens/home/dapps/nft/nft';
 import { SendCW20Params } from '@/screens/home/dapps/sendCW20/sendCW20';
 import { SendCW721Params } from '@/screens/home/dapps/sendCW721/sendCW721';
+import { DepositParams } from '@/screens/home/governance/deposit';
 import { SendIBCParams } from '@/screens/home/wallet/sendIBC';
-import { CW721Params } from '@/screens/home/assets/cw721';
+import { TransactionParams } from '@/screens/transaction/transaction';
+import { WebParams } from '@/screens/webScreen';
+
+import { CreateStepOneParams } from '../screens/createWallet/stepOne';
+import { CreateStepThreeParams } from '../screens/createWallet/stepThree';
+import { CreateStepTwoParams } from '../screens/createWallet/stepTwo';
+import { ProposalParams } from '../screens/home/governance/proposal';
+import { DelegateParams } from '../screens/home/staking/delegate';
+import { ValidatorParams } from '../screens/home/staking/validator';
+import { ExportWalletParams } from '../screens/setting/exportWallet';
 
 export enum Screens {
     LoginCheck = 'LoginCheck',

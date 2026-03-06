@@ -1,5 +1,6 @@
 import { FirmaUtil } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
+
 import { getDAppConnectSession, setDAppConnectSession } from './wallet';
 
 export interface UserSession {
@@ -134,7 +135,7 @@ class ConnectClient {
             const response: ResponseProjectData = await this.requestService.requestGet<ResponseProjectData>('/v1/projects');
 
             return {
-                projectList: response.projectList,
+                projectList: response.projectList
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -148,7 +149,7 @@ class ConnectClient {
             );
 
             return {
-                service: response.service,
+                service: response.service
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -160,7 +161,7 @@ class ConnectClient {
             const response: ResponseAuthData = await this.requestService.requestPost<ResponseAuthData>('/v1/wallets/auth');
 
             return {
-                userkey: response.userkey,
+                userkey: response.userkey
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -169,7 +170,7 @@ class ConnectClient {
 
     public async getUserSession(walletKey: string): Promise<UserSession> {
         try {
-            let result = await getDAppConnectSession(walletKey);
+            const result = await getDAppConnectSession(walletKey);
 
             const isSessionExist = result !== null;
 
@@ -187,11 +188,11 @@ class ConnectClient {
     public async connectFromSession(session: UserSession): Promise<UserSession> {
         try {
             const response: ResponseAuthData = await this.requestService.requestPost<ResponseAuthData>('/v1/wallets/auth', {
-                userkey: session.userkey,
+                userkey: session.userkey
             });
 
             return {
-                userkey: response.userkey,
+                userkey: response.userkey
             };
         } catch (e) {
             throw new Error('Failed Request');
@@ -224,7 +225,7 @@ class ConnectClient {
                     apiCode,
                     requestKey,
                     signParams,
-                    projectMetaData,
+                    projectMetaData
                 };
             } else {
                 throw new Error('Invalid API Code');
@@ -252,7 +253,7 @@ class ConnectClient {
 
                 return {
                     project,
-                    service,
+                    service
                 };
             } else {
                 throw new Error('Invalid API Code');
@@ -312,7 +313,7 @@ class ConnectClient {
                 `/v1/wallets/sign/${QRData.requestKey}`,
                 { signature },
                 {
-                    userkey: session.userkey,
+                    userkey: session.userkey
                 }
             );
 
@@ -345,7 +346,7 @@ class ConnectClient {
                     `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/approve`,
                     approveParam,
                     {
-                        userkey: session.userkey,
+                        userkey: session.userkey
                     }
                 );
                 return {};
@@ -365,7 +366,7 @@ class ConnectClient {
                     `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/reject`,
                     {},
                     {
-                        userkey: session.userkey,
+                        userkey: session.userkey
                     }
                 );
                 return {};
@@ -386,7 +387,7 @@ class RequestService {
             const requestOptions = {
                 method: 'POST',
                 headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
+                body: JSON.stringify(body)
             };
             const response = await fetch(`${this.relay}${uri}`, requestOptions);
             const data: any = await response.json();
@@ -406,7 +407,7 @@ class RequestService {
             const requestOptions = {
                 method: 'PUT',
                 headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
+                body: JSON.stringify(body)
             };
             const response = await fetch(`${this.relay}${uri}`, requestOptions);
             const data: any = await response.json();
@@ -425,8 +426,8 @@ class RequestService {
             const response = await fetch(`${this.relay}${uri}`, {
                 headers: {
                     ...headers,
-                    'Content-Type': 'application/json',
-                },
+                    'Content-Type': 'application/json'
+                }
             });
             const data: any = await response.json();
             if (data.code === 0) {

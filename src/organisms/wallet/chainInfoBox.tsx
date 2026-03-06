@@ -1,23 +1,23 @@
-import React, { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { TextColor } from "@/constants/theme";
-import { makeDecimalPoint } from "@/util/common";
+import React, { useMemo } from 'react';
+import { TextColor } from '@/constants/theme';
+import { makeDecimalPoint } from '@/util/common';
+import { StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface IProps {
     chainInfo: any;
 }
 
-const ChainInfoBox = ({chainInfo}:IProps) => {
+const ChainInfoBox = ({ chainInfo }: IProps) => {
     const data = chainInfo;
 
     const currentPrice = useMemo(() => {
-        if(data?.market_data === undefined) return 0;
+        if (data?.market_data === undefined) return 0;
         return data.market_data.current_price.usd;
     }, [data]);
 
     const priceChangePercentage = useMemo(() => {
-        if(data?.market_data === undefined) return 0;
+        if (data?.market_data === undefined) return 0;
         return makeDecimalPoint(data.market_data.price_change_percentage_24h, 2);
     }, [data]);
     const isMinus = priceChangePercentage < 0;
@@ -26,21 +26,22 @@ const ChainInfoBox = ({chainInfo}:IProps) => {
         <View style={styles.container}>
             <View style={styles.box}>
                 <Text style={styles.title}>Current price:</Text>
-                {data && 
-                    <Text style={styles.title}>$ 
-                        <Text style={styles.price}>{currentPrice}</Text>
-                    </Text>}
+                {data && (
+                    <Text style={styles.title}>
+                        $<Text style={styles.price}>{currentPrice}</Text>
+                    </Text>
+                )}
             </View>
             <View style={styles.box}>
                 <Text style={styles.desc}>(coingecko)</Text>
-                <View style={styles.box}> 
-                    <Icon name={isMinus? 'trending-down':'trending-up'} color={isMinus? 'tomato':'forestgreen'} size={15} />
-                    <Text style={[styles.changePercentage, {color: isMinus? 'tomato':'forestgreen'}]}>{priceChangePercentage}</Text>
+                <View style={styles.box}>
+                    <Icon name={isMinus ? 'trending-down' : 'trending-up'} color={isMinus ? 'tomato' : 'forestgreen'} size={15} />
+                    <Text style={[styles.changePercentage, { color: isMinus ? 'tomato' : 'forestgreen' }]}>{priceChangePercentage}</Text>
                 </View>
             </View>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -49,29 +50,29 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         borderWidth: 1,
         borderRadius: 8,
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     box: {
-        flexDirection:'row',
+        flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     title: {
-        color: TextColor,
+        color: TextColor
     },
     price: {
         color: TextColor,
-        fontWeight: 'bold',
+        fontWeight: 'bold'
     },
     changePercentage: {
         fontSize: 12,
         fontWeight: 'bold',
-        paddingLeft: 5,
+        paddingLeft: 5
     },
     desc: {
         color: TextColor,
-        fontSize: 12,
+        fontSize: 12
     }
-})
+});
 
 export default ChainInfoBox;

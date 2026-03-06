@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BgColor, DisableButtonColor, FailedColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from "@/constants/theme";
+import React, { useEffect, useMemo, useState } from 'react';
+import { BgColor, DisableButtonColor, FailedColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
     title: string;
@@ -14,13 +14,23 @@ interface IProps {
     disableTextColor?: string;
 }
 
-const SmallButton = ({ title, onPressEvent, size = 100, height = 42, color = PointColor, active = true, border = false, disableColor = DisableButtonColor, disableTextColor = TextDarkGrayColor }: IProps) => {
+const SmallButton = ({
+    title,
+    onPressEvent,
+    size = 100,
+    height = 42,
+    color = PointColor,
+    active = true,
+    border = false,
+    disableColor = DisableButtonColor,
+    disableTextColor = TextDarkGrayColor
+}: IProps) => {
     const [buttonHeight, setButtonHeight] = useState(height);
 
     const handleOnPress = (value?: any) => {
         if (active === false) return;
         onPressEvent && onPressEvent(value);
-    }
+    };
 
     const buttonColor = useMemo(() => {
         if (active) {
@@ -28,21 +38,21 @@ const SmallButton = ({ title, onPressEvent, size = 100, height = 42, color = Poi
                 const bcakgroundColor = color === PointColor && border ? BgColor : color;
                 return {
                     background: bcakgroundColor,
-                    textColor: TextColor,
-                }
+                    textColor: TextColor
+                };
             } else {
                 return {
                     background: color,
-                    textColor: TextColor,
-                }
+                    textColor: TextColor
+                };
             }
         } else {
             return {
                 background: disableColor,
-                textColor: disableTextColor,
-            }
+                textColor: disableTextColor
+            };
         }
-    }, [active, active, border, color])
+    }, [active, active, border, color]);
 
     useEffect(() => {
         if (height === 0) return setButtonHeight(0);
@@ -53,35 +63,38 @@ const SmallButton = ({ title, onPressEvent, size = 100, height = 42, color = Poi
         <View>
             <TouchableOpacity
                 disabled={!active}
-                style={[styles.button,
-                {
-                    width: size,
-                    height: buttonHeight,
-                    borderWidth: (border && active) ? 1 : 0,
-                    borderColor: WhiteColor,
-                    backgroundColor: buttonColor.background
-                }]}
-                onPress={() => handleOnPress()}>
+                style={[
+                    styles.button,
+                    {
+                        width: size,
+                        height: buttonHeight,
+                        borderWidth: border && active ? 1 : 0,
+                        borderColor: WhiteColor,
+                        backgroundColor: buttonColor.background
+                    }
+                ]}
+                onPress={() => handleOnPress()}
+            >
                 <Text style={[styles.buttonText, { color: buttonColor.textColor }]}>{title}</Text>
             </TouchableOpacity>
         </View>
-    )
-}
+    );
+};
 
 export default SmallButton;
 
 const styles = StyleSheet.create({
     button: {
         height: 42,
-        overflow: "hidden",
+        overflow: 'hidden',
         borderRadius: 4,
-        justifyContent: "center",
+        justifyContent: 'center'
     },
     buttonText: {
         fontFamily: Lato,
         color: TextColor,
-        textAlign: "center",
+        textAlign: 'center',
         fontSize: 16,
-        fontWeight: "normal",
-    },
-})
+        fontWeight: 'normal'
+    }
+});

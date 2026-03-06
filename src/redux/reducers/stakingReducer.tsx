@@ -1,5 +1,7 @@
-import { IValidatorDetailState } from '@/hooks/staking/hooks';
 import { createAction, createReducer } from '@reduxjs/toolkit';
+
+import { IValidatorDetailState } from '@/hooks/staking/hooks';
+
 import { UPDATE_DELEGATE_STATE, UPDATE_STAKING_REWARD, UPDATE_VALIDATOR_STATE } from '../types';
 
 export interface IDelegateUpdateState {

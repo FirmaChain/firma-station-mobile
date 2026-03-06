@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
-import { PasswordCheck, WalletNameValidationCheck } from '@/util/validationCheck';
-import { InputBgColor, Lato, TextGrayColor } from '@/constants/theme';
 import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_WALLET_NAME, WARNING_WALLET_NAME_IS_TOO_SHORT } from '@/constants/common';
-import InputSetVertical from '@/components/input/inputSetVertical';
+import { InputBgColor, Lato, TextGrayColor } from '@/constants/theme';
+import { PasswordCheck, WalletNameValidationCheck } from '@/util/validationCheck';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
+import InputSetVertical from '@/components/input/inputSetVertical';
+
 interface IProps {
-    wallet: any;
+    walletName: string;
     validate: (valid: boolean) => void;
     newWalletName: (name: string) => void;
     password: (value: string) => void;
     recoverValue: (value: string) => void;
 }
 
-const InputBox = ({ wallet, validate, newWalletName, password, recoverValue }: IProps) => {
+const InputBox = ({ walletName, validate, newWalletName, password, recoverValue }: IProps) => {
     const walletNameText = {
         title: 'New wallet name',
         placeholder: PLACEHOLDER_FOR_WALLET_NAME
@@ -30,8 +31,8 @@ const InputBox = ({ wallet, validate, newWalletName, password, recoverValue }: I
     const [nameValidation, setNameValidation] = useState(false);
 
     const onChangeWalletName = async (value: string) => {
-        let result = value.length >= 5 && value.length <= 20;
-        let nameCheck = await WalletNameValidationCheck(value);
+        const result = value.length >= 5 && value.length <= 20;
+        const nameCheck = await WalletNameValidationCheck(value);
 
         let msg = result && !nameCheck ? '' : nameCheck ? `"${value}" is already exists` : WARNING_WALLET_NAME_IS_TOO_SHORT;
         if (value.length === 0) msg = '';
@@ -42,7 +43,7 @@ const InputBox = ({ wallet, validate, newWalletName, password, recoverValue }: I
 
     const handlePassword = async (value: string) => {
         try {
-            let result = await PasswordCheck(wallet.name, value);
+            const result = await PasswordCheck(walletName, value);
             if (result) {
                 recoverValue(result);
                 password(value);
@@ -68,7 +69,7 @@ const InputBox = ({ wallet, validate, newWalletName, password, recoverValue }: I
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>Wallet name</Text>
                 </View>
-                <Text style={styles.walletName}>{wallet.name}</Text>
+                <Text style={styles.walletName}>{walletName}</Text>
             </View>
             <InputSetVertical
                 title={walletNameText.title}

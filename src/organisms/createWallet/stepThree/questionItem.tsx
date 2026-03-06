@@ -1,6 +1,6 @@
-import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from "@/constants/theme";
+import React from 'react';
+import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
     title: string;
@@ -9,20 +9,19 @@ interface IProps {
     onPressEvent: Function;
 }
 
-const QuestionItem= ({title, value, focus, onPressEvent}:IProps) => {
+const QuestionItem = ({ title, value, focus, onPressEvent }: IProps) => {
     const val = value;
-    const bc = focus? WhiteColor : 'transparent';
+    const bc = focus ? WhiteColor : 'transparent';
 
     return (
         <View style={styles.viewContainer}>
             <Text style={styles.text}>{title}</Text>
-            <TouchableOpacity
-                onPress={() => onPressEvent()}>
-                <Text style={[styles.quiz, {borderColor: bc, color: val === 'select'? InputPlaceholderColor : TextColor}]}>{val}</Text>
+            <TouchableOpacity onPress={() => onPressEvent()}>
+                <Text style={[styles.quiz, { borderColor: bc, color: val === 'select' ? InputPlaceholderColor : TextColor }]}>{val}</Text>
             </TouchableOpacity>
         </View>
-    )
-}
+    );
+};
 
 export default QuestionItem;
 
@@ -31,13 +30,13 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        marginBottom: 20,
+        marginBottom: 20
     },
     text: {
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor,
-        marginBottom: 5,
+        marginBottom: 5
     },
     quiz: {
         width: 160,
@@ -49,4 +48,4 @@ const styles = StyleSheet.create({
         color: InputPlaceholderColor,
         overflow: 'hidden'
     }
-})
+});

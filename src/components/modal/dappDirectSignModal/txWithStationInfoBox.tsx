@@ -1,6 +1,6 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { CHAIN_SYMBOL } from '@/constants/common';
-import { StyleSheet, Text, View } from 'react-native';
+import { VALIDATOR_PROFILE } from '@/constants/images';
 import { AddressTextColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import {
     AUTHZ_GRANT,
@@ -15,15 +15,16 @@ import {
     STAKING_UNDELEGATE,
     STAKING_WITHDRAW,
     STAKING_WITHDRAW_ALL,
-    VOTE_TYPE,
+    VOTE_TYPE
 } from '@/constants/types';
-import { convertAmount, convertNumber, convertTime, convertToFctNumber } from '@/util/common';
 import { useAppSelector } from '@/redux/hooks';
-import { getValidatorAvatarURL, useStakingData } from '@/hooks/staking/hooks';
-import { useProposalData } from '@/hooks/governance/hooks';
-import { VALIDATOR_PROFILE } from '@/constants/images';
+import { convertAmount, convertNumber, convertTime, convertToFctNumber } from '@/util/common';
 import { getStakingFromvalidator, getValidatorFromAddress } from '@/util/firma';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { useProposalData } from '@/hooks/governance/hooks';
+import { getValidatorAvatarURL, useStakingData } from '@/hooks/staking/hooks';
 
 interface IProps {
     type: string;
@@ -52,9 +53,11 @@ interface IRenderValidatorInfoProps {
 }
 
 const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
+    const { validatorsProfile } = useAppSelector((state) => state.storage);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
-    const { storage, wallet } = useAppSelector(state => state);
     const { stakingState, getStakingState } = useStakingData();
     const { proposalState, handleProposalPolling } = useProposalData();
 
@@ -68,7 +71,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
     const [memo, setMemo] = useState<string>('');
 
     const QRData = useMemo(() => {
-        let data = qrData.signParams.argument;
+        const data = qrData.signParams.argument;
 
         if (data.fee !== undefined) {
             setFee(data.fee);
@@ -81,8 +84,8 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
     }, [qrData]);
 
     const ValidatorAvatarList = useMemo(() => {
-        return storage.validatorsProfile.profileInfos;
-    }, [storage.validatorsProfile]);
+        return validatorsProfile.profileInfos;
+    }, [validatorsProfile]);
 
     const isEmptyInfo = useMemo(() => {
         return DAPP_MESSAGE_TYPE[type] === AUTHZ_REVOKE;
@@ -94,17 +97,19 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                 style={[
                     styles.boxH,
                     { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
-                    isMemo && { alignItems: 'flex-start' },
-                ]}>
+                    isMemo && { alignItems: 'flex-start' }
+                ]}
+            >
                 <Text style={[styles.catTitle, isMemo && { flex: 0, width: 40 }]}>{title}</Text>
                 <Text
                     style={[
                         styles.value,
                         { flex: isMemo ? 1 : 0, color: AddressTextColor, fontSize: 15 },
-                        isMemo ? { maxWidth: 240 } : { maxWidth: '50%' },
+                        isMemo ? { maxWidth: 240 } : { maxWidth: '50%' }
                     ]}
                     numberOfLines={isMemo ? 2 : 1}
-                    ellipsizeMode={'middle'}>
+                    ellipsizeMode={'middle'}
+                >
                     {value}
                 </Text>
             </View>
@@ -118,7 +123,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                 <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({
                     value: amount,
                     isUfct: false,
-                    point: amount > 0 ? 6 : 0,
+                    point: amount > 0 ? 6 : 0
                 })} ${_CHAIN_SYMBOL}`}</Text>
             </View>
         );
@@ -153,11 +158,11 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
             }
             switch (DAPP_MESSAGE_TYPE[type]) {
                 case BANK_SEND:
-                    let sendAmount = QRData.fctPrice;
+                    const sendAmount = QRData.fctPrice;
                     return <RenderAmountInfo title={'Amount'} amount={sendAmount} />;
                 case STAKING_DELEGATE:
                 case STAKING_UNDELEGATE:
-                    let stakingAmount = QRData.amount;
+                    const stakingAmount = QRData.amount;
                     getValidatorInfo(QRData.validatorAddress, 0);
                     return (
                         <Fragment>
@@ -166,7 +171,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                         </Fragment>
                     );
                 case STAKING_REDELEGATE:
-                    let _stakingAmount = QRData.amount;
+                    const _stakingAmount = QRData.amount;
                     getValidatorInfo(QRData.validatorSrcAddress, 0);
                     getValidatorInfo(QRData.validatorDstAddress, 1);
                     return (
@@ -189,8 +194,8 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                     getWithdrawAllInfo();
                     return <RenderAmountInfo title={'Amount'} amount={stakingState === null ? 0 : stakingState.stakingReward} />;
                 case GOV_PROPOSAL:
-                    let proposalTitle = QRData.title;
-                    let initialDepositFCT = QRData.initialDepositFCT;
+                    const proposalTitle = QRData.title;
+                    const initialDepositFCT = QRData.initialDepositFCT;
                     return (
                         <Fragment>
                             <RenderDefaultInfo title={'Proposal Title'} value={proposalTitle} />
@@ -199,8 +204,8 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                     );
                 case GOV_DEPOSIT:
                     getProposalInfo(QRData.proposalId);
-                    let proposalTitleDeposit = proposalState === null ? '' : proposalState.titleState.title;
-                    let depositAmount = QRData.amount;
+                    const proposalTitleDeposit = proposalState === null ? '' : proposalState.titleState.title;
+                    const depositAmount = QRData.amount;
                     return (
                         <Fragment>
                             <RenderDefaultInfo title={'Proposal Title'} value={proposalTitleDeposit} />
@@ -209,9 +214,9 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                     );
                 case GOV_VOTE:
                     getProposalInfo(QRData.proposalId);
-                    let proposalTitleVote = proposalState === null ? '' : proposalState.titleState.title;
-                    let option = QRData.option;
-                    let voteIndex: number = convertNumber(option - 1);
+                    const proposalTitleVote = proposalState === null ? '' : proposalState.titleState.title;
+                    const option = QRData.option;
+                    const voteIndex: number = convertNumber(option - 1);
                     return (
                         <Fragment>
                             <RenderDefaultInfo title={'Proposal Title'} value={proposalTitleVote} />
@@ -219,7 +224,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                         </Fragment>
                     );
                 case AUTHZ_GRANT:
-                    let expirationDate = QRData.expirationDate;
+                    const expirationDate = QRData.expirationDate;
                     return <RenderDefaultInfo title={'Expiry Date'} value={convertTime(expirationDate, false, false)} />;
                 default:
                     return <Fragment />;
@@ -233,7 +238,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
             try {
                 const [validator, avatarURL] = await Promise.all([
                     getValidatorFromAddress(validatorAddress),
-                    getValidatorAvatarURL(ValidatorAvatarList, validatorAddress),
+                    getValidatorAvatarURL(ValidatorAvatarList, validatorAddress)
                 ]);
                 if (type === 0) {
                     setSrcMoniker(validator.description.moniker);
@@ -253,7 +258,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
     const getWithdrawInfo = useCallback(
         async (validatorAddress: string) => {
             try {
-                const withdraw = await getStakingFromvalidator(wallet.address, validatorAddress);
+                const withdraw = await getStakingFromvalidator(walletAddress, validatorAddress);
                 setWithdrawAmount(withdraw.stakingReward);
             } catch (error) {
                 console.log(error);
@@ -283,7 +288,14 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
 
     return (
         <Fragment>
-            <View style={{ width: '100%', height: 1, backgroundColor: WhiteColor + '10', display: isEmptyInfo ? 'none' : 'flex' }} />
+            <View
+                style={{
+                    width: '100%',
+                    height: 1,
+                    backgroundColor: WhiteColor + '10',
+                    display: isEmptyInfo ? 'none' : 'flex'
+                }}
+            />
             <View style={[styles.boxV, isEmptyInfo ? {} : { paddingTop: 20, paddingBottom: 17 }]}>
                 <RenderInfoByType type={type} />
                 <RenderAmountInfo title={'Fee'} amount={convertToFctNumber(fee)} />
@@ -297,25 +309,25 @@ const styles = StyleSheet.create({
     boxH: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     boxV: {
         width: '100%',
-        alignItems: 'flex-start',
+        alignItems: 'flex-start'
     },
 
     catTitle: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
-        color: TextDarkGrayColor,
+        color: TextDarkGrayColor
     },
     value: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
         color: TextDarkGrayColor,
-        textAlign: 'right',
+        textAlign: 'right'
     },
     avatar: {
         width: 20,
@@ -323,8 +335,8 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 50,
         overflow: 'hidden',
-        marginRight: 7,
-    },
+        marginRight: 7
+    }
 });
 
 export default TxWithStationInfoBox;

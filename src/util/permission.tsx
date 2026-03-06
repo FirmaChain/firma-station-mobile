@@ -1,8 +1,8 @@
-import { Alert, Linking, Platform } from "react-native";
-import { check, RESULTS, PERMISSIONS, Permission, PermissionStatus, request } from "react-native-permissions"
-import { CAMERA_PERMISSION_ALERT } from "@/constants/common";
+import { CAMERA_PERMISSION_ALERT } from '@/constants/common';
+import { Alert, Linking, Platform } from 'react-native';
+import { check, Permission, PERMISSIONS, PermissionStatus, request, RESULTS } from 'react-native-permissions';
 
-export const isPermissionGranted = async(permission:Permission) => {
+export const isPermissionGranted = async (permission: Permission) => {
     let granted = false;
     let requested: PermissionStatus;
     const checked = await check(permission);
@@ -16,7 +16,7 @@ export const isPermissionGranted = async(permission:Permission) => {
                 granted = true;
             }
             break;
-        case RESULTS.UNAVAILABLE:   
+        case RESULTS.UNAVAILABLE:
         case RESULTS.LIMITED:
         case RESULTS.BLOCKED:
             granted = false;
@@ -27,25 +27,30 @@ export const isPermissionGranted = async(permission:Permission) => {
     }
 
     return granted;
-}
+};
 
-export const checkCameraPermission = async() => {
+export const checkCameraPermission = async () => {
     let permission = false;
-    if(Platform.OS === "ios"){
+    if (Platform.OS === 'ios') {
         permission = await isPermissionGranted(PERMISSIONS.IOS.CAMERA);
-    } else if(Platform.OS === "android") {
+    } else if (Platform.OS === 'android') {
         permission = await isPermissionGranted(PERMISSIONS.ANDROID.CAMERA);
     }
-    if(permission === false) {
+    if (permission === false) {
         Alert.alert(CAMERA_PERMISSION_ALERT.title, CAMERA_PERMISSION_ALERT.desc, [
             {
-                text: "Cancel",
-                style: "cancel",
+                text: 'Cancel',
+                style: 'cancel'
             },
-            { text: "OK", onPress: () => {Linking.openSettings()} }
-        ])
+            {
+                text: 'OK',
+                onPress: () => {
+                    Linking.openSettings();
+                }
+            }
+        ]);
         return false;
     } else {
         return true;
     }
-}
+};

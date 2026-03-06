@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { IStakeInfo } from '@/hooks/staking/hooks';
-import { useBalanceData } from '@/hooks/wallet/hooks';
-import { convertNumber, convertToFctNumber, convertToFctNumberForInput } from '@/util/common';
+import {
+    AUTO_ENTERED_AMOUNT_TEXT,
+    CHAIN_SYMBOL,
+    FEE_INSUFFICIENT_NOTICE,
+    REDELEGATE_NOTICE_TEXT,
+    UNDELEGATE_NOTICE_TEXT,
+    WARNING_FOR_MAX_AMOUNT_TEST
+} from '@/constants/common';
 import {
     DisableColor,
     InputBgColor,
@@ -16,18 +19,17 @@ import {
     TextGrayColor,
     WhiteColor
 } from '@/constants/theme';
-import {
-    AUTO_ENTERED_AMOUNT_TEXT,
-    CHAIN_SYMBOL,
-    FEE_INSUFFICIENT_NOTICE,
-    REDELEGATE_NOTICE_TEXT,
-    UNDELEGATE_NOTICE_TEXT,
-    WARNING_FOR_MAX_AMOUNT_TEST
-} from '@/constants/common';
+import { convertNumber, convertToFctNumber, convertToFctNumberForInput } from '@/util/common';
+import { useFocusEffect } from '@react-navigation/native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { IStakeInfo } from '@/hooks/staking/hooks';
+import { useBalanceData } from '@/hooks/wallet/hooks';
 import { DownArrow, StarIcon } from '@/components/icon/icon';
-import WarnContainer from '@/components/parts/containers/warnContainer';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
 import BalanceInfo from '@/components/parts/balanceInfo';
+import WarnContainer from '@/components/parts/containers/warnContainer';
+
 import ValidatorSelectModal from './validatorSelectModal';
 
 interface IProps {
@@ -258,7 +260,7 @@ const InputBox = ({
                 <View style={[styles.conatainer, { marginBottom: 13 }]}>
                     <View style={styles.selectBox}>
                         <Text style={styles.title}>Source Validator</Text>
-                        <TouchableOpacity style={[styles.select]} onPress={() => handleSelectModal(true)}>
+                        <TouchableOpacity style={styles.select} onPress={() => handleSelectModal(true)}>
                             <Text style={[styles.selectTitle, selectOperatorAddressSrc === '' && { color: InputPlaceholderColor }]}>
                                 {selectOperatorAddressSrc === '' ? 'Select...' : selectValidatorMoniker}
                             </Text>

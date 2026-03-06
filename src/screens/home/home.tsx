@@ -1,6 +1,6 @@
 import React from 'react';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import Home from '@/organisms/home';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 interface IProps {
     route: {};

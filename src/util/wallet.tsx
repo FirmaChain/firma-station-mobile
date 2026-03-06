@@ -1,17 +1,19 @@
-import { CommonActions, StorageActions, WalletActions } from '@/redux/actions';
-import { getUniqueId } from 'react-native-device-info';
-import { getAddressFromRecoverValue, mnemonicCheck } from './firma';
-import { checkBioMetrics } from './bioAuth';
-import { decrypt, encrypt, keyEncrypt } from './keystore';
-import { getChain, removeChain, setChain } from './secureKeyChain';
 import { CONNECT_ID_LIST, CONNECT_SESSION, DAPPS_SERVICE_IDENTITY, USE_BIO_AUTH, WALLET_LIST } from '@/../config';
 import { IKeyValue } from '@/constants/common';
+import { CommonActions, StorageActions, WalletActions } from '@/redux/actions';
+import { Alert } from 'react-native';
+import { getUniqueIdSync } from 'react-native-device-info';
 
-const UNIQUE_ID = getUniqueId();
+import { checkBioMetrics } from './bioAuth';
+import { getAddressFromRecoverValue, mnemonicCheck } from './firma';
+import { decrypt, encrypt, keyEncrypt } from './keystore';
+import { getChain, removeChain, setChain } from './secureKeyChain';
+
+const UNIQUE_ID = getUniqueIdSync(); // Device identifierForVendor (IDFV)
 
 const setWalletListArray = (list: string) => {
     const arr = list.split('/');
-    let walletList: any[] = [];
+    const walletList: any[] = [];
     arr.map((item) => {
         walletList.push(item);
     });
@@ -70,24 +72,16 @@ export const setNewWallet = async (name: string, password: string, recoverValue:
 };
 
 export const setWalletList = async (list: string) => {
-    try {
-        if (list === '') {
-            StorageActions.handleLastSelectedWalletIndex(-1);
-            await removeChain(WALLET_LIST);
-        } else {
-            await setChain(WALLET_LIST, list);
-        }
-    } catch (error) {
-        throw error;
+    if (list === '') {
+        StorageActions.handleLastSelectedWalletIndex(-1);
+        await removeChain(WALLET_LIST);
+    } else {
+        await setChain(WALLET_LIST, list);
     }
 };
 
 export const removeWallet = async (name: string) => {
-    try {
-        await removeChain(name);
-    } catch (error) {
-        throw error;
-    }
+    await removeChain(name);
 };
 
 export const getRecoverValue = async (walletName: string, password: string) => {
@@ -98,7 +92,7 @@ export const getRecoverValue = async (walletName: string, password: string) => {
         const result = await getChain(walletName);
 
         if (result) {
-            let w = decrypt(result.password, key.toString());
+            const w = decrypt(result.password, key.toString());
             if (w !== '') {
                 recoverValue = w;
             }
@@ -111,27 +105,29 @@ export const getRecoverValue = async (walletName: string, password: string) => {
 };
 
 export const getWalletWithAutoLogin = async () => {
-    let uniqueId = '';
+    let autoLoginWallet = '';
     try {
         const result = await getChain(UNIQUE_ID);
+
         if (result === false) return '';
-        uniqueId = decrypt(result.password, UNIQUE_ID);
-        return uniqueId;
+        autoLoginWallet = decrypt(result.password, UNIQUE_ID);
+        return autoLoginWallet;
     } catch (error) {
         console.log(error);
+        Alert.alert('Error');
         throw error;
     }
 };
 
 export const setWalletWithAutoLogin = async (walletInfo: string) => {
     try {
-        let epochTimeSeconds = Math.round(new Date().getTime() / 1000).toString();
-        let key = {
+        const epochTimeSeconds = Math.round(new Date().getTime() / 1000).toString();
+        const key = {
             ...JSON.parse(walletInfo),
             timestamp: epochTimeSeconds
         };
 
-        let payload = JSON.stringify(key);
+        const payload = JSON.stringify(key);
         const encWallet = encrypt(payload, UNIQUE_ID);
 
         await setChain(UNIQUE_ID, encWallet);
@@ -142,14 +138,11 @@ export const setWalletWithAutoLogin = async (walletInfo: string) => {
 };
 
 export const removeWalletWithAutoLogin = async () => {
-    try {
-        await removeChain(UNIQUE_ID);
-    } catch (error) {
-        throw error;
-    }
+    await removeChain(UNIQUE_ID);
 };
 
 export const setUseBioAuth = async (name: string) => {
+    // USE_BIO_AUTH_value is fixed string.
     await setChain(USE_BIO_AUTH + name, 'true');
 };
 
@@ -168,11 +161,7 @@ export const getUseBioAuth = async (name: string) => {
 };
 
 export const removeUseBioAuth = async (name: string) => {
-    try {
-        await removeChain(USE_BIO_AUTH + name).catch((error) => console.log(error));
-    } catch (error) {
-        throw error;
-    }
+    await removeChain(USE_BIO_AUTH + name).catch((error) => console.log(error));
 };
 
 export const setBioAuth = async (name: string, password: string) => {
@@ -190,31 +179,34 @@ export const setBioAuth = async (name: string, password: string) => {
 export const getPasswordViaBioAuth = async () => {
     let timestamp = 0;
     let password = '';
-    try {
-        const result = await getWalletWithAutoLogin();
-        if (result === '') return '';
-        const json = JSON.parse(result);
-        timestamp = json.timestamp;
 
-        const passwordResult = await getChain(UNIQUE_ID + timestamp.toString());
-        if (passwordResult === false) return '';
-        password = decrypt(passwordResult.password, UNIQUE_ID + timestamp.toString());
-        return password;
-    } catch (error) {
-        throw error;
-    }
+    const result = await getWalletWithAutoLogin();
+    if (result === '') return '';
+    const json = JSON.parse(result);
+    timestamp = json.timestamp;
+
+    const passwordResult = await getChain(UNIQUE_ID + timestamp.toString());
+    if (passwordResult === false) return '';
+    password = decrypt(passwordResult.password, UNIQUE_ID + timestamp.toString());
+    return password;
 };
 
+// Save encrypted password
 export const setPasswordViaBioAuth = async (password: string) => {
-    let timestamp = 0;
+    let timestamp = 0; // Wallet timestamp (maybe addedAt, or else)
     try {
+        // Get current wallet info
         const result = await getWalletWithAutoLogin();
+
         if (result === '') return '';
+
         const json = JSON.parse(result);
-        timestamp = json.timestamp;
+        timestamp = json.timestamp; // Get timestamp from wallet info -> What timestamp? addedAt?
 
         const encWallet = encrypt(password, UNIQUE_ID + timestamp.toString());
-        setChain(UNIQUE_ID + timestamp.toString(), encWallet);
+
+        // Save encrypted password to Keychain
+        await setChain(UNIQUE_ID + timestamp.toString(), encWallet);
     } catch (error) {
         console.log(error);
         throw error;
@@ -239,19 +231,16 @@ export const removePasswordViaBioAuth = async () => {
 export const getDecryptPassword = async () => {
     let timestamp = 0;
     let password = '';
-    try {
-        const result = await getWalletWithAutoLogin();
-        if (result === '') return '';
-        const json = JSON.parse(result);
-        timestamp = json.timestamp;
 
-        const passwordResult = await getChain(timestamp.toString() + UNIQUE_ID);
-        if (passwordResult === false) return '';
-        password = decrypt(passwordResult.password, timestamp.toString() + UNIQUE_ID);
-        return password;
-    } catch (error) {
-        throw error;
-    }
+    const result = await getWalletWithAutoLogin();
+    if (result === '') return '';
+    const json = JSON.parse(result);
+    timestamp = json.timestamp;
+
+    const passwordResult = await getChain(timestamp.toString() + UNIQUE_ID);
+    if (passwordResult === false) return '';
+    password = decrypt(passwordResult.password, timestamp.toString() + UNIQUE_ID);
+    return password;
 };
 
 export const setEncryptPassword = async (password: string) => {
@@ -263,7 +252,7 @@ export const setEncryptPassword = async (password: string) => {
         timestamp = json.timestamp;
 
         const encWallet = encrypt(password, timestamp.toString() + UNIQUE_ID);
-        setChain(timestamp.toString() + UNIQUE_ID, encWallet);
+        await setChain(timestamp.toString() + UNIQUE_ID, encWallet);
     } catch (error) {
         console.log(error);
         throw error;
@@ -283,7 +272,7 @@ export const setWalletWithBioAuth = async (name: string, password: string, recov
         );
 
         await setEncryptPassword(password);
-        setBioAuth(name, password);
+        await setBioAuth(name, password);
 
         WalletActions.handleWalletName(name);
         WalletActions.handleWalletAddress(address === null ? '' : address);
@@ -396,8 +385,8 @@ export const removeDAppServiceId = async (name: string) => {
 
 export const setRecoverType = async (typeList: IKeyValue | undefined, recoverValue: string, address: string) => {
     try {
-        let isMnemonic = await mnemonicCheck(recoverValue);
-        let recoverType = isMnemonic ? 'mnemonic' : 'privateKey';
+        const isMnemonic = await mnemonicCheck(recoverValue);
+        const recoverType = isMnemonic ? 'mnemonic' : 'privateKey';
 
         if (typeList === undefined) {
             StorageActions.handleRecoverType({
@@ -416,7 +405,7 @@ export const setRecoverType = async (typeList: IKeyValue | undefined, recoverVal
 
 export const removeRecoverType = (typeList: IKeyValue | undefined, address: string) => {
     if (typeList !== undefined) {
-        let recoverTypeList = { ...typeList };
+        const recoverTypeList = { ...typeList };
         delete recoverTypeList[`${address}`];
 
         StorageActions.handleRecoverType(recoverTypeList);

@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { GUIDE_URI } from '@/../config';
+import { WALLETNAME_CHANGE_SUCCESS } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { CommonActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
+import { updateArray } from '@/util/common';
+import { getAddressFromRecoverValue } from '@/util/firma';
 import {
     getUseBioAuth,
     getWalletList,
@@ -20,23 +22,25 @@ import {
     setUseBioAuth,
     setWalletList
 } from '@/util/wallet';
-import { updateArray } from '@/util/common';
-import { WALLETNAME_CHANGE_SUCCESS } from '@/constants/common';
-import { BgColor } from '@/constants/theme';
-import { GUIDE_URI } from '@/../config';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
 import Button from '@/components/button/button';
 import AlertModal from '@/components/modal/alertModal';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import InputBox from './inputBox';
-import Toast from 'react-native-toast-message';
-import { getAddressFromRecoverValue } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangeWalletName>;
 
 const ChangeWalletName = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet, storage } = useAppSelector((state) => state);
+
+    const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { recoverType } = useAppSelector((state) => state.storage);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeButton, setActiveButton] = useState(false);
@@ -78,22 +82,22 @@ const ChangeWalletName = () => {
     const removeCurrentWallet = useCallback(async () => {
         try {
             await getAddressFromRecoverValue(recoverValue);
-            removeRecoverType(storage.recoverType, wallet.address);
-            await removeWallet(wallet.name);
-            await removeDAppProjectIdList(wallet.name);
-            await removeDAppConnectSession(wallet.name);
+            removeRecoverType(recoverType, walletAddress);
+            await removeWallet(walletName);
+            await removeDAppProjectIdList(walletName);
+            await removeDAppConnectSession(walletName);
             await removePasswordViaBioAuth();
         } catch (error) {
             console.log(error);
             throw error;
         }
-    }, [storage.recoverType, wallet.name, recoverValue]);
+    }, [recoverType, walletName, recoverValue]);
 
     const createNewWallet = async () => {
         let newList: string = '';
         try {
             const result = await getWalletList();
-            let arr = result ? updateArray(result, wallet.name, newWalletName) : [];
+            const arr = result ? updateArray(result, walletName, newWalletName) : [];
             if (arr.length >= 1) {
                 arr.map((item) => {
                     newList += item + '/';
@@ -103,7 +107,7 @@ const ChangeWalletName = () => {
             await setWalletList(newList);
 
             const setWalletResult = await setNewWallet(newWalletName, password, recoverValue, false);
-            await setRecoverType(storage.recoverType, recoverValue, wallet.address);
+            await setRecoverType(recoverType, recoverValue, walletAddress);
 
             await handleUseBioAuthForNewWallet();
             WalletActions.handleWalletName(newWalletName);
@@ -118,12 +122,12 @@ const ChangeWalletName = () => {
 
     const handleUseBioAuthForNewWallet = async () => {
         try {
-            const result = await getUseBioAuth(wallet.name);
+            const result = await getUseBioAuth(walletName);
             if (result) {
                 await setUseBioAuth(newWalletName);
             }
             setBioAuth(newWalletName, password);
-            await removeUseBioAuth(wallet.name);
+            await removeUseBioAuth(walletName);
         } catch (error) {
             throw error;
         }
@@ -143,7 +147,7 @@ const ChangeWalletName = () => {
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
                     <InputBox
-                        wallet={wallet}
+                        walletName={walletName}
                         validate={handleActiveButton}
                         newWalletName={setNewWalletName}
                         password={setPassword}
@@ -173,12 +177,12 @@ const styles = StyleSheet.create({
         flex: 3,
         paddingHorizontal: 20
     },
-    wallet: {
-        paddingVertical: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#aaa'
-    },
+    // wallet: {
+    //     paddingVertical: 10,
+    //     fontSize: 20,
+    //     fontWeight: 'bold',
+    //     color: '#aaa'
+    // },
     buttonBox: {
         flex: 1,
         justifyContent: 'flex-end'

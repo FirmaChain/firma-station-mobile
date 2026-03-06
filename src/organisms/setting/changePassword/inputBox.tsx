@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet } from 'react-native';
 import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_PASSWORD_CONFIRM, WARNING_PASSWORD_NOT_MATCH } from '@/constants/common';
 import { PasswordCheck, PasswordValidationCheck } from '@/util/validationCheck';
-import InputSetVertical from '@/components/input/inputSetVertical';
+import { Keyboard, Pressable, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 
+import InputSetVertical from '@/components/input/inputSetVertical';
+
 interface IProps {
-    wallet: any;
+    walletName: string;
     validate: (valid: boolean) => void;
     newPassword: (value: string) => void;
     recoverValue: (value: string) => void;
 }
 
-const InputBox = ({ wallet, validate, newPassword, recoverValue }: IProps) => {
+const InputBox = ({ walletName, validate, newPassword, recoverValue }: IProps) => {
     const currentPasswordTextObj = {
         title: 'Current password',
         placeholder: PLACEHOLDER_FOR_PASSWORD
@@ -37,7 +38,7 @@ const InputBox = ({ wallet, validate, newPassword, recoverValue }: IProps) => {
 
     const handleCurrentPassword = async (value: string) => {
         try {
-            let result = await PasswordCheck(wallet.name, value);
+            const result = await PasswordCheck(walletName, value);
             if (result) {
                 recoverValue(result);
                 setPwValidation(true);
@@ -54,7 +55,7 @@ const InputBox = ({ wallet, validate, newPassword, recoverValue }: IProps) => {
 
     const handleNewPassword = (value: string) => {
         const result = PasswordValidationCheck(value);
-        var msg = result ? '' : PLACEHOLDER_FOR_PASSWORD;
+        let msg = result ? '' : PLACEHOLDER_FOR_PASSWORD;
         if (value.length === 0) msg = '';
         setNewPW(value);
         setNewPwValidation(result);
@@ -64,8 +65,8 @@ const InputBox = ({ wallet, validate, newPassword, recoverValue }: IProps) => {
     };
 
     const handleConfirmPassword = (value: string) => {
-        var result = value === newPW;
-        var msg = result ? '' : WARNING_PASSWORD_NOT_MATCH;
+        let result = value === newPW;
+        let msg = result ? '' : WARNING_PASSWORD_NOT_MATCH;
         if (value.length === 0) {
             msg = '';
             result = false;

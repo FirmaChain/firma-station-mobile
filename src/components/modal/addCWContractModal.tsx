@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Animated, StyleSheet, Text, TextInput, View } from 'react-native';
-import { ModalActions, StorageActions } from '@/redux/actions';
+import { ERROR_CW_CONTRACT, EXIST_CW_CONTRACT_TO_LIST, NON_EXIST_CW_CONTRACT } from '@/constants/common';
 import {
+    BgColor,
+    BoxColor,
     CW20BackgroundColor,
     CW20Color,
     CW721BackgroundColor,
@@ -10,25 +11,30 @@ import {
     CWLabelBorderColor,
     CWLabelColor,
     FailedColor,
+    InputBgColor,
+    InputPlaceholderColor,
+    Lato,
+    TextCatTitleColor,
+    TextColor,
     TextGrayColor,
-    TextWarnColor,
-    WhiteColor,
+    //   TextWarnColor,
+    WhiteColor
 } from '@/constants/theme';
-import { InputPlaceholderColor } from '@/constants/theme';
-import { BgColor, BoxColor, InputBgColor, Lato, TextCatTitleColor, TextColor } from '@/constants/theme';
+import { ModalActions, StorageActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { wait } from '@/util/common';
 import { addressCheck, getCW20ContractInfo, getCW721ContractInfo, getCWContractInfo, ValidCWType, verifyCWContract } from '@/util/firma';
+import { ContractInfo, Cw20TokenInfo, Cw721ContractInfo } from '@firmachain/firma-js';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { Alert, Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
 import CustomModal from '@/components/modal/customModal';
+
 import Button from '../button/button';
 import TextButton from '../button/textButton';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { ContractInfo, Cw20TokenInfo, Cw721ContractInfo } from '@firmachain/firma-js';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import Progress from '../parts/progress';
-import { wait } from '@/util/common';
-import { useSelector } from 'react-redux';
-import { rootState } from '@/redux/reducers';
-import { ERROR_CW_CONTRACT, EXIST_CW_CONTRACT_TO_LIST, NON_EXIST_CW_CONTRACT } from '@/constants/common';
 
 interface IProps {
     open: boolean;
@@ -37,12 +43,11 @@ interface IProps {
 }
 
 const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => {
-    const isGlobalLoading = useSelector((v: rootState) => v.common.loading);
+    const { loading: isGlobalLoading } = useAppSelector((state) => state.common);
+    const { address } = useAppSelector((state) => state.wallet);
+    const { network } = useAppSelector((state) => state.storage);
+    const { cw20Contracts, cw721Contracts } = useAppSelector((state) => state.storage);
 
-    const { address } = useSelector((state: rootState) => state.wallet);
-    const { network } = useSelector((state: rootState) => state.storage);
-
-    const { cw20Contracts, cw721Contracts } = useSelector((state: rootState) => state.storage);
     const nonExist721StoreValue = Boolean(cw721Contracts === undefined || cw721Contracts[address] === undefined);
     const nonExist20StoreValue = Boolean(cw20Contracts === undefined || cw20Contracts[address] === undefined);
 
@@ -85,12 +90,12 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
 
                 if (nonExist20StoreValue) {
                     StorageActions.handleCW20Contracts({
-                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }],
+                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }]
                     });
                 } else {
                     StorageActions.handleCW20Contracts({
                         ...cw20Contracts,
-                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }],
+                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }]
                     });
                 }
             }
@@ -99,12 +104,12 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
 
                 if (nonExist721StoreValue) {
                     StorageActions.handleCW721Contracts({
-                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }],
+                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }]
                     });
                 } else {
                     StorageActions.handleCW721Contracts({
                         ...cw721Contracts,
-                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }],
+                        [address]: [...prevList, { address: cwInfo.address, type: validType, network }]
                     });
                 }
             }
@@ -112,7 +117,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
             console.log(error);
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
         } finally {
             successCallback(validType === 'CW20' ? 0 : 1);
@@ -131,7 +136,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                 symbol: cw20Info?.symbol,
                 label: cwInfo?.contract_info.label,
                 color: CW20Color,
-                backgroundColor: CW20BackgroundColor,
+                backgroundColor: CW20BackgroundColor
             };
         }
 
@@ -142,7 +147,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                 symbol: cw721Info?.symbol,
                 label: cwInfo?.contract_info.label,
                 color: CW721Color,
-                backgroundColor: CW721BackgroundColor,
+                backgroundColor: CW721BackgroundColor
             };
         }
 
@@ -174,7 +179,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
 
                 Toast.show({
                     type: 'error',
-                    text1: String(error),
+                    text1: String(error)
                 });
             } finally {
                 wait(1000).then(() => {
@@ -218,13 +223,13 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
         if (validType === 'CW20') {
             const filter = nonExist20StoreValue
                 ? []
-                : cw20Contracts[address].filter(adr => adr.address.toLowerCase() === addressValue.toLowerCase());
+                : cw20Contracts[address].filter((adr) => adr.address.toLowerCase() === addressValue.toLowerCase());
             return Boolean(filter.length > 0);
         }
         if (validType === 'CW721') {
             const filter = nonExist721StoreValue
                 ? []
-                : cw721Contracts[address].filter(adr => adr.address.toLowerCase() === addressValue.toLowerCase());
+                : cw721Contracts[address].filter((adr) => adr.address.toLowerCase() === addressValue.toLowerCase());
             return Boolean(filter.length > 0);
         }
 
@@ -263,7 +268,8 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
             bgColor={BgColor}
             toastInModal={false}
             forceActive={true}
-            handleOpen={open === false ? () => null : handleOpenModal}>
+            handleOpen={open === false ? () => null : handleOpenModal}
+        >
             <View style={styles.modalContainer}>
                 <View style={styles.headerBox}>
                     <Text style={styles.headerTitle}>{'Add CW Contract'}</Text>
@@ -278,8 +284,8 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                             styles.input,
                             {
                                 color: TextColor,
-                                borderColor: ExistAddress || InvalidAddress ? FailedColor : addressFocus ? WhiteColor : 'transparent',
-                            },
+                                borderColor: ExistAddress || InvalidAddress ? FailedColor : addressFocus ? WhiteColor : 'transparent'
+                            }
                         ]}
                         placeholder={'Address'}
                         placeholderTextColor={InputPlaceholderColor}
@@ -291,7 +297,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                         editable={!isGlobalLoading && !isLoading}
                         onFocus={() => setAddressFocus(true)}
                         onBlur={() => setAddressFocus(false)}
-                        onChangeText={text => handleAddressValue(text)}
+                        onChangeText={(text) => handleAddressValue(text)}
                     />
                     <Animated.View
                         style={[
@@ -299,22 +305,27 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                             {
                                 opacity: ExistAddress || InvalidAddress ? 1 : 0,
                                 height: ExistAddress || InvalidAddress ? 'auto' : 0,
-                                paddingBottom: ExistAddress || InvalidAddress ? 5 : 0,
-                            },
-                        ]}>
+                                paddingBottom: ExistAddress || InvalidAddress ? 5 : 0
+                            }
+                        ]}
+                    >
                         <Text style={styles.noticeText}>{ErrorMessage}</Text>
                     </Animated.View>
 
                     {contractInfo !== null && (
-                        <View style={{ width: '100%', overflow: 'hidden', maxHeight: contractInfo !== null ? 300 : 0 }}>
+                        <View
+                            style={{
+                                width: '100%',
+                                overflow: 'hidden',
+                                maxHeight: contractInfo !== null ? 300 : 0
+                            }}
+                        >
                             <View style={styles.infoContainer}>
                                 <Text style={styles.text}>{'Name'}</Text>
                                 <View style={styles.wrap}>
                                     <Text
-                                        style={[
-                                            styles.label,
-                                            { color: contractInfo.color, backgroundColor: contractInfo.backgroundColor },
-                                        ]}>
+                                        style={[styles.label, { color: contractInfo.color, backgroundColor: contractInfo.backgroundColor }]}
+                                    >
                                         {contractInfo.type}
                                     </Text>
                                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.infoValue}>
@@ -331,8 +342,12 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                             <View
                                 style={[
                                     styles.infoContainer,
-                                    { alignItems: 'flex-start', display: contractInfo.label === '' ? 'none' : 'flex' },
-                                ]}>
+                                    {
+                                        alignItems: 'flex-start',
+                                        display: contractInfo.label === '' ? 'none' : 'flex'
+                                    }
+                                ]}
+                            >
                                 <Text style={[styles.text, { paddingTop: 3 }]}>{'Label'}</Text>
                                 <Text
                                     style={[
@@ -342,9 +357,10 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                                             color: CWLabelColor,
                                             backgroundColor: CWLabelBackgroundColor,
                                             borderColor: CWLabelBorderColor,
-                                            borderWidth: 1,
-                                        },
-                                    ]}>
+                                            borderWidth: 1
+                                        }
+                                    ]}
+                                >
                                     {contractInfo.label}
                                 </Text>
                             </View>
@@ -370,7 +386,7 @@ const styles = StyleSheet.create({
     modalContainer: {
         width: '100%',
         maxHeight: 500,
-        backgroundColor: BgColor,
+        backgroundColor: BgColor
     },
     headerBox: {
         paddingHorizontal: 10,
@@ -378,7 +394,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: BoxColor,
+        backgroundColor: BoxColor
     },
     wrap: {
         flexShrink: 1,
@@ -386,44 +402,44 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
         width: '100%',
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
     headerTitle: {
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,
-        paddingHorizontal: 10,
+        paddingHorizontal: 10
     },
     inputContainer: {
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
     textContainer: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        marginBottom: 8,
+        marginBottom: 8
     },
     text: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor,
-        minWidth: 80,
+        minWidth: 80
     },
     input: {
         color: TextColor,
         padding: 12,
         borderWidth: 1,
         backgroundColor: InputBgColor,
-        marginBottom: 13,
+        marginBottom: 13
     },
     infoContainer: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        marginVertical: 8,
+        marginVertical: 8
     },
     label: {
         fontFamily: Lato,
@@ -434,7 +450,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         paddingHorizontal: 6,
         paddingVertical: 3,
-        marginRight: 5,
+        marginRight: 5
     },
     infoValue: {
         fontSize: 18,
@@ -442,13 +458,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: TextColor,
         overflow: 'hidden',
-        flexShrink: 1,
+        flexShrink: 1
     },
     buttonBox: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 20,
+        marginTop: 20
     },
     noticeBox: {
         flexDirection: 'row',
@@ -456,15 +472,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: -10,
         paddingBottom: 5,
-        marginBottom: 5,
+        marginBottom: 5
     },
     noticeText: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
         color: FailedColor,
-        textAlign: 'right',
-    },
+        textAlign: 'right'
+    }
 });
 
 export default AddCWContractModal;

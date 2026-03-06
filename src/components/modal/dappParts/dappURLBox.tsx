@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { URLLockIcon } from '@/components/icon/icon';
 import { ICON_CERTIFIED_SITE } from '@/constants/images';
 import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { URLLockIcon } from '@/components/icon/icon';
 
 interface IProps {
     certifiedState: number;
@@ -12,7 +13,7 @@ interface IProps {
 
 const DappURLBox = ({ certifiedState, url }: IProps) => {
     return (
-        <View style={[styles.urlBox]}>
+        <View style={styles.urlBox}>
             {certifiedState === 1 && (
                 <View style={{ paddingVertical: 3, paddingHorizontal: 5 }}>
                     <URLLockIcon size={16} color={TextCatTitleColor} />

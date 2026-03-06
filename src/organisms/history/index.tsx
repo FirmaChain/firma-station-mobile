@@ -1,21 +1,25 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Linking, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { GUIDE_URI } from '@/../config';
+import { HISTORY_NOT_EXIST } from '@/constants/common';
+import { BgColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { useAppSelector } from '@/redux/hooks';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useAppSelector } from '@/redux/hooks';
+import { FlatList, Linking, RefreshControl, StyleSheet, Text, View } from 'react-native';
+
 import { IHistoryState, useHistoryData } from '@/hooks/wallet/hooks';
-import { BgColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
-import { HISTORY_NOT_EXIST } from '@/constants/common';
-import { GUIDE_URI } from '@/../config';
 import Container from '@/components/parts/containers/conatainer';
+
 import HistoryList from './historyList';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.History>;
 
 const History = () => {
+    const { historyVolume } = useAppSelector((state) => state.storage);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+
     const navigation: ScreenNavgationProps = useNavigation();
-    const { storage, wallet } = useAppSelector(state => state);
     const { historyList, handleHistoryOffset, handleHisotyPolling } = useHistoryData();
 
     const [isLoading, setIsLoading] = useState(true);
@@ -25,12 +29,12 @@ const History = () => {
     const historyHashMap = useRef(new Map<string, boolean>());
 
     const itemsSkeleton = useMemo(() => {
-        if (storage.historyVolume === undefined) return null;
-        if (storage.historyVolume[wallet.address] === undefined) return null;
-        let length = storage.historyVolume[wallet.address] > 15 ? 15 : storage.historyVolume[wallet.address];
-        let array = Array.from({ length: length });
+        if (historyVolume === undefined) return null;
+        if (historyVolume[walletAddress] === undefined) return null;
+        const length = historyVolume[walletAddress] > 15 ? 15 : historyVolume[walletAddress];
+        const array = Array.from({ length: length });
         return array;
-    }, [storage.historyVolume[wallet.address]]);
+    }, [historyVolume[walletAddress]]);
 
     const historyOffsetHandler = (reset: boolean) => {
         if (reset) {
@@ -65,12 +69,12 @@ const History = () => {
         if (historyList !== undefined && historyList.list.length > 0) {
             if (loadedHistoryList.length === 0) {
                 historyHashMap.current.clear();
-                historyList.list.forEach(item => historyHashMap.current.set(item.hash, true));
+                historyList.list.forEach((item) => historyHashMap.current.set(item.hash, true));
                 setLoadedHistoryList(historyList.list);
             } else {
-                const newItems = historyList.list.filter(item => !historyHashMap.current.has(item.hash));
-                newItems.forEach(item => historyHashMap.current.set(item.hash, true));
-                setLoadedHistoryList(prev => [...prev, ...newItems]);
+                const newItems = historyList.list.filter((item) => !historyHashMap.current.has(item.hash));
+                newItems.forEach((item) => historyHashMap.current.set(item.hash, true));
+                setLoadedHistoryList((prev) => [...prev, ...newItems]);
             }
         }
     }, [historyList]);
@@ -133,19 +137,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         paddingVertical: 20,
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
     notice: {
         textAlign: 'center',
         fontFamily: Lato,
         fontSize: 18,
         color: TextDarkGrayColor,
-        opacity: 0.8,
+        opacity: 0.8
     },
     listBox: {
         flex: 1,
-        backgroundColor: BgColor,
-    },
+        backgroundColor: BgColor
+    }
 });
 
 export default History;

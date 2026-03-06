@@ -1,10 +1,8 @@
-import React from "react";
-import History from "@/organisms/history";
+import React from 'react';
+import History from '@/organisms/history';
 
 const HistoryScreen = () => {
-    return (
-        <History />
-    )
-}
+    return <History />;
+};
 
 export default HistoryScreen;

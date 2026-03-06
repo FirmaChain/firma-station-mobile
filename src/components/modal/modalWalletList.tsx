@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
+
 import { MenuIcon, Radio } from '../icon/icon';
 
 interface IProps {
@@ -18,7 +19,6 @@ type Item = {
 };
 
 const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: IProps) => {
-    const flatListRef = useRef<any>(null);
     const initialData = useMemo(() => {
         if (data === null) {
             return [];
@@ -26,7 +26,7 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
         return data.map((item, index) => {
             return {
                 key: index,
-                label: item,
+                label: item
             };
         });
     }, [data]);
@@ -74,28 +74,22 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
         recreateList();
     }, [listData]);
 
-    const handleScrollInitValue = useCallback(() => {
-        if (flatListRef !== null && listData.length > 0 && initVal >= 0) {
-            let scrollPosition = containerSize * initVal;
-            flatListRef.current._listRef._scrollRef.scrollTo({ y: scrollPosition, animated: true });
-        }
-    }, [flatListRef, containerSize, initVal, isEdit]);
-
-    useEffect(() => {
-        handleScrollInitValue();
-    }, [flatListRef, containerSize, initVal]);
+    const canInitialScroll = containerSize > 0 && initVal >= 0 && listData.length > 0;
 
     const RenderListItem = useCallback(
         ({ item, drag }: RenderItemParams<Item>) => {
-            const index = listData.findIndex(dataItem => dataItem.key === item.key);
+            const index = listData.findIndex((dataItem) => dataItem.key === item.key);
             return (
                 <TouchableOpacity
                     key={item.key}
                     style={styles.modalContentBox}
-                    onLayout={e => setContainerSize(e.nativeEvent.layout.height)}
+                    onLayout={(e) => {
+                        if (containerSize === 0) setContainerSize(e.nativeEvent.layout.height);
+                    }}
                     onPress={() => {
-                        isEdit === false && handleSelect(index);
-                    }}>
+                        if (isEdit === false) handleSelect(index);
+                    }}
+                >
                     <Text style={styles.itemTitle}>{item.label}</Text>
                     {isEdit ? (
                         <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onPressIn={drag}>
@@ -122,12 +116,17 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
             </View>
             <GestureHandlerRootView style={{ backgroundColor: BgColor }}>
                 <DraggableFlatList
-                    ref={flatListRef}
                     data={listData}
                     style={{ maxHeight: 450 }}
                     renderItem={RenderListItem}
                     scrollEnabled={true}
-                    keyExtractor={item => item.key.toString()}
+                    initialScrollIndex={canInitialScroll ? initVal : undefined}
+                    getItemLayout={(_, index) => ({
+                        length: containerSize,
+                        offset: containerSize * index,
+                        index
+                    })}
+                    keyExtractor={(item) => item.key.toString()}
                     onScrollToIndexFailed={() => {}}
                     onDragEnd={({ data }) => setListData(data)}
                 />
@@ -141,7 +140,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginBottom: Platform.select({ android: 0, ios: 25 }),
         maxHeight: 500,
-        backgroundColor: BoxDarkColor,
+        backgroundColor: BoxDarkColor
     },
     headerBox: {
         paddingHorizontal: 10,
@@ -149,24 +148,24 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: BoxColor,
+        backgroundColor: BoxColor
     },
     headerTitle: {
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,
-        paddingHorizontal: 10,
+        paddingHorizontal: 10
     },
     headerEditButton: {
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor,
-        paddingHorizontal: 10,
+        paddingHorizontal: 10
     },
     editButton: {
         paddingVertical: 10,
         paddingLeft: 10,
-        paddingRight: 3,
+        paddingRight: 3
     },
     modalContentBox: {
         width: '100%',
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 1,
-        backgroundColor: BgColor,
+        backgroundColor: BgColor
     },
     itemTitle: {
         fontFamily: Lato,
@@ -182,8 +181,8 @@ const styles = StyleSheet.create({
         fontWeight: 'normal',
         color: TextColor,
         paddingVertical: 20,
-        paddingHorizontal: 20,
-    },
+        paddingHorizontal: 20
+    }
 });
 
 export default ModalWalletList;

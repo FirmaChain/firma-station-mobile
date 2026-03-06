@@ -1,9 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BoxDarkColor, CW20BackgroundColor, CW20Color, CW721BackgroundColor, CW721Color, Lato, TextCatTitleColor, TextColor, TextGrayColor } from '@/constants/theme';
-import { Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
-import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
+import {
+    BoxDarkColor,
+    CW20BackgroundColor,
+    CW20Color,
+    CW721BackgroundColor,
+    CW721Color,
+    Lato,
+    TextCatTitleColor,
+    TextColor,
+    TextGrayColor
+} from '@/constants/theme';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
+import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 
 interface IProps {
     data: any;
@@ -16,18 +27,18 @@ const DescriptionBox = ({ data }: IProps) => {
     const [openAccordion, setOpenAccordion] = useState(false);
 
     const CW20Contract = useMemo(() => {
-        if (data.cw20ContractAddress === null || data.cw20ContractAddress === '' || data.cw20ContractAddress === '0x') return "";
-        return data.cw20ContractAddress
-    }, [data.cw20ContractAddress])
+        if (data.cw20ContractAddress === null || data.cw20ContractAddress === '' || data.cw20ContractAddress === '0x') return '';
+        return data.cw20ContractAddress;
+    }, [data.cw20ContractAddress]);
 
     const CW721Contract = useMemo(() => {
-        if (data.cw721ContractAddress === null || data.cw721ContractAddress === '' || data.cw721ContractAddress === '0x') return "";
-        return data.cw721ContractAddress
-    }, [data.cw721ContractAddress])
+        if (data.cw721ContractAddress === null || data.cw721ContractAddress === '' || data.cw721ContractAddress === '0x') return '';
+        return data.cw721ContractAddress;
+    }, [data.cw721ContractAddress]);
 
     const isCWContract = useMemo(() => {
-        return !Boolean(CW20Contract === '' && CW721Contract === '');
-    }, [CW20Contract, CW721Contract])
+        return !(CW20Contract === '' && CW721Contract === '');
+    }, [CW20Contract, CW721Contract]);
 
     const NUM_OF_LINES = isCWContract ? 2 : 3;
 
@@ -63,15 +74,38 @@ const DescriptionBox = ({ data }: IProps) => {
     return (
         <View style={[styles.boxH, { paddingHorizontal: 20, paddingTop: 10, alignItems: 'flex-start' }]}>
             <View style={{ height: '100%', justifyContent: 'flex-start' }}>
-                <Image style={[styles.contentImage]} source={{ uri: data.icon }} />
+                <Image style={styles.contentImage} source={{ uri: data.icon }} />
             </View>
             <View style={[styles.boxV, { flex: 1 }]}>
                 <View style={[styles.boxH, { paddingBottom: 6, display: isCWContract ? 'flex' : 'none' }]}>
-                    <Text style={[styles.label, { display: CW20Contract === "" ? 'none' : 'flex', color: CW20Color, backgroundColor: CW20BackgroundColor }]}>{'CW20'}</Text>
-                    <Text style={[styles.label, { display: CW721Contract === "" ? 'none' : 'flex', color: CW721Color, backgroundColor: CW721BackgroundColor, marginLeft: CW20Contract === "" ? 0 : 8 }]}>{'CW721'}</Text>
+                    <Text
+                        style={[
+                            styles.label,
+                            {
+                                display: CW20Contract === '' ? 'none' : 'flex',
+                                color: CW20Color,
+                                backgroundColor: CW20BackgroundColor
+                            }
+                        ]}
+                    >
+                        {'CW20'}
+                    </Text>
+                    <Text
+                        style={[
+                            styles.label,
+                            {
+                                display: CW721Contract === '' ? 'none' : 'flex',
+                                color: CW721Color,
+                                backgroundColor: CW721BackgroundColor,
+                                marginLeft: CW20Contract === '' ? 0 : 8
+                            }
+                        ]}
+                    >
+                        {'CW721'}
+                    </Text>
                 </View>
                 <View style={[styles.boxH, { paddingBottom: 6 }]}>
-                    <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.contentTitle]}>
+                    <Text numberOfLines={2} ellipsizeMode="tail" style={styles.contentTitle}>
                         {data.name}
                     </Text>
                 </View>
@@ -118,7 +152,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         fontWeight: '600',
         paddingHorizontal: 6,
-        paddingVertical: 3,
+        paddingVertical: 3
     },
     boxV: {
         alignItems: 'flex-start'
@@ -137,14 +171,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textTransform: 'uppercase',
         color: TextColor,
-        paddingRight: 10,
+        paddingRight: 10
     },
     desc: {
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: 'normal',
         textAlign: 'left',
-        color: TextCatTitleColor,
+        color: TextCatTitleColor
     },
     moreButtonBox: {
         position: 'absolute',

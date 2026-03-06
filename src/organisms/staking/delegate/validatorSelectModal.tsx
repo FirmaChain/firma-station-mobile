@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
-import { IStakeInfo } from "@/hooks/staking/hooks";
-import { BgColor } from "@/constants/theme";
-import CustomModal from "@/components/modal/customModal";
-import ModalItemsForValidator from "@/components/modal/modalItemsForValidator";
+import React, { useEffect, useState } from 'react';
+import { BgColor } from '@/constants/theme';
+import { StyleSheet } from 'react-native';
+
+import { IStakeInfo } from '@/hooks/staking/hooks';
+import CustomModal from '@/components/modal/customModal';
+import ModalItemsForValidator from '@/components/modal/modalItemsForValidator';
 
 interface IProps {
     list: Array<IStakeInfo>;
@@ -14,32 +15,36 @@ interface IProps {
     resetValues: boolean;
 }
 
-const ValidatorSelectModal = ({list, open, myAddress, setOpenModal, setValue, resetValues}:IProps) => {
+const ValidatorSelectModal = ({ list, open, myAddress, setOpenModal, setValue, resetValues }: IProps) => {
     const [selected, setSelected] = useState('');
 
-    const handleOpenModal = (open:boolean) => {
+    const handleOpenModal = (open: boolean) => {
         setOpenModal && setOpenModal(open);
-    }
+    };
 
-    const handleSelectWallet = (address:string) => {
+    const handleSelectWallet = (address: string) => {
         setValue(address);
         setSelected(address);
         handleOpenModal(false);
-    }
+    };
 
     useEffect(() => {
         handleSelectWallet('');
-    }, [resetValues])
-    
+    }, [resetValues]);
+
     return (
         <CustomModal visible={open} bgColor={BgColor} handleOpen={handleOpenModal}>
-            <ModalItemsForValidator title={"Source Validator"} initVal={selected} myAddress={myAddress} data={list} onPressEvent={handleSelectWallet}/>
+            <ModalItemsForValidator
+                title={'Source Validator'}
+                initVal={selected}
+                myAddress={myAddress}
+                data={list}
+                onPressEvent={handleSelectWallet}
+            />
         </CustomModal>
-    )
-}
+    );
+};
 
-const styles = StyleSheet.create({
-
-})
+const styles = StyleSheet.create({});
 
 export default ValidatorSelectModal;

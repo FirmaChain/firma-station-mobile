@@ -1,10 +1,8 @@
-import React from "react";
-import SelectWallet from "@/organisms/welcome/selectWallet";
+import React from 'react';
+import SelectWallet from '@/organisms/welcome/selectWallet';
 
 const SelectWalletScreen = () => {
-    return (
-        <SelectWallet />
-    )
-}
+    return <SelectWallet />;
+};
 
 export default SelectWalletScreen;

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from '@/constants/theme';
 import { BIOAUTH_ACTIVATE, SETTING_BIO_AUTH_MODAL_TEXT } from '@/constants/common';
+import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from '@/constants/theme';
+import { useAppSelector } from '@/redux/hooks';
+import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { confirmViaBioAuth } from '@/util/bioAuth';
 import {
     getUseBioAuth,
     removeDAppConnectSession,
@@ -9,20 +11,19 @@ import {
     removePasswordViaBioAuth,
     removeUseBioAuth,
     setPasswordViaBioAuth,
-    setUseBioAuth,
+    setUseBioAuth
 } from '@/util/wallet';
-import { confirmViaBioAuth } from '@/util/bioAuth';
-import { useAppSelector } from '@/redux/hooks';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
 import RadioOnModal from '../modal/bioAuthOnModal';
 
 interface IProps {
-    wallet: any;
+    walletName: string;
 }
 
-const BioAuthRadio = ({ wallet }: IProps) => {
-    const { common } = useAppSelector(state => state);
+const BioAuthRadio = ({ walletName }: IProps) => {
+    const { isBioAuthInProgress } = useAppSelector((state) => state.common);
 
     const [openBioModal, setOpenBioModal] = useState(false);
     const [useBio, setUseBio] = useState(false);
@@ -44,17 +45,20 @@ const BioAuthRadio = ({ wallet }: IProps) => {
     const handleToast = () => {
         Toast.show({
             type: 'info',
-            text1: BIOAUTH_ACTIVATE,
+            text1: BIOAUTH_ACTIVATE
         });
     };
 
     const handleBioAuthState = async (password?: string) => {
+        // This password is considered as right password.
+
         try {
             if (password) {
+                // Try to get user bio auth
                 const result = await confirmViaBioAuth();
                 if (result) {
                     await setPasswordViaBioAuth(password);
-                    await setUseBioAuth(wallet.name);
+                    await setUseBioAuth(walletName);
                     handleToast();
                 } else {
                     closeBioModal(false);
@@ -62,14 +66,14 @@ const BioAuthRadio = ({ wallet }: IProps) => {
                 setOpenBioModal(false);
             } else {
                 await removePasswordViaBioAuth();
-                await removeUseBioAuth(wallet.name);
-                await removeDAppProjectIdList(wallet.name);
-                await removeDAppConnectSession(wallet.name);
+                await removeUseBioAuth(walletName);
+                await removeDAppProjectIdList(walletName);
+                await removeDAppConnectSession(walletName);
             }
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: String(error),
+                text1: String(error)
             });
         }
     };
@@ -77,15 +81,15 @@ const BioAuthRadio = ({ wallet }: IProps) => {
     useEffect(() => {
         if (openBioModal === false) {
             const getUseBioAuthState = async () => {
-                const result = await getUseBioAuth(wallet.name);
+                const result = await getUseBioAuth(walletName);
                 setUseBio(result);
             };
 
-            if (common.isBioAuthInProgress === false) {
+            if (isBioAuthInProgress === false) {
                 getUseBioAuthState();
             }
         }
-    }, [common.isBioAuthInProgress, openBioModal]);
+    }, [isBioAuthInProgress, openBioModal]);
 
     return (
         <View style={styles.listItem}>
@@ -94,13 +98,14 @@ const BioAuthRadio = ({ wallet }: IProps) => {
                 <View
                     style={[
                         styles.radioWrapper,
-                        useBio ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor },
-                    ]}>
+                        useBio ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor }
+                    ]}
+                >
                     <View style={styles.radio} />
                 </View>
             </TouchableOpacity>
             <RadioOnModal
-                walletName={wallet.name}
+                walletName={walletName}
                 open={openBioModal}
                 book={SETTING_BIO_AUTH_MODAL_TEXT}
                 setOpenModal={closeBioModal}
@@ -118,25 +123,25 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottomWidth: 0.5,
-        borderBottomColor: BgColor,
+        borderBottomColor: BgColor
     },
     itemTitle: {
         fontFamily: Lato,
         fontSize: 16,
-        color: TextColor,
+        color: TextColor
     },
     radioWrapper: {
         width: 45,
         borderRadius: 20,
         justifyContent: 'center',
-        padding: 3,
+        padding: 3
     },
     radio: {
         width: 18,
         height: 18,
         borderRadius: 50,
-        backgroundColor: WhiteColor,
-    },
+        backgroundColor: WhiteColor
+    }
 });
 
 export default BioAuthRadio;

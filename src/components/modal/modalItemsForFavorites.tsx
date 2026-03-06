@@ -1,21 +1,30 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Animated } from 'react-native';
-import { IFavoriteProps } from '@/redux/types';
+import { FAVORITE_REMOVE_SUCCESS, FAVORITE_REMOVE_WARN_TEXT } from '@/constants/common';
+import { ICON_ATOM_LOGO, ICON_OSMO_LOGO, LOADING_LOGO_3 } from '@/constants/images';
+import {
+    BgColor,
+    BoxDarkColor,
+    FailedColor,
+    Lato,
+    RestakeActiveColor,
+    TextCatTitleColor,
+    TextColor,
+    TextGrayColor,
+    TextWarnColor,
+    WhiteColor
+} from '@/constants/theme';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { rootState } from '@/redux/reducers';
+import { IFavoriteProps } from '@/redux/types';
+import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
+import FastImage from '@d11/react-native-fast-image';
+import { filter, isEqual } from 'es-toolkit/compat';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+
 import { MenuIcon, Radio, RemoveIcon } from '../icon/icon';
-import { LayoutAnim, easeInAndOutCustomAnim, fadeIn, fadeOut } from '@/util/animation';
-import { FAVORITE_REMOVE_SUCCESS, FAVORITE_REMOVE_WARN_TEXT } from '@/constants/common';
-import { BgColor, Lato, TextCatTitleColor, TextColor, TextGrayColor, TextWarnColor, WhiteColor } from '@/constants/theme';
-import { BoxDarkColor, FailedColor } from '@/constants/theme';
-import { RestakeActiveColor } from '@/constants/theme';
-import { ICON_ATOM_LOGO, ICON_OSMO_LOGO, LOADING_LOGO_3 } from '@/constants/images';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import FastImage from 'react-native-fast-image';
-import _ from 'lodash';
 
 interface IProps {
     initVal: string;
@@ -36,9 +45,9 @@ const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | n
             fadeIn(Animated, fadeAnimForRemove, 300);
             return {
                 opacity: fadeAnimForRemove,
-                height: 'auto' as 'auto',
+                height: 'auto',
                 padding: 10,
-                buttonPadding: 4,
+                buttonPadding: 4
             };
         } else {
             fadeOut(Animated, fadeAnimForRemove, 150);
@@ -46,14 +55,14 @@ const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | n
                 opacity: fadeAnimForRemove,
                 height: 0.1,
                 padding: 0,
-                buttonPadding: 0,
+                buttonPadding: 0
             };
         }
     }, [removeItem, item, fadeAnimForRemove]);
 };
 
 function removeObject<T>(arr: T[], target: T): T[] {
-    return _.filter(arr, item => !_.isEqual(item, target));
+    return filter(arr, (item) => !isEqual(item, target));
 }
 
 // Confirm Remove Box
@@ -74,9 +83,10 @@ const RemoveConfirmBox = ({ item, removeItem, onRemove }: RemoveConfirmBoxProps)
                     opacity: animationState.opacity,
                     height: animationState.height,
                     paddingBottom: animationState.padding,
-                    paddingHorizontal: 20,
-                },
-            ]}>
+                    paddingHorizontal: 20
+                }
+            ]}
+        >
             <Text style={styles.removeNotice}>{FAVORITE_REMOVE_WARN_TEXT}</Text>
             <TouchableOpacity onPress={() => onRemove(item)}>
                 <Animated.Text
@@ -85,9 +95,10 @@ const RemoveConfirmBox = ({ item, removeItem, onRemove }: RemoveConfirmBoxProps)
                         {
                             opacity: animationState.opacity,
                             height: animationState.height,
-                            paddingVertical: animationState.buttonPadding,
-                        },
-                    ]}>
+                            paddingVertical: animationState.buttonPadding
+                        }
+                    ]}
+                >
                     {'Remove'}
                 </Animated.Text>
             </TouchableOpacity>
@@ -116,12 +127,13 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
 
     return (
         <View key={item.address + item.name} style={styles.modalContentBox}>
-            <View style={[styles.modalPressBox]}>
+            <View style={styles.modalPressBox}>
                 <Animated.View
                     style={{
                         marginRight: animationState.iconMargin,
-                        width: animationState.iconWidth,
-                    }}>
+                        width: animationState.iconWidth
+                    }}
+                >
                     <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} onPress={() => isEdit && onRemove(item)}>
                         <RemoveIcon size={20} color={FailedColor} />
                     </TouchableOpacity>
@@ -164,11 +176,8 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
 };
 
 const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPressEvent, onPressEventForEdit }: IProps) => {
-    // External Seletor
-    const {
-        storage: { favorite },
-        wallet,
-    } = useAppSelector((state: rootState) => state);
+    const { favorite } = useAppSelector((state) => state.storage);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
 
     // Internal Hooks
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -182,14 +191,14 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
             fadeIn(Animated, fadeAnim, 300);
             return {
                 iconWidth: 20,
-                iconMargin: 15,
+                iconMargin: 15
             };
         } else {
             setRemoveItem(null);
             fadeOut(Animated, fadeAnim, 300);
             return {
                 iconWidth: 0,
-                iconMargin: 0,
+                iconMargin: 0
             };
         }
     }, [isEdit]);
@@ -211,17 +220,17 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
 
         Toast.show({
             type: 'info',
-            text1: FAVORITE_REMOVE_SUCCESS,
+            text1: FAVORITE_REMOVE_SUCCESS
         });
     };
 
     const adjustFavoriteList = useCallback(
         (list: IFavoriteProps[]) => {
-            const newList = favorite.map(value => {
-                if (value.ownerAddress === wallet.address) {
+            const newList = favorite.map((value) => {
+                if (value.ownerAddress === walletAddress) {
                     return {
                         ownerAddress: value.ownerAddress,
-                        favorite: list,
+                        favorite: list
                     };
                 } else {
                     return value;
@@ -261,7 +270,7 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
                 style={{ maxHeight: 450 }}
                 renderItem={ListItem}
                 scrollEnabled={true}
-                keyExtractor={item => item.address + item.name} //? Both address and name are unique
+                keyExtractor={(item) => item.address + item.name} //? Both address and name are unique
                 onDragEnd={({ data }) => adjustFavoriteList(data)}
             />
         </GestureHandlerRootView>
@@ -274,7 +283,7 @@ const styles = StyleSheet.create({
         backgroundColor: BgColor,
         marginBottom: 1,
         borderBottomColor: BoxDarkColor,
-        borderBottomWidth: 0.5,
+        borderBottomWidth: 0.5
     },
     modalPressBox: {
         width: '100%',
@@ -283,28 +292,28 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 1,
+        marginBottom: 1
     },
     favoriteItemBox: {
         flex: 1,
         width: '100%',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingRight: 10,
+        paddingRight: 10
     },
     nameBox: {
         flex: 1,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        paddingBottom: 5,
+        paddingBottom: 5
     },
     name: {
         width: '70%',
         fontFamily: Lato,
         fontSize: 16,
         fontWeight: '600',
-        color: TextColor,
+        color: TextColor
     },
     verifiedBox: {
         justifyContent: 'center',
@@ -312,14 +321,14 @@ const styles = StyleSheet.create({
         borderColor: RestakeActiveColor,
         borderWidth: 1,
         borderRadius: 5,
-        marginLeft: 5,
+        marginLeft: 5
     },
     verified: {
         fontFamily: Lato,
         fontSize: 8,
         color: RestakeActiveColor,
         paddingHorizontal: 5,
-        paddingVertical: 3,
+        paddingVertical: 3
     },
     logo: {
         width: 20,
@@ -327,7 +336,7 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 50,
         overflow: 'hidden',
-        marginRight: 7,
+        marginRight: 7
     },
     address: {
         flex: 1,
@@ -335,26 +344,26 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
         color: TextCatTitleColor,
-        paddingBottom: 5,
+        paddingBottom: 5
     },
     memo: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 12,
         fontWeight: '600',
-        color: TextGrayColor,
+        color: TextGrayColor
     },
     removeConfirmBox: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     removeNotice: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 14,
         color: TextWarnColor,
-        marginRight: 20,
+        marginRight: 20
     },
     removeButton: {
         color: TextColor,
@@ -364,8 +373,8 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         overflow: 'hidden',
-        backgroundColor: FailedColor,
-    },
+        backgroundColor: FailedColor
+    }
 });
 
 export default ModalItemsForFavorites;

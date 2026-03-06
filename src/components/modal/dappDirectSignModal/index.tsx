@@ -1,34 +1,47 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
+import { CHAIN_NETWORK } from '@/../config';
+import { CHAIN_SYMBOL, DAPP_NOT_ENOUGHT_BALANCE, TRANSACTION_TYPE } from '@/constants/common';
+import {
+    BgColor
+    //   DisableColor,
+    //   Lato,
+    //   TextCatTitleColor,
+    //   TextColor,
+    //   TextDarkGrayColor,
+} from '@/constants/theme';
 import { CommonActions, ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { convertNumber, convertToFctNumber, makeDecimalPoint } from '@/util/common';
+import ConnectClient from '@/util/connectClient';
 import { getBalanceFromAdr, getFirmaSDK, getTokenBalance } from '@/util/firma';
 import { getDAppConnectSession } from '@/util/wallet';
-import { useDappCertified } from '@/hooks/dapps/hooks';
-import { BgColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { CHAIN_SYMBOL, DAPP_NOT_ENOUGHT_BALANCE, TRANSACTION_TYPE } from '@/constants/common';
-import { convertNumber, convertToFctNumber, makeDecimalPoint } from '@/util/common';
-import { CHAIN_NETWORK } from '@/../config';
+import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import ConnectClient from '@/util/connectClient';
+
+import { useDappCertified } from '@/hooks/dapps/hooks';
+
 import Button from '../../button/button';
-import CustomModal from '../customModal';
-import ValidationModal from '../validationModal';
 import WarnContainer from '../../parts/containers/warnContainer';
+import CustomModal from '../customModal';
+import DappButtonBox from '../dappParts/dappButtonBox';
+import DappTitleBox from '../dappParts/dappTitleBox';
+import DappURLBox from '../dappParts/dappURLBox';
+import ValidationModal from '../validationModal';
 import MyInfoBox from './myInfoBox';
 import ProductInfoBox from './productInfoBox';
 import TxInfoBox from './txInfoBox';
 import TxWithStationInfoBox from './txWithStationInfoBox';
-import DappURLBox from '../dappParts/dappURLBox';
-import DappTitleBox from '../dappParts/dappTitleBox';
-import DappButtonBox from '../dappParts/dappButtonBox';
 
 const DappDirectSignModal = () => {
-    const { common, wallet, storage, modal } = useAppSelector((state) => state);
+    const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
+    const { network } = useAppSelector((state) => state.storage);
+    const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { dappDirectSignModal, modalData } = useAppSelector((state) => state.modal);
+
     const { Certified } = useDappCertified();
 
-    const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
-    const defaultFee = convertToFctNumber(CHAIN_NETWORK[storage.network].FIRMACHAIN_CONFIG.defaultFee);
+    const connectClient = new ConnectClient(CHAIN_NETWORK[network].RELAY_HOST);
+    const defaultFee = convertToFctNumber(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG.defaultFee);
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [openValidationModal, setOpenValidationModal] = useState(false);
@@ -66,15 +79,15 @@ const DappDirectSignModal = () => {
     };
 
     const isVisible = useMemo(() => {
-        return modal.dappDirectSignModal;
-    }, [modal.dappDirectSignModal]);
+        return dappDirectSignModal;
+    }, [dappDirectSignModal]);
 
     const QRData = useMemo(() => {
         if (isVisible) {
-            return modal.modalData;
+            return modalData;
         }
         return null;
-    }, [modal.modalData, isVisible]);
+    }, [modalData, isVisible]);
 
     const MessageType = useMemo(() => {
         if (QRData === null || QRData.signParams.argument?.messageType === undefined) return null;
@@ -97,7 +110,7 @@ const DappDirectSignModal = () => {
 
     const getBalance = async () => {
         try {
-            const balanceResult = await getBalanceFromAdr(wallet.address);
+            const balanceResult = await getBalanceFromAdr(walletAddress);
             setBalance(convertNumber(makeDecimalPoint(convertToFctNumber(balanceResult), 2)));
             setIsGetBalanceData(true);
         } catch (error) {
@@ -112,8 +125,8 @@ const DappDirectSignModal = () => {
 
     const getTokenBalanceFromDenom = async (denom: string) => {
         try {
-            let result = await getTokenBalance(wallet.address, denom);
-            let token = convertToFctNumber(result);
+            const result = await getTokenBalance(walletAddress, denom);
+            const token = convertToFctNumber(result);
             setTokenBalance(token);
             setIsGetTokenBalanceData(true);
         } catch (error) {
@@ -124,10 +137,10 @@ const DappDirectSignModal = () => {
     useEffect(() => {
         if (QRData) {
             try {
-                let _productName = QRData.signParams.argument?.name === undefined ? '' : QRData.signParams.argument.name;
+                const _productName = QRData.signParams.argument?.name === undefined ? '' : QRData.signParams.argument.name;
                 setProductName(_productName);
 
-                let _companyName = QRData.signParams.argument?.corpName === undefined ? '' : QRData.signParams.argument.corpName;
+                const _companyName = QRData.signParams.argument?.corpName === undefined ? '' : QRData.signParams.argument.corpName;
                 setCompanyName(_companyName);
 
                 if (QRData.signParams.argument?.fctPrice !== undefined) {
@@ -194,13 +207,13 @@ const DappDirectSignModal = () => {
     };
 
     const handleValidation = (open: boolean) => {
-        if (common.appState === 'active') {
+        if (appState === 'active') {
             setOpenValidationModal(open);
         }
     };
 
     const handleTransaction = (result: string) => {
-        if (common.appState === 'active') {
+        if (appState === 'active') {
             ModalActions.handleDAppData({
                 type: TRANSACTION_TYPE['DAPP'],
                 password: result,
@@ -216,7 +229,7 @@ const DappDirectSignModal = () => {
         const initializeModalData = async () => {
             try {
                 setChainId(getFirmaSDK().Config.chainID);
-                let session = await getDAppConnectSession(wallet.name + storage.network);
+                const session = await getDAppConnectSession(walletName + network);
                 setUserSession(session);
             } catch (error) {
                 console.log(error);
@@ -250,8 +263,8 @@ const DappDirectSignModal = () => {
     }, [isVisible]);
 
     useEffect(() => {
-        if (common.appState !== 'active' && common.isBioAuthInProgress === false) closeModal();
-    }, [common.appState]);
+        if (appState !== 'active' && isBioAuthInProgress === false) closeModal();
+    }, [appState]);
 
     return (
         <CustomModal visible={isLoadedAllBalanceData} handleOpen={closeModal}>
@@ -261,7 +274,7 @@ const DappDirectSignModal = () => {
                         <DappURLBox certifiedState={isCertified} url={url} />
                         <DappTitleBox title={title} descExist={false} iconURL={iconUrl} />
                         <ProductInfoBox productName={productName} productPrice={productPrice} />
-                        <MyInfoBox address={wallet.address} balance={balance} />
+                        <MyInfoBox address={walletAddress} balance={balance} />
 
                         {QRData !== null ? (
                             MessageType === null ? (
@@ -330,48 +343,48 @@ const styles = StyleSheet.create({
     boxV: {
         width: '100%',
         alignItems: 'flex-start'
-    },
-    desc: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextDarkGrayColor,
-        paddingBottom: 20
-    },
-
-    productBox: {
-        width: '100%',
-        alignItems: 'center',
-        backgroundColor: DisableColor,
-        padding: 20,
-        borderRadius: 8
-    },
-    productTitle: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextCatTitleColor
-    },
-    productPrice: {
-        fontFamily: Lato,
-        fontSize: 26,
-        fontWeight: '600',
-        color: TextColor,
-        paddingRight: 6,
-        paddingTop: 8
-    },
-
-    catTitle: {
-        flex: 1,
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextDarkGrayColor
-    },
-    value: {
-        flex: 1,
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextDarkGrayColor,
-        textAlign: 'right'
     }
+    //   desc: {
+    //     fontFamily: Lato,
+    //     fontSize: 14,
+    //     color: TextDarkGrayColor,
+    //     paddingBottom: 20,
+    //   },
+
+    //   productBox: {
+    //     width: '100%',
+    //     alignItems: 'center',
+    //     backgroundColor: DisableColor,
+    //     padding: 20,
+    //     borderRadius: 8,
+    //   },
+    //   productTitle: {
+    //     fontFamily: Lato,
+    //     fontSize: 14,
+    //     color: TextCatTitleColor,
+    //   },
+    //   productPrice: {
+    //     fontFamily: Lato,
+    //     fontSize: 26,
+    //     fontWeight: '600',
+    //     color: TextColor,
+    //     paddingRight: 6,
+    //     paddingTop: 8,
+    //   },
+
+    //   catTitle: {
+    //     flex: 1,
+    //     fontFamily: Lato,
+    //     fontSize: 14,
+    //     color: TextDarkGrayColor,
+    //   },
+    //   value: {
+    //     flex: 1,
+    //     fontFamily: Lato,
+    //     fontSize: 14,
+    //     color: TextDarkGrayColor,
+    //     textAlign: 'right',
+    //   },
 });
 
 export default DappDirectSignModal;

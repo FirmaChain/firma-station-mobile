@@ -1,10 +1,12 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import { ModalActions } from '@/redux/actions';
-import { QRCodeScannerIcon, QuestionFilledCircle, Setting } from '@/components/icon/icon';
+import React, { ReactNode } from 'react';
 import { ICON_HISTORY } from '@/constants/images';
 import { BgColor, GrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
+import { ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { QRCodeScannerIcon, QuestionFilledCircle, Setting } from '@/components/icon/icon';
+
 import NetworkBadge from '../networkBadge';
 
 interface IProps {
@@ -12,11 +14,11 @@ interface IProps {
     settingNavEvent: Function;
     historyNavEvent: Function;
     handleGuide?: () => void;
-    children: JSX.Element;
+    children: ReactNode;
 }
 
 const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, children }: IProps) => {
-    const { storage } = useAppSelector(state => state);
+    const { network } = useAppSelector((state) => state.storage);
 
     const handleQRScanner = async (active: boolean) => {
         ModalActions.handleQRScannerModal(active);
@@ -26,11 +28,11 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
     };
 
     const handleMoveToSetting = () => {
-        settingNavEvent && settingNavEvent();
+        if (settingNavEvent) settingNavEvent();
     };
 
     const handleMoveToHistory = () => {
-        historyNavEvent && historyNavEvent();
+        if (historyNavEvent) historyNavEvent();
     };
 
     return (
@@ -53,7 +55,8 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
                     <TouchableOpacity
                         hitSlop={{ top: 5, bottom: 5, left: 10, right: 10 }}
                         style={{ marginHorizontal: 25 }}
-                        onPress={() => handleMoveToHistory()}>
+                        onPress={() => handleMoveToHistory()}
+                    >
                         <Image style={{ width: 30, height: 30, resizeMode: 'contain' }} source={ICON_HISTORY} />
                     </TouchableOpacity>
 
@@ -61,7 +64,7 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
                         <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
                 </View>
-                {storage.network !== 'MainNet' && <NetworkBadge top={-20} title={storage.network} />}
+                {network !== 'MainNet' && <NetworkBadge top={-20} title={network} />}
             </View>
             {children}
         </View>
@@ -71,11 +74,11 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: BgColor,
+        backgroundColor: BgColor
     },
     boxH: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     titleContainer: {
         width: '100%',
@@ -84,20 +87,20 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        flexDirection: 'row',
+        flexDirection: 'row'
     },
     title: {
         fontFamily: Lato,
         fontSize: 28,
         fontWeight: 'bold',
-        color: TextColor,
+        color: TextColor
     },
     guide: {
         paddingLeft: 5,
         paddingRight: 10,
         paddingVertical: 10,
-        marginTop: 3,
-    },
+        marginTop: 3
+    }
 });
 
 export default TabContainer;

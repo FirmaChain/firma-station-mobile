@@ -1,18 +1,21 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, BoxColor, Lato, TextColor } from '@/constants/theme';
-import { getWalletList, removeRecoverType, removeUseBioAuth, removeWallet, setWalletList } from '@/util/wallet';
-import DeleteWalletModal from '../modal/deleteWalletModal';
-import Toast from 'react-native-toast-message';
 import { useAppSelector } from '@/redux/hooks';
+import { getWalletList, removeRecoverType, removeUseBioAuth, removeWallet, setWalletList } from '@/util/wallet';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
+import DeleteWalletModal from '../modal/deleteWalletModal';
 
 interface IProps {
-    wallet: any;
+    walletName: string;
+    walletAddress: string;
     handleDisconnect: () => void;
 }
 
-const Delete = ({ wallet, handleDisconnect }: IProps) => {
-    const { storage } = useAppSelector((state) => state);
+const Delete = ({ walletName, walletAddress, handleDisconnect }: IProps) => {
+    const { recoverType } = useAppSelector((state) => state.storage);
+
     const [openDelModal, setOpenDelModal] = useState(false);
     const handleDelModal = (open: boolean) => {
         setOpenDelModal(open);
@@ -20,16 +23,16 @@ const Delete = ({ wallet, handleDisconnect }: IProps) => {
 
     const handleDeleteWallet = useCallback(async () => {
         try {
-            removeRecoverType(storage.recoverType, wallet.address);
-            await removeWallet(wallet.name);
-            await removeUseBioAuth(wallet.name);
+            removeRecoverType(recoverType, walletAddress);
+            await removeWallet(walletName);
+            await removeUseBioAuth(walletName);
 
             let newList: string = '';
             const result = await getWalletList();
-            let arr = result ? result : [];
+            const arr = result ? result : [];
 
             if (arr.length >= 1) {
-                arr.filter((item) => item !== wallet.name).map((item) => {
+                arr.filter((item) => item !== walletName).map((item) => {
                     newList += item + '/';
                 });
                 newList = newList.slice(0, -1);
@@ -44,7 +47,7 @@ const Delete = ({ wallet, handleDisconnect }: IProps) => {
                 text1: String(error)
             });
         }
-    }, [storage.recoverType, wallet.name]);
+    }, [recoverType, walletName]);
 
     return (
         <View>
@@ -55,7 +58,7 @@ const Delete = ({ wallet, handleDisconnect }: IProps) => {
             </TouchableOpacity>
 
             <DeleteWalletModal
-                walletName={wallet.name}
+                walletName={walletName}
                 open={openDelModal}
                 setOpenModal={handleDelModal}
                 deleteWallet={handleDeleteWallet}

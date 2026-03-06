@@ -1,37 +1,45 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { AppState, Dimensions, Platform, StyleSheet, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import { CommonActions, StorageActions } from '@/redux/actions';
-import { convertNumber, getTimeStamp, wait } from '@/util/common';
-import { Detect } from '@/util/detect';
-import { BgColor } from '@/constants/theme';
-import { JAILBREAK_ALERT, MAINTENANCE_ERROR, setNetworkData } from '@/constants/common';
-import { MaintenanceModal, QRCodeScannerModal, UpdateModal } from '@/components/modal';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { setClient } from '@/apollo';
-import { setFirmaSDK } from '@/util/firma';
+import { VERSION } from '@/../config';
 import { setApiAddress } from '@/api';
 import { getValidatorsProfile } from '@/api/validator.api';
+import { setClient } from '@/apollo';
+import { JAILBREAK_ALERT, MAINTENANCE_ERROR, setNetworkData } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
+import { CommonActions, StorageActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
 import { IValidatorsProfileState } from '@/redux/reducers/storageReducer';
-import { useServerMessage } from '@/hooks/common/hooks';
+import { convertNumber, getTimeStamp, wait } from '@/util/common';
+import { Detect } from '@/util/detect';
+import { setFirmaSDK } from '@/util/firma';
 import { VersionCheck } from '@/util/validationCheck';
-import { VERSION } from '@/../config';
-import SplashScreen from 'react-native-splash-screen';
-import Progress from '@/components/parts/progress';
-import AlertModal from '@/components/modal/alertModal';
-import ValidationModal from '@/components/modal/validationModal';
-import DeepLinkManager from './deepLinkManager';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { AppState, Dimensions, Platform, StyleSheet, View } from 'react-native';
+
+import { useServerMessage } from '@/hooks/common/hooks';
+import { MaintenanceModal, QRCodeScannerModal, UpdateModal } from '@/components/modal';
+import AlertModal from '@/components/modal/alertModal';
+import ValidationModal from '@/components/modal/validationModal';
+// import SplashScreen from 'react-native-splash-screen';
+import Progress from '@/components/parts/progress';
+
 import { Screens, StackParamList } from './appRoutes';
+import DeepLinkManager from './deepLinkManager';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
 const { width, height } = Dimensions.get('window');
 
 const AppStateManager = () => {
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+    const { network, validatorsProfile, currency } = useAppSelector((state) => state.storage);
+    const { lockStation, appState, appPausedTime, connect, isNetworkChanged, loggedIn, loading, isBioAuthInProgress } = useAppSelector(
+        (state) => state.common
+    );
+    const { qrScannerModal } = useAppSelector((state) => state.modal);
+
     const netInfo = useNetInfo();
-    const { wallet, storage, common, modal } = useAppSelector(state => state);
     const { minAppVer, maintenanceState, getMaintenanceData } = useServerMessage();
 
     const [maintenanceHealthCheck, setMaintenanceHealthCheck] = useState<boolean>(true);
@@ -46,9 +54,9 @@ const AppStateManager = () => {
         try {
             const result: IValidatorsProfileState = (await getValidatorsProfile()).data;
             const lastUpdatedTime = result.lastUpdatedTime;
-            const storageInfoExist = storage.validatorsProfile !== undefined;
+            const storageInfoExist = validatorsProfile !== undefined;
 
-            if (storageInfoExist === false || (storage.validatorsProfile.lastUpdatedTime !== lastUpdatedTime && lastUpdatedTime !== 0)) {
+            if (storageInfoExist === false || (validatorsProfile.lastUpdatedTime !== lastUpdatedTime && lastUpdatedTime !== 0)) {
                 StorageActions.handleValidatorsProfile(result);
             }
         } catch (error) {
@@ -59,15 +67,15 @@ const AppStateManager = () => {
     const handleInitialize = useCallback(() => {
         CommonActions.handleLoggedIn(false);
         CommonActions.handleIsConnection(true);
-        setClient(storage.network);
-        setFirmaSDK(storage.network);
-        setApiAddress(storage.network);
-        setNetworkData(storage.network);
+        setClient(network);
+        setFirmaSDK(network);
+        setApiAddress(network);
+        setNetworkData(network);
 
         CommonActions.handleAppPausedTime('');
         CommonActions.handleAppState('active');
         CommonActions.handleLockStation(false);
-        if (storage.currency === undefined) {
+        if (currency === undefined) {
             StorageActions.handleCurrency('USD');
         }
         handleValidatorsProfile();
@@ -101,11 +109,11 @@ const AppStateManager = () => {
     const handleJailbreakDetect = useCallback(() => {
         if (Detect() === false) {
             setOpenAlertModal(false);
-            if (wallet.name === '') {
+            if (walletName === '') {
                 CommonActions.handleAppPausedTime('');
             }
-            if (common.appPausedTime !== '' && common.appState === 'active') {
-                if (convertNumber(getTimeStamp()) - convertNumber(common.appPausedTime) >= 60) {
+            if (appPausedTime !== '' && appState === 'active') {
+                if (convertNumber(getTimeStamp()) - convertNumber(appPausedTime) >= 60) {
                     CommonActions.handleDataLoadStatus(0);
                     CommonActions.handleLockStation(true);
                 } else {
@@ -115,22 +123,22 @@ const AppStateManager = () => {
         } else {
             return handleAlertModalOpen(true);
         }
-    }, [common.appState, common.appPausedTime]);
+    }, [appState, appPausedTime]);
 
     const handleLoadingProgress = useCallback(() => {
-        if (common.lockStation === false && (common.connect === false || common.isNetworkChanged)) {
+        if (lockStation === false && (connect === false || isNetworkChanged)) {
             CommonActions.handleLoadingProgress(true);
         }
-    }, [common.lockStation, common.connect, common.isNetworkChanged]);
+    }, [lockStation, connect, isNetworkChanged]);
 
     const handleLoadingProgressWithNetworkChange = useCallback(() => {
-        if (common.loggedIn) {
+        if (loggedIn) {
             wait(3000).then(() => {
                 CommonActions.handleIsNetworkChange(false);
                 CommonActions.handleLoadingProgress(false);
             });
         }
-    }, [common.loggedIn]);
+    }, [loggedIn]);
 
     useEffect(() => {
         handleInitialize();
@@ -140,7 +148,7 @@ const AppStateManager = () => {
         wait(300).then(() => {
             handleJailbreakDetect();
         });
-    }, [common.appState, common.appPausedTime]);
+    }, [appState, appPausedTime]);
 
     useEffect(() => {
         if (minAppVer !== undefined) {
@@ -179,27 +187,28 @@ const AppStateManager = () => {
     }, [update, maintenanceState]);
 
     useEffect(() => {
-        if (wallet.name === '') {
+        if (walletName === '') {
             return;
         }
-        const appStateListener = AppState.addEventListener('change', nextAppState => {
+        const appStateListener = AppState.addEventListener('change', (nextAppState) => {
             CommonActions.handleAppState(nextAppState);
 
             const key = Platform.OS === 'ios' ? 'inactive' : 'background';
-            if (nextAppState === key) {
+            // Do not treat biometric system prompt transitions as app pause.
+            if (nextAppState === key && isBioAuthInProgress === false) {
                 CommonActions.handleAppPausedTime(getTimeStamp());
             }
         });
         return () => {
             appStateListener.remove();
         };
-    }, [wallet.name]);
+    }, [walletName, isBioAuthInProgress]);
 
     useEffect(() => {
         const connect = netInfo.isConnected; // netInfo.isConnected === null ? false : netInfo.isConnected;
-        if (connect === false) {
-            SplashScreen.hide();
-        }
+        // if (connect === false) {
+        //     SplashScreen.hide();
+        // }
         CommonActions.handleIsNetworkChange(false);
         CommonActions.handleLoadingProgress(!connect);
         CommonActions.handleIsConnection(connect);
@@ -209,24 +218,24 @@ const AppStateManager = () => {
         if (navigation.getState()) {
             handleLoadingProgress();
         }
-    }, [common.connect, common.isNetworkChanged, common.lockStation]);
+    }, [connect, isNetworkChanged, lockStation]);
 
     useEffect(() => {
         handleLoadingProgressWithNetworkChange();
-    }, [storage.network]);
+    }, [network]);
 
     return (
         <React.Fragment>
-            {common.loading && <Progress />}
-            {wallet.name !== '' && common.loggedIn && (
+            {loading && <Progress />}
+            {walletName !== '' && loggedIn && (
                 <React.Fragment>
-                    {common.isBioAuthInProgress === false && common.appState !== 'active' && <View style={styles.dim} />}
-                    {common.isBioAuthInProgress === false && common.appPausedTime !== '' && <View style={styles.dim} />}
+                    {isBioAuthInProgress === false && appState !== 'active' && appPausedTime !== '' && <View style={styles.dim} />}
+                    {isBioAuthInProgress === false && appPausedTime !== '' && <View style={styles.dim} />}
                     <DeepLinkManager />
-                    <ValidationModal type={'lock'} open={common.lockStation} setOpenModal={handleUnlock} validationHandler={handleUnlock} />
+                    <ValidationModal type={'lock'} open={lockStation} setOpenModal={handleUnlock} validationHandler={handleUnlock} />
                 </React.Fragment>
             )}
-            {modal.qrScannerModal && <QRCodeScannerModal />}
+            {qrScannerModal && <QRCodeScannerModal />}
             {openAlertModal && (
                 <React.Fragment>
                     <View style={styles.dim} />
@@ -265,8 +274,8 @@ const styles = StyleSheet.create({
         backgroundColor: BgColor,
         opacity: 1,
         top: 0,
-        left: 0,
-    },
+        left: 0
+    }
 });
 
 export default AppStateManager;

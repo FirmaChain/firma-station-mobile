@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { BgColor, BoxColor, Lato, TextCatTitleColor, TextDisableColor } from '@/constants/theme';
 import { CHAIN_NETWORK } from '@/../config';
-import { useAppSelector } from '@/redux/hooks';
-import { StorageActions } from '@/redux/actions';
-import { wait } from '@/util/common';
-import { fadeIn } from '@/util/animation';
-import ConnectClient, { ProjectList } from '@/util/connectClient';
-import DappsSkeleton from '@/components/skeleton/dappsSkeleton';
+import { BgColor, BoxColor, Lato, TextCatTitleColor, TextDisableColor } from '@/constants/theme';
 import { useDappsContext } from '@/context/dappsContext';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { StorageActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { fadeIn } from '@/util/animation';
+import { wait } from '@/util/common';
+import ConnectClient, { ProjectList } from '@/util/connectClient';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import DappsSkeleton from '@/components/skeleton/dappsSkeleton';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Dapps>;
 
@@ -20,23 +21,24 @@ const itemCountPerLine = 2;
 const Dapps = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    const { setSelectedTabIndex, setData } = useDappsContext()
+    const { setSelectedTabIndex, setData } = useDappsContext();
 
-    const { storage } = useAppSelector((state) => state);
-    const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const { network, contentVolume, dappServicesVolume } = useAppSelector((state) => state.storage);
+
+    const connectClient = new ConnectClient(CHAIN_NETWORK[network].RELAY_HOST);
     const fadeAnimDapp = useRef(new Animated.Value(0)).current;
 
     const [containerSize, setContainerSize] = useState(0);
     const [projectList, setProjectList] = useState<Array<any>>([]);
 
     const dappsVolumes = useMemo(() => {
-        if (storage.contentVolume?.dapps === undefined) return null;
-        return storage.contentVolume.dapps;
-    }, [storage.contentVolume]);
+        if (contentVolume?.dapps === undefined) return null;
+        return contentVolume.dapps;
+    }, [contentVolume]);
 
     const itemsSkeleton = useMemo(() => {
         if (dappsVolumes === null) return [];
-        let array = Array.from({ length: Number(dappsVolumes) });
+        const array = Array.from({ length: Number(dappsVolumes) });
         return array;
     }, [dappsVolumes]);
 
@@ -46,9 +48,9 @@ const Dapps = () => {
 
     const getProjectList = async () => {
         try {
-            let list: ProjectList = await connectClient.getProjects();
+            const list: ProjectList = await connectClient.getProjects();
             StorageActions.handleContentVolume({
-                ...storage.contentVolume,
+                ...contentVolume,
                 dapps: list.projectList.length
             });
 
@@ -92,7 +94,7 @@ const Dapps = () => {
             if (projectList.length >= dappsVolumes || projectList.length > 0) {
                 fadeIn(Animated, fadeAnimDapp, 500);
 
-                let list = storage.dappServicesVolume;
+                let list = dappServicesVolume;
                 projectList.map((value) => {
                     list = { ...list, [value.identity]: value.serviceList.length };
                     StorageActions.handleDappServicesVolume(list);
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        paddingHorizontal: 10,
+        paddingHorizontal: 10
     },
     contentWrap: {
         marginBottom: 20

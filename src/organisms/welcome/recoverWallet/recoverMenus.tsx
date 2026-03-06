@@ -1,6 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
 import { TextCatTitleColor } from '@/constants/theme';
+import { View } from 'react-native';
+
 import Button from '@/components/button/button';
 
 interface IProps {

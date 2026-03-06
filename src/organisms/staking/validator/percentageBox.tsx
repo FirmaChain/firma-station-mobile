@@ -1,8 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { IValidatorData } from '@/hooks/staking/hooks';
-import { useAppSelector } from '@/redux/hooks';
-import { convertAmount } from '@/util/common';
+import { CHAIN_SYMBOL } from '@/constants/common';
 import {
     BoxColor,
     DividerColor,
@@ -13,19 +10,24 @@ import {
     TextDisableColor,
     TextGrayColor
 } from '@/constants/theme';
-import { CHAIN_SYMBOL } from '@/constants/common';
+import { useAppSelector } from '@/redux/hooks';
+import { convertAmount } from '@/util/common';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+
+import { IValidatorData } from '@/hooks/staking/hooks';
 
 interface IProps {
     data: IValidatorData | undefined;
 }
 
-const cols = 2;
-const marginHorizontal = 0;
-const marginVertical = 4;
-const width = Dimensions.get('window').width / cols - marginHorizontal * (cols + 1);
+// const cols = 2;
+// const marginHorizontal = 0;
+// const marginVertical = 4;
+// const width = Dimensions.get('window').width / cols - marginHorizontal * (cols + 1);
 
 const PercentageBox = ({ data }: IProps) => {
-    const { storage } = useAppSelector((state) => state);
+    const { network } = useAppSelector((state) => state.storage);
+
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const DataExist = useMemo(() => {
@@ -63,7 +65,7 @@ const PercentageBox = ({ data }: IProps) => {
                 }
             ];
         return data.state;
-    }, [storage.network, data]);
+    }, [network, data]);
 
     const APR = useMemo(() => {
         if (data === undefined) return 0;
@@ -91,7 +93,7 @@ const PercentageBox = ({ data }: IProps) => {
     );
 
     return (
-        <View style={[styles.container]}>
+        <View style={styles.container}>
             <View style={[styles.box, { paddingHorizontal: 20, paddingVertical: 18, marginBottom: 16 }]}>
                 <View style={[styles.wrapperH, { flex: 1, justifyContent: 'space-around' }]}>
                     <Text style={styles.title}>APR</Text>
@@ -119,7 +121,11 @@ const PercentageBox = ({ data }: IProps) => {
                                                 <Text
                                                     style={[
                                                         styles.data,
-                                                        { fontSize: 22, paddingBottom: 6, color: DataExist ? TextColor : TextDisableColor }
+                                                        {
+                                                            fontSize: 22,
+                                                            paddingBottom: 6,
+                                                            color: DataExist ? TextColor : TextDisableColor
+                                                        }
                                                     ]}
                                                 >
                                                     {handlePercentage(item.data)}
@@ -188,15 +194,15 @@ const styles = StyleSheet.create({
         fontWeight: 'normal',
         fontSize: 13,
         color: TextGrayColor
-    },
-    borderBox: {
-        width: width,
-        marginTop: marginVertical,
-        marginBottom: marginVertical,
-        marginLeft: marginHorizontal,
-        marginRight: marginHorizontal,
-        alignItems: 'center'
     }
+    // borderBox: {
+    //     width: width,
+    //     marginTop: marginVertical,
+    //     marginBottom: marginVertical,
+    //     marginLeft: marginHorizontal,
+    //     marginRight: marginHorizontal,
+    //     alignItems: 'center'
+    // }
 });
 
 export default PercentageBox;

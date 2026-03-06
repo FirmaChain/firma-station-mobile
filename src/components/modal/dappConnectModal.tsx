@@ -1,23 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import { CommonActions, ModalActions } from '@/redux/actions';
-import { setDAppProjectIdList } from '@/util/wallet';
-import { wait } from '@/util/common';
-import { Lato, TextDarkGrayColor } from '@/constants/theme';
-import { DAPP_SERVICE_CONNECTION, DAPP_SERVICE_CONNECTION_DESCRIPTION_1, DAPP_SERVICE_CONNECTION_DESCRIPTION_2 } from '@/constants/common';
-import { useDappCertified } from '@/hooks/dapps/hooks';
 import { CHAIN_NETWORK } from '@/../config';
-import CustomModal from './customModal';
+import { DAPP_SERVICE_CONNECTION, DAPP_SERVICE_CONNECTION_DESCRIPTION_1, DAPP_SERVICE_CONNECTION_DESCRIPTION_2 } from '@/constants/common';
+import { CommonActions, ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { wait } from '@/util/common';
 import ConnectClient from '@/util/connectClient';
-import DappURLBox from './dappParts/dappURLBox';
-import DappTitleBox from './dappParts/dappTitleBox';
+import { setDAppProjectIdList } from '@/util/wallet';
+import { StyleSheet, View } from 'react-native';
+
+import { useDappCertified } from '@/hooks/dapps/hooks';
+
+import CustomModal from './customModal';
 import DappButtonBox from './dappParts/dappButtonBox';
+import DappTitleBox from './dappParts/dappTitleBox';
+import DappURLBox from './dappParts/dappURLBox';
 
 const DappConnectModal = () => {
-    const { storage, common, wallet, modal } = useAppSelector((state) => state);
+    const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
+    const { network } = useAppSelector((state) => state.storage);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+    const { dappConnectModal, modalData } = useAppSelector((state) => state.modal);
+
     const { Certified } = useDappCertified();
-    const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const connectClient = new ConnectClient(CHAIN_NETWORK[network].RELAY_HOST);
 
     const [url, setUrl] = useState('');
     const [iconUrl, setIconUrl] = useState('');
@@ -25,26 +30,23 @@ const DappConnectModal = () => {
     const [dappName, setDappName] = useState('');
 
     const isVisible = useMemo(() => {
-        return modal.dappConnectModal;
-    }, [modal.dappConnectModal]);
+        return dappConnectModal;
+    }, [dappConnectModal]);
 
     useEffect(() => {
         CommonActions.handleLoadingProgress(false);
     }, [isVisible]);
 
     const QRData = useMemo(() => {
-        if (isVisible) {
-            return modal.modalData.data;
-        }
-        return null;
-    }, [modal.modalData, isVisible]);
+        return isVisible ? (modalData?.data ?? null) : null;
+    }, [modalData, isVisible]);
 
     const IdState = useMemo(() => {
         if (isVisible) {
-            return modal.modalData.idState;
+            return modalData.idState;
         }
         return null;
-    }, [modal.modalData, isVisible]);
+    }, [modalData, isVisible]);
 
     useEffect(() => {
         if (QRData) {
@@ -70,10 +72,10 @@ const DappConnectModal = () => {
 
     const handleConnect = async () => {
         handleModal(false);
-        if (common.appState === 'active') {
+        if (appState === 'active') {
             try {
-                let updateList = JSON.stringify(IdState.list);
-                await setDAppProjectIdList(wallet.name, storage.network, updateList);
+                const updateList = JSON.stringify(IdState.list);
+                await setDAppProjectIdList(walletName, network, updateList);
                 ModalActions.handleModalData(QRData);
                 if (connectClient.isDirectSign(QRData)) {
                     wait(500).then(() => {
@@ -91,8 +93,8 @@ const DappConnectModal = () => {
     };
 
     useEffect(() => {
-        if (common.appState !== 'active' && common.isBioAuthInProgress === false) handleCloseModal();
-    }, [common.appState]);
+        if (appState !== 'active' && isBioAuthInProgress === false) handleCloseModal();
+    }, [appState]);
 
     return (
         <CustomModal visible={isVisible} handleOpen={handleModal}>
@@ -123,21 +125,21 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'flex-start'
     },
-    desc: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextDarkGrayColor
-    },
+    //   desc: {
+    //     fontFamily: Lato,
+    //     fontSize: 14,
+    //     color: TextDarkGrayColor,
+    //   },
     modalTextContents: {
         width: '100%',
         padding: 20
-    },
-    modalButtonBox: {
-        paddingTop: 30,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
     }
+    //   modalButtonBox: {
+    //     paddingTop: 30,
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     justifyContent: 'space-between',
+    //   },
 });
 
 export default DappConnectModal;

@@ -1,5 +1,5 @@
-import gql from 'graphql-tag';
 import { getClient } from '@/apollo';
+import gql from 'graphql-tag';
 
 interface IQueryParam {
     proposalId?: string;
@@ -27,8 +27,8 @@ export const getProposalData = async ({ proposalId }: IQueryParam) => {
             }
           }
         `,
-        notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'no-cache',
+        // notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'no-cache'
     });
 };
 
@@ -53,12 +53,12 @@ export const getHistoryByAddressData = async ({ address, offset, limit }: IQuery
                 }
             }
         `,
-        notifyOnNetworkStatusChange: true,
+        // notifyOnNetworkStatusChange: true,
         fetchPolicy: 'no-cache',
         variables: {
             address,
             limit,
-            offset,
-        },
+            offset
+        }
     });
 };

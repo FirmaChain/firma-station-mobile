@@ -2,7 +2,7 @@ import { FirmaUtil } from '@firmachain/firma-js';
 import moment from 'moment';
 
 export const wait = (timeout: number) => {
-    return new Promise<void>(resolve => setTimeout(() => resolve(), timeout));
+    return new Promise<void>((resolve) => setTimeout(() => resolve(), timeout));
 };
 
 export const updateArray = (array: Array<any>, oldVal: any, newVal: any) => {
@@ -19,7 +19,7 @@ export const convertNumber = (value: string | number | null | undefined) => {
 };
 
 export const convertCurrent = (value: number | string) => {
-    var val = value.toString().split('.');
+    const val = value.toString().split('.');
     val[0] = val[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return val.join('.');
 };
@@ -28,7 +28,7 @@ export const convertAmount = ({
     value,
     isUfct = true,
     point = 2,
-    decimal = null,
+    decimal = null
 }: {
     value: string | number;
     isUfct?: boolean;
@@ -85,10 +85,10 @@ export const convertToFctNumber = (value: string | number) => {
 };
 
 export const createOrdinal = (value: number) => {
-    let number = String(value);
-    let length = number.length;
-    let end = number.substring(length - 1);
-    let teen = length > 1 && number.substring(length - 2, length - 1) === '1';
+    const number = String(value);
+    const length = number.length;
+    const end = number.substring(length - 1);
+    const teen = length > 1 && number.substring(length - 2, length - 1) === '1';
     let ordinal = 'th';
 
     if (end === '1' && !teen) {
@@ -160,12 +160,12 @@ export const convertTimerText = (time: string) => {
 
     return {
         diff: diff,
-        time: timeResult,
+        time: timeResult
     };
 };
 
 export const getGMT = () => {
-    let date = new Date();
+    const date = new Date();
     const offset = date.getTimezoneOffset();
     const GMT = offset / 60 < 0 ? '+' + Math.abs(offset / 60) : (offset / 60) * -1;
 
@@ -190,7 +190,7 @@ export const createDecimalPoint = (value: number) => {
 };
 
 export const convertPercentage = (value: string | number) => {
-    let percent = convertNumber(value) * 100;
+    const percent = convertNumber(value) * 100;
 
     let result = convertCurrent(makeDecimalPoint(percent));
     if (percent >= 1e3 && percent < 1e6) {

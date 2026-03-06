@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BoxColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { ForwardArrow } from '@/components/icon/icon';
-import { convertTime, getGMT } from '@/util/common';
 import { EXPLORER_URL, HISTORY_NOT_EXIST } from '@/constants/common';
-import RecentHistorySkeleton from '@/components/skeleton/recentHistorySkeleton';
+import { BoxColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { fadeIn } from '@/util/animation';
+import { convertTime, getGMT } from '@/util/common';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { ForwardArrow } from '@/components/icon/icon';
+import RecentHistorySkeleton from '@/components/skeleton/recentHistorySkeleton';
 
 interface IProps {
     recentHistory: any;
@@ -56,7 +57,12 @@ const HistoryBox = ({ recentHistory, historyVolume, handleHistory, handleExplore
                                 style={[
                                     styles.wrapperH,
                                     styles.wrapper,
-                                    { justifyContent: 'flex-start', alignItems: 'flex-start', paddingTop: 18, flex: 3 }
+                                    {
+                                        justifyContent: 'flex-start',
+                                        alignItems: 'flex-start',
+                                        paddingTop: 18,
+                                        flex: 3
+                                    }
                                 ]}
                             >
                                 <View style={[styles.historyWrapper, { flex: 1 }]}>
@@ -103,9 +109,15 @@ const HistoryBox = ({ recentHistory, historyVolume, handleHistory, handleExplore
 
                             <TouchableOpacity onPress={() => handleExplorer(EXPLORER_URL() + '/transactions/' + historyData.hash)}>
                                 <View style={[styles.wrapper, { paddingBottom: 0 }]}>
-                                    <View style={[styles.historyWrapper]}>
+                                    <View style={styles.historyWrapper}>
                                         <Text style={[styles.contentTitle, { fontSize: 14 }]}>Hash</Text>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between'
+                                            }}
+                                        >
                                             <Text
                                                 style={[styles.contentItem, { fontSize: 14, flex: 1, color: TextAddressColor }]}
                                                 numberOfLines={1}

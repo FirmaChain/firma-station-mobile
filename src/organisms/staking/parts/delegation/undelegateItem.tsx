@@ -1,9 +1,11 @@
 import React, { memo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { convertAmount, convertTime } from '@/util/common';
-import { IUndelegationInfo } from '@/hooks/staking/hooks';
-import { BgColor } from '@/constants/theme';
 import { CHAIN_SYMBOL } from '@/constants/common';
+import { BgColor } from '@/constants/theme';
+import { convertAmount, convertTime } from '@/util/common';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+
+import { IUndelegationInfo } from '@/hooks/staking/hooks';
+
 import DataSection from '../list/dataSection';
 import MonikerSection from '../list/monikerSection';
 
@@ -17,7 +19,7 @@ const UndelegateItem = ({ data, navigate }: IProps) => {
 
     return (
         <TouchableOpacity onPress={() => navigate(data.validatorAddress)}>
-            <View style={[styles.item]}>
+            <View style={styles.item}>
                 <MonikerSection validator={data} />
                 <DataSection title="Amount" data={`${convertAmount({ value: data.balance })} ${_CHAIN_SYMBOL}`} />
                 <DataSection title="Linked Until" data={convertTime(data.completionTime, true)} />

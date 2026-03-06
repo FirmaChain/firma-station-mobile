@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Pressable, Keyboard, Linking } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNavigation } from '@react-navigation/native';
-import { StorageActions, WalletActions } from '@/redux/actions';
-import { useAppSelector } from '@/redux/hooks';
+import { GUIDE_URI } from '@/../config';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
-import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from '@/util/wallet';
-import { PasswordCheck } from '@/util/validationCheck';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { StorageActions, WalletActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
 import { getAddressFromRecoverValue } from '@/util/firma';
-import { GUIDE_URI } from '@/../config';
-import { ModalWalletList } from '@/components/modal';
+import { PasswordCheck } from '@/util/validationCheck';
+import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from '@/util/wallet';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
+import Button from '@/components/button/button';
+import InputSetVertical from '@/components/input/inputSetVertical';
+import { ModalWalletList } from '@/components/modal';
+import CustomModal from '@/components/modal/customModal';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import InputSetVertical from '@/components/input/inputSetVertical';
-import Button from '@/components/button/button';
-import CustomModal from '@/components/modal/customModal';
+
 import WalletSelector from './walletSelector';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWallet>;
@@ -25,7 +27,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWa
 const SelectWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { storage } = useAppSelector((state) => state);
+    const { lastSelectedWalletIndex } = useAppSelector((state) => state.storage);
 
     const [items, setItems] = useState<Array<any> | null>(null);
     const [selected, setSelected] = useState<number>(-1);
@@ -94,7 +96,7 @@ const SelectWallet = () => {
     const onChangePassword = async (value: string) => {
         setPassword(value);
         try {
-            let result = await PasswordCheck(selectedWallet, value);
+            const result = await PasswordCheck(selectedWallet, value);
             if (result) {
                 setPwValidation(true);
                 setMnemonic(result);
@@ -142,7 +144,7 @@ const SelectWallet = () => {
         const initStatus = async () => {
             try {
                 await WalletList();
-                let initIndex = storage.lastSelectedWalletIndex === undefined ? -1 : storage.lastSelectedWalletIndex;
+                const initIndex = lastSelectedWalletIndex === undefined ? -1 : lastSelectedWalletIndex;
                 setSelected(initIndex);
                 if (initIndex >= 0 && items !== null) {
                     setSelectedWallet(items[initIndex]);

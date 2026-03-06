@@ -1,23 +1,24 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
+
 import {
-    APP_STATE,
-    MAINTENANCE_STATE,
-    CURRENT_APP_VERSION,
-    CHAIN_VERSION,
-    SDK_VERSION,
-    SET_REQUEST_ID,
-    CLEAR_REQUEST_ID,
     APP_PAUSED_TIME,
-    LOCK_STATION,
-    HANDLE_LOADING_PROGRESS,
-    HANDLE_SCROLL_TO_TOP,
-    HANDLE_NETWORK_CHANGE_ACTIVATE,
-    IS_BIOAUTH_IN_PROGRESS,
-    IS_NETWORK_CHANGED,
-    IS_CONNECTION,
-    LOGGEDIN,
-    DATA_LOAD_STATUS,
+    APP_STATE,
+    CHAIN_VERSION,
+    CLEAR_REQUEST_ID,
+    CURRENT_APP_VERSION,
     CURRENT_ROUTE,
+    DATA_LOAD_STATUS,
+    HANDLE_LOADING_PROGRESS,
+    HANDLE_NETWORK_CHANGE_ACTIVATE,
+    HANDLE_SCROLL_TO_TOP,
+    IS_BIOAUTH_IN_PROGRESS,
+    IS_CONNECTION,
+    IS_NETWORK_CHANGED,
+    LOCK_STATION,
+    LOGGEDIN,
+    MAINTENANCE_STATE,
+    SDK_VERSION,
+    SET_REQUEST_ID
 } from '../types';
 
 export interface ICommonStateProps {
@@ -58,7 +59,7 @@ const initialState: ICommonStateProps = {
     connect: null, // Default is null, because it's not initialized yet
     loggedIn: false,
     dataLoadStatus: 0,
-    currentRoute: '', // Save current route name. for rootView
+    currentRoute: '' // Save current route name. for rootView
 };
 
 export const ACTION_CREATORS = {
@@ -79,7 +80,7 @@ export const ACTION_CREATORS = {
     IS_CONNECTION: createAction<boolean | null>(IS_CONNECTION),
     LOGGEDIN: createAction<boolean>(LOGGEDIN),
     DATA_LOAD_STATUS: createAction<number>(DATA_LOAD_STATUS),
-    CURRENT_ROUTE: createAction<string>(CURRENT_ROUTE),
+    CURRENT_ROUTE: createAction<string>(CURRENT_ROUTE)
 };
 
 export const ACTIONS = {
@@ -100,10 +101,10 @@ export const ACTIONS = {
     handleIsConnection: ACTION_CREATORS.IS_CONNECTION,
     handleLoggedIn: ACTION_CREATORS.LOGGEDIN,
     handleDataLoadStatus: ACTION_CREATORS.DATA_LOAD_STATUS,
-    handleCurrentRoute: ACTION_CREATORS.CURRENT_ROUTE,
+    handleCurrentRoute: ACTION_CREATORS.CURRENT_ROUTE
 };
 
-const reducer = createReducer(initialState, builder => {
+const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ACTION_CREATORS.APP_STATE, (state, { payload }) => {
         state.appState = payload;
     });
@@ -123,7 +124,7 @@ const reducer = createReducer(initialState, builder => {
         state.requestIds.push(payload);
     });
     builder.addCase(ACTION_CREATORS.CLEAR_REQUEST_ID, (state, { payload }) => {
-        state.requestIds = state.requestIds.filter(v => v !== payload);
+        state.requestIds = state.requestIds.filter((v) => v !== payload);
     });
     builder.addCase(ACTION_CREATORS.APP_PAUSED_TIME, (state, { payload }) => {
         state.appPausedTime = payload;

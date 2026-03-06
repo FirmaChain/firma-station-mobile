@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+    AUTO_ENTERED_AMOUNT_TEXT,
+    CHAIN_SYMBOL,
+    CW_TX_NOTICE_TEXT,
+    // FAVORITE_ADD_SUCCESS,
+    FEE_INSUFFICIENT_NOTICE
+} from '@/constants/common';
 import {
     BgColor,
     BoxColor,
@@ -10,32 +16,27 @@ import {
     PointColor,
     TextCatTitleColor,
     TextColor,
-    WhiteColor,
+    WhiteColor
 } from '@/constants/theme';
-import {
-    AUTO_ENTERED_AMOUNT_TEXT,
-    CHAIN_SYMBOL,
-    CW_TX_NOTICE_TEXT,
-    FAVORITE_ADD_SUCCESS,
-    FEE_INSUFFICIENT_NOTICE,
-} from '@/constants/common';
+import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { convertNumber, convertToFctNumberForInput, wait } from '@/util/common';
+import { getFirmaConfig } from '@/util/firma';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { DownArrow } from '@/components/icon/icon';
+import InputSetVertical from '@/components/input/inputSetVertical';
 import InputSetVerticalForAddress from '@/components/input/inputSetVerticalForAddress';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
-import InputSetVertical from '@/components/input/inputSetVertical';
-import WarnContainer from '@/components/parts/containers/warnContainer';
-import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { FavoritesCreateModal, FavoritesModal } from '@/components/modal';
-import { useAppSelector } from '@/redux/hooks';
-import { rootState } from '@/redux/reducers';
-import { convertNumber, convertToFctNumberForInput, wait } from '@/util/common';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
-import { SendType } from '../common/senTypeSelector';
-import { IBC_SEND_CHAIN_CONFIG, IBCChainState } from '../../../../config';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
-import { DownArrow } from '@/components/icon/icon';
 import CustomModal from '@/components/modal/customModal';
 import ModalIBCChain from '@/components/modal/modalIBCChain';
-import { getFirmaConfig } from '@/util/firma';
+import WarnContainer from '@/components/parts/containers/warnContainer';
+
+import { IBC_SEND_CHAIN_CONFIG, IBCChainState } from '../../../../config';
+// import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import { SendType } from '../common/senTypeSelector';
 
 interface IProps {
     handleSendInfo: (type: string, value: string | number | IBCChainState | null) => void;
@@ -48,7 +49,7 @@ interface IProps {
 const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IProps) => {
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
-    const { modal } = useAppSelector((state: rootState) => state);
+    const { favoriteModal, favoriteCreateModal } = useAppSelector((state) => state.modal);
 
     const [safetyActive, setSafetyActive] = useState(true);
     const [limitAvailable, setLimitAvailable] = useState(0);
@@ -72,12 +73,12 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
     }, [type]);
 
     const openFavoriteModal = useMemo(() => {
-        return modal.favoriteModal;
-    }, [modal.favoriteModal]);
+        return favoriteModal;
+    }, [favoriteModal]);
 
     const openFavoriteCreateModal = useMemo(() => {
-        return modal.favoriteCreateModal;
-    }, [modal.favoriteCreateModal]);
+        return favoriteCreateModal;
+    }, [favoriteCreateModal]);
 
     const handleSendInfoState = (type: string, value: string | number | IBCChainState | null) => {
         handleSendInfo(type, value);
@@ -192,8 +193,9 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
                     <View
                         style={[
                             styles.radioWrapper,
-                            safetyActive ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor },
-                        ]}>
+                            safetyActive ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor }
+                        ]}
+                    >
                         <View style={styles.radio} />
                     </View>
                 </TouchableOpacity>
@@ -249,35 +251,35 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor,
-        marginBottom: 5,
+        marginBottom: 5
     },
     radioBox: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        marginBottom: 10,
+        marginBottom: 10
     },
     radioWrapper: {
         width: 45,
         borderRadius: 20,
         justifyContent: 'center',
-        padding: 3,
+        padding: 3
     },
     radio: {
         width: 18,
         height: 18,
         borderRadius: 50,
-        backgroundColor: WhiteColor,
+        backgroundColor: WhiteColor
     },
     chainContainer: {
         marginBottom: 20,
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
     chainTitle: {
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor,
-        marginBottom: 5,
+        marginBottom: 5
     },
     chainSelectBox: {
         flexDirection: 'row',
@@ -285,12 +287,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         padding: 15,
         backgroundColor: InputBgColor,
-        marginBottom: 5,
+        marginBottom: 5
     },
     chain: {
         fontFamily: Lato,
         fontSize: 14,
-        color: TextColor,
+        color: TextColor
     },
     modalHeaderBox: {
         width: '100%',
@@ -299,14 +301,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: BoxColor,
+        backgroundColor: BoxColor
     },
     modalHeaderTitle: {
         fontFamily: Lato,
         fontSize: 18,
         color: TextCatTitleColor,
-        paddingHorizontal: 10,
-    },
+        paddingHorizontal: 10
+    }
 });
 
 export default SendInputBox;

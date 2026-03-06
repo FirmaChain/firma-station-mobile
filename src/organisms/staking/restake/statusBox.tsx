@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
-import { IStakeInfo, IStakingGrantState } from '@/hooks/staking/hooks';
 import { BorderColor, Lato, TextGrayColor } from '@/constants/theme';
 import { convertTime } from '@/util/common';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { IStakeInfo, IStakingGrantState } from '@/hooks/staking/hooks';
 
 interface IProps {
     grantState: IStakingGrantState;
@@ -16,7 +17,7 @@ const StatusBox = ({ grantState, delegationState, minimumRewards }: IProps) => {
 
     const grantExist = useMemo(() => {
         if (grantState.list.length > 0) {
-            let activation = grantState.list.filter((value) => value.isActive);
+            const activation = grantState.list.filter((value) => value.isActive);
             return activation.length > 0;
         }
     }, [grantState]);

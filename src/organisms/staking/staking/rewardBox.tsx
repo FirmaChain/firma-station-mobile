@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { CommonActions } from '@/redux/actions';
+import { CHAIN_SYMBOL } from '@/constants/common';
 import {
     ButtonPointLightColor,
     DiableButtonPointcolor,
@@ -10,15 +9,17 @@ import {
     TextColor,
     TextLightGrayColor,
     TextPointDisableColor,
-    TextStakingReward,
+    TextStakingReward
 } from '@/constants/theme';
+import { Screens } from '@/navigators/appRoutes';
+import { CommonActions } from '@/redux/actions';
 import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
 import { getEstimateGasFromAllDelegations, getFeesFromGas, getFirmaConfig } from '@/util/firma';
-import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
+import { StyleSheet, Text, View } from 'react-native';
+
 import SmallButton from '@/components/button/smallButton';
 import AlertModal from '@/components/modal/alertModal';
-import { CHAIN_SYMBOL } from '@/constants/common';
-import { Screens } from '@/navigators/appRoutes';
+import TransactionConfirmModal from '@/components/modal/transactionConfirmModal';
 
 interface IProps {
     walletName: string;
@@ -150,33 +151,33 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: PointColor,
+        backgroundColor: PointColor
     },
     divider: {
         width: '100%',
         height: 1,
         marginBottom: 20,
-        backgroundColor: DisableColor,
+        backgroundColor: DisableColor
     },
     boxV: {},
     boxH: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingBottom: 10,
+        paddingBottom: 10
     },
     title: {
         fontFamily: Lato,
         fontSize: 20,
         fontWeight: '600',
-        color: TextLightGrayColor,
+        color: TextLightGrayColor
     },
     desc: {
         fontFamily: Lato,
         fontSize: 28,
         fontWeight: '600',
-        color: TextColor,
-    },
+        color: TextColor
+    }
 });
 
 export default RewardBox;

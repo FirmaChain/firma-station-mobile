@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { CHAIN_SYMBOL } from '@/constants/common';
 import { BorderColor, Lato, TextCatTitleColor, TextColor } from '@/constants/theme';
 import { convertAmount } from '@/util/common';
-import { CHAIN_SYMBOL } from '@/constants/common';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     available: number;
@@ -13,21 +13,28 @@ interface IProps {
     bottomSymbol?: string;
 }
 
-const BalanceInfoMultiLine = ({ available = 0, reward = 0, topTitle = 'Total Delegate', topSymbol = CHAIN_SYMBOL(), bottomTitle = 'Total Reward', bottomSymbol = CHAIN_SYMBOL() }: IProps) => {
+const BalanceInfoMultiLine = ({
+    available = 0,
+    reward = 0,
+    topTitle = 'Total Delegate',
+    topSymbol = CHAIN_SYMBOL(),
+    bottomTitle = 'Total Reward',
+    bottomSymbol = CHAIN_SYMBOL()
+}: IProps) => {
     return (
         <View style={styles.box}>
             <View style={styles.boxH}>
                 <Text style={styles.title}>{topTitle}</Text>
                 <Text style={styles.balance}>
                     {convertAmount({ value: available, point: 6 })}
-                    <Text style={[styles.title]}>{`  ${topSymbol}`}</Text>
+                    <Text style={styles.title}>{`  ${topSymbol}`}</Text>
                 </Text>
             </View>
             <View style={styles.boxH}>
                 <Text style={styles.title}>{bottomTitle}</Text>
                 <Text style={styles.balance}>
                     {convertAmount({ value: reward, point: 6 })}
-                    <Text style={[styles.title]}>{`  ${bottomSymbol}`}</Text>
+                    <Text style={styles.title}>{`  ${bottomSymbol}`}</Text>
                 </Text>
             </View>
         </View>

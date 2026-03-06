@@ -1,19 +1,21 @@
 import React, { useMemo, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { GUIDE_URI } from '@/../config';
+import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { PasswordValidationCheck } from '@/util/validationCheck';
 import { getPrivateKeyFromMnemonic, mnemonicCheck } from '@/util/firma';
+import { PasswordValidationCheck } from '@/util/validationCheck';
 import { getRecoverValue } from '@/util/wallet';
-import { BgColor } from '@/constants/theme';
-import { GUIDE_URI } from '@/../config';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
+import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import Button from '@/components/button/button';
+
 import ExportWalletModal from './exportWalletModal';
 import InputBox from './inputBox';
 
@@ -25,7 +27,8 @@ interface IProps {
 
 const ExportWallet = ({ type }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const { wallet } = useAppSelector((state) => state);
+
+    const { name: walletName } = useAppSelector((state) => state.wallet);
 
     const exportPK = type === 'ExportPK';
     const titleText = useMemo(() => {
@@ -71,11 +74,11 @@ const ExportWallet = ({ type }: IProps) => {
     const getMnemonicFromChain = async (password: string) => {
         try {
             CommonActions.handleLoadingProgress(true);
-            let result = await getRecoverValue(wallet.name, password);
+            const result = await getRecoverValue(walletName, password);
             if (result !== null) {
                 handleModalOpen(false);
                 if (exportPK) {
-                    let isMnemonic = await mnemonicCheck(result);
+                    const isMnemonic = await mnemonicCheck(result);
                     setStatus(1);
 
                     if (isMnemonic) {
@@ -106,7 +109,7 @@ const ExportWallet = ({ type }: IProps) => {
     };
 
     const handleMoveToWeb = () => {
-        let key = type.toLowerCase();
+        const key = type.toLowerCase();
         // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI[key]});
         Linking.openURL(GUIDE_URI[key]);
     };
@@ -143,16 +146,16 @@ const styles = StyleSheet.create({
         flex: 3,
         paddingHorizontal: 20
     },
-    contents: {
-        flex: 2,
-        paddingVertical: 20
-    },
-    wallet: {
-        paddingVertical: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#aaa'
-    },
+    // contents: {
+    //     flex: 2,
+    //     paddingVertical: 20
+    // },
+    // wallet: {
+    //     paddingVertical: 10,
+    //     fontSize: 20,
+    //     fontWeight: 'bold',
+    //     color: '#aaa'
+    // },
     buttonBox: {
         flex: 1,
         justifyContent: 'flex-end'

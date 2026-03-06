@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { InputBgColor, Lato, TextColor, TextGrayColor, WhiteColor } from '@/constants/theme';
+import { useAppSelector } from '@/redux/hooks';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
 import TextButton from '@/components/button/textButton';
-import { useSelector } from 'react-redux';
-import { rootState } from '@/redux/reducers';
 
 interface IProps {
     type: 'mnemonic' | 'privateKey';
@@ -12,7 +12,7 @@ interface IProps {
 }
 
 const InputBox = ({ type, handleRecoverValue }: IProps) => {
-    const isLoading = useSelector((v: rootState) => v.common.loading);
+    const { loading: isLoading } = useAppSelector((state) => state.common);
 
     const [focus, setFocus] = useState(false);
     const [recoverValue, setRecoverValue] = useState('');
@@ -41,14 +41,15 @@ const InputBox = ({ type, handleRecoverValue }: IProps) => {
             <View
                 style={[
                     type === 'mnemonic' ? styles.inputWrapper : styles.inputWrapperForPrivateKey,
-                    { borderColor: focus ? WhiteColor : 'transparent' },
-                ]}>
+                    { borderColor: focus ? WhiteColor : 'transparent' }
+                ]}
+            >
                 <TextInput
                     multiline={true}
                     style={styles.input}
                     value={recoverValue}
                     selectionColor={TextGrayColor}
-                    onChangeText={text => handleRecoverValueInput(text)}
+                    onChangeText={(text) => handleRecoverValueInput(text)}
                     onFocus={() => setFocus(true)}
                     onBlur={() => setFocus(false)}
                     editable={!isLoading}
@@ -62,12 +63,12 @@ const styles = StyleSheet.create({
     wrapperH: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignContent: 'center',
+        alignContent: 'center'
     },
     title: {
         color: TextColor,
         fontFamily: Lato,
-        fontSize: 14,
+        fontSize: 14
     },
     inputWrapperForPrivateKey: {
         color: TextColor,
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
         backgroundColor: InputBgColor,
         borderWidth: 1,
         borderRadius: 4,
-        padding: 8,
+        padding: 8
     },
     inputWrapper: {
         height: 200,
@@ -85,12 +86,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: InputBgColor,
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 4
     },
     input: {
         color: TextColor,
-        flex: 1,
-    },
+        flex: 1
+    }
 });
 
 export default InputBox;

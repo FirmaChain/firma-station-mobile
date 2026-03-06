@@ -1,7 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
 import { BgColor, DividerColor } from '@/constants/theme';
 import ContentLoader, { Rect } from 'react-content-loader/native';
+import { View } from 'react-native';
 
 interface IProps {
     size: number;

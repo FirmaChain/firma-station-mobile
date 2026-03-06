@@ -1,22 +1,20 @@
+import { useCallback } from 'react';
 import { ICON_CW_NFT_THUMBNAIL } from '@/constants/images';
 import { useCWContext } from '@/context/cwContext';
-import { rootState } from '@/redux/reducers';
+import { useAppSelector } from '@/redux/hooks';
 import {
     getCW20Balance,
     getCW20ExtraInfo,
     getCW20TokenInfo,
     getCW721ContractInfo,
-    getCW721NFTImage,
+    // getCW721NFTImage,
     getCW721TotalNFTs,
     getCWContractInfo
 } from '@/util/firma';
-import { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
 export const useCW721 = () => {
-    const { address } = useSelector((state: rootState) => state.wallet);
-    const { network } = useSelector((state: rootState) => state.storage);
-    const { cw721Contracts } = useSelector((state: rootState) => state.storage);
+    const { address } = useAppSelector((state) => state.wallet);
+    const { network, cw721Contracts } = useAppSelector((state) => state.storage);
 
     const nonExistStoreValue = Boolean(cw721Contracts === undefined || cw721Contracts[address] === undefined);
     const { handleUpdateCW721WholeData } = useCWContext();
@@ -87,9 +85,8 @@ export const useCW721 = () => {
 };
 
 export const useCW20 = () => {
-    const { address } = useSelector((state: rootState) => state.wallet);
-    const { network } = useSelector((state: rootState) => state.storage);
-    const { cw20Contracts } = useSelector((state: rootState) => state.storage);
+    const { address } = useAppSelector((state) => state.wallet);
+    const { network, cw20Contracts } = useAppSelector((state) => state.storage);
 
     const nonExist20StoreValue = Boolean(cw20Contracts === undefined || cw20Contracts[address] === undefined);
     const { handleUpdateCW20WholeData } = useCWContext();

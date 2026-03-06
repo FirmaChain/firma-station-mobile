@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
-import { useDelegationData } from '@/hooks/staking/hooks';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { useIsFocused } from '@react-navigation/native';
-import DelegationList from '../parts/delegation/delegationList';
-import ValidatorList from '../parts/validator/validatorList';
-import StakingSkeleton from '@/components/skeleton/stakingSkeleton';
-import RestakeList from '../parts/restake/restakeList';
 import { wait } from '@/util/common';
+import { useIsFocused } from '@react-navigation/native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { useDelegationData } from '@/hooks/staking/hooks';
+import StakingSkeleton from '@/components/skeleton/stakingSkeleton';
+
+import DelegationList from '../parts/delegation/delegationList';
+import RestakeList from '../parts/restake/restakeList';
+import ValidatorList from '../parts/validator/validatorList';
 
 interface IProps {
     isRefresh: boolean;
@@ -18,8 +20,10 @@ interface IProps {
 }
 
 const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps) => {
+    const { dataLoadStatus } = useAppSelector((state) => state.common);
+
     const isFocused = useIsFocused();
-    const { common } = useAppSelector((state) => state);
+
     const { delegationState, redelegationState, undelegationState, stakingGrantState, handleDelegationState } = useDelegationData();
 
     const [tab, setTab] = useState(0);
@@ -33,10 +37,6 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
     const handleDelegationExist = (exist: boolean) => {
         setDelegationExist(exist);
     };
-
-    const VisibleLoading = useMemo(() => {
-        return dataLoading;
-    }, [dataLoading]);
 
     const handleTabFromDelegationData = useCallback(() => {
         if (delegationExist) {
@@ -60,13 +60,14 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
                     .catch((error) => console.log(error));
             } catch (error) {
                 console.log(error);
-                CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+                CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             }
         },
         [tab, isFocused, delegationExist]
     );
 
     const handleTab = async (index: number) => {
+        if (dataLoading) return;
         try {
             if (index === tab) return;
             setTab(index);
@@ -87,15 +88,17 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
     }, [isFocused, isRefresh, tab]);
 
     useEffect(() => {
-        let exist = delegationState.length > 0 || redelegationState.length > 0 || undelegationState.length > 0;
+        const exist = delegationState.length > 0 || redelegationState.length > 0 || undelegationState.length > 0;
         handleDelegationExist(exist);
     }, [delegationState, redelegationState, undelegationState]);
 
     return (
         <View style={styles.listContainer}>
-            <View style={styles.tabBox}>
-                {delegationExist && (
-                    <React.Fragment>
+            {dataLoading ? (
+                <StakingSkeleton />
+            ) : (
+                <>
+                    <View style={styles.tabBox}>
                         <TouchableOpacity
                             style={[styles.tab, { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' }]}
                             onPress={() => handleTab(0)}
@@ -108,53 +111,49 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
                         >
                             <Text style={tab === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>Restake</Text>
                         </TouchableOpacity>
-                    </React.Fragment>
-                )}
-                <TouchableOpacity
-                    style={[styles.tab, { borderBottomColor: tab === 2 ? WhiteColor : 'transparent' }]}
-                    onPress={() => handleTab(2)}
-                >
-                    <Text style={tab === 2 ? styles.tabTitleActive : styles.tabTitleInactive}>Validator</Text>
-                </TouchableOpacity>
-                {delegationExist === false && <View style={[styles.tab, { borderBottomColor: 'transparent' }]}></View>}
-            </View>
-            <View style={{ display: VisibleLoading ? 'none' : 'flex' }}>
-                <DelegationList
-                    visible={tab === 0}
-                    delegationState={delegationState}
-                    redelegationState={redelegationState}
-                    undelegationState={undelegationState}
-                    navigateValidator={navigateValidator}
-                />
-                <RestakeList
-                    visible={tab === 1}
-                    isRefresh={isRefresh}
-                    delegationState={delegationState}
-                    restakeState={stakingGrantState}
-                    handleIsRefresh={handleIsRefresh}
-                    navigateValidator={navigateValidator}
-                />
-                <ValidatorList
-                    visible={tab === 2}
-                    isRefresh={isRefresh}
-                    handleIsRefresh={handleIsRefresh}
-                    navigateValidator={navigateValidator}
-                />
-            </View>
-            <StakingSkeleton visible={VisibleLoading} />
+                        <TouchableOpacity
+                            style={[styles.tab, { borderBottomColor: tab === 2 ? WhiteColor : 'transparent' }]}
+                            onPress={() => handleTab(2)}
+                        >
+                            <Text style={tab === 2 ? styles.tabTitleActive : styles.tabTitleInactive}>Validator</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        {tab === 0 && (
+                            <DelegationList
+                                delegationState={delegationState}
+                                redelegationState={redelegationState}
+                                undelegationState={undelegationState}
+                                navigateValidator={navigateValidator}
+                            />
+                        )}
+                        {tab === 1 && (
+                            <RestakeList
+                                isRefresh={isRefresh}
+                                delegationState={delegationState}
+                                restakeState={stakingGrantState}
+                                handleIsRefresh={handleIsRefresh}
+                                navigateValidator={navigateValidator}
+                            />
+                        )}
+                        {tab === 2 && (
+                            <ValidatorList isRefresh={isRefresh} handleIsRefresh={handleIsRefresh} navigateValidator={navigateValidator} />
+                        )}
+                    </View>
+                </>
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     listContainer: {
-        height: '100%',
         paddingVertical: 15,
-        backgroundColor: BoxColor
+        paddingHorizontal: 20,
+        flex: 1
     },
     tabBox: {
         height: 58,
-        marginHorizontal: 20,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

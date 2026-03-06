@@ -1,10 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
-import { ModalActions } from '@/redux/actions';
-import { useAppSelector } from '@/redux/hooks';
-import { addressCheck } from '@/util/firma';
-import { FavoriteIcon, QRCodeScannerIcon } from '../icon/icon';
+import { IBC_OSMO_ADDRESS_INVALID_TEXT, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
 import {
     InputBgColor,
     InputPlaceholderColor,
@@ -13,16 +8,20 @@ import {
     TextColor,
     TextGrayColor,
     TextWarnColor,
-    WhiteColor,
+    WhiteColor
 } from '@/constants/theme';
-import { IBC_OSMO_ADDRESS_INVALID_TEXT, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
-import Clipboard from '@react-native-clipboard/clipboard';
-import TextButton from '../button/textButton';
-import Toast from 'react-native-toast-message';
 import { SendType } from '@/organisms/wallet/common/senTypeSelector';
+import { ModalActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
-import { useSelector } from 'react-redux';
-import { rootState } from '@/redux/reducers';
+import { addressCheck } from '@/util/firma';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useIsFocused } from '@react-navigation/native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
+import TextButton from '../button/textButton';
+import { FavoriteIcon, QRCodeScannerIcon } from '../icon/icon';
 
 interface IProps {
     title: string;
@@ -47,12 +46,12 @@ const InputSetVerticalForAddress = ({
     enableFavorite: enableFavorite = true,
     enableQrScanner = true,
     onChangeEvent,
-    type = 'SEND_TOKEN',
+    type = 'SEND_TOKEN'
 }: IProps) => {
-    const isLoading = useSelector((v: rootState) => v.common.loading);
+    const { loading: isLoading, appState } = useAppSelector((state) => state.common);
+    const { modalData } = useAppSelector((state) => state.modal);
 
     const isFocused = useIsFocused();
-    const { common, modal } = useAppSelector(state => state);
 
     const [focus, setFocus] = useState(false);
     const [val, setVal] = useState(value);
@@ -87,31 +86,31 @@ const InputSetVerticalForAddress = ({
     };
 
     useEffect(() => {
-        if (isFocused && modal.modalData) {
-            if (modal.modalData.result !== undefined) {
-                const isValidAddress = addressCheck(modal.modalData.result);
+        if (isFocused && modalData) {
+            if (modalData.result !== undefined) {
+                const isValidAddress = addressCheck(modalData.result);
                 if (isValidAddress) {
-                    handleInputChange(modal.modalData.result);
+                    handleInputChange(modalData.result);
                 } else {
                     return Toast.show({
                         type: 'error',
-                        text1: WRONG_TARGET_ADDRESS_WARN_TEXT,
+                        text1: WRONG_TARGET_ADDRESS_WARN_TEXT
                     });
                 }
             }
             ModalActions.handleResetModal({});
         }
-    }, [isFocused, modal.modalData]);
+    }, [isFocused, modalData]);
 
     useEffect(() => {
         handleInputChange(value);
     }, [value]);
 
     useEffect(() => {
-        if (common.appState !== 'active') {
+        if (appState !== 'active') {
             handleQRModal(false);
         }
-    }, [common.appState]);
+    }, [appState]);
 
     useEffect(() => {
         if (resetValues) handleInputChange('');
@@ -124,12 +123,14 @@ const InputSetVerticalForAddress = ({
                     <Text style={styles.text}>{title}</Text>
                     <TouchableOpacity
                         style={{ marginRight: 15, display: enableFavorite ? 'flex' : 'none' }}
-                        onPress={() => setOpenFavoritekModal(true)}>
+                        onPress={() => setOpenFavoritekModal(true)}
+                    >
                         <FavoriteIcon size={28} color={WhiteColor} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={{ marginRight: 15, display: enableQrScanner ? 'flex' : 'none' }}
-                        onPress={() => handleQRModal(true)}>
+                        onPress={() => handleQRModal(true)}
+                    >
                         <QRCodeScannerIcon size={25} color={WhiteColor} />
                     </TouchableOpacity>
                     <TextButton title={'Paste'} onPressEvent={handlePaste} />
@@ -145,7 +146,7 @@ const InputSetVerticalForAddress = ({
                     selectionColor={TextGrayColor}
                     onFocus={() => setFocus(true)}
                     onBlur={() => setFocus(false)}
-                    onChangeText={text => handleInputChange(text)}
+                    onChangeText={(text) => handleInputChange(text)}
                     editable={!isLoading} // block edit or focus when loading
                 />
                 <Text style={[styles.noticeText, { maxHeight: validAddress ? 0 : 20 }]}>{IBC_OSMO_ADDRESS_INVALID_TEXT}</Text>
@@ -158,29 +159,29 @@ export default InputSetVerticalForAddress;
 
 const styles = StyleSheet.create({
     viewContainer: {
-        marginBottom: 8,
+        marginBottom: 8
     },
     textContainer: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        marginBottom: 8,
+        marginBottom: 8
     },
     messageContainer: {
         height: 17,
-        alignItems: 'flex-end',
+        alignItems: 'flex-end'
     },
     text: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
-        color: TextCatTitleColor,
+        color: TextCatTitleColor
     },
     message: {
         fontSize: 14,
         fontFamily: Lato,
-        textAlign: 'right',
+        textAlign: 'right'
     },
     input: {
         color: TextColor,
@@ -190,33 +191,33 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     modalTextContents: {
         width: '100%',
-        paddingBottom: 40,
+        paddingBottom: 40
     },
     title: {
         fontFamily: Lato,
         fontSize: 20,
         color: TextCatTitleColor,
-        marginBottom: 15,
+        marginBottom: 15
     },
     desc: {
         fontFamily: Lato,
         fontSize: 14,
-        color: TextColor,
+        color: TextColor
     },
     QRWrapper: {
         padding: 20,
         width: '100%',
         height: 350,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     noticeText: {
         fontFamily: Lato,
         fontSize: 14,
         color: TextWarnColor,
-        overflow: 'hidden',
-    },
+        overflow: 'hidden'
+    }
 });

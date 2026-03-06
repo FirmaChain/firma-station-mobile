@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode, useContext, useEffect } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 interface DappsContextType {
     data: any;
@@ -12,11 +12,10 @@ export const DappsContext = createContext<DappsContextType | undefined>(undefine
 export const useDappsContext = () => {
     const context = useContext(DappsContext);
     if (!context) {
-        throw new Error("useDappsContext must be used within a DappsProvider");
+        throw new Error('useDappsContext must be used within a DappsProvider');
     }
     return context;
 };
-
 
 interface DappsProviderProps {
     children: ReactNode;
@@ -26,9 +25,5 @@ export const DappsProvider: React.FC<DappsProviderProps> = ({ children }) => {
     const [data, setData] = useState<any>({});
     const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0);
 
-    return (
-        <DappsContext.Provider value={{ data, setData, selectedTabIndex, setSelectedTabIndex }}>
-            {children}
-        </DappsContext.Provider>
-    );
+    return <DappsContext.Provider value={{ data, setData, selectedTabIndex, setSelectedTabIndex }}>{children}</DappsContext.Provider>;
 };

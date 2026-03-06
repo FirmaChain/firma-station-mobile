@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { WALLET_LIST } from '@/../config';
+import { WELCOME_DESCRIPTION } from '@/constants/common';
+import { BgColor, DisableColor, FailedColor, Lato, TextGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StakingActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { getChain } from '@/util/secureKeyChain';
-import { BgColor, DisableColor, FailedColor, Lato, TextGrayColor } from '@/constants/theme';
-import { WELCOME_DESCRIPTION } from '@/constants/common';
-import { WALLET_LIST } from '@/../config';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet, Text, View } from 'react-native';
+
 import Button from '@/components/button/button';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import SplashScreen from 'react-native-splash-screen';
-import Description from './description';
 import NetworkBadge from '@/components/parts/networkBadge';
+
+// import SplashScreen from 'react-native-splash-screen';
+import Description from './description';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Welcome>;
 
 const Welcome = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
-    const { storage } = useAppSelector(state => state);
+    const { network } = useAppSelector((state) => state.storage);
 
     const [walletExist, setWalletExist] = useState(false);
 
@@ -53,7 +55,7 @@ const Welcome = () => {
         WalletActions.handleWalletAddress('');
         StakingActions.updateStakingRewardState(0);
 
-        SplashScreen.hide();
+        // SplashScreen.hide();
         isWalletExist();
         return () => {
             setWalletExist(false);
@@ -63,7 +65,7 @@ const Welcome = () => {
     return (
         <ViewContainer bgColor={BgColor}>
             <View style={styles.viewContainer}>
-                <View style={styles.network}>{storage.network !== 'MainNet' && <NetworkBadge top={-5} title={storage.network} />}</View>
+                <View style={styles.network}>{network !== 'MainNet' && <NetworkBadge top={-5} title={network} />}</View>
                 <Description title={Title} desc={Desc} />
                 <View style={styles.buttonBox}>
                     {walletExist && (
@@ -90,7 +92,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingTop: 10,
+        paddingTop: 10
     },
     network: {
         width: '100%',
@@ -98,32 +100,32 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         textAlign: 'right',
-        color: FailedColor,
+        color: FailedColor
     },
     buttonBox: {
         width: '100%',
         paddingHorizontal: 20,
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-end'
     },
     dividerWrapper: {
         height: 17,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 14,
+        marginVertical: 14
     },
     divider: {
         flex: 1,
         height: 1,
-        backgroundColor: DisableColor,
+        backgroundColor: DisableColor
     },
     dividerText: {
         fontFamily: Lato,
         fontSize: 14,
         fontWeight: 'normal',
         color: TextGrayColor,
-        paddingHorizontal: 18,
-    },
+        paddingHorizontal: 18
+    }
 });
 
 export default Welcome;

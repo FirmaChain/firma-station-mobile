@@ -1,14 +1,14 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import ContentLoader, { Rect } from 'react-content-loader/native';
 import { BoxColor, DividerColor } from '@/constants/theme';
+import ContentLoader, { Rect } from 'react-content-loader/native';
+import { StyleSheet } from 'react-native';
 
 interface IProps {
     volumes: number;
 }
 
 const ProposalSkeleton = ({ volumes }: IProps) => {
-    let skeleton = Array.from({ length: volumes });
+    const skeleton = Array.from({ length: volumes });
     return (
         <React.Fragment>
             {skeleton.map((item, index) => {

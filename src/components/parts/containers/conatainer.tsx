@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import { BoxDarkColor } from '@/constants/theme';
+import { StyleSheet, View } from 'react-native';
+
 import Header from '@/components/header/header';
+
 import TitleBar from '../titleBar';
 
 interface IProps {
@@ -23,7 +25,7 @@ const Container = ({
     step = 0,
     backEvent,
     handleGuide,
-    children,
+    children
 }: IProps) => {
     const handleMoveBack = () => {
         backEvent && backEvent();
@@ -40,8 +42,8 @@ const Container = ({
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-    },
+        flex: 1
+    }
 });
 
 export default Container;

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     notification: string;

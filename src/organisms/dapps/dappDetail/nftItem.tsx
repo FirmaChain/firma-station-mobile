@@ -1,10 +1,11 @@
-import SquareSkeleton from '@/components/skeleton/squareSkeleton';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { BoxColor, Lato, TextCatTitleColor } from '@/constants/theme';
-import { INFTProps } from '@/hooks/dapps/hooks';
 import { fadeIn, fadeOut } from '@/util/animation';
-import React, { useState, useRef, useEffect, memo } from 'react';
-import { View, StyleSheet, Animated, TouchableOpacity, Text } from 'react-native';
-import FastImage, { Source } from 'react-native-fast-image';
+import FastImage, { Source } from '@d11/react-native-fast-image';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { INFTProps } from '@/hooks/dapps/hooks';
+import SquareSkeleton from '@/components/skeleton/squareSkeleton';
 
 interface IProps {
     item: INFTProps;
@@ -14,22 +15,21 @@ interface IProps {
 }
 
 const NFTItem = ({ item, size, disabled = false, moveToNFTDetail }: IProps) => {
-
     const getImageSource = (value: string | Source): Source => {
         return typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))
             ? { uri: value, priority: FastImage.priority.low }
-            : value as Source;
+            : (value as Source);
     };
 
     return (
-        <TouchableOpacity activeOpacity={disabled ? 1 : 0.2} style={[styles.contentWrap, { width: size }]} onPress={() => moveToNFTDetail(item.id)}>
+        <TouchableOpacity
+            activeOpacity={disabled ? 1 : 0.2}
+            style={[styles.contentWrap, { width: size }]}
+            onPress={() => moveToNFTDetail(item.id)}
+        >
             <View style={{ paddingHorizontal: 10 }}>
                 <View style={[styles.contentImageWrap, { width: '100%', height: size - 20 }]}>
-                    <FastImage
-                        style={styles.contentImage}
-                        resizeMode="contain"
-                        source={getImageSource(item.image)}
-                    />
+                    <FastImage style={styles.contentImage} resizeMode="contain" source={getImageSource(item.image)} />
                 </View>
                 <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
                     {item.name}

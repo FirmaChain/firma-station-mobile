@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { BgColor, Lato, RestakeActiveColor, RestakeNoDelegationColor, TextColor, TextDisableColor } from '@/constants/theme';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { VALIDATOR_PROFILE } from '@/constants/images';
-import { convertAmount, convertNumber } from '@/util/common';
 import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
+import { VALIDATOR_PROFILE } from '@/constants/images';
+import { BgColor, Lato, RestakeActiveColor, RestakeNoDelegationColor, TextColor, TextDisableColor } from '@/constants/theme';
+import { convertAmount, convertNumber } from '@/util/common';
 import { FirmaUtil } from '@firmachain/firma-js';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     data: any;
@@ -82,7 +82,14 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
                     </React.Fragment>
                 ) : (
                     <Text
-                        style={[styles.label, { backgroundColor: restakeStatus.color + '30', color: restakeStatus.color, marginLeft: 6 }]}
+                        style={[
+                            styles.label,
+                            {
+                                backgroundColor: restakeStatus.color + '30',
+                                color: restakeStatus.color,
+                                marginLeft: 6
+                            }
+                        ]}
                     >
                         {restakeStatus.title}
                     </Text>

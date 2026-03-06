@@ -1,15 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
+import React, { useMemo, useState } from 'react';
 import { CHAIN_SYMBOL, CW_TX_NOTICE_TEXT } from '@/constants/common';
-import InputSetVerticalForAddress from '@/components/input/inputSetVerticalForAddress';
-import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
 import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { rootState } from '@/redux/reducers';
-import { FavoritesCreateModal, FavoritesModal } from '@/components/modal';
 import { wait } from '@/util/common';
+import { View } from 'react-native';
+
 import InputSetVertical from '@/components/input/inputSetVertical';
+import InputSetVerticalForAddress from '@/components/input/inputSetVerticalForAddress';
+import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
+import { FavoritesCreateModal, FavoritesModal } from '@/components/modal';
 import WarnContainer from '@/components/parts/containers/warnContainer';
 
 interface IProps {
@@ -23,18 +22,18 @@ interface IProps {
 const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = CHAIN_SYMBOL() }: IProps) => {
     const _CHAIN_SYMBOL = symbol;
 
-    const { modal } = useAppSelector((state: rootState) => state);
+    const { favoriteModal, favoriteCreateModal } = useAppSelector((state) => state.modal);
 
     const [addressValue, setAddressValue] = useState(dstAddress);
     const [memoValue, setMemoValue] = useState('');
 
     const openFavoriteModal = useMemo(() => {
-        return modal.favoriteModal;
-    }, [modal.favoriteModal]);
+        return favoriteModal;
+    }, [favoriteModal]);
 
     const openFavoriteCreateModal = useMemo(() => {
-        return modal.favoriteCreateModal;
-    }, [modal.favoriteCreateModal]);
+        return favoriteCreateModal;
+    }, [favoriteCreateModal]);
 
     const handleSendInfoState = (type: string, value: string | number) => {
         handleSendInfo(type, value);
@@ -48,7 +47,6 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
         setMemoValue(memo);
     };
 
-
     const setOpenFavoriteModal = (active: boolean) => {
         ModalActions.handleFavoriteModal(active);
     };
@@ -56,7 +54,6 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
     const setOpenFavoriteCreateModal = (active: boolean) => {
         ModalActions.handleFavoriteCreateModal(active);
     };
-
 
     const handleOpenCreateFavoriteModal = () => {
         setOpenFavoriteModal(false);
@@ -123,32 +120,5 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    title: {
-        fontFamily: Lato,
-        fontSize: 16,
-        color: TextCatTitleColor,
-        marginBottom: 5
-    },
-    radioBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        marginBottom: 10
-    },
-    radioWrapper: {
-        width: 45,
-        borderRadius: 20,
-        justifyContent: 'center',
-        padding: 3
-    },
-    radio: {
-        width: 18,
-        height: 18,
-        borderRadius: 50,
-        backgroundColor: WhiteColor
-    }
-});
 
 export default SendInputBox;

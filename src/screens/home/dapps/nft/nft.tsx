@@ -1,5 +1,6 @@
 import React from 'react';
 import NFT from '@/organisms/dapps/nft';
+
 import { INFTProps } from '@/hooks/dapps/hooks';
 
 interface IProps {
@@ -9,7 +10,7 @@ interface IProps {
 export type NFTParams = {
     data: {
         nft: INFTProps | undefined;
-        cw721Contract: string | null
+        cw721Contract: string | null;
     };
 };
 

@@ -1,20 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { useNavigation } from '@react-navigation/native';
-import { DividerColor } from '@/constants/theme';
-import ConnectClient, { ServiceData, ServiceMetaData } from '@/util/connectClient';
 import { CHAIN_NETWORK } from '@/../config';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
+import ConnectClient, { ServiceData, ServiceMetaData } from '@/util/connectClient';
+import { getCW20TokenInfo, getCW20TokenMarketingInfo } from '@/util/firma';
 import { getDAppServiceId } from '@/util/wallet';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
-import DescriptionBox from './descriptionBox';
-import BalanceBox from './balanceBox';
-import TabBox from './tabBox';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
-import { getCW20TokenInfo, getCW20TokenMarketingInfo } from '@/util/firma';
+
+import BalanceBox from './balanceBox';
+import DescriptionBox from './descriptionBox';
+import TabBox from './tabBox';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.DappDetail>;
 
@@ -43,11 +44,12 @@ interface IProps {
     data: any;
 }
 
-
 const DappDetail = ({ data }: IProps) => {
-    const { storage, wallet } = useAppSelector((state) => state);
+    const { network } = useAppSelector((state) => state.storage);
+    const { name: walletName } = useAppSelector((state) => state.wallet);
+
     const navigation: ScreenNavgationProps = useNavigation();
-    const connectClient = new ConnectClient(CHAIN_NETWORK[storage.network].RELAY_HOST);
+    const connectClient = new ConnectClient(CHAIN_NETWORK[network].RELAY_HOST);
 
     const [dappData, setDappData] = useState<IDappDataState>();
     const [isLoadedDappService, setIsLoadedDappService] = useState(false);
@@ -64,8 +66,11 @@ const DappDetail = ({ data }: IProps) => {
         if (dappData === null) return;
         if (dappData?.cw20ContractAddress === undefined || dappData.cw20ContractAddress === null) return;
         if (dappData.token?.symbol === undefined || dappData.token?.symbol === null) return;
-        navigation.navigate(Screens.SendCW20, { contract: dappData?.cw20ContractAddress, symbol: dappData.token?.symbol });
-    }
+        navigation.navigate(Screens.SendCW20, {
+            contract: dappData?.cw20ContractAddress,
+            symbol: dappData.token?.symbol
+        });
+    };
 
     const handleRefresh = (refresh: boolean) => {
         setIsRefresh(refresh);
@@ -106,7 +111,6 @@ const DappDetail = ({ data }: IProps) => {
                 marketingLogo: marketingLogo,
                 decimal: decimal
             });
-
         } catch (error) {
             console.log('handleDappData : ', error);
         }
@@ -116,9 +120,9 @@ const DappDetail = ({ data }: IProps) => {
         if (dappData === undefined) return;
         if (isLoadedDappService === true) return;
         try {
-            let dappServiceData = await getDAppServiceId(wallet.name);
+            const dappServiceData = await getDAppServiceId(walletName);
             if (dappServiceData === null) return;
-            let dappService: IDappServiceState = JSON.parse(dappServiceData)[storage.network];
+            const dappService: IDappServiceState = JSON.parse(dappServiceData)[network];
             if (dappService === null || dappService === undefined) return;
             getUserDappServiceFromId(dappService);
         } catch (error) {
@@ -131,10 +135,10 @@ const DappDetail = ({ data }: IProps) => {
             if (dappData === undefined) return;
             if (ids.identity !== dappData.identity) return;
             try {
-                let dappService: ServiceData = await connectClient.getUserDappService(ids.identity, ids.serviceId);
-                let prevList = dappData.serviceList;
+                const dappService: ServiceData = await connectClient.getUserDappService(ids.identity, ids.serviceId);
+                const prevList = dappData.serviceList;
 
-                let index = dappData.serviceList.findIndex((val) => val.serviceId === dappService.service.serviceId);
+                const index = dappData.serviceList.findIndex((val) => val.serviceId === dappService.service.serviceId);
                 if (index === -1) {
                     dappData['serviceList'] = [...prevList, dappService.service];
                 }
@@ -186,8 +190,22 @@ const DappDetail = ({ data }: IProps) => {
                         <View style={{ padding: 15 }} />
                         {dappData !== undefined && (
                             <React.Fragment>
-                                {isBalanceSectionOpen && <BalanceBox tokenData={dappData.token} cw20Contract={dappData.cw20ContractAddress} marketingLogo={dappData.marketingLogo} decimal={dappData.decimal} moveToSendScreen={moveToSendScreen} />}
-                                <TabBox data={dappData} isScrollEnd={isBottom} serviceOnly={isServiceOnly} isRefresh={isRefresh} handleRefresh={handleRefresh} />
+                                {isBalanceSectionOpen && (
+                                    <BalanceBox
+                                        tokenData={dappData.token}
+                                        cw20Contract={dappData.cw20ContractAddress}
+                                        marketingLogo={dappData.marketingLogo}
+                                        decimal={dappData.decimal}
+                                        moveToSendScreen={moveToSendScreen}
+                                    />
+                                )}
+                                <TabBox
+                                    data={dappData}
+                                    isScrollEnd={isBottom}
+                                    serviceOnly={isServiceOnly}
+                                    isRefresh={isRefresh}
+                                    handleRefresh={handleRefresh}
+                                />
                             </React.Fragment>
                         )}
                     </View>
@@ -196,13 +214,5 @@ const DappDetail = ({ data }: IProps) => {
         </Container>
     );
 };
-
-const styles = StyleSheet.create({
-    divider: {
-        width: '100%',
-        height: 1,
-        backgroundColor: DividerColor
-    }
-});
 
 export default DappDetail;

@@ -1,20 +1,30 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BgColor, BoxColor, InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
 import { CHAIN_SYMBOL, CW_TX_NOTICE_TEXT } from '@/constants/common';
+import {
+    BgColor,
+    BoxColor,
+    InputBgColor,
+    InputPlaceholderColor,
+    Lato,
+    TextCatTitleColor,
+    TextColor
+    //   WhiteColor,
+} from '@/constants/theme';
+import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { convertAmount, convertNumber, wait } from '@/util/common';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { DownArrow } from '@/components/icon/icon';
+import InputSetVertical from '@/components/input/inputSetVertical';
 import InputSetVerticalForAddress from '@/components/input/inputSetVerticalForAddress';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
-import InputSetVertical from '@/components/input/inputSetVertical';
-import WarnContainer from '@/components/parts/containers/warnContainer';
-import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { FavoritesCreateModal, FavoritesModal } from '@/components/modal';
-import { useAppSelector } from '@/redux/hooks';
-import { rootState } from '@/redux/reducers';
-import { convertAmount, convertNumber, wait } from '@/util/common';
-import { DownArrow } from '@/components/icon/icon';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import CustomModal from '@/components/modal/customModal';
 import ModalIBCChain from '@/components/modal/modalIBCChain';
+import WarnContainer from '@/components/parts/containers/warnContainer';
+
 import { IBC_SEND_CHAIN_CONFIG, IBCChainState } from '../../../../config';
 import { SendType } from '../common/senTypeSelector';
 
@@ -30,7 +40,8 @@ interface IProps {
 }
 
 const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol = CHAIN_SYMBOL(), reset, dstAddress }: IProps) => {
-    const { modal } = useAppSelector((state: rootState) => state);
+    const { favoriteModal, favoriteCreateModal } = useAppSelector((state) => state.modal);
+
     const _CHAIN_SYMBOL = symbol;
     const [addressValue, setAddressValue] = useState(dstAddress);
     const [memoValue, setMemoValue] = useState('');
@@ -52,19 +63,19 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
     }, [type]);
 
     const openFavoriteModal = useMemo(() => {
-        return modal.favoriteModal;
-    }, [modal.favoriteModal]);
+        return favoriteModal;
+    }, [favoriteModal]);
 
     const openFavoriteCreateModal = useMemo(() => {
-        return modal.favoriteCreateModal;
-    }, [modal.favoriteCreateModal]);
+        return favoriteCreateModal;
+    }, [favoriteCreateModal]);
 
     const handleSendInfoState = (type: string, value: string | number | IBCChainState | null) => {
         handleSendInfo(type, value);
-        if (type === 'amount' && (typeof value === 'number')) setAmount(value);
+        if (type === 'amount' && typeof value === 'number') setAmount(value);
         if (type === 'address' && (typeof value === 'string' || typeof value === 'number')) setAddressValue(value.toString());
         if (type === 'memo' && (typeof value === 'string' || typeof value === 'number')) setMemoValue(value.toString());
-        if (type === 'chain' && (typeof value !== 'string' && typeof value !== 'number')) {
+        if (type === 'chain' && typeof value !== 'string' && typeof value !== 'number') {
             setSelectChain(value);
             setOpenChainSelectModal(false);
         }
@@ -111,7 +122,9 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
             <View style={[styles.chainContainer, { height: accordionHeight }]}>
                 <Text style={styles.chainTitle}>Destination Chain</Text>
                 <TouchableOpacity style={styles.chainSelectBox} onPress={() => setOpenChainSelectModal(true)}>
-                    <Text style={[styles.chain, { color: selectChain === null ? InputPlaceholderColor : TextColor }]}>{selectChain === null ? 'Select IBC chain' : `${selectChain.name.toUpperCase()} (${selectChain.channel})`}</Text>
+                    <Text style={[styles.chain, { color: selectChain === null ? InputPlaceholderColor : TextColor }]}>
+                        {selectChain === null ? 'Select IBC chain' : `${selectChain.name.toUpperCase()} (${selectChain.channel})`}
+                    </Text>
                     <DownArrow size={10} color={InputPlaceholderColor} />
                 </TouchableOpacity>
             </View>
@@ -177,30 +190,30 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
 };
 
 const styles = StyleSheet.create({
-    title: {
-        fontFamily: Lato,
-        fontSize: 16,
-        color: TextCatTitleColor,
-        marginBottom: 5
-    },
-    radioBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        marginBottom: 10
-    },
-    radioWrapper: {
-        width: 45,
-        borderRadius: 20,
-        justifyContent: 'center',
-        padding: 3
-    },
-    radio: {
-        width: 18,
-        height: 18,
-        borderRadius: 50,
-        backgroundColor: WhiteColor
-    },
+    //   title: {
+    //     fontFamily: Lato,
+    //     fontSize: 16,
+    //     color: TextCatTitleColor,
+    //     marginBottom: 5,
+    //   },
+    //   radioBox: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     justifyContent: 'flex-start',
+    //     marginBottom: 10,
+    //   },
+    //   radioWrapper: {
+    //     width: 45,
+    //     borderRadius: 20,
+    //     justifyContent: 'center',
+    //     padding: 3,
+    //   },
+    //   radio: {
+    //     width: 18,
+    //     height: 18,
+    //     borderRadius: 50,
+    //     backgroundColor: WhiteColor,
+    //   },
     chainContainer: {
         marginBottom: 20,
         overflow: 'hidden'
@@ -209,20 +222,20 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor,
-        marginBottom: 5,
+        marginBottom: 5
     },
     chainSelectBox: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
         padding: 15,
         backgroundColor: InputBgColor,
-        marginBottom: 5,
+        marginBottom: 5
     },
     chain: {
         fontFamily: Lato,
         fontSize: 14,
-        color: TextColor,
+        color: TextColor
     },
     modalHeaderBox: {
         width: '100%',
@@ -238,7 +251,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: TextCatTitleColor,
         paddingHorizontal: 10
-    },
+    }
 });
 
 export default SendInputBox;

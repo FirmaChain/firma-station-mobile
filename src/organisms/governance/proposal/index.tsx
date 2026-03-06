@@ -1,22 +1,24 @@
 import React, { Fragment, useEffect, useMemo } from 'react';
-import { Linking } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import { CommonActions } from '@/redux/actions';
-import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { useProposalData } from '@/hooks/governance/hooks';
+import { GUIDE_URI } from '@/../config';
 import { DATA_RELOAD_INTERVAL, EXPLORER_URL, PROPOSAL_STATUS_VOTING_PERIOD, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
-import { GUIDE_URI } from '@/../config';
+import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { CommonActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Linking } from 'react-native';
+
+import { useInterval } from '@/hooks/common/hooks';
+import { useProposalData } from '@/hooks/governance/hooks';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
+
 import DescriptionSection from './descriptionSection';
 import TitleSection from './titleSection';
-import VotingSection from './votingSection';
 import Voting from './voting';
-import { useInterval } from '@/hooks/common/hooks';
+import VotingSection from './votingSection';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Proposal>;
 
@@ -28,7 +30,9 @@ const Proposal = ({ proposalId }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
-    const { wallet, common } = useAppSelector(state => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { dataLoadStatus } = useAppSelector((state) => state.common);
+
     const { proposalState, handleProposalPolling } = useProposalData();
 
     const proposalStates = useMemo(() => {
@@ -55,10 +59,10 @@ const Proposal = ({ proposalId }: IProps) => {
         const transactionState = {
             type: TRANSACTION_TYPE['VOTING'],
             password: password,
-            address: wallet.address,
+            address: walletAddress,
             proposalId: proposalId,
             votingOpt: votingOpt,
-            gas: gas,
+            gas: gas
         };
         navigation.navigate(Screens.Transaction, { state: transactionState });
     };
@@ -72,7 +76,7 @@ const Proposal = ({ proposalId }: IProps) => {
             await handleProposalPolling(proposalId);
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
-            CommonActions.handleDataLoadStatus(common.dataLoadStatus + 1);
+            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             console.log(error);
         }
     };
@@ -81,7 +85,7 @@ const Proposal = ({ proposalId }: IProps) => {
         () => {
             refreshStates();
         },
-        common.dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 

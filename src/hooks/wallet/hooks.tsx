@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getHistoryByAddressData } from '@/apollo/gqls';
-import { useAppSelector } from '@/redux/hooks';
-import { getBalanceFromAdr } from '@/util/firma';
-import { convertNumber } from '@/util/common';
 import { TRANSACTION_TYPE_MODEL } from '@/constants/common';
 import { PointColor } from '@/constants/theme';
 import { StorageActions } from '@/redux/actions';
+import { useAppSelector } from '@/redux/hooks';
+import { convertNumber } from '@/util/common';
+import { getBalanceFromAdr } from '@/util/firma';
 import axios from 'axios';
+
 import { COINGECKO, COINGECKO_PRICE_LIST } from '../../../config';
 
 export interface IBalanceState {
@@ -36,13 +37,16 @@ export interface CryptoPrices {
 }
 
 export const useBalanceData = () => {
-    const { wallet, storage, common } = useAppSelector((state) => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { network } = useAppSelector((state) => state.storage);
+    const { lockStation } = useAppSelector((state) => state.common);
+
     const [balance, setBalance] = useState(0);
 
     async function getBalance() {
-        if (wallet.address === '' || wallet.address === undefined) return;
+        if (walletAddress === '' || walletAddress === undefined) return;
         try {
-            const result = await getBalanceFromAdr(wallet.address);
+            const result = await getBalanceFromAdr(walletAddress);
             setBalance(convertNumber(result));
         } catch (error) {
             console.log(error);
@@ -51,10 +55,10 @@ export const useBalanceData = () => {
     }
 
     useEffect(() => {
-        if (common.lockStation === false) {
+        if (lockStation === false) {
             getBalance();
         }
-    }, [storage.network, common.lockStation]);
+    }, [network, lockStation]);
 
     return {
         balance,
@@ -63,7 +67,9 @@ export const useBalanceData = () => {
 };
 
 export const useHistoryData = () => {
-    const { wallet, storage } = useAppSelector((state) => state);
+    const { address: walletAddress } = useAppSelector((state) => state.wallet);
+    const { network, historyVolume } = useAppSelector((state) => state.storage);
+
     const [historyList, setHistoryList] = useState<IHistoryListState>({
         list: []
     });
@@ -71,7 +77,7 @@ export const useHistoryData = () => {
     const [historyOffset, setHistoryOffset] = useState(0);
 
     const handleHistoryOffset = (reset: boolean) => {
-        let offset = reset ? 0 : historyOffset + 30;
+        const offset = reset ? 0 : historyOffset + 30;
         setHistoryOffset(offset);
         getHistoryByAddress(offset);
     };
@@ -96,22 +102,23 @@ export const useHistoryData = () => {
     const getHistoryByAddress = useCallback(
         (offset: number) => {
             getHistoryByAddressData({
-                address: `{${wallet.address}}`,
+                address: `{${walletAddress}}`,
                 offset: offset,
                 limit: 30
             })
                 .then(async ({ data, loading }) => {
-                    if (loading === false) {
+                    if (!loading) {
+                        // loading looks not provided anymore
                         if (data !== undefined) {
                             if (offset === 0) {
-                                if (storage.historyVolume === undefined) {
+                                if (historyVolume === undefined) {
                                     StorageActions.handleHistoryVolume({
-                                        [wallet.address]: data.messagesByAddress.length
+                                        [walletAddress]: data.messagesByAddress.length
                                     });
                                 } else {
                                     StorageActions.handleHistoryVolume({
-                                        ...storage.historyVolume,
-                                        [wallet.address]: data.messagesByAddress.length
+                                        ...historyVolume,
+                                        [walletAddress]: data.messagesByAddress.length
                                     });
                                 }
                             }
@@ -124,6 +131,7 @@ export const useHistoryData = () => {
                                     timestamp: value.transaction.block.timestamp,
                                     block: value.transaction.block.height
                                 };
+
                                 return result;
                             });
 
@@ -143,7 +151,7 @@ export const useHistoryData = () => {
                     throw error;
                 });
         },
-        [wallet.address]
+        [walletAddress]
     );
 
     const handleHisotyPolling = async () => {
@@ -167,7 +175,7 @@ export const useHistoryData = () => {
         };
 
         handleRefreshHistory();
-    }, [storage.network]);
+    }, [network]);
 
     return {
         historyList,
@@ -193,8 +201,8 @@ export const useFetchPrices = () => {
             const response = await axios.get(COINGECKO, {
                 params: {
                     ids: COINGECKO_PRICE_LIST,
-                    vs_currencies: 'usd',
-                },
+                    vs_currencies: 'usd'
+                }
             });
             const transformedPrices = transformPrices(response.data);
             setPriceData(transformedPrices);
@@ -204,5 +212,5 @@ export const useFetchPrices = () => {
         }
     };
 
-    return { priceData, fetchPrices }
-}
+    return { priceData, fetchPrices };
+};

@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
-import { Keyboard, Platform, Pressable, StyleSheet, Modal as FadeModal, KeyboardAvoidingView, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
+import React, { ReactNode, useEffect } from 'react';
 import { BgColor, BoxColor } from '@/constants/theme';
-import { useInterval } from '@/hooks/common/hooks';
-import CustomToast from '../toast/customToast';
+import { useAppSelector } from '@/redux/hooks';
+import { Modal as FadeModal, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet } from 'react-native';
 import Modal from 'react-native-modal';
+
+import { useInterval } from '@/hooks/common/hooks';
+
+import CustomToast from '../toast/customToast';
 
 interface IProps {
     visible: boolean;
@@ -14,7 +16,7 @@ interface IProps {
     forceActive?: boolean;
     bgColor?: string;
     handleOpen: (open: boolean) => void;
-    children: JSX.Element;
+    children: ReactNode;
     toastInModal?: boolean;
 }
 
@@ -27,9 +29,9 @@ const CustomModal = ({
     bgColor = BoxColor,
     handleOpen,
     toastInModal = true,
-    children,
+    children
 }: IProps) => {
-    const { common } = useAppSelector(state => state);
+    const { appState, isBioAuthInProgress, appPausedTime } = useAppSelector((state) => state.common);
 
     const closeModal = () => {
         if (lockBackButton) return;
@@ -43,7 +45,8 @@ const CustomModal = ({
                     <KeyboardAvoidingView
                         enabled={keyboardAvoiing}
                         behavior={Platform.select({ android: undefined, ios: 'padding' })}
-                        style={{ flex: 1 }}>
+                        style={{ flex: 1 }}
+                    >
                         <Pressable style={styles.modalContainer} onPress={() => closeModal()} />
                         <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
                             {children}
@@ -63,7 +66,8 @@ const CustomModal = ({
                     hideModalContentWhileAnimating={true}
                     onModalHide={closeModal}
                     onBackButtonPress={closeModal}
-                    style={{ marginHorizontal: 0, marginVertical: 0 }}>
+                    style={{ marginHorizontal: 0, marginVertical: 0 }}
+                >
                     <Pressable style={styles.modalContainer} onPress={() => closeModal()} />
                     {toastInModal && <CustomToast />}
                     <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
@@ -80,15 +84,15 @@ const CustomModal = ({
                 closeModal();
             }
         },
-        common.appState !== 'active' && common.isBioAuthInProgress === false ? 50000 : null,
+        appState !== 'active' && isBioAuthInProgress === false ? 50000 : null,
         true
     );
 
     useEffect(() => {
         if (forceActive === false) {
-            if (common.appState !== 'active' && common.isBioAuthInProgress === false) closeModal();
+            if (appState !== 'active' && isBioAuthInProgress === false) closeModal();
         }
-    }, [common.appPausedTime, common.appState, forceActive]);
+    }, [appPausedTime, appState, forceActive]);
 
     return modalSwitcher();
 };
@@ -98,7 +102,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        zIndex: 9999,
+        zIndex: 9999
     },
     modalBox: {
         width: '100%',
@@ -111,8 +115,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 4,
         paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-        zIndex: 9999,
-    },
+        zIndex: 9999
+    }
 });
 
 export default CustomModal;

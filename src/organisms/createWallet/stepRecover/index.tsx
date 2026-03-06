@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { GUIDE_URI } from '@/../config';
+import { CHECK_MNEMONIC, CHECK_PRIVATEKEY, RECOVER_WALLET_FAILED } from '@/constants/common';
+import { BgColor, InputBgColor, Lato, TextColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
+import { CommonActions } from '@/redux/actions';
+import { mnemonicCheck, privateKeyCheck } from '@/util/firma';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { CommonActions } from '@/redux/actions';
-import { BgColor, InputBgColor, Lato, TextColor } from '@/constants/theme';
-import { CHECK_MNEMONIC, CHECK_PRIVATEKEY, RECOVER_WALLET_FAILED } from '@/constants/common';
-import { GUIDE_URI } from '@/../config';
+import { Linking, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
 import Button from '@/components/button/button';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
+
 import InputBox from './inputBox';
-import Toast from 'react-native-toast-message';
-import { mnemonicCheck, privateKeyCheck } from '@/util/firma';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.StepRecover>;
 
@@ -42,10 +44,10 @@ const StepRecover = ({ type }: IProps) => {
 
             CommonActions.handleLoadingProgress(false);
             if (recover === false) {
-                let message = type === 'mnemonic' ? CHECK_MNEMONIC : CHECK_PRIVATEKEY;
+                const message = type === 'mnemonic' ? CHECK_MNEMONIC : CHECK_PRIVATEKEY;
                 return Toast.show({
                     type: 'error',
-                    text1: message,
+                    text1: message
                 });
             }
             navigation.navigate(Screens.CreateStepOne, { recoverValue: recoverValue });
@@ -53,7 +55,7 @@ const StepRecover = ({ type }: IProps) => {
             CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
-                text1: RECOVER_WALLET_FAILED,
+                text1: RECOVER_WALLET_FAILED
             });
         }
     };
@@ -84,17 +86,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 3,
         padding: 20,
-        paddingBottom: 0,
+        paddingBottom: 0
     },
     wrapperH: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignContent: 'center',
+        alignContent: 'center'
     },
     title: {
         color: TextColor,
         fontFamily: Lato,
-        fontSize: 14,
+        fontSize: 14
     },
     inputWrapper: {
         height: 200,
@@ -102,12 +104,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: InputBgColor,
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 4
     },
     input: {
         color: TextColor,
-        flex: 1,
-    },
+        flex: 1
+    }
 });
 
 export default StepRecover;
