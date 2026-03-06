@@ -1,14 +1,6 @@
 module.exports = {
-    project: {
-        ios: {},
-        android: {}
-    },
     dependencies: {
-        'react-native-tcp-socket': {
-            platforms: {
-                android: null,
-            },
-        },
+        'react-native-vector-icons': {}
     },
-    assets: ['./src/assets/fonts'],
+    assets: ['./src/assets/fonts']
 };

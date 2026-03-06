@@ -1,13 +1,13 @@
+//! You must place 'react-native-worklets/plugin' at the last of plugin array.
+
 module.exports = {
-    presets: ['module:metro-react-native-babel-preset'],
+    presets: ['module:@react-native/babel-preset'],
     plugins: [
-        'react-native-reanimated/plugin',
-        '@babel/plugin-syntax-bigint',
         [
             'module-resolver',
             {
                 root: ['./src'],
-                extensions: ['.ios.ts', '.android.ts', '.ts', '.ios.tsx', '.android.tsx', '.tsx', '.jsx', '.js', '.json'],
+                extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
                 alias: {
                     '@': './src',
                     '@components': './src/components',
@@ -15,8 +15,12 @@ module.exports = {
                     '@assets': './src/assets',
                     '@hooks': './src/hooks',
                     '@utils': './src/utils',
-                },
-            },
+                    crypto: 'react-native-quick-crypto',
+                    stream: 'readable-stream',
+                    buffer: '@craftzdog/react-native-buffer'
+                }
+            }
         ],
-    ],
+        'react-native-worklets/plugin'
+    ]
 };
