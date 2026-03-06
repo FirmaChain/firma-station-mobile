@@ -20,9 +20,10 @@ interface IProps {
     useBio: boolean;
     fadeIn: any;
     loginHandler: (mnemonic: string, name: string, password: string) => void;
+    isLoginProgress: boolean;
 }
 
-const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
+const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }: IProps) => {
     const { lastSelectedWalletIndex } = useAppSelector((state) => state.storage);
 
     const passwordText = {
@@ -167,7 +168,7 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler }: IProps) => {
                     />
                 </CustomModal>
             )}
-            <Button title="Connect" active={pwValidation} onPressEvent={handleLogin} />
+            <Button title="Connect" active={pwValidation && !isLoginProgress} onPressEvent={handleLogin} />
         </Animated.View>
     );
 };

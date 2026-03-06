@@ -22,7 +22,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
-// import SplashScreen from 'react-native-splash-screen';
 import Toast from 'react-native-toast-message';
 
 import Button from '@/components/button/button';
@@ -48,9 +47,13 @@ const LoginCheck = () => {
     const [isKeyboardShown, setIsKeyboardShown] = useState(false);
     const [dimActive, setDimActive] = useState(true);
     const [useBio, setUseBio] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Get wallet information
+    const [isLoginProgress, setIsLoginProgress] = useState(false); // Login progress
 
     const handleLogin = async (recoverValue: string, name: string, password: string) => {
+        if (isLoginProgress === true) return;
+        setIsLoginProgress(true);
+
         try {
             const adr = await getAddressFromRecoverValue(recoverValue);
             if (adr) {
@@ -77,6 +80,7 @@ const LoginCheck = () => {
                 type: 'error',
                 text1: String(error)
             });
+            setIsLoginProgress(false);
         }
     };
 
@@ -174,9 +178,9 @@ const LoginCheck = () => {
                     } else {
                         handleDisconnect();
                     }
-                    setLoading(false);
                 } catch (error) {
                     console.log(error);
+                } finally {
                     setLoading(false);
                 }
             };
@@ -223,7 +227,13 @@ const LoginCheck = () => {
                                 </Animated.View>
                             )}
                             {dimActive === false && (
-                                <InputBox walletName={walletName} useBio={useBio} fadeIn={fadeAnim} loginHandler={handleLogin} />
+                                <InputBox
+                                    walletName={walletName}
+                                    useBio={useBio}
+                                    fadeIn={fadeAnim}
+                                    loginHandler={handleLogin}
+                                    isLoginProgress={isLoginProgress}
+                                />
                             )}
                         </Animated.View>
                     </Pressable>

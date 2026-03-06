@@ -1,10 +1,10 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 interface IProps {
     bgColor?: string;
     full?: boolean;
-    children: JSX.Element;
+    children: ReactNode;
 }
 
 const ViewContainer = ({ bgColor, children }: IProps) => {

@@ -36,6 +36,9 @@ const StepOne = ({ recoverValue = null }: IProps) => {
     const [walletName, setWalletName] = useState('');
     const [password, setPassword] = useState('');
     const [validation, setValidation] = useState(false);
+
+    const [inProgress, setInProgress] = useState(false);
+
     const handleWalletInfo = (name: string, _password: string, _validation: boolean) => {
         setWalletName(name);
         setPassword(_password);
@@ -48,6 +51,9 @@ const StepOne = ({ recoverValue = null }: IProps) => {
     };
 
     const onCreateWalletAndMoveToStepTwo = async () => {
+        if (inProgress) return;
+        setInProgress(true);
+
         CommonActions.handleLoadingProgress(true);
         try {
             const result = await createNewWallet();
@@ -70,10 +76,14 @@ const StepOne = ({ recoverValue = null }: IProps) => {
                 type: 'error',
                 text1: CREATE_WALLET_FAILED
             });
+            setInProgress(false);
         }
     };
 
     const onCompleteRecoverWallet = async () => {
+        if (inProgress) return;
+        setInProgress(true);
+
         try {
             const useBioAuth = await setWalletWithBioAuth(walletName, password, recoverValue);
 
@@ -89,6 +99,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
                 type: 'error',
                 text1: CREATE_WALLET_FAILED
             });
+            setInProgress(false);
         }
     };
 
@@ -156,7 +167,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
                     <View style={styles.buttonBox}>
                         <Button
                             title={recoverValue ? 'Recover' : 'Next'}
-                            active={validation}
+                            active={validation && !inProgress}
                             onPressEvent={recoverValue ? onCompleteRecoverWallet : onCreateWalletAndMoveToStepTwo}
                         />
                     </View>

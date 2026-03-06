@@ -40,6 +40,8 @@ const SelectWallet = () => {
     const [password, setPassword] = useState('');
     const [mnemonic, setMnemonic] = useState('');
 
+    const [isProgress, setIsProgress] = useState(false);
+
     const passwordText = {
         title: 'Password',
         placeholder: PLACEHOLDER_FOR_PASSWORD
@@ -112,6 +114,7 @@ const SelectWallet = () => {
     };
 
     const onSelectWalletAndMoveToHome = async () => {
+        setIsProgress(true);
         try {
             let adr = '';
             const result = await getAddressFromRecoverValue(mnemonic);
@@ -137,6 +140,7 @@ const SelectWallet = () => {
                 type: 'error',
                 text1: String(error)
             });
+            setIsProgress(false);
         }
     };
 
@@ -164,7 +168,6 @@ const SelectWallet = () => {
     }, []);
 
     const handleMoveToWeb = () => {
-        // navigation.navigate(Screens.WebScreen, {uri: GUIDE_URI["selectWallet"]});
         Linking.openURL(GUIDE_URI['selectWallet']);
     };
 
@@ -199,7 +202,7 @@ const SelectWallet = () => {
                         </CustomModal>
                     )}
                     <View style={styles.buttonBox}>
-                        <Button title="Next" active={pwValidation} onPressEvent={onSelectWalletAndMoveToHome} />
+                        <Button title="Next" active={pwValidation && !isProgress} onPressEvent={onSelectWalletAndMoveToHome} />
                     </View>
                 </Pressable>
             </ViewContainer>
