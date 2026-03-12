@@ -4,7 +4,6 @@ import { getProposalData } from '@/apollo/gqls';
 import { ERROR_FETCHING_PROPOSAL_DATA, PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { rootState } from '@/redux/reducers';
 import { convertNumber, convertTime } from '@/util/common';
 import { getProposalByProposalId, getProposalParams, getProposals, getProposalTally } from '@/util/firma';
 import { useNavigation } from '@react-navigation/native';
@@ -75,14 +74,14 @@ interface IProposalJSONProps {
 }
 
 export const useGovernanceList = () => {
-    const { storage } = useAppSelector((state: rootState) => state);
+    const { network, contentVolume } = useAppSelector((state) => state.storage);
     const [governanceState, setGovernanceList] = useState<IGovernanceState>({
         list: []
     });
 
     const getProposalJsonData = useCallback(async () => {
         try {
-            const response = await fetch(`${CHAIN_NETWORK[storage.network].PROPOSAL_JSON}`, {
+            const response = await fetch(`${CHAIN_NETWORK[network].PROPOSAL_JSON}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-store',
@@ -136,7 +135,7 @@ export const useGovernanceList = () => {
                 });
 
             StorageActions.handleContentVolume({
-                ...storage.contentVolume,
+                ...contentVolume,
                 proposals: list.length
             });
 
@@ -154,7 +153,7 @@ export const useGovernanceList = () => {
 
     useEffect(() => {
         handleGovernanceListPolling();
-    }, [storage.network]);
+    }, [network]);
 
     return {
         governanceState,
