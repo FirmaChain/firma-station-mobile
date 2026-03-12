@@ -42,6 +42,8 @@ export interface IProposalDescriptionState {
     proposalType: string;
     submitTime: string;
     description: string;
+    isTextProposal: boolean;
+    messages: Array<any>;
     classified: any;
     votingStartTime: string;
     votingEndTime: string;
@@ -236,6 +238,8 @@ export const useProposalData = () => {
                 proposalType: proposalType,
                 submitTime: submitTime,
                 description: description,
+                isTextProposal: isEmptyMsg,
+                messages: Array.isArray(proposal.messages) ? proposal.messages : [],
                 classified: classified,
                 votingStartTime: votingStartTime,
                 votingEndTime: votingEndTime,
@@ -259,7 +263,7 @@ export const useProposalData = () => {
                 descState,
                 voteState
             });
-        } catch (e) {
+        } catch {
             // Fix: if failed to fetch proposal data, show error toast and return to previous screen (governance)
             Toast.show({
                 type: 'error',

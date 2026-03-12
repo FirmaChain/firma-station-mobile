@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CHAIN_SYMBOL, PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from '@/constants/common';
 import { ICON_LINK_ARROW } from '@/constants/images';
 import { BoxColor, DividerColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
@@ -15,6 +15,7 @@ interface IProps {
 
 const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
+    const [openedMessageMap, setOpenedMessageMap] = useState<Record<number, boolean>>({});
 
     const isDepositPeriod = useMemo(() => {
         return data.status === PROPOSAL_STATUS_DEPOSIT_PERIOD;
@@ -63,6 +64,71 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
         if (data) return data.classified;
         return null;
     }, [data]);
+
+    const messages = useMemo(() => {
+        if (!data) return [];
+        if (data.isTextProposal) return [];
+        if (!Array.isArray(data.messages)) return [];
+        if (data.messages.length === 0) return [];
+        return data.messages;
+    }, [data]);
+
+    const toggleMessage = (index: number) => {
+        setOpenedMessageMap((prev) => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    };
+
+    const getMessageType = (message: any, index: number) => {
+        const messageType = message?.content?.['@type'] || message?.['@type'];
+        if (!messageType) return `Message #${index + 1}`;
+        return String(messageType);
+    };
+
+    const getMessageName = (message: any, index: number) => {
+        const rawType = getMessageType(message, index);
+        if (rawType.startsWith('Message #')) return rawType;
+
+        const slashSeparated = rawType.split('/');
+        const lastSegment = slashSeparated[slashSeparated.length - 1] || rawType;
+        const dotSeparated = lastSegment.split('.');
+        return dotSeparated[dotSeparated.length - 1] || lastSegment;
+    };
+
+    const parseRows = (value: any, parentKey = ''): Array<{ key: string; value: string }> => {
+        const shouldSkipKey = (keyPath: string) => {
+            if (!keyPath) return false;
+            const lastKey = keyPath.split('.').pop() || keyPath;
+            const normalized = lastKey.replace(/\[\d+\]/g, '').toLowerCase();
+            return normalized === 'title' || normalized === 'description';
+        };
+
+        if (shouldSkipKey(parentKey)) {
+            return [];
+        }
+
+        if (value === null || value === undefined) {
+            return [{ key: parentKey || '-', value: '-' }];
+        }
+
+        if (Array.isArray(value)) {
+            if (value.length === 0) {
+                return [{ key: parentKey || '-', value: '[]' }];
+            }
+            return value.flatMap((item, index) => parseRows(item, `${parentKey}[${index}]`));
+        }
+
+        if (typeof value === 'object') {
+            const entries = Object.entries(value);
+            if (entries.length === 0) {
+                return [{ key: parentKey || '-', value: '{}' }];
+            }
+            return entries.flatMap(([key, item]) => parseRows(item, parentKey ? `${parentKey}.${key}` : key));
+        }
+
+        return [{ key: parentKey || 'value', value: String(value) }];
+    };
 
     const convertClassified = (classified: any) => {
         if (classified === undefined || classified === null) return;
@@ -145,6 +211,43 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
                     <Text style={[styles.title, styles.titleV, { color: TextColor }]}>{Description.title}</Text>
                     <MarkdownRender markdown={Description.data} />
                 </View>
+                {messages.length > 0 && (
+                    <View style={styles.messageContainer}>
+                        <Text style={[styles.title, styles.titleV, { color: TextColor }]}>Messages</Text>
+                        {messages.map((message, index) => {
+                            const rows = parseRows(message);
+                            const isOpened = Boolean(openedMessageMap[index]);
+
+                            return (
+                                <View key={index} style={styles.messageCard}>
+                                    <TouchableOpacity
+                                        style={[styles.boxH, { justifyContent: 'space-between', alignItems: 'flex-start' }]}
+                                        onPress={() => toggleMessage(index)}
+                                    >
+                                        <Text style={[styles.desc, { fontSize: 14, flex: 1 }]}>{getMessageName(message, index)}</Text>
+                                        <Text style={[styles.desc, { fontSize: 14, color: TextAddressColor }]}>
+                                            {isOpened ? 'Hide' : 'Show'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    {isOpened && (
+                                        <View style={styles.tableWrap}>
+                                            <View style={styles.tableRowHeader}>
+                                                <Text style={[styles.tableHeaderText, styles.tableKeyCol]}>Key</Text>
+                                                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>Value</Text>
+                                            </View>
+                                            {rows.map((row, rowIndex) => (
+                                                <View key={`${index}-${rowIndex}`} style={styles.tableRow}>
+                                                    <Text style={[styles.tableCellText, styles.tableKeyCol]}>{row.key}</Text>
+                                                    <Text style={[styles.tableCellText, styles.tableValueCol]}>{row.value}</Text>
+                                                </View>
+                                            ))}
+                                        </View>
+                                    )}
+                                </View>
+                            );
+                        })}
+                    </View>
+                )}
                 {convertClassified(Classified)}
             </View>
             <View style={styles.dividerDashed} />
@@ -179,6 +282,62 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 20,
         marginTop: 36
+    },
+    messageContainer: {
+        width: '100%',
+        marginTop: 36
+    },
+    messageCard: {
+        width: '100%',
+        backgroundColor: BoxColor,
+        borderRadius: 8,
+        padding: 16,
+        marginTop: 10
+    },
+    tableWrap: {
+        width: '100%',
+        marginTop: 12,
+        borderWidth: 1,
+        borderColor: DividerColor,
+        borderRadius: 8,
+        overflow: 'hidden'
+    },
+    tableRowHeader: {
+        width: '100%',
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: DividerColor,
+        backgroundColor: '#25252d'
+    },
+    tableRow: {
+        width: '100%',
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: DividerColor
+    },
+    tableHeaderText: {
+        fontFamily: Lato,
+        color: TextColor,
+        fontWeight: '600',
+        fontSize: 13,
+        paddingVertical: 10,
+        paddingHorizontal: 12
+    },
+    tableCellText: {
+        fontFamily: Lato,
+        color: TextCatTitleColor,
+        fontSize: 12,
+        lineHeight: 18,
+        paddingVertical: 10,
+        paddingHorizontal: 12
+    },
+    tableKeyCol: {
+        width: '38%',
+        borderRightWidth: 1,
+        borderRightColor: DividerColor
+    },
+    tableValueCol: {
+        width: '62%'
     },
     boxV: {
         alignItems: 'flex-start'
