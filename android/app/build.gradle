@@ -138,3 +138,21 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+// Ensure vector icon fonts are copied before release lint model tasks
+afterEvaluate {
+    def copyFontsTask = tasks.findByName("copyReactNativeVectorIconFonts")
+
+    if (copyFontsTask != null) {
+        tasks.matching { task ->
+            task.name in [
+                "generateReleaseLintVitalReportModel",
+                "lintVitalAnalyzeRelease",
+                "lintAnalyzeRelease",
+                "generateReleaseLintReportModel"
+            ]
+        }.configureEach { task ->
+            task.dependsOn(copyFontsTask)
+        }
+    }
+}
