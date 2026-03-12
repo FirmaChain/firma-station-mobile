@@ -48,12 +48,12 @@ export const degree = (value: Animated.Value) => {
 };
 
 export const LayoutAnim = () => {
-    console.warn('LayoutAnim is not supported on New Arch');
-    // if (Platform.OS === 'android') {
-    //     if (UIManager.setLayoutAnimationEnabledExperimental) {
-    //       UIManager.setLayoutAnimationEnabledExperimental(true);
-    //     }
-    // }
+    // console.warn('LayoutAnim is not supported on New Arch');
+    if (Platform.OS === 'android') {
+        if (UIManager.setLayoutAnimationEnabledExperimental) {
+            UIManager.setLayoutAnimationEnabledExperimental(true);
+        }
+    }
 };
 
 export const easeInAndOutAnim = () => {

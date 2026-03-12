@@ -546,7 +546,7 @@ export const getDelegations = async (address: string) => {
     try {
         const totalReward = await getTotalReward(address);
         const delegateListOrigin = await getDelegateList(address);
-        const delegateListSort = delegateListOrigin.toSorted((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
+        const delegateListSort = [...delegateListOrigin].sort((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
 
         return delegateListSort.map((value) => {
             return {
@@ -586,7 +586,7 @@ export const getRedelegations = async (address: string) => {
             });
         });
 
-        const redelegationListSort = redelegationList.toSorted((a, b) => {
+        const redelegationListSort = [...redelegationList].sort((a, b) => {
             return Date.parse(a.completionTime) - Date.parse(b.completionTime);
         });
 
@@ -614,7 +614,7 @@ export const getUndelegations = async (address: string) => {
             });
         });
 
-        const redelegationListSort = undelegationList.toSorted((a, b) => {
+        const redelegationListSort = [...undelegationList].sort((a, b) => {
             return Date.parse(a.completionTime) - Date.parse(b.completionTime);
         });
 
@@ -644,7 +644,7 @@ export const getStaking = async (address: string) => {
     const available = convertNumber(balance);
     const stakingReward = convertToFctNumber(totalReward.total);
 
-    const delegateListSort = delegateListOrigin.toSorted((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
+    const delegateListSort = [...delegateListOrigin].sort((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
     const delegationBalanceList = delegateListSort.map((value) => {
         return value.balance.amount;
     });
