@@ -3,56 +3,57 @@ import { CHANGE_NETWORK_NOTICE, CONNECTION_NOTICE, LOADING_DATA_NOTICE } from '@
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from '@/constants/images';
 import { BgColor, Lato, TextColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { fadeIn, fadeOut } from '@/util/animation';
+import { fadeIn } from '@/util/animation';
 import { useFocusEffect } from '@react-navigation/native';
-import { Animated, BackHandler, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
+import { Animated, BackHandler, Easing, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 
 const Progress = () => {
     const { isNetworkChanged, connect, dataLoadStatus } = useAppSelector((state) => state.common);
     const { network } = useAppSelector((state) => state.storage);
 
     const opacity = connect === false || isNetworkChanged ? 1 : 0.8;
+    const progressAnim = useRef(new Animated.Value(0)).current;
 
-    const fadeAnim_1 = useRef(new Animated.Value(0)).current;
-    const fadeAnim_2 = useRef(new Animated.Value(0)).current;
-    const fadeAnim_3 = useRef(new Animated.Value(0)).current;
     const fadeAnim_text = useRef(new Animated.Value(0)).current;
-
-    const animated = [fadeAnim_1, fadeAnim_2, fadeAnim_3];
     const [loadingDelayed, setLoadingDelayed] = useState(false);
+
+    // Match the original pattern timing (250ms tick + 300ms fade) without JS timers.
+    const fadeAnim_1 = progressAnim.interpolate({
+        inputRange: [0, 0.15, 0.75, 0.9, 1],
+        outputRange: [0, 1, 1, 0, 0]
+    });
+
+    const fadeAnim_2 = progressAnim.interpolate({
+        inputRange: [0, 0.125, 0.275, 0.625, 0.775, 1],
+        outputRange: [0, 0, 1, 1, 0, 0]
+    });
+
+    const fadeAnim_3 = progressAnim.interpolate({
+        inputRange: [0, 0.25, 0.4, 0.5, 0.65, 1],
+        outputRange: [0, 0, 1, 1, 0, 0]
+    });
 
     useEffect(() => {
         Keyboard.dismiss();
 
-        let index = -1;
-        let inverse = true;
-        let count = 0;
-
-        const handleProgress = () => {
-            if (inverse && index < 3) index = index + 1;
-            if (!inverse && index >= 0) index = index - 1;
-
-            if (inverse && index >= 0 && index < 3) fadeIn(Animated, animated[index], 300);
-            if (!inverse && index >= 0 && index < 3) fadeOut(Animated, animated[index], 300);
-
-            if (index <= -1 || index >= 3) inverse = !inverse;
-            count = count + 2.5;
-            if (count === 10) {
-                count = 0;
-            }
-        };
-
-        handleProgress();
-        let timerId = setTimeout(function progress() {
-            handleProgress();
-            timerId = setTimeout(progress, 250);
-        }, 250);
+        const animation = Animated.loop(
+            Animated.timing(progressAnim, {
+                toValue: 1,
+                duration: 2000,
+                easing: Easing.linear,
+                useNativeDriver: true,
+                isInteraction: false
+            })
+        );
+        animation.start();
 
         return () => {
-            clearTimeout(timerId);
+            animation.stop();
+            progressAnim.stopAnimation();
+            progressAnim.setValue(0);
             setLoadingDelayed(false);
         };
-    }, []);
+    }, [progressAnim]);
 
     useEffect(() => {
         if (dataLoadStatus >= 1) {
@@ -120,23 +121,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0
     },
-    // counterBox: {
-    //   height: '100%',
-    //   alignItems: 'center',
-    //   justifyContent: 'flex-end',
-    // },
-    // notice: {
-    //   fontFamily: Lato,
-    //   fontSize: 20,
-    //   fontWeight: '600',
-    //   color: TextColor,
-    //   paddingBottom: 10,
-    // },
-    // counter: {
-    //   fontFamily: Lato,
-    //   fontSize: 18,
-    //   color: TextCatTitleColor,
-    // },
     network: {
         width: '100%',
         fontFamily: Lato,
