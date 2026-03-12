@@ -1,9 +1,19 @@
 import React, { ComponentProps } from 'react';
-import { DividerColor, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { DividerColor, PointColor, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import Markdown from 'react-native-markdown-display';
 
 const MarkdownRender = ({ markdown }: { markdown: string }) => {
-    return <Markdown style={markdownStyles}>{markdown}</Markdown>;
+    const normalizeMarkdownLinks = (source: string) => {
+        if (!source) return '';
+
+        // Convert bare URLs to markdown links so they become tappable.
+        return source.replace(/(^|[\s(>])((https?:\/\/[^\s<)]+))/g, (match, prefix, url) => {
+            if (/\]\((https?:\/\/[^\s)]+)\)$/.test(match)) return match;
+            return `${prefix}[${url}](${url})`;
+        });
+    };
+
+    return <Markdown style={markdownStyles}>{normalizeMarkdownLinks(markdown)}</Markdown>;
 };
 
 const markdownStyles: ComponentProps<typeof Markdown>['style'] = {
@@ -84,12 +94,13 @@ const markdownStyles: ComponentProps<typeof Markdown>['style'] = {
     },
     code_inline: {
         fontSize: 14,
-        color: TextColor
+        color: TextColor,
+        backgroundColor: PointColor
     },
     code_block: {
         fontSize: 14,
         lineHeight: 20,
-        color: TextColor
+        backgroundColor: PointColor
     },
     fence: {
         fontSize: 14,
