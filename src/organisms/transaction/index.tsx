@@ -328,7 +328,7 @@ const Transaction = ({ state }: IProps) => {
                 break;
             case TRANSACTION_TYPE.GRANT:
             case TRANSACTION_TYPE.REVOKE:
-                navigation.navigate(Screens.Staking);
+                navigation.popToTop();
                 break;
             case TRANSACTION_TYPE.SEND_CW20:
             case TRANSACTION_TYPE.SEND_CW721:
