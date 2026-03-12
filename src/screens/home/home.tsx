@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { isMainTabScreen, Screens } from '@/navigators/appRoutes';
 import Home from '@/organisms/home';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { useAppSelector } from '@/redux/hooks';
 
-interface IProps {
-    route: {};
-}
+const HomeScreen = () => {
+    const { currentRoute } = useAppSelector((state) => state.common);
+    const lastMainRouteRef = useRef<Screens>(Screens.Wallet);
 
-const HomeScreen = (props: IProps) => {
-    const routeName = getFocusedRouteNameFromRoute(props.route);
-    return <Home title={routeName === undefined ? 'Wallet' : routeName} />;
+    if (isMainTabScreen(currentRoute)) {
+        lastMainRouteRef.current = currentRoute as Screens;
+    }
+
+    return <Home title={lastMainRouteRef.current} />;
 };
 
 export default React.memo(HomeScreen);

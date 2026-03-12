@@ -60,6 +60,12 @@ export enum Screens {
     Version = 'Version'
 }
 
+export const MAIN_TAB_SCREENS: Screens[] = [Screens.Wallet, Screens.Staking, Screens.Governance, Screens.Dapps];
+
+export const isMainTabScreen = (routeName: string): boolean => {
+    return MAIN_TAB_SCREENS.includes(routeName as Screens);
+};
+
 export type StackParamList = {
     LoginCheck: undefined;
     Web: WebParams;

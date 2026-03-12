@@ -1,6 +1,6 @@
 import React from 'react';
 import { BgColor, BoxDarkColor } from '@/constants/theme';
-import { Screens } from '@/navigators/appRoutes';
+import { isMainTabScreen } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +17,7 @@ const RootView = ({ children, bgColor = BgColor }: IProps) => {
 
     const insets = useSafeAreaInsets();
 
-    const isMainPage = [Screens.Wallet, Screens.Staking, Screens.Governance, Screens.Dapps].includes(currentRoute as Screens);
+    const isMainPage = isMainTabScreen(currentRoute);
     const isModalOpen = Object.values(modal).some((value) => value === true);
 
     const chkLoginStatus = name !== '' && loggedIn;
