@@ -6,7 +6,7 @@ import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletSer
 
 import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 
-import { convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from './common';
+import { compareBigIntDesc, convertAmountByDecimalToTx, convertNumber, convertToFctNumber } from './common';
 import { getDecryptPassword, getRecoverValue } from './wallet';
 
 export interface IWallet {
@@ -53,21 +53,13 @@ export const getFirmaConfig = () => {
 };
 
 export const getChainInfo = async () => {
-    try {
-        const result = await getFirmaSDK().BlockChain.getChainInfo();
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().BlockChain.getChainInfo();
 };
 
 // Wallet
 export const createNewWallet = async () => {
     try {
-        console.log('CreateNewWallet');
-
         const wallet = await getFirmaSDK().Wallet.newWallet();
-        console.log('wallet??', wallet);
 
         return organizeWallet(wallet);
     } catch (error) {
@@ -78,7 +70,7 @@ export const createNewWallet = async () => {
 
 export const mnemonicCheck = async (mnemonic: string) => {
     try {
-        const valid = await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
+        await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
         return true;
     } catch (error) {
         console.log('error : ' + error);
@@ -97,18 +89,9 @@ export const privateKeyCheck = async (privateKey: string) => {
 };
 
 export const recoverWallet = async (recoverValue: string) => {
-    try {
-        let wallet;
-        const isMnemonic = await mnemonicCheck(recoverValue);
-        if (isMnemonic) {
-            wallet = await getFirmaSDK().Wallet.fromMnemonic(recoverValue);
-        } else {
-            wallet = await getFirmaSDK().Wallet.fromPrivateKey(recoverValue);
-        }
-        return wallet;
-    } catch (error) {
-        throw error;
-    }
+    const isMnemonic = await mnemonicCheck(recoverValue);
+    if (isMnemonic) return await getFirmaSDK().Wallet.fromMnemonic(recoverValue);
+    else return await getFirmaSDK().Wallet.fromPrivateKey(recoverValue);
 };
 
 export const getPrivateKeyFromMnemonic = async (mnemonic: string) => {
@@ -193,55 +176,31 @@ const organizeWallet = async (wallet: FirmaWalletService) => {
 };
 
 export const getDecryptWalletInfo = async (walletName: string) => {
-    try {
-        const password = await getDecryptPassword();
-        const result = await getRecoverValue(walletName, password);
-        const recoverValue = result === null ? '' : result;
-        return await recoverWallet(recoverValue);
-    } catch (error) {
-        throw error;
-    }
+    const password = await getDecryptPassword();
+    const result = await getRecoverValue(walletName, password);
+    const recoverValue = result === null ? '' : result;
+    return await recoverWallet(recoverValue);
 };
 
 export const getEstimateGasFromAllDelegations = async (walletName: string) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList;
-        const estimatedGas = await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewardsFromAllValidator(wallet, delegationList);
-        return estimatedGas;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList;
+    return await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewardsFromAllValidator(wallet, delegationList);
 };
 
 export const getEstimateGasFromDelegation = async (walletName: string, validatorAddress: string) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const estimatedGas = await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewards(wallet, validatorAddress);
-        return estimatedGas;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Distribution.getGasEstimationWithdrawAllRewards(wallet, validatorAddress);
 };
 
 export const getEstimateGasDelegate = async (walletName: string, validatorAddress: string, amount: number) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Staking.getGasEstimationDelegate(wallet, validatorAddress, amount);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Staking.getGasEstimationDelegate(wallet, validatorAddress, amount);
 };
 
 export const getEstimateGasUndelegate = async (walletName: string, validatorAddress: string, amount: number) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Staking.getGasEstimationUndelegate(wallet, validatorAddress, amount);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Staking.getGasEstimationUndelegate(wallet, validatorAddress, amount);
 };
 
 export const getEstimateGasRedelegate = async (
@@ -250,71 +209,41 @@ export const getEstimateGasRedelegate = async (
     validatorDstAddress: string,
     amount: number
 ) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Staking.getGasEstimationRedelegate(
-            wallet,
-            validatorSrcAddress,
-            validatorDstAddress,
-            amount
-        );
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
 };
 
 export const getEstimateGasGrantStakeAuthorization = async (walletName: string, validatorAddress: string[]) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 1);
+    const wallet = await getDecryptWalletInfo(walletName);
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
 
-        const gasEstimation = await getFirmaSDK().Authz.getGasEstimationGrantStakeAuthorization(
-            wallet,
-            getRestakeAddress(),
-            validatorAddress,
-            1,
-            {
-                seconds: BigInt(Math.floor(date.getTime() / 1000)),
-                nanos: (date.getTime() % 1000) * 1000000
-            },
-            0
-        );
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Authz.getGasEstimationGrantStakeAuthorization(
+        wallet,
+        getRestakeAddress(),
+        validatorAddress,
+        1,
+        {
+            seconds: BigInt(Math.floor(date.getTime() / 1000)),
+            nanos: (date.getTime() % 1000) * 1000000
+        },
+        0
+    );
 };
 
 export const getEstimateGasRevokeStakeAuthorization = async (walletName: string) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Authz.getGasEstimationRevokeStakeAuthorization(wallet, getRestakeAddress(), 1);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Authz.getGasEstimationRevokeStakeAuthorization(wallet, getRestakeAddress(), 1);
 };
 
 export const getEstimateGasSend = async (walletName: string, address: string, amount: number) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Bank.getGasEstimationSend(wallet, address, amount);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Bank.getGasEstimationSend(wallet, address, amount);
 };
 
 export const getEstimateGasSendToken = async (walletName: string, address: string, tokenId: string, amount: number, decimal: number) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Bank.getGasEstimationSendToken(wallet, address, tokenId, amount, decimal);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Bank.getGasEstimationSendToken(wallet, address, tokenId, amount, decimal);
 };
 
 export const getEstimateGasSendIBC = async (
@@ -326,66 +255,33 @@ export const getEstimateGasSendIBC = async (
     amount: number,
     decimal: number
 ) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const _amount = convertAmountByDecimalToTx(amount, decimal);
-        const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
-        const timeStamp = (Date.now() + 600000).toString() + '000000';
-        const timeoutTimeStamp = BigInt(timeStamp); // Long.fromString(timeStamp, true);
-        const height = {
-            revisionHeight: BigInt(clientState.identified_client_state.client_state.latest_height.revision_height) + BigInt(1000),
-            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
-            //     Long.fromNumber(1000)
-            // ),
-            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number)
-            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
-        };
+    const wallet = await getDecryptWalletInfo(walletName);
+    const _amount = convertAmountByDecimalToTx(amount, decimal);
+    const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
+    const timeStamp = (Date.now() + 600000).toString() + '000000';
+    const timeoutTimeStamp = BigInt(timeStamp);
+    const height = {
+        revisionHeight: BigInt(clientState.identified_client_state.client_state.latest_height.revision_height) + BigInt(1000),
+        revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number)
+    };
 
-        const gasEstimation = await getFirmaSDK().Ibc.getGasEstimationTransfer(
-            wallet,
-            port,
-            channel,
-            denom,
-            _amount,
-            address,
-            height,
-            timeoutTimeStamp
-        );
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Ibc.getGasEstimationTransfer(wallet, port, channel, denom, _amount, address, height, timeoutTimeStamp);
 };
 
 export const getEstimateGasSendCW20 = async (walletName: string, contract: string, address: string, amount: string) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const _amount = await convertCW20Amount(contract, amount);
-        const gasEstimation = await getFirmaSDK().Cw20.getGasEstimationTransfer(wallet, contract, address, _amount);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    const _amount = await convertCW20Amount(contract, amount);
+    return await getFirmaSDK().Cw20.getGasEstimationTransfer(wallet, contract, address, _amount);
 };
 
 export const getEstimateGasSendCW721 = async (walletName: string, contract: string, address: string, tokenId: string) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Cw721.getGasEstimationTransfer(wallet, contract, address, tokenId);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Cw721.getGasEstimationTransfer(wallet, contract, address, tokenId);
 };
 
 export const getEstimateGasVoting = async (walletName: string, proposalId: number, votingOpt: number) => {
-    try {
-        const wallet = await getDecryptWalletInfo(walletName);
-        const gasEstimation = await getFirmaSDK().Gov.getGasEstimationVote(wallet, proposalId, votingOpt);
-        return gasEstimation;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await getDecryptWalletInfo(walletName);
+    return await getFirmaSDK().Gov.getGasEstimationVote(wallet, proposalId, votingOpt);
 };
 
 export const getFeesFromGas = (estimatedGas: number) => {
@@ -394,17 +290,12 @@ export const getFeesFromGas = (estimatedGas: number) => {
 };
 
 export const sendFCT = async (recoverValue: string, target: string, amount: number, estimatedGas: number, memo?: string) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const send = await getFirmaSDK().Bank.send(wallet, target, amount, {
-            memo: memo,
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-        return send;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Bank.send(wallet, target, amount, {
+        memo: memo,
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const sendToken = async (
@@ -416,17 +307,12 @@ export const sendToken = async (
     estimatedGas: number,
     memo?: string
 ) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const send = await getFirmaSDK().Bank.sendToken(wallet, target, tokenId, amount, decimal, {
-            memo: memo,
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-        return send;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Bank.sendToken(wallet, target, tokenId, amount, decimal, {
+        memo: memo,
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const sendIBC = async (
@@ -440,29 +326,21 @@ export const sendIBC = async (
     estimatedGas: number,
     memo?: string
 ) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const _amount = convertAmountByDecimalToTx(amount, decimal);
-        const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
-        const timeStamp = (Date.now() + 600000).toString() + '000000';
-        const timeoutTimeStamp = BigInt(timeStamp); // Long.fromString(timeStamp, true);
-        const height = {
-            revisionHeight: BigInt(clientState.identified_client_state.client_state.latest_height.revision_height) + BigInt(1000),
-            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_height, true).add(
-            //     Long.fromNumber(1000)
-            // ),
-            revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number)
-            // Long.fromString(clientState.identified_client_state.client_state.latest_height.revision_number, true),
-        };
-        const send = await getFirmaSDK().Ibc.transfer(wallet, port, channel, denom, _amount, target, height, timeoutTimeStamp, {
-            memo: memo,
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-        return send;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    const _amount = convertAmountByDecimalToTx(amount, decimal);
+    const clientState = await getFirmaSDK().Ibc.getClientState(channel, port);
+    const timeStamp = (Date.now() + 600000).toString() + '000000';
+    const timeoutTimeStamp = BigInt(timeStamp);
+    const height = {
+        revisionHeight: BigInt(clientState.identified_client_state.client_state.latest_height.revision_height) + BigInt(1000),
+        revisionNumber: BigInt(clientState.identified_client_state.client_state.latest_height.revision_number)
+    };
+    //! Added 'memo' parameter to fix type error (currently undefined)
+    return await getFirmaSDK().Ibc.transfer(wallet, port, channel, denom, _amount, target, height, timeoutTimeStamp, undefined, {
+        memo: memo,
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const addressCheck = (address: string) => {
@@ -498,275 +376,179 @@ export const getUndelegateList = async (address: string) => {
 };
 
 export const getTotalReward = async (address: string) => {
-    try {
-        return await getFirmaSDK().Distribution.getTotalRewardInfo(address);
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Distribution.getTotalRewardInfo(address);
 };
 
 export const getStakingPoolState = async () => {
-    try {
-        const pool = await getFirmaSDK().Staking.getPool();
-        return pool;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Staking.getPool();
 };
 
 export const getSlashingState = async () => {
-    try {
-        const slashing = await getFirmaSDK().Slashing.getSlashingParam();
-        return slashing;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Slashing.getSlashingParam();
 };
 
 export const getBankSupply = async () => {
-    try {
-        const denom = TOKEN_DENOM();
-
-        const supply = await getFirmaSDK().Bank.getTokenSupply(denom);
-        return convertNumber(supply);
-    } catch (error) {
-        throw error;
-    }
+    const denom = TOKEN_DENOM();
+    const supply = await getFirmaSDK().Bank.getTokenSupply(denom);
+    return convertNumber(supply);
 };
 
 export const getMintInflation = async () => {
-    try {
-        const inflation = await getFirmaSDK().Mint.getInflation();
-        return convertNumber(inflation);
-    } catch (error) {
-        throw error;
-    }
+    const inflation = await getFirmaSDK().Mint.getInflation();
+    return convertNumber(inflation);
 };
 
 export const getValidators = async () => {
-    try {
-        const validatorList = await getFirmaSDK().Staking.getValidatorList();
+    const validatorList = await getFirmaSDK().Staking.getValidatorList();
 
-        const dataList: ValidatorDataType[] = validatorList.dataList;
-        let nextKey: string = validatorList.pagination.next_key;
+    const dataList: ValidatorDataType[] = validatorList.dataList;
+    let nextKey: string = validatorList.pagination.next_key;
 
-        while (nextKey !== null) {
-            const nextValidatorList = await getFirmaSDK().Staking.getValidatorList('' as StakingValidatorStatus, nextKey);
-            const nextDataList = nextValidatorList.dataList;
-            nextKey = nextValidatorList.pagination.next_key;
+    while (nextKey !== null) {
+        const nextValidatorList = await getFirmaSDK().Staking.getValidatorList('' as StakingValidatorStatus, nextKey);
+        const nextDataList = nextValidatorList.dataList;
+        nextKey = nextValidatorList.pagination.next_key;
 
-            dataList.push(...nextDataList);
-        }
-
-        return dataList;
-    } catch (error) {
-        throw error;
+        dataList.push(...nextDataList);
     }
+
+    return dataList;
 };
 
 export const getSigningInfos = async () => {
-    try {
-        const result = await getFirmaSDK().Slashing.getSigningInfos();
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Slashing.getSigningInfos();
 };
 
 export const getSigningInfo = async (address: string) => {
     try {
-        const result = await getFirmaSDK().Slashing.getSigningInfo(address);
-        return result;
-    } catch (error) {}
+        return await getFirmaSDK().Slashing.getSigningInfo(address);
+    } catch {
+        return null;
+    }
 };
 
 export const getValidatorFromAddress = async (address: string) => {
-    try {
-        const validator = await getFirmaSDK().Staking.getValidator(address);
-        return validator;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Staking.getValidator(address);
 };
 
 export const getDelegationListFromValidator = async (address: string) => {
-    try {
-        const delegation = (await getFirmaSDK().Staking.getDelegationListFromValidator(address)).dataList;
-        return delegation;
-    } catch (error) {
-        throw error;
-    }
+    return (await getFirmaSDK().Staking.getDelegationListFromValidator(address)).dataList;
 };
 
 export const getSelfDelegateAddressFromValOperAddress = async (address: string) => {
-    try {
-        const selfDelegateAddress = FirmaUtil.getAccAddressFromValOperAddress(address);
-        return selfDelegateAddress;
-    } catch (error) {
-        throw error;
-    }
+    return FirmaUtil.getAccAddressFromValOperAddress(address);
 };
 
 export const getStakingFromvalidator = async (address: string, validatorAddress: string) => {
-    try {
-        const balance = await getBalanceFromAdr(address);
+    const balance = await getBalanceFromAdr(address);
 
-        const totalReward = await getTotalReward(address);
-        const reward = totalReward.rewards.find((value) => value.validator_address === validatorAddress);
+    const totalReward = await getTotalReward(address);
+    const reward = totalReward.rewards.find((value) => value.validator_address === validatorAddress);
 
-        const delegateListOrigin = await getDelegateList(address);
-        const delegation = delegateListOrigin.find((value) => value.delegation.validator_address === validatorAddress);
+    const delegateListOrigin = await getDelegateList(address);
+    const delegation = delegateListOrigin.find((value) => value.delegation.validator_address === validatorAddress);
 
-        const available = convertToFctNumber(convertNumber(balance));
-        const delegated = convertToFctNumber(delegation ? delegation.balance.amount : 0);
-        const undelegate = 0;
-        const stakingReward = convertToFctNumber(reward ? reward.amount : 0);
+    const available = convertToFctNumber(convertNumber(balance));
+    const delegated = convertToFctNumber(delegation ? delegation.balance.amount : 0);
+    const undelegate = 0;
+    const stakingReward = convertToFctNumber(reward ? reward.amount : 0);
 
-        const values: IStakingState = {
-            available,
-            delegated,
-            undelegate,
-            stakingReward
-        };
-
-        return values;
-    } catch (error) {
-        throw error;
-    }
+    return {
+        available,
+        delegated,
+        undelegate,
+        stakingReward
+    } satisfies IStakingState;
 };
 
 export const delegate = async (recoverValue: string, address: string, amount: number, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const result = await getFirmaSDK().Staking.delegate(wallet, address, amount, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Staking.delegate(wallet, address, amount, {
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const redelegate = async (recoverValue: string, srcAddress: string, dstAddress: string, amount: number, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const result = await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const undelegate = async (recoverValue: string, address: string, amount: number, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const result = await getFirmaSDK().Staking.undelegate(wallet, address, amount, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Staking.undelegate(wallet, address, amount, {
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const grant = async (recoverValue: string, validatorAddress: string[], maxTokens: number, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 1);
+    const wallet = await recoverWallet(recoverValue);
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
 
-        const result = await getFirmaSDK().Authz.grantStakeAuthorization(
-            wallet,
-            getRestakeAddress(),
-            validatorAddress,
-            1,
-            {
-                seconds: BigInt(Math.floor(date.getTime() / 1000)),
-                nanos: (date.getTime() % 1000) * 1000000
-            },
-            maxTokens,
-            {
-                gas: estimatedGas,
-                fee: getFeesFromGas(estimatedGas)
-            }
-        );
-
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    return await getFirmaSDK().Authz.grantStakeAuthorization(
+        wallet,
+        getRestakeAddress(),
+        validatorAddress,
+        1,
+        {
+            seconds: BigInt(Math.floor(date.getTime() / 1000)),
+            nanos: (date.getTime() % 1000) * 1000000
+        },
+        maxTokens,
+        {
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas)
+        }
+    );
 };
 
 export const revoke = async (recoverValue: string, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const result = await getFirmaSDK().Authz.revokeStakeAuthorization(wallet, getRestakeAddress(), 1, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Authz.revokeStakeAuthorization(wallet, getRestakeAddress(), 1, {
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const withdrawRewards = async (recoverValue: string, address: string, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const result = await getFirmaSDK().Distribution.withdrawAllRewards(wallet, address, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Distribution.withdrawAllRewards(wallet, address, {
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const withdrawAllRewards = async (recoverValue: string, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
+    const wallet = await recoverWallet(recoverValue);
 
-        const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList;
-        const result = await getFirmaSDK().Distribution.withdrawAllRewardsFromAllValidator(wallet, delegationList, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const delegationList = (await getFirmaSDK().Staking.getTotalDelegationInfo(await wallet.getAddress())).dataList;
+    return await getFirmaSDK().Distribution.withdrawAllRewardsFromAllValidator(wallet, delegationList, {
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
 export const voting = async (recoverValue: string, proposalId: number, votingOpt: number, estimatedGas: number) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const result = await getFirmaSDK().Gov.vote(wallet, proposalId, votingOpt, {
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    return await getFirmaSDK().Gov.vote(wallet, proposalId, votingOpt, {
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
 };
 
+//Todo: Need to consider using bigint for amount and reward
 export const getDelegations = async (address: string) => {
     try {
         const totalReward = await getTotalReward(address);
         const delegateListOrigin = await getDelegateList(address);
-        const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
-        const delegateList = delegateListSort.map((value) => {
+        const delegateListSort = delegateListOrigin.toSorted((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
+
+        return delegateListSort.map((value) => {
             return {
                 validatorAddress: value.delegation.validator_address,
                 delegatorAddress: value.delegation.delegator_address,
@@ -778,7 +560,6 @@ export const getDelegations = async (address: string) => {
                 avatarURL: ''
             };
         });
-        return delegateList;
     } catch (error) {
         console.log(error);
         throw error;
@@ -805,8 +586,8 @@ export const getRedelegations = async (address: string) => {
             });
         });
 
-        const redelegationListSort = redelegationList.sort((a: any, b: any) => {
-            return new Date(a.completionTime).getTime() - new Date(b.completionTime).getTime();
+        const redelegationListSort = redelegationList.toSorted((a, b) => {
+            return Date.parse(a.completionTime) - Date.parse(b.completionTime);
         });
 
         return redelegationListSort;
@@ -833,8 +614,8 @@ export const getUndelegations = async (address: string) => {
             });
         });
 
-        const redelegationListSort = undelegationList.sort((a: any, b: any) => {
-            return new Date(a.completionTime).getTime() - new Date(b.completionTime).getTime();
+        const redelegationListSort = undelegationList.toSorted((a, b) => {
+            return Date.parse(a.completionTime) - Date.parse(b.completionTime);
         });
 
         return redelegationListSort;
@@ -846,66 +627,58 @@ export const getUndelegations = async (address: string) => {
 
 export const getStakingGrant = async (address: string) => {
     try {
-        const data = await getFirmaSDK().Authz.getStakingGrantData(address, getRestakeAddress(), 1);
-        const grantData = data.dataList;
-
-        return grantData;
-    } catch (error) {
+        return (await getFirmaSDK().Authz.getStakingGrantData(address, getRestakeAddress(), 1)).dataList;
+    } catch {
         return [];
     }
 };
 
 export const getStaking = async (address: string) => {
-    try {
-        const [balance, totalReward, delegateListOrigin, undelegateListOrigin] = await Promise.all([
-            getBalanceFromAdr(address),
-            getTotalReward(address),
-            getDelegateList(address),
-            getUndelegateList(address)
-        ]);
+    const [balance, totalReward, delegateListOrigin, undelegateListOrigin] = await Promise.all([
+        getBalanceFromAdr(address),
+        getTotalReward(address),
+        getDelegateList(address),
+        getUndelegateList(address)
+    ]);
 
-        const available = convertNumber(balance);
-        const stakingReward = convertToFctNumber(totalReward.total);
+    const available = convertNumber(balance);
+    const stakingReward = convertToFctNumber(totalReward.total);
 
-        const delegateListSort = delegateListOrigin.sort((a: any, b: any) => b.balance.amount - a.balance.amount);
-        const delegationBalanceList = delegateListSort.map((value) => {
-            return value.balance.amount;
-        });
-        const delegated = convertToFctNumber(
-            delegationBalanceList.length > 0
-                ? delegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
-                : 0
-        );
+    const delegateListSort = delegateListOrigin.toSorted((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
+    const delegationBalanceList = delegateListSort.map((value) => {
+        return value.balance.amount;
+    });
+    const delegated = convertToFctNumber(
+        delegationBalanceList.length > 0
+            ? delegationBalanceList.reduce((prev: string, current: string) => {
+                  return (convertNumber(prev) + convertNumber(current)).toString();
+              })
+            : 0
+    );
 
-        const undelegationBalanceList = undelegateListOrigin.map((value) => {
-            return value.entries
-                .map((value) => {
-                    return value.balance;
-                })
-                .reduce((prev: string, current: string) => {
-                    return (convertNumber(prev) + convertNumber(current)).toString();
-                });
-        });
-        const undelegate = convertToFctNumber(
-            undelegationBalanceList.length > 0
-                ? undelegationBalanceList.reduce((prev: string, current: string) => {
-                      return (convertNumber(prev) + convertNumber(current)).toString();
-                  })
-                : 0
-        );
+    const undelegationBalanceList = undelegateListOrigin.map((value) => {
+        return value.entries
+            .map((value) => {
+                return value.balance;
+            })
+            .reduce((prev: string, current: string) => {
+                return (convertNumber(prev) + convertNumber(current)).toString();
+            });
+    });
+    const undelegate = convertToFctNumber(
+        undelegationBalanceList.length > 0
+            ? undelegationBalanceList.reduce((prev: string, current: string) => {
+                  return (convertNumber(prev) + convertNumber(current)).toString();
+              })
+            : 0
+    );
 
-        const staking = {
-            available,
-            delegated,
-            undelegate,
-            stakingReward
-        };
-        return staking;
-    } catch (error) {
-        throw error;
-    }
+    return {
+        available,
+        delegated,
+        undelegate,
+        stakingReward
+    };
 };
 
 export const getNFTIdListOfOwner = async (address: string) => {
@@ -922,52 +695,36 @@ export const getNFTItemFromId = async (id: string) => {
     try {
         const nft = await getFirmaSDK().Nft.getNftItem(id);
         return nft;
-    } catch (error) {
+    } catch {
         console.log('error');
         return null;
     }
 };
 
 export const getProposals = async () => {
-    try {
-        const result = await getFirmaSDK().Gov.getAllProposalList();
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const result = await getFirmaSDK().Gov.getAllProposalList();
+    return result;
 };
 
 export const getProposalParams = async () => {
-    try {
-        const result = await getFirmaSDK().Gov.getParam();
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const result = await getFirmaSDK().Gov.getParam();
+    return result;
 };
 
 export const getProposalByProposalId = async (proposalId: string) => {
-    try {
-        const result = await getFirmaSDK().Gov.getProposal(proposalId);
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const result = await getFirmaSDK().Gov.getProposal(proposalId);
+    return result;
 };
 
 export const getProposalTally = async (proposalId: string) => {
-    try {
-        const result = await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId);
+    const result = await getFirmaSDK().Gov.getCurrentVoteInfo(proposalId);
 
-        return {
-            yes: result.yes_count,
-            no: result.no_count,
-            no_with_veto: result.no_with_veto_count,
-            abstain: result.abstain_count
-        };
-    } catch (error) {
-        throw error;
-    }
+    return {
+        yes: result.yes_count,
+        no: result.no_count,
+        no_with_veto: result.no_with_veto_count,
+        abstain: result.abstain_count
+    };
 };
 
 // CW
@@ -1029,18 +786,14 @@ export const sendCW20 = async (
     contract: string,
     memo: string
 ) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const _amount = await convertCW20Amount(contract, amount);
-        const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, {
-            memo: memo,
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-        return send;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    const _amount = await convertCW20Amount(contract, amount);
+    const send = await getFirmaSDK().Cw20.transfer(wallet, contract, target, _amount, {
+        memo: memo,
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
+    return send;
 };
 
 export const sendCW721NFT = async (
@@ -1051,34 +804,26 @@ export const sendCW721NFT = async (
     contract: string,
     memo: string
 ) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, {
-            memo: memo,
-            gas: estimatedGas,
-            fee: getFeesFromGas(estimatedGas)
-        });
-        return send;
-    } catch (error) {
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    const send = await getFirmaSDK().Cw721.transfer(wallet, contract, target, tokenId, {
+        memo: memo,
+        gas: estimatedGas,
+        fee: getFeesFromGas(estimatedGas)
+    });
+    return send;
 };
 
 export const convertCW20Amount = async (contract: string, amount: string) => {
-    try {
-        const tokenInfo = await getFirmaSDK().Cw20.getTokenInfo(contract);
-        const result = convertAmountByDecimalToTx(amount, tokenInfo.decimals);
-        return result;
-    } catch (error) {
-        throw error;
-    }
+    const tokenInfo = await getFirmaSDK().Cw20.getTokenInfo(contract);
+    const result = convertAmountByDecimalToTx(amount, tokenInfo.decimals);
+    return result;
 };
 
 export type ValidCWType = 'DEFAULT' | 'NON_EXIST' | 'CW20' | 'CW721' | 'ERROR';
 export const verifyCWContract = async (contract: string): Promise<ValidCWType> => {
     try {
         await getCWContractInfo(contract);
-    } catch (error) {
+    } catch {
         return 'NON_EXIST';
     }
 

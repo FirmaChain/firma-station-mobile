@@ -4,6 +4,8 @@
   "exclude": ["**/node_modules", "**/Pods"],
   "compilerOptions": {
     "baseUrl": "./src",
+    "types": ["react", "react-native"],
+    "lib": ["dom","esnext"],
     "paths": {
       "@/*": ["./*"],
       "@components/*": ["components/*"],

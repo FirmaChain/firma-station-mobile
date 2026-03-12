@@ -240,3 +240,11 @@ export const resizeFontSize = (amount: number, reference: number, initSize: numb
 export const getTimeStamp = () => {
     return Math.round(new Date().getTime() / 1000).toString();
 };
+
+export const compareBigIntDesc = (left: string, right: string) => {
+    const l = BigInt(left);
+    const r = BigInt(right);
+    if (r > l) return 1;
+    if (r < l) return -1;
+    return 0;
+};

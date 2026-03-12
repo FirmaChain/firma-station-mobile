@@ -602,13 +602,13 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
 
             const status = getValidatorStatus(validator.status);
             const jailed = validator.jailed;
-            const tombstoned = signingInfo === undefined ? false : signingInfo.tombstoned;
+            const tombstoned = signingInfo?.tombstoned ?? false;
 
             const stakingState: IStakingsState = getStakingState(commonState, votingPower, network);
             const annualPercentageState = getAPRAPY(stakingState, commission);
 
             let condition = '-';
-            const missedBlockCounter = signingInfo === undefined ? 0 : convertNumber(signingInfo.missed_blocks_counter);
+            const missedBlockCounter = convertNumber(signingInfo?.missed_blocks_counter ?? 0);
             const conditionOrigin = (1 - missedBlockCounter / signedBlockWindow) * 100;
             condition = makeDecimalPoint(conditionOrigin, 2);
 
