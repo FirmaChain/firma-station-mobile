@@ -6,6 +6,7 @@ import { convertAmount, convertTime } from '@/util/common';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { IProposalDescriptionState } from '@/hooks/governance/hooks';
+import MarkdownRender from '@/components/parts/markdownRender';
 
 interface IProps {
     data: IProposalDescriptionState;
@@ -142,7 +143,7 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
             <View style={[styles.boxV, { paddingVertical: 30 }]}>
                 <View style={styles.boxV}>
                     <Text style={[styles.title, styles.titleV, { color: TextColor }]}>{Description.title}</Text>
-                    <Text style={[styles.desc, { fontSize: 16 }]}>{Description.data}</Text>
+                    <MarkdownRender markdown={Description.data} />
                 </View>
                 {convertClassified(Classified)}
             </View>
