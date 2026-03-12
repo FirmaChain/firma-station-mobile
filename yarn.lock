@@ -5921,10 +5921,11 @@ __metadata:
     react-native-keychain: "npm:^10.0.0"
     react-native-linear-gradient: "npm:^2.8.3"
     react-native-modal: "npm:^14.0.0-rc.1"
-    react-native-nitro-modules: "npm:^0.31.10"
+    react-native-nitro-modules: "npm:^0.35.0"
     react-native-permissions: "npm:^5.4.4"
     react-native-qrcode-svg: "npm:^6.3.20"
-    react-native-quick-crypto: "npm:^1.0.6"
+    react-native-quick-base64: "npm:^2.2.2"
+    react-native-quick-crypto: "npm:^1.0.16"
     react-native-reanimated: "npm:4.1.5"
     react-native-safe-area-context: "npm:^5.5.2"
     react-native-screens: "npm:^4.18.0"
@@ -9095,13 +9096,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:^0.31.10":
-  version: 0.31.10
-  resolution: "react-native-nitro-modules@npm:0.31.10"
+"react-native-nitro-modules@npm:^0.35.0":
+  version: 0.35.0
+  resolution: "react-native-nitro-modules@npm:0.35.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/0acc6ca5f12e24a6601e682070f257a771b95214c11fba911b342af705071234544c93076900f43400c8ae2f1a6738011b120e4425813968102997860ffd7626
+  checksum: 10c0/3e1360081b0b9b6fc315f062a65d48dc5398ca03effdf8869c00dce808ddd320a3fe1869077784c86c3b9dd3d500cb6fd84e0d0b07a73ecbe1598fb800a4b0bb
   languageName: node
   linkType: hard
 
@@ -9134,7 +9135,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-quick-base64@npm:2.2.2, react-native-quick-base64@npm:^2.0.5, react-native-quick-base64@npm:^2.2.2":
+"react-native-quick-base64@npm:^2.0.5, react-native-quick-base64@npm:^2.2.2":
   version: 2.2.2
   resolution: "react-native-quick-base64@npm:2.2.2"
   peerDependencies:
@@ -9144,15 +9145,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-quick-crypto@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "react-native-quick-crypto@npm:1.0.6"
+"react-native-quick-crypto@npm:^1.0.16":
+  version: 1.0.16
+  resolution: "react-native-quick-crypto@npm:1.0.16"
   dependencies:
     "@craftzdog/react-native-buffer": "npm:6.1.0"
     events: "npm:3.3.0"
-    react-native-quick-base64: "npm:2.2.2"
     readable-stream: "npm:4.5.2"
     safe-buffer: "npm:^5.2.1"
+    string_decoder: "npm:^1.3.0"
     util: "npm:0.12.5"
   peerDependencies:
     expo: ">=48.0.0"
@@ -9160,12 +9161,13 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: ">=0.29.1"
+    react-native-quick-base64: ">=2.1.0"
   peerDependenciesMeta:
     expo:
       optional: true
     expo-build-properties:
       optional: true
-  checksum: 10c0/fd33eb8c888cc5c6acebf2ac2473902d01aec25d8a2fa596324c1564cba862ee40f21ee73eb49e53ace61bf84ad0f88ec903349aa0d4870a5924ed110d19e458
+  checksum: 10c0/7672e6f2fe4b3fc1f5d7a784126b4870553a4a8f132818aade59be32429cfcdd7cbef41d38e1bf69526fd9115e1a9224cbe23723d7016de87cd79d514541a4a1
   languageName: node
   linkType: hard
 

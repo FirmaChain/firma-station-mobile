@@ -29,7 +29,7 @@ PODS:
   - libwebp/sharpyuv (1.5.0)
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
-  - NitroModules (0.31.10):
+  - NitroModules (0.35.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -58,7 +58,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - QuickCrypto (1.0.6):
+  - QuickCrypto (1.0.16):
     - boost
     - DoubleConversion
     - fast_float
@@ -1892,6 +1892,8 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
+  - react-native-quick-base64 (2.2.2):
+    - React-Core
   - react-native-safe-area-context (5.6.2):
     - boost
     - DoubleConversion
@@ -3147,6 +3149,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -3305,6 +3308,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-quick-base64:
+    :path: "../node_modules/react-native-quick-base64"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-webview:
@@ -3421,8 +3426,8 @@ SPEC CHECKSUMS:
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
-  NitroModules: 22837572f1ecf8f1560f5aac7c9f687825754901
-  QuickCrypto: bbf87c57bcd909e2fb46d89a77c2de3fb5351fc7
+  NitroModules: 0ffbade1b2ebcfa12f3821c970b17fa369320810
+  QuickCrypto: 033c3aa0b39de28bb2369557fba5eeaeb8ab4956
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
   RCTDeprecation: f17e2ebc07876ca9ab8eb6e4b0a4e4647497ae3a
   RCTRequired: e2c574c1b45231f7efb0834936bd609d75072b63
@@ -3458,6 +3463,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 885bebe5c5f25035e1fd0920776078840a0e3a76
   react-native-get-random-values: 9856c21cab42a6d8db71dcb35c3059fdaeac2b16
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
+  react-native-quick-base64: d87272898345e0fc3c3afb8e5dff335d51214f3e
   react-native-safe-area-context: 54d812805f3c4e08a4580ad086cbde1d8780c2e4
   react-native-webview: 8b9097e270a99ee8798449f191a7ea27c790fa1c
   React-NativeModulesApple: c4bee6aa736092cd347456488a4f97a8e7517604
@@ -3515,6 +3521,6 @@ SPEC CHECKSUMS:
   VisionCamera: 68d40255fa8866e815cbbb063730102d3da276fd
   Yoga: 689c8e04277f3ad631e60fe2a08e41d411daf8eb
 
-PODFILE CHECKSUM: d2c98767d6ca5ab9469f37660da45e30c9f7ccfc
+PODFILE CHECKSUM: 10f7a35d38e4f62a14139d6fa062a7e1c91be4c7
 
 COCOAPODS: 1.16.2

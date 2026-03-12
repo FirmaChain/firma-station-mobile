@@ -49,6 +49,12 @@ target 'firma_station_mobile' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+    # Force set iOS target to min version.
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+      end
+    end
     # Build only for the active arch. This line added to exclude armv7.
     # installer.pods_project.targets.each do |target|
     #   target.build_configurations.each do |config|
