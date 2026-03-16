@@ -322,13 +322,11 @@ const Transaction = ({ state }: IProps) => {
             case TRANSACTION_TYPE.DELEGATE:
             case TRANSACTION_TYPE.REDELEGATE:
             case TRANSACTION_TYPE.UNDELEGATE:
-                navigation.navigate(Screens.Validator, {
-                    validatorAddress: state.operatorAddressDst
-                });
+                navigation.pop(2);
                 break;
             case TRANSACTION_TYPE.GRANT:
             case TRANSACTION_TYPE.REVOKE:
-                navigation.popToTop();
+                navigation.goBack();
                 break;
             case TRANSACTION_TYPE.SEND_CW20:
             case TRANSACTION_TYPE.SEND_CW721:
