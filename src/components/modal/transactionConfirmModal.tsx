@@ -26,7 +26,7 @@ interface IProps {
     vote?: string;
     extraData?: any;
     open: boolean;
-    setOpenModal: Function;
+    setOpenModal: (v: boolean) => void;
     symbol?: string;
     transactionHandler: (password: string) => void;
 }
@@ -97,6 +97,8 @@ const TransactionConfirmModal = ({
     useEffect(() => {
         if (open) {
             setTransactionStart(false);
+        } else {
+            setOpenValidationModal(false);
         }
     }, [open]);
 
@@ -205,9 +207,6 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 20
     },
-    // desc: {
-    //     fontSize: 14,
-    // },
     boxH: {
         flexDirection: 'row',
         justifyContent: 'space-between'

@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { BgColor, BoxColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import { VOTE_TYPE } from '@/constants/types';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { wait } from '@/util/common';
 import { getEstimateGasVoting, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import { useFocusEffect } from '@react-navigation/native';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import Button from '@/components/button/button';
@@ -39,6 +40,14 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
     const [openVoteModal, setOpenVoteModal] = useState(false);
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
 
+    const closeAllModals = useCallback(() => {
+        setOpenVoteModal(false);
+        setOpenTransactionModal(false);
+        setIsAlertModalOpen(false);
+        setProgress(false);
+        CommonActions.handleLoadingProgress(false);
+    }, []);
+
     const handleVoteModal = (open: boolean) => {
         if (open) setSelectedVote('');
         setOpenVoteModal(open);
@@ -50,6 +59,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
 
     const handleTransaction = (password: string) => {
         if (alertDescription !== '') return handleModalOpen(true);
+        closeAllModals();
         transactionHandler(password, votingGas, getVotingOption(selectedVote));
     };
 
@@ -117,6 +127,14 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
             !progress
         );
     }, [isVotingPeriod, openVoteModal, openTransactionModal, isAlertModalOpen, requestIds, loading, progress]);
+
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                closeAllModals();
+            };
+        }, [closeAllModals])
+    );
 
     return (
         <React.Fragment>
