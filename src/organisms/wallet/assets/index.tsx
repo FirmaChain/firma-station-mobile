@@ -31,7 +31,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Assets>;
 
 const Assets = () => {
     const { addCWContractModal } = useAppSelector((state) => state.modal);
-    const { cw20Contracts } = useAppSelector((state) => state.storage);
+    const { cw20Contracts, cw721Contracts } = useAppSelector((state) => state.storage);
     const { address } = useAppSelector((state) => state.wallet);
 
     const navigation: ScreenNavgationProps = useNavigation();
@@ -46,7 +46,7 @@ const Assets = () => {
 
     useEffect(() => {
         handleCW721ContractsInfo();
-    }, [cw20Contracts, address]);
+    }, [cw721Contracts, address]);
 
     const [tab, setTab] = useState(0);
     const [isEdit, setIsEdit] = useState(false);
