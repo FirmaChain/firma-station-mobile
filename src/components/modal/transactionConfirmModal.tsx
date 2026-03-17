@@ -97,8 +97,6 @@ const TransactionConfirmModal = ({
     useEffect(() => {
         if (open) {
             setTransactionStart(false);
-        } else {
-            setOpenValidationModal(false);
         }
     }, [open]);
 
