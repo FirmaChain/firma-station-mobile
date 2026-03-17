@@ -204,7 +204,7 @@ export const useProposalData = () => {
 
             const _proposal = proposal as any;
             const firstMsg = proposal.messages[0] as any;
-            const firmsMsgContent = firstMsg?.content || null;
+            const firmsMsgContent = firstMsg?.content ?? firstMsg ?? {};
             const isEmptyMsg = Array.isArray(proposal.messages) ? proposal.messages.length === 0 : Boolean(proposal.messages);
 
             const proposalId = proposal.id.toString();
@@ -213,7 +213,7 @@ export const useProposalData = () => {
             // If Messages is empty, can be considered as Text Proposal
             const proposalType = isEmptyMsg
                 ? PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']
-                : PROPOSAL_MESSAGE_TYPE[(firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')];
+                : PROPOSAL_MESSAGE_TYPE[firmsMsgContent['@type']?.replace('Msg', '')];
             const submitTime = _proposal.submit_time;
             const description = proposal.summary;
             const classified = classifiedData(proposal.messages);
@@ -238,7 +238,7 @@ export const useProposalData = () => {
                 proposalType: proposalType,
                 submitTime: submitTime,
                 description: description,
-                isTextProposal: isEmptyMsg,
+                isTextProposal: proposalType?.includes(PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']),
                 messages: Array.isArray(proposal.messages) ? proposal.messages : [],
                 classified: classified,
                 votingStartTime: votingStartTime,
@@ -263,7 +263,8 @@ export const useProposalData = () => {
                 descState,
                 voteState
             });
-        } catch {
+        } catch (e) {
+            console.log(e);
             // Fix: if failed to fetch proposal data, show error toast and return to previous screen (governance)
             Toast.show({
                 type: 'error',

@@ -274,7 +274,11 @@ export const PROPOSAL_MESSAGE_TYPE: IKeyValue = {
     '/cosmos.gov.v1beta1.TextProposal': 'Text',
     '/cosmos.params.v1beta1.ParameterChangeProposal': 'ParameterChange',
     '/cosmos.distribution.v1beta1.CommunityPoolSpendProposal': 'CommunityPoolSpend',
-    '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal': 'SoftwareUpgrade'
+    '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal': 'SoftwareUpgrade',
+    '/cosmos.upgrade.v1beta1.SoftwareUpgrade': 'SoftwareUpgrade',
+    '/cosmos.distribution.v1beta1.CommunityPoolSpend': 'CommunityPoolSpend',
+    '/cosmos.gov.v1.UpdateParams': 'UpdateGovParams',
+    '/cosmos.staking.v1beta1.UpdateParams': 'UpdateStakingParams'
 };
 
 export const PROPOSAL_MESSAGE_TYPE_TEXT = 'Text';
