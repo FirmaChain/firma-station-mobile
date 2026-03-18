@@ -3,8 +3,9 @@ import { GUIDE_URI } from '@/../config';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { StorageActions, WalletActions } from '@/redux/actions';
+import { CommonActions, StorageActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
+import { waitForNextFrame } from '@/util/common';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import { PasswordCheck } from '@/util/validationCheck';
 import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from '@/util/wallet';
@@ -28,6 +29,7 @@ const SelectWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
     const { lastSelectedWalletIndex } = useAppSelector((state) => state.storage);
+    const { loading } = useAppSelector((state) => state.common);
 
     const [items, setItems] = useState<Array<any> | null>(null);
     const [selected, setSelected] = useState<number>(-1);
@@ -39,8 +41,6 @@ const SelectWallet = () => {
     const [pwValidation, setPwValidation] = useState(false);
     const [password, setPassword] = useState('');
     const [mnemonic, setMnemonic] = useState('');
-
-    const [isProgress, setIsProgress] = useState(false);
 
     const passwordText = {
         title: 'Password',
@@ -114,7 +114,8 @@ const SelectWallet = () => {
     };
 
     const onSelectWalletAndMoveToHome = async () => {
-        setIsProgress(true);
+        CommonActions.handleLoadingProgress(true);
+        await waitForNextFrame();
         try {
             let adr = '';
             const result = await getAddressFromRecoverValue(mnemonic);
@@ -140,7 +141,7 @@ const SelectWallet = () => {
                 type: 'error',
                 text1: String(error)
             });
-            setIsProgress(false);
+            CommonActions.handleLoadingProgress(false);
         }
     };
 
@@ -202,7 +203,7 @@ const SelectWallet = () => {
                         </CustomModal>
                     )}
                     <View style={styles.buttonBox}>
-                        <Button title="Next" active={pwValidation && !isProgress} onPressEvent={onSelectWalletAndMoveToHome} />
+                        <Button title="Next" active={pwValidation && !loading} onPressEvent={onSelectWalletAndMoveToHome} />
                     </View>
                 </Pressable>
             </ViewContainer>

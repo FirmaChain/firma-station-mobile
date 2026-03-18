@@ -88,10 +88,30 @@ export const privateKeyCheck = async (privateKey: string) => {
     }
 };
 
+// Refactored to improve performance
 export const recoverWallet = async (recoverValue: string) => {
-    const isMnemonic = await mnemonicCheck(recoverValue);
-    if (isMnemonic) return await getFirmaSDK().Wallet.fromMnemonic(recoverValue);
-    else return await getFirmaSDK().Wallet.fromPrivateKey(recoverValue);
+    const normalized = recoverValue.trim();
+    const hasWhitespace = /\s/.test(normalized);
+    const wordCount = normalized.split(/\s+/).filter(Boolean).length;
+
+    const isMnemonicCandidate = hasWhitespace && wordCount === 24;
+    const isPrivateKeyCandidate = !hasWhitespace;
+
+    if (isMnemonicCandidate === false && isPrivateKeyCandidate === false) {
+        throw new Error('Invalid recover value format');
+    }
+
+    try {
+        if (isMnemonicCandidate) {
+            return await getFirmaSDK().Wallet.fromMnemonic(normalized);
+        }
+        return await getFirmaSDK().Wallet.fromPrivateKey(normalized);
+    } catch {
+        if (isMnemonicCandidate) {
+            return await getFirmaSDK().Wallet.fromPrivateKey(normalized);
+        }
+        return await getFirmaSDK().Wallet.fromMnemonic(normalized);
+    }
 };
 
 export const getPrivateKeyFromMnemonic = async (mnemonic: string) => {

@@ -5,6 +5,10 @@ export const wait = (timeout: number) => {
     return new Promise<void>((resolve) => setTimeout(() => resolve(), timeout));
 };
 
+export const waitForNextFrame = () => {
+    return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+};
+
 export const updateArray = (array: Array<any>, oldVal: any, newVal: any) => {
     const index = array.indexOf(oldVal);
     if (index !== -1) {

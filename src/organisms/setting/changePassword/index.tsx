@@ -5,6 +5,7 @@ import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
+import { waitForNextFrame } from '@/util/common';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import { removePasswordViaBioAuth, removeRecoverType, removeWallet, setBioAuth, setNewWallet, setRecoverType } from '@/util/wallet';
 import { useNavigation } from '@react-navigation/native';
@@ -24,6 +25,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangePa
 const ChangePassword = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
+    const { loading } = useAppSelector((state) => state.common);
     const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
     const { recoverType } = useAppSelector((state) => state.storage);
 
@@ -52,17 +54,20 @@ const ChangePassword = () => {
     };
 
     const changeNewPassword = async () => {
+        if (loading) return;
+        CommonActions.handleLoadingProgress(true);
+        await waitForNextFrame();
+
         try {
-            CommonActions.handleLoadingProgress(true);
             await removeCurrentPassword();
             await createNewPassword();
-            CommonActions.handleLoadingProgress(false);
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
                 text1: String(error)
             });
+        } finally {
+            CommonActions.handleLoadingProgress(false);
         }
     };
 
@@ -112,7 +117,7 @@ const ChangePassword = () => {
                         recoverValue={handleRecoverValue}
                     />
                     <View style={styles.buttonBox}>
-                        <Button title="Change" active={activeButton} onPressEvent={changeNewPassword} />
+                        <Button title="Change" active={activeButton && !loading} onPressEvent={changeNewPassword} />
                     </View>
                     {isModalOpen && (
                         <AlertModal
@@ -135,12 +140,6 @@ const styles = StyleSheet.create({
         flex: 3,
         paddingHorizontal: 20
     },
-    // wallet: {
-    //     paddingVertical: 10,
-    //     fontSize: 20,
-    //     fontWeight: 'bold',
-    //     color: '#aaa',
-    // },
     buttonBox: {
         flex: 1,
         justifyContent: 'flex-end'

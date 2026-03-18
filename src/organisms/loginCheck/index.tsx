@@ -6,7 +6,7 @@ import { CommonActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { easeInAndOutAnim, fadeIn, LayoutAnim } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
-import { wait } from '@/util/common';
+import { wait, waitForNextFrame } from '@/util/common';
 import { removeAllData } from '@/util/detect';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import {
@@ -53,6 +53,7 @@ const LoginCheck = () => {
     const handleLogin = async (recoverValue: string, name: string, password: string) => {
         if (isLoginProgress === true) return;
         setIsLoginProgress(true);
+        await waitForNextFrame();
 
         try {
             const adr = await getAddressFromRecoverValue(recoverValue);

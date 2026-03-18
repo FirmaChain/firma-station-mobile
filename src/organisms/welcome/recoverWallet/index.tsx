@@ -5,7 +5,8 @@ import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { mnemonicCheck, privateKeyCheck } from '@/util/firma';
+import { waitForNextFrame } from '@/util/common';
+import { recoverWallet } from '@/util/firma';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking, StyleSheet, View } from 'react-native';
@@ -29,18 +30,18 @@ const RecoverWallet = () => {
     const recoverWalletViaQR = async (value: string) => {
         try {
             CommonActions.handleLoadingProgress(true);
-            const isMnemonic = await mnemonicCheck(value);
-            const isPrivateKey = await privateKeyCheck(value);
+            await waitForNextFrame();
 
-            if (isMnemonic === false && isPrivateKey === false) throw CHECK_RECOVER_VALUE;
-            CommonActions.handleLoadingProgress(false);
+            await recoverWallet(value); // Try to get wallet from QR data
+
             navigation.navigate(Screens.CreateStepOne, { recoverValue: value });
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
             Toast.show({
                 type: 'error',
                 text1: String(error)
             });
+        } finally {
+            CommonActions.handleLoadingProgress(false);
         }
     };
 
