@@ -187,9 +187,10 @@ const AppStateManager = () => {
     }, [update, maintenanceState]);
 
     useEffect(() => {
-        if (walletName === '') {
-            return;
-        }
+        // Note: Removed `walletName` dependency and the early return.
+        // If the user disconnects right after Face ID, `walletName` becomes empty and
+        // the AppState listener used to detach before receiving the next `active` event.
+        // That could leave Redux `appState` stuck at `inactive`, so the wallet select modal closed immediately on open (appearing as if it never opened).
         const appStateListener = AppState.addEventListener('change', (nextAppState) => {
             CommonActions.handleAppState(nextAppState);
 
@@ -202,7 +203,7 @@ const AppStateManager = () => {
         return () => {
             appStateListener.remove();
         };
-    }, [walletName, isBioAuthInProgress]);
+    }, [isBioAuthInProgress]);
 
     useEffect(() => {
         const connect = netInfo.isConnected; // netInfo.isConnected === null ? false : netInfo.isConnected;
