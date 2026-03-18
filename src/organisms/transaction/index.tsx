@@ -326,7 +326,7 @@ const Transaction = ({ state }: IProps) => {
                 break;
             case TRANSACTION_TYPE.GRANT:
             case TRANSACTION_TYPE.REVOKE:
-                navigation.goBack();
+                navigation.pop(2);
                 break;
             case TRANSACTION_TYPE.SEND_CW20:
             case TRANSACTION_TYPE.SEND_CW721:
