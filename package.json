@@ -107,7 +107,8 @@
     "@cosmjs/stargate": "0.38.1",
     "@cosmjs/stream": "0.38.1",
     "@cosmjs/tendermint-rpc": "0.38.1",
-    "@cosmjs/utils": "0.38.1"
+    "@cosmjs/utils": "0.38.1",
+    "fast-xml-parser": "^5.5.6"
   },
   "packageManager": "yarn@4.10.3"
 }
