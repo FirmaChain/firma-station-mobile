@@ -58,7 +58,7 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -91,12 +91,8 @@ android {
         applicationId "com.firma_station_mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 47
+        versionCode 48
         versionName "1.0.31"
-        
-        ndk {
-           abiFilters "arm64-v8a", "x86_64"
-        }
     }
     signingConfigs {
         debug {
@@ -123,6 +119,10 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources true
+            ndk {
+                abiFilters "arm64-v8a"
+            }
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
