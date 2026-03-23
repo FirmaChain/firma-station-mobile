@@ -1,6 +1,5 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 import { Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { convertNumber } from '@/util/common';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
@@ -11,28 +10,11 @@ interface IProps {
 }
 
 const DappTitleBox = ({ title, descExist, desc = '', iconURL }: IProps) => {
-    const [iconHeight, setIconHeight] = useState(0);
-
-    useEffect(() => {
-        if (iconURL !== '') {
-            Image.getSize(
-                iconURL,
-                (width, height) => {
-                    const ratio = convertNumber(height / width);
-                    setIconHeight(115 * ratio);
-                },
-                (error) => {
-                    console.log(error);
-                }
-            );
-        }
-    }, [iconURL]);
-
     return (
         <Fragment>
             {iconURL !== '' && (
                 <View style={styles.logoBox}>
-                    <Image style={{ width: 115, height: iconHeight, resizeMode: 'contain', borderRadius: 10 }} source={{ uri: iconURL }} />
+                    <Image style={styles.logo} source={{ uri: iconURL }} />
                 </View>
             )}
             <Text style={styles.title}>{title}</Text>
@@ -44,6 +26,12 @@ const DappTitleBox = ({ title, descExist, desc = '', iconURL }: IProps) => {
 const styles = StyleSheet.create({
     logoBox: {
         paddingVertical: 20
+    },
+    logo: {
+        width: 115,
+        height: 115,
+        resizeMode: 'contain',
+        borderRadius: 10
     },
     title: {
         fontFamily: Lato,

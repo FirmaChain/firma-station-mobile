@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CHAIN_NETWORK } from '@/../config';
 import { DAPP_SERVICE_CONNECTION, DAPP_SERVICE_CONNECTION_DESCRIPTION_1, DAPP_SERVICE_CONNECTION_DESCRIPTION_2 } from '@/constants/common';
-import { CommonActions, ModalActions } from '@/redux/actions';
+import { ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { wait } from '@/util/common';
 import ConnectClient from '@/util/connectClient';
@@ -33,10 +33,6 @@ const DappConnectModal = () => {
         return dappConnectModal;
     }, [dappConnectModal]);
 
-    useEffect(() => {
-        CommonActions.handleLoadingProgress(false);
-    }, [isVisible]);
-
     const QRData = useMemo(() => {
         return isVisible ? (modalData?.data ?? null) : null;
     }, [modalData, isVisible]);
@@ -55,7 +51,7 @@ const DappConnectModal = () => {
                 setIconUrl(QRData.projectMetaData.icon);
                 setDappName(QRData.projectMetaData.name);
                 setIsCertified(Certified(QRData.projectMetaData));
-            } catch (error) {
+            } catch {
                 handleModal(false);
             }
         }

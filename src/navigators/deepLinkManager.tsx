@@ -203,6 +203,7 @@ const DeepLinkManager = () => {
                         idState: updateList
                     });
                     wait(500).then(() => {
+                        CommonActions.handleLoadingProgress(false);
                         ModalActions.handleDAppConnectModal(true);
                     });
                 }
