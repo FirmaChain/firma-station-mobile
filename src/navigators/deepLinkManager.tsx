@@ -189,10 +189,12 @@ const DeepLinkManager = () => {
 
                     if (connectClient.isDirectSign(QRData)) {
                         wait(500).then(() => {
+                            CommonActions.handleLoadingProgress(false);
                             ModalActions.handleDAppDirectSignModal(true);
                         });
                     } else {
                         wait(500).then(() => {
+                            CommonActions.handleLoadingProgress(false);
                             ModalActions.handleDAppSignModal(true);
                         });
                     }
