@@ -2,22 +2,34 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TRANSACTION_PROCESS_DESCRIPTION_TEXT, TRANSACTION_PROCESS_NOTICE_TEXT, TRANSACTION_PROCESS_TEXT } from '@/constants/common';
 import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from '@/constants/images';
 import { BgColor, Lato, TextCatTitleColor, TextColor, TextLightGrayColor, TextWarnColor } from '@/constants/theme';
-import { fadeIn, fadeOut } from '@/util/animation';
+import { fadeIn } from '@/util/animation';
 import { useFocusEffect } from '@react-navigation/native';
-import { Animated, BackHandler, Platform, StyleSheet, Text, View } from 'react-native';
+import { Animated, BackHandler, Easing, Platform, StyleSheet, Text, View } from 'react-native';
 
 // import { getStatusBarHeight } from "react-native-status-bar-height";
 import { QuestionCircle } from '@/components/icon/icon';
 
 const ProgressTransaction = () => {
-    const fadeAnim_1 = useRef(new Animated.Value(0)).current;
-    const fadeAnim_2 = useRef(new Animated.Value(0)).current;
-    const fadeAnim_3 = useRef(new Animated.Value(0)).current;
+    const progressAnim = useRef(new Animated.Value(0)).current;
     const fadeAnim_notice = useRef(new Animated.Value(0)).current;
+    const startedAtRef = useRef<number>(Date.now());
 
-    const animated = [fadeAnim_1, fadeAnim_2, fadeAnim_3];
+    const fadeAnim_1 = progressAnim.interpolate({
+        inputRange: [0, 0.15, 0.75, 0.9, 1],
+        outputRange: [0, 1, 1, 0, 0]
+    });
 
-    const [counter, setCounter] = useState(0);
+    const fadeAnim_2 = progressAnim.interpolate({
+        inputRange: [0, 0.125, 0.275, 0.625, 0.775, 1],
+        outputRange: [0, 0, 1, 1, 0, 0]
+    });
+
+    const fadeAnim_3 = progressAnim.interpolate({
+        inputRange: [0, 0.25, 0.4, 0.5, 0.65, 1],
+        outputRange: [0, 0, 1, 1, 0, 0]
+    });
+
+    const [elapsedSec, setElapsedSec] = useState(0);
 
     const createTimerText = (time: number) => {
         let min: string | number = parseInt((time / 60).toString());
@@ -30,41 +42,38 @@ const ProgressTransaction = () => {
     };
 
     useEffect(() => {
-        if (counter % 60 >= 15) {
+        if (elapsedSec % 60 >= 15) {
             fadeIn(Animated, fadeAnim_notice, 300);
         }
-    }, [counter]);
+    }, [elapsedSec]);
 
     useEffect(() => {
-        let index = -1;
-        let inverse = true;
-        let count = 0;
-
-        const handleProgress = () => {
-            count = count + 5;
-            if (count === 10) {
-                setCounter((counter) => counter + 1);
-                count = 0;
-            }
-            if (inverse && index < 3) index = index + 1;
-            if (!inverse && index >= 0) index = index - 1;
-
-            if (inverse && index >= 0 && index < 3) fadeIn(Animated, animated[index], 300);
-            if (!inverse && index >= 0 && index < 3) fadeOut(Animated, animated[index], 300);
-
-            if (index <= -1 || index >= 3) inverse = !inverse;
+        startedAtRef.current = Date.now();
+        const updateElapsed = () => {
+            setElapsedSec(Math.floor((Date.now() - startedAtRef.current) / 1000));
         };
+        updateElapsed();
 
-        handleProgress();
-        let timerId = setTimeout(function progress() {
-            handleProgress();
-            timerId = setTimeout(progress, 500);
-        }, 500);
+        const animation = Animated.loop(
+            Animated.timing(progressAnim, {
+                toValue: 1,
+                duration: 2000,
+                easing: Easing.linear,
+                useNativeDriver: true,
+                isInteraction: false
+            })
+        );
+        animation.start();
+
+        const timerId = setInterval(updateElapsed, 250);
 
         return () => {
-            clearTimeout(timerId);
+            clearInterval(timerId);
+            animation.stop();
+            progressAnim.stopAnimation();
+            progressAnim.setValue(0);
         };
-    }, []);
+    }, [progressAnim]);
 
     useFocusEffect(
         useCallback(() => {
@@ -89,7 +98,7 @@ const ProgressTransaction = () => {
                         <Animated.Image style={[styles.logo, { opacity: fadeAnim_3 }]} source={LOADING_LOGO_3} />
                     </View>
                     <Text style={styles.notice}>{TRANSACTION_PROCESS_TEXT}</Text>
-                    <Text style={styles.counter}>{createTimerText(counter)}</Text>
+                    <Text style={styles.counter}>{createTimerText(elapsedSec)}</Text>
                 </View>
                 <View style={[styles.counterBox, { flex: 1, width: '100%', justifyContent: 'center' }]}>
                     <Text style={[styles.description, { paddingBottom: 20, fontSize: 16 }]}>{TRANSACTION_PROCESS_DESCRIPTION_TEXT}</Text>
