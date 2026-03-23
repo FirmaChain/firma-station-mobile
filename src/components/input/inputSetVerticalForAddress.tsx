@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { IBC_OSMO_ADDRESS_INVALID_TEXT, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
 import {
     InputBgColor,
@@ -49,7 +49,11 @@ const InputSetVerticalForAddress = ({
     type = 'SEND_TOKEN'
 }: IProps) => {
     const { loading: isLoading, appState } = useAppSelector((state) => state.common);
-    const { modalData } = useAppSelector((state) => state.modal);
+    const { modalData, qrScannerModal } = useAppSelector((state) => state.modal);
+    // Camera permission prompt can briefly move appState to inactive/background.
+    // Ignore only the first transition right after opening QR to avoid immediate close.
+    const ignoreNextInactiveRef = useRef(false);
+    const ignoreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const isFocused = useIsFocused();
 
@@ -72,6 +76,18 @@ const InputSetVerticalForAddress = ({
     };
 
     const handleQRModal = (active: boolean) => {
+        if (active) {
+            // Arm one-time ignore flag only when user explicitly opens scanner.
+            ignoreNextInactiveRef.current = true;
+            if (ignoreTimeoutRef.current) {
+                clearTimeout(ignoreTimeoutRef.current);
+            }
+            // Auto-clear guard in case no appState transition occurs.
+            ignoreTimeoutRef.current = setTimeout(() => {
+                ignoreNextInactiveRef.current = false;
+                ignoreTimeoutRef.current = null;
+            }, 2000);
+        }
         ModalActions.handleQRScannerModal(active);
     };
 
@@ -107,10 +123,24 @@ const InputSetVerticalForAddress = ({
     }, [value]);
 
     useEffect(() => {
-        if (appState !== 'active') {
+        if (qrScannerModal && appState !== 'active') {
+            // Ignore only one inactive/background right after opening scanner.
+            if (ignoreNextInactiveRef.current) {
+                ignoreNextInactiveRef.current = false;
+                return;
+            }
+            // Normal behavior: close scanner when app actually moves out of foreground.
             handleQRModal(false);
         }
-    }, [appState]);
+    }, [appState, qrScannerModal]);
+
+    useEffect(() => {
+        return () => {
+            if (ignoreTimeoutRef.current) {
+                clearTimeout(ignoreTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (resetValues) handleInputChange('');
