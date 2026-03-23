@@ -91,7 +91,7 @@ android {
         applicationId "com.firma_station_mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 48
+        versionCode 49
         versionName "1.0.31"
     }
     signingConfigs {
