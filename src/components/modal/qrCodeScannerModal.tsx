@@ -75,7 +75,9 @@ const QRCodeScannerModal = () => {
     return (
         <Modal animationType="fade" transparent visible={visible} onRequestClose={closeModal}>
             <View style={styles.container}>
-                {!loading && device ? <Camera style={StyleSheet.absoluteFill} device={device} isActive={visible} codeScanner={codeScanner} /> : null}
+                {!loading && device ? (
+                    <Camera style={StyleSheet.absoluteFill} device={device} isActive={visible} codeScanner={codeScanner} />
+                ) : null}
 
                 <Svg pointerEvents="none" style={StyleSheet.absoluteFill}>
                     <Path
