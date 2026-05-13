@@ -37,6 +37,10 @@
 	<string>Use FaceId to authenticate the user.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app does not use your location.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

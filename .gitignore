@@ -78,3 +78,7 @@ config.ts
 !.yarn/versions
 
 android/keystore.properties
+
+# Firebase
+google-services.json
+GoogleService-Info.plist

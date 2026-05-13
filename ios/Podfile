@@ -25,7 +25,7 @@ prepare_react_native_project!
 
 # Add react-native-permissions
 # ⬇️ uncomment the permissions you need
-setup_permissions(['Camera','FaceID'])
+setup_permissions(['Camera','FaceID','Notifications'])
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -35,6 +35,9 @@ end
 
 target 'firma_station_mobile' do
   config = use_native_modules!
+
+  # Firebase installation error
+  pod 'GoogleUtilities', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -49,12 +52,29 @@ target 'firma_station_mobile' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
-    # Force set iOS target to min version.
+
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |build_config|
         build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+
+        if target.name == 'fmt'
+          build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+
+          definitions = build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS']
+          definitions = ['$(inherited)'] if definitions.nil?
+          definitions = [definitions] if definitions.is_a?(String)
+
+          definitions << 'FMT_USE_CONSTEVAL=0' unless definitions.include?('FMT_USE_CONSTEVAL=0')
+          build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = definitions
+        end
       end
     end
+    # Force set iOS target to min version.
+    # installer.pods_project.targets.each do |target|
+    #   target.build_configurations.each do |build_config|
+    #     build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+    #   end
+    # end
     # Build only for the active arch. This line added to exclude armv7.
     # installer.pods_project.targets.each do |target|
     #   target.build_configurations.each do |config|

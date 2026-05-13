@@ -1,6 +1,11 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+if (file("google-services.json").exists()) {
+    apply plugin: "com.google.gms.google-services"
+} else {
+    println("[FCM] google-services.json not found; Android Firebase setup is disabled until the file is added.")
+}
 // For react-native-vector-icons
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 /**
