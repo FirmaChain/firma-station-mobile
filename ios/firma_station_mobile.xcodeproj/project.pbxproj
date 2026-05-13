@@ -34,6 +34,8 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4608D7EF2EE2B12B00BDD506 /* Fonts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Fonts;
 			sourceTree = "<group>";
 		};
@@ -209,13 +211,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -252,13 +250,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -285,7 +279,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = firma_station_mobile/Info.plist;
@@ -295,7 +289,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.31;
+				MARKETING_VERSION = 1.0.32;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -315,7 +309,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = firma_station_mobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Firma Station";
@@ -324,7 +318,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.31;
+				MARKETING_VERSION = 1.0.32;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
