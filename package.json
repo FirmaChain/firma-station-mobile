@@ -11,8 +11,7 @@
     "lint:check": "eslint . --max-warnings 0",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "format": "prettier --write . && eslint . --fix",
-    "postinstall": "patch-package"
+    "format": "prettier --write . && eslint . --fix"
   },
   "dependencies": {
     "@apollo/client": "^4.0.9",
@@ -33,12 +32,10 @@
     "@types/react-redux": "^7.1.34",
     "axios": "^1.16.0",
     "crypto-js": "3.3.0",
-    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.20",
     "es-toolkit": "^1.41.0",
     "graphql": "^16.12.0",
     "jail-monkey": "^2.8.4",
-    "moment": "^2.30.1",
-    "patch-package": "^8.0.1",
     "react": "19.1.1",
     "react-content-loader": "^7.1.1",
     "react-native": "0.82.1",

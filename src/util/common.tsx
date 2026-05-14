@@ -1,5 +1,8 @@
 import { FirmaUtil } from '@firmachain/firma-js';
-import moment from 'moment';
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 export const wait = (timeout: number) => {
     return new Promise<void>((resolve) => setTimeout(() => resolve(), timeout));
@@ -134,15 +137,19 @@ export const isValid = (data: any) => {
     return true;
 };
 
-export const convertTime = (time: string | number | Date, fulltime: boolean, addTime?: boolean) => {
-    if (time === undefined) return '';
+export const convertTime = (
+  time: string | number | Date,
+  fulltime: boolean,
+  addTime?: boolean,
+) => {
+if (time === undefined) return ''
 
-    const GMT = getGMT();
+  const GMT = getGMT()
+  const format = fulltime || addTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'
+  const result = dayjs.utc(time).local().format(format)
 
-    if (fulltime) return moment(moment.utc(time).toDate()).format('YYYY-MM-DD HH:mm:ss') + ` (${GMT})`;
-    if (addTime) return moment(moment.utc(time).toDate()).format('YYYY-MM-DD HH:mm:ss');
-    return moment(moment.utc(time).toDate()).format('YYYY-MM-DD');
-};
+  return fulltime ? `${result} (${GMT})` : result
+}
 
 export const convertTimerText = (time: string) => {
     if (time === '') return { diff: 0, time: '00:00:00' };
