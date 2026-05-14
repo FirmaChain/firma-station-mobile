@@ -1,19 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { DATA_RELOAD_INTERVAL } from '@/constants/common';
-import { BgColor } from '@/constants/theme';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { DATA_RELOAD_INTERVAL, PROPOSAL_NOT_REGISTERED } from '@/constants/common';
+import { BgColor, TextDarkGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { wait } from '@/util/common';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { StyleSheet, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import { useInterval } from '@/hooks/common/hooks';
 import { IProposalItemState, useGovernanceList } from '@/hooks/governance/hooks';
-import RefreshScrollView from '@/components/parts/refreshScrollView';
+import ProposalSkeleton from '@/components/skeleton/proposalSkeleton';
 
-import ProposalList from './proposalList';
+import ProposalListItem from './proposalListItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governance>;
 
@@ -25,36 +24,37 @@ const Governance = () => {
     const { contentVolume } = useAppSelector((state) => state.storage);
 
     const { governanceState, handleGovernanceListPolling } = useGovernanceList();
-
-    const [proposalList, setProposalList] = useState<Array<IProposalItemState>>([]);
+    const [refreshing, setRefreshing] = useState(false);
 
     const proposalVolumes = useMemo(() => {
         if (contentVolume?.proposals === undefined) return null;
         return contentVolume.proposals;
     }, [contentVolume]);
 
-    const handleMoveToDetail = (proposalId: number) => {
-        navigation.navigate(Screens.Proposal, { proposalId: proposalId });
-    };
+    const handleMoveToDetail = useCallback(
+        (proposalId: number) => {
+            navigation.navigate(Screens.Proposal, { proposalId: proposalId });
+        },
+        [navigation]
+    );
 
-    const refreshStates = async () => {
+    const refreshStates = useCallback(async () => {
         try {
             await handleGovernanceListPolling();
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             console.log(error);
         }
-    };
+    }, [dataLoadStatus, handleGovernanceListPolling]);
 
-    useEffect(() => {
-        if (proposalVolumes) {
-            if (governanceState.list.length >= proposalVolumes) {
-                wait(800).then(() => {
-                    setProposalList(governanceState.list);
-                });
-            }
+    const onRefresh = useCallback(async () => {
+        try {
+            setRefreshing(true);
+            await refreshStates();
+        } finally {
+            setRefreshing(false);
         }
-    }, [proposalVolumes, governanceState]);
+    }, [refreshStates]);
 
     useInterval(
         () => {
@@ -68,16 +68,61 @@ const Governance = () => {
         if (isFocused && isNetworkChanged === false) {
             refreshStates();
         }
-    }, [isFocused]);
+    }, [isFocused, isNetworkChanged, refreshStates]);
+
+    const listData = governanceState.list;
+    const isListReady = proposalVolumes !== null;
+    const isEmptyState = isListReady && proposalVolumes === 0;
+    const isLoadingList = isListReady && proposalVolumes > 0 && listData.length === 0;
+
+    const keyExtractor = useCallback((item: IProposalItemState) => item.proposalId, []);
+    const renderItem = useCallback(
+        ({ item }: { item: IProposalItemState }) => {
+            return <ProposalListItem proposal={item} handleDetail={handleMoveToDetail} />;
+        },
+        [handleMoveToDetail]
+    );
+
+    const renderEmptyComponent = useCallback(() => {
+        if (!isListReady) return null;
+
+        if (isEmptyState) {
+            return (
+                <View style={styles.emptyBox}>
+                    <Text style={styles.notice}>{PROPOSAL_NOT_REGISTERED}</Text>
+                </View>
+            );
+        }
+
+        if (isLoadingList) {
+            return <ProposalSkeleton volumes={Math.min(proposalVolumes ?? 0, 6)} />;
+        }
+
+        return null;
+    }, [isEmptyState, isLoadingList, isListReady, proposalVolumes]);
 
     return (
         <View style={styles.container}>
-            {connect && isNetworkChanged === false && (
-                <View style={styles.listBox}>
-                    <RefreshScrollView refreshFunc={refreshStates}>
-                        <ProposalList volumes={proposalVolumes} proposals={proposalList} handleDetail={handleMoveToDetail} />
-                    </RefreshScrollView>
-                </View>
+            {connect && isNetworkChanged === false && isListReady && (
+                <FlatList
+                    data={isLoadingList ? [] : listData}
+                    keyExtractor={keyExtractor}
+                    renderItem={renderItem}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                    contentContainerStyle={isEmptyState ? styles.emptyContent : styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    removeClippedSubviews={true}
+                    initialNumToRender={8}
+                    maxToRenderPerBatch={8}
+                    updateCellsBatchingPeriod={50}
+                    windowSize={7}
+                    getItemLayout={(_, index) => ({
+                        length: 142,
+                        offset: 142 * index,
+                        index
+                    })}
+                    ListEmptyComponent={renderEmptyComponent()}
+                />
             )}
         </View>
     );
@@ -88,9 +133,26 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: BgColor
     },
-    listBox: {
+    listContent: {
+        paddingTop: 32,
+        paddingBottom: 20,
+        paddingHorizontal: 20
+    },
+    emptyContent: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 20
+    },
+    emptyBox: {
         flex: 1,
         justifyContent: 'center'
+    },
+    notice: {
+        width: '100%',
+        textAlign: 'center',
+        fontSize: 18,
+        color: TextDarkGrayColor,
+        opacity: 0.8
     }
 });
 
