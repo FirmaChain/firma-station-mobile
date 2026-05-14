@@ -1,8 +1,8 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { BgColor, BoxColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { Modal as FadeModal, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet } from 'react-native';
-import Modal from 'react-native-modal';
+import { EmitterSubscription, Keyboard, Modal, Platform, Pressable, StatusBar, StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { useInterval } from '@/hooks/common/hooks';
 
@@ -11,7 +11,7 @@ import CustomToast from '../toast/customToast';
 interface IProps {
     visible: boolean;
     fade?: boolean;
-    keyboardAvoiing?: boolean;
+    keyboardAvoiding?: boolean;
     lockBackButton?: boolean;
     forceActive?: boolean;
     bgColor?: string;
@@ -21,10 +21,13 @@ interface IProps {
     toastInModal?: boolean;
 }
 
+const ANIMATION_DURATION = 220;
+const SHEET_HIDDEN_OFFSET = 320;
+
 const CustomModal = ({
     visible,
     fade = false,
-    keyboardAvoiing = true,
+    keyboardAvoiding = true,
     lockBackButton = false,
     forceActive = false,
     bgColor = BoxColor,
@@ -33,52 +36,87 @@ const CustomModal = ({
     toastInModal = true,
     children
 }: IProps) => {
+    const statusBarHeight = StatusBar.currentHeight || 0;
+
     const { appState, isBioAuthInProgress, appPausedTime } = useAppSelector((state) => state.common);
 
-    const closeModal = () => {
-        if (lockBackButton) return;
-        handleOpen(false);
-    };
+    const [mounted, setMounted] = useState(visible);
 
-    const modalSwitcher = () => {
-        if (fade) {
-            return (
-                <FadeModal animationType="fade" transparent={true} onRequestClose={closeModal} visible={visible}>
-                    <KeyboardAvoidingView
-                        enabled={keyboardAvoiing}
-                        behavior={Platform.select({ android: undefined, ios: 'padding' })}
-                        style={{ flex: 1 }}
-                    >
-                        <Pressable style={styles.modalContainer} onPress={() => closeModal()} />
-                        <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
-                            {children}
-                        </Pressable>
-                        {toastInModal && <CustomToast />}
-                    </KeyboardAvoidingView>
-                </FadeModal>
-            );
-        } else {
-            return (
-                <Modal
-                    isVisible={visible}
-                    backdropColor={'#000000'}
-                    backdropOpacity={0.7}
-                    avoidKeyboard={true}
-                    useNativeDriver={true}
-                    hideModalContentWhileAnimating={true}
-                    onModalHide={closeModal}
-                    onBackButtonPress={closeModal}
-                    style={{ marginHorizontal: 0, marginVertical: 0 }}
-                >
-                    <Pressable style={styles.modalContainer} onPress={() => closeModal()} />
-                    {toastInModal && <CustomToast />}
-                    <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
-                        {children}
-                    </Pressable>
-                </Modal>
-            );
+    const backdropOpacity = useSharedValue(0);
+    const sheetOpacity = useSharedValue(0);
+    const sheetTranslateY = useSharedValue(fade ? 0 : SHEET_HIDDEN_OFFSET);
+    const keyboardOffset = useSharedValue(0);
+
+    const closeModal = useCallback(() => {
+        if (lockBackButton) return;
+
+        handleOpen(false);
+    }, [handleOpen, lockBackButton]);
+
+    useEffect(() => {
+        let showSubscription: EmitterSubscription | undefined;
+        let hideSubscription: EmitterSubscription | undefined;
+
+        if (keyboardAvoiding) {
+            showSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (event) => {
+                keyboardOffset.value = event.endCoordinates.height;
+            });
+
+            hideSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => {
+                keyboardOffset.value = 0;
+            });
         }
-    };
+
+        return () => {
+            showSubscription?.remove();
+            hideSubscription?.remove();
+        };
+    }, [keyboardAvoiding, keyboardOffset]);
+
+    useEffect(() => {
+        if (visible) {
+            setMounted(true);
+            handleShow?.();
+
+            backdropOpacity.value = withTiming(1, {
+                duration: ANIMATION_DURATION
+            });
+
+            sheetOpacity.value = withTiming(1, {
+                duration: ANIMATION_DURATION
+            });
+
+            sheetTranslateY.value = withTiming(0, {
+                duration: ANIMATION_DURATION
+            });
+
+            return;
+        }
+
+        Keyboard.dismiss();
+
+        backdropOpacity.value = withTiming(0, {
+            duration: ANIMATION_DURATION
+        });
+
+        sheetOpacity.value = withTiming(0, {
+            duration: ANIMATION_DURATION
+        });
+
+        sheetTranslateY.value = withTiming(fade ? 0 : SHEET_HIDDEN_OFFSET, {
+            duration: ANIMATION_DURATION
+        });
+
+        keyboardOffset.value = 0;
+
+        const timeoutId = setTimeout(() => {
+            setMounted(false);
+        }, ANIMATION_DURATION);
+
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [backdropOpacity, fade, handleShow, keyboardOffset, sheetOpacity, sheetTranslateY, visible]);
 
     useInterval(
         () => {
@@ -92,32 +130,91 @@ const CustomModal = ({
 
     useEffect(() => {
         if (forceActive === false) {
-            if (appState !== 'active' && isBioAuthInProgress === false) closeModal();
+            if (appState !== 'active' && isBioAuthInProgress === false) {
+                closeModal();
+            }
         }
-    }, [appPausedTime, appState, forceActive]);
+    }, [appPausedTime, appState, closeModal, forceActive, isBioAuthInProgress]);
 
-    return modalSwitcher();
+    const backdropAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: backdropOpacity.value
+    }));
+
+    const sheetAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: sheetOpacity.value,
+        transform: [
+            {
+                translateY: sheetTranslateY.value - keyboardOffset.value
+            }
+        ]
+    }));
+
+    if (!mounted) return null;
+
+    return (
+        <Modal visible={mounted} transparent animationType="none" onRequestClose={closeModal} statusBarTranslucent>
+            <View style={styles.root}>
+                {!fade && <Animated.View pointerEvents="none" style={[styles.dimmedBackground, backdropAnimatedStyle]} />}
+
+                <Pressable style={styles.backdrop} onPress={closeModal} />
+
+                {toastInModal && <CustomToast />}
+
+                <Animated.View style={[styles.sheet, sheetAnimatedStyle]}>
+                    <Pressable
+                        style={[styles.modalBox, { backgroundColor: bgColor, marginTop: statusBarHeight }]}
+                        onPress={Keyboard.dismiss}
+                    >
+                        {children}
+                    </Pressable>
+                </Animated.View>
+            </View>
+        </Modal>
+    );
 };
 
 const styles = StyleSheet.create({
-    modalContainer: {
+    root: {
         flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        zIndex: 9999
+        justifyContent: 'flex-end'
     },
+
+    dimmedBackground: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.7)'
+    },
+
+    backdrop: {
+        ...StyleSheet.absoluteFillObject
+    },
+
+    sheet: {
+        width: '100%'
+    },
+
     modalBox: {
         width: '100%',
         height: 'auto',
+
+        // Shadow
         shadowColor: BgColor,
-        shadowOffset: { width: 0, height: -4 },
+        shadowOffset: {
+            width: 0,
+            height: -4
+        },
         shadowOpacity: 0.1,
         shadowRadius: 3,
+
+        // Android elevation
+        elevation: 4,
+
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 4,
-        paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-        zIndex: 9999
+
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+
+        paddingBottom: Platform.OS === 'ios' ? 30 : 0
     }
 });
 
