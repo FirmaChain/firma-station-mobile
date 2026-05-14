@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getHistoryByAddressData } from '@/apollo/gqls';
 import { TRANSACTION_TYPE_MODEL } from '@/constants/common';
 import { PointColor } from '@/constants/theme';
+import { getHistoryByAddressData } from '@/gql/query';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { convertNumber } from '@/util/common';
@@ -102,56 +102,52 @@ export const useHistoryData = () => {
     const getHistoryByAddress = useCallback(
         (offset: number) => {
             getHistoryByAddressData({
+                network,
                 address: `{${walletAddress}}`,
                 offset: offset,
                 limit: 30
             })
-                .then(async ({ data, loading }) => {
-                    if (!loading) {
-                        // loading looks not provided anymore
-                        if (data !== undefined) {
-                            if (offset === 0) {
-                                if (historyVolume === undefined) {
-                                    StorageActions.handleHistoryVolume({
-                                        [walletAddress]: data.messagesByAddress.length
-                                    });
-                                } else {
-                                    StorageActions.handleHistoryVolume({
-                                        ...historyVolume,
-                                        [walletAddress]: data.messagesByAddress.length
-                                    });
-                                }
-                            }
-
-                            const list = data.messagesByAddress.map((value: any) => {
-                                const result = {
-                                    hash: value.transaction.hash,
-                                    success: convertResult(value.transaction.success),
-                                    type: convertMsgType(value.transaction.messages[0]['@type']),
-                                    timestamp: value.transaction.block.timestamp,
-                                    block: value.transaction.block.height
-                                };
-
-                                return result;
+                .then(async (data) => {
+                    if (offset === 0) {
+                        if (historyVolume === undefined) {
+                            StorageActions.handleHistoryVolume({
+                                [walletAddress]: data.messagesByAddress.length
                             });
-
-                            if (list.length > 0 && list[0].hash !== recentHistory?.hash) {
-                                setRecentHistory(list[0]);
-                            }
-
-                            setHistoryList((prevState) => ({
-                                ...prevState,
-                                list
-                            }));
+                        } else {
+                            StorageActions.handleHistoryVolume({
+                                ...historyVolume,
+                                [walletAddress]: data.messagesByAddress.length
+                            });
                         }
                     }
+
+                    const list = data.messagesByAddress.map((value: any) => {
+                        const result = {
+                            hash: value.transaction.hash,
+                            success: convertResult(value.transaction.success),
+                            type: convertMsgType(value.transaction.messages[0]['@type']),
+                            timestamp: value.transaction.block.timestamp,
+                            block: value.transaction.block.height
+                        };
+
+                        return result;
+                    });
+
+                    if (list.length > 0 && list[0].hash !== recentHistory?.hash) {
+                        setRecentHistory(list[0]);
+                    }
+
+                    setHistoryList((prevState) => ({
+                        ...prevState,
+                        list
+                    }));
                 })
                 .catch((error) => {
                     console.log(error);
                     throw error;
                 });
         },
-        [walletAddress]
+        [walletAddress, network]
     );
 
     const handleHisotyPolling = async () => {

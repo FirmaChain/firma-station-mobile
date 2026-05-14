@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { CHAIN_NETWORK } from '@/../config';
-import { getProposalData } from '@/apollo/gqls';
 import { ERROR_FETCHING_PROPOSAL_DATA, PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
+import { getProposalData } from '@/gql/query';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { convertNumber, convertTime } from '@/util/common';
 import { getProposalByProposalId, getProposalParams, getProposals, getProposalTally } from '@/util/firma';
 import { useNavigation } from '@react-navigation/native';
-import { groupBy, orderBy } from 'es-toolkit';
+import { orderBy } from 'es-toolkit';
 import Toast from 'react-native-toast-message';
 
 export interface IGovernanceState {
@@ -97,7 +97,7 @@ export const useGovernanceList = () => {
             console.log(error);
             throw error;
         }
-    }, []);
+    }, [network]);
 
     const handleProposalList = useCallback(async () => {
         const proposalsJSON = (await getProposalJsonData()).ignoreProposalIdList;
@@ -147,7 +147,7 @@ export const useGovernanceList = () => {
                 list: sortList
             }));
         }
-    }, []);
+    }, [getProposalJsonData, contentVolume]);
 
     const handleGovernanceListPolling = async () => {
         await handleProposalList();
@@ -165,114 +165,121 @@ export const useGovernanceList = () => {
 
 export const useProposalData = () => {
     const navigation = useNavigation();
+    const { network } = useAppSelector((state) => state.storage);
 
     const [proposalState, setProposalState] = useState<IProposalState | null>(null);
 
-    const handleProposal = useCallback(async (id: number) => {
-        try {
-            const _id = String(id);
-            const [proposal, param, proposalTally] = await Promise.all([
-                getProposalByProposalId(_id),
-                getProposalParams(),
-                getProposalTally(_id)
-            ]);
-
-            let bondedTokens: number | null = null;
-            let votingList: Array<any> = [];
+    const handleProposal = useCallback(
+        async (id: number) => {
             try {
-                await new Promise<void>((resolve) => setTimeout(resolve, 1000));
-                const proposalData = await getProposalData({ proposalId: _id });
-                if (proposalData.data.proposal[0] !== undefined) {
-                    if (proposalData.data.proposal[0].staking_pool_snapshot) {
-                        const _bondedTokens = proposalData.data.proposal[0].staking_pool_snapshot.bonded_tokens;
-                        bondedTokens = _bondedTokens;
+                const _id = String(id);
+                const [proposal, param, proposalTally] = await Promise.all([
+                    getProposalByProposalId(_id),
+                    getProposalParams(),
+                    getProposalTally(_id)
+                ]);
+
+                let bondedTokens = null;
+                let votingList: Array<any> = [];
+                try {
+                    await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+                    const proposalData = await getProposalData({ proposalId: _id, network });
+                    if (proposalData.proposal[0] !== undefined) {
+                        if (proposalData.proposal[0].staking_pool_snapshot) {
+                            const _bondedTokens = proposalData.proposal[0].staking_pool_snapshot.bonded_tokens;
+                            bondedTokens = _bondedTokens;
+                        }
+
+                        if (proposalData.proposalVote !== undefined) {
+                            const _votingList = proposalData.proposalVote;
+
+                            const ordered = orderBy(_votingList, ['height'], ['asc']);
+                            const latestVotesByVoter = ordered.reduce<Record<string, (typeof ordered)[number]>>((acc, vote) => {
+                                acc[vote.voterAddress] = vote;
+                                return acc;
+                            }, {});
+
+                            votingList = Object.values(latestVotesByVoter);
+                        }
                     }
-
-                    if (proposalData.data.proposalVote !== undefined) {
-                        const _votingList = proposalData.data.proposalVote;
-
-                        const ordered = orderBy(_votingList, ['height'], ['asc']);
-                        const grouped = groupBy(ordered, (item) => item.voter_address);
-                        const latestVotesByVoter = Object.values(grouped).map((votes) => votes[votes.length - 1]);
-
-                        votingList = latestVotesByVoter;
-                    }
+                } catch (error) {
+                    console.log(error);
                 }
-            } catch (error) {
-                console.log(error);
+
+                const _proposal = proposal as any;
+                const firstMsg = proposal.messages[0] as any;
+                const firmsMsgContent = firstMsg?.content ?? firstMsg ?? {};
+                const isEmptyMsg = Array.isArray(proposal.messages) ? proposal.messages.length === 0 : Boolean(proposal.messages);
+
+                const proposalId = proposal.id.toString();
+                const title = proposal.title;
+                const status = proposal.status.toString();
+                // If Messages is empty, can be considered as Text Proposal
+                const proposalType = isEmptyMsg
+                    ? PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']
+                    : PROPOSAL_MESSAGE_TYPE[firmsMsgContent['@type']?.replace('Msg', '')];
+                const submitTime = _proposal.submit_time;
+                const description = proposal.summary;
+                const classified = classifiedData(proposal.messages);
+                const votingStartTime = _proposal.voting_start_time;
+                const votingEndTime = _proposal.voting_end_time;
+                const quorum = param.quorum;
+                const maxDepositPeriod = param.max_deposit_period;
+                const depositPeriod = convertDepositPeriod(maxDepositPeriod, submitTime);
+                const minDeposit = param.min_deposit[0].amount;
+                const proposalDeposit = _proposal.total_deposit[0].amount;
+                const tallyResult = proposalTally;
+                const normalizedBondedTokens = bondedTokens === undefined || bondedTokens === null ? null : Number(bondedTokens);
+                const currentTurnout = calculateCurrentTurnout(normalizedBondedTokens, tallyResult);
+
+                const titleState: IProposalTitleState = {
+                    proposalId,
+                    title,
+                    status
+                };
+
+                const descState: IProposalDescriptionState = {
+                    status,
+                    proposalType: proposalType,
+                    submitTime: submitTime,
+                    description: description,
+                    isTextProposal: proposalType?.includes(PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']),
+                    messages: Array.isArray(proposal.messages) ? proposal.messages : [],
+                    classified: classified,
+                    votingStartTime: votingStartTime,
+                    votingEndTime: votingEndTime,
+                    depositPeriod: depositPeriod,
+                    minDeposit: minDeposit,
+                    proposalDeposit: proposalDeposit
+                };
+
+                const voteState: IProposalVoteState = {
+                    votingStartTime: votingStartTime,
+                    votingEndTime: votingEndTime,
+                    quorum: convertNumber(quorum),
+                    currentTurnout: currentTurnout,
+                    totalVotingPower: normalizedBondedTokens,
+                    proposalTally: tallyResult,
+                    voters: votingList
+                };
+
+                setProposalState({
+                    titleState,
+                    descState,
+                    voteState
+                });
+            } catch (e) {
+                console.log(e);
+                // Fix: if failed to fetch proposal data, show error toast and return to previous screen (governance)
+                Toast.show({
+                    type: 'error',
+                    text1: ERROR_FETCHING_PROPOSAL_DATA
+                });
+                navigation.goBack();
             }
-
-            const _proposal = proposal as any;
-            const firstMsg = proposal.messages[0] as any;
-            const firmsMsgContent = firstMsg?.content ?? firstMsg ?? {};
-            const isEmptyMsg = Array.isArray(proposal.messages) ? proposal.messages.length === 0 : Boolean(proposal.messages);
-
-            const proposalId = proposal.id.toString();
-            const title = proposal.title;
-            const status = proposal.status.toString();
-            // If Messages is empty, can be considered as Text Proposal
-            const proposalType = isEmptyMsg
-                ? PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']
-                : PROPOSAL_MESSAGE_TYPE[firmsMsgContent['@type']?.replace('Msg', '')];
-            const submitTime = _proposal.submit_time;
-            const description = proposal.summary;
-            const classified = classifiedData(proposal.messages);
-            const votingStartTime = _proposal.voting_start_time;
-            const votingEndTime = _proposal.voting_end_time;
-            const quorum = param.quorum;
-            const maxDepositPeriod = param.max_deposit_period;
-            const depositPeriod = convertDepositPeriod(maxDepositPeriod, submitTime);
-            const minDeposit = param.min_deposit[0].amount;
-            const proposalDeposit = _proposal.total_deposit[0].amount;
-            const tallyResult = proposalTally;
-            const currentTurnout = calculateCurrentTurnout(bondedTokens, tallyResult);
-
-            const titleState: IProposalTitleState = {
-                proposalId,
-                title,
-                status
-            };
-
-            const descState: IProposalDescriptionState = {
-                status,
-                proposalType: proposalType,
-                submitTime: submitTime,
-                description: description,
-                isTextProposal: proposalType?.includes(PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']),
-                messages: Array.isArray(proposal.messages) ? proposal.messages : [],
-                classified: classified,
-                votingStartTime: votingStartTime,
-                votingEndTime: votingEndTime,
-                depositPeriod: depositPeriod,
-                minDeposit: minDeposit,
-                proposalDeposit: proposalDeposit
-            };
-
-            const voteState: IProposalVoteState = {
-                votingStartTime: votingStartTime,
-                votingEndTime: votingEndTime,
-                quorum: convertNumber(quorum),
-                currentTurnout: currentTurnout,
-                totalVotingPower: bondedTokens,
-                proposalTally: tallyResult,
-                voters: votingList
-            };
-
-            setProposalState({
-                titleState,
-                descState,
-                voteState
-            });
-        } catch (e) {
-            console.log(e);
-            // Fix: if failed to fetch proposal data, show error toast and return to previous screen (governance)
-            Toast.show({
-                type: 'error',
-                text1: ERROR_FETCHING_PROPOSAL_DATA
-            });
-            navigation.goBack();
-        }
-    }, []);
+        },
+        [network]
+    );
 
     const convertDepositPeriod = (period: string, submitTime: string) => {
         const periodToDay = convertNumber(period.split('s')[0]);

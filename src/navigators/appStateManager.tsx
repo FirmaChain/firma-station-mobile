@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { VERSION } from '@/../config';
 import { setApiAddress } from '@/api';
 import { getValidatorsProfile } from '@/api/validator.api';
-import { setClient } from '@/apollo';
 import { JAILBREAK_ALERT, MAINTENANCE_ERROR, setNetworkData } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { CommonActions, StorageActions } from '@/redux/actions';
@@ -68,7 +67,6 @@ const AppStateManager = () => {
     const handleInitialize = useCallback(() => {
         CommonActions.handleLoggedIn(false);
         CommonActions.handleIsConnection(true);
-        setClient(network);
         setFirmaSDK(network);
         setApiAddress(network);
         setNetworkData(network);

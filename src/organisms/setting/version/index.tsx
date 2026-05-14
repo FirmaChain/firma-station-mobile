@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { VERSION } from '@/../config';
 import { setApiAddress } from '@/api';
-import { setClient } from '@/apollo';
 import { setNetworkData } from '@/constants/common';
 import { BgColor, TextGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
@@ -57,7 +56,6 @@ const Version = () => {
         CommonActions.handleIsNetworkChange(true);
         setFirmaSDK(networkList[index]);
         setApiAddress(networkList[index]);
-        setClient(networkList[index]);
         setNetworkData(networkList[index]);
         ModalActions.handleDAppData(null);
         ModalActions.handleModalData(null);

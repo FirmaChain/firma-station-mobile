@@ -14,7 +14,6 @@
     "format": "prettier --write . && eslint . --fix"
   },
   "dependencies": {
-    "@apollo/client": "^4.0.9",
     "@craftzdog/react-native-buffer": "^6.1.1",
     "@d11/react-native-fast-image": "^8.13.0",
     "@firmachain/firma-js": "^0.4.2",
@@ -89,11 +88,11 @@
     "prettier": "^3.6.2",
     "react-native-fs": "^2.20.0",
     "react-native-get-random-values": "^2.0.0",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.46.3"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "resolutions": {
     "@cosmjs/amino": "0.38.1",
