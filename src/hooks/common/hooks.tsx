@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { CHAIN_NETWORK, MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
 import { getChainInfo } from '@/util/firma';
-import axios from 'axios';
+import kyInstance from '@/util/kyService';
 
 interface IMaintenanceState {
     isShow: boolean;
@@ -84,14 +84,16 @@ export const useServerMessage = () => {
 
     const getMaintenanceData = useCallback(async () => {
         try {
-            const { data } = await axios.get(`${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-store',
-                    Pragma: 'no-store',
-                    Expires: '0'
-                }
-            });
+            const data = await kyInstance
+                .get<any>(`${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-store',
+                        Pragma: 'no-store',
+                        Expires: '0'
+                    }
+                })
+                .json();
 
             setMinAppVer(data.minAppVer);
             setCurrentAppVer(data.currentAppVer);

@@ -6,7 +6,7 @@ import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { convertNumber } from '@/util/common';
 import { getBalanceFromAdr } from '@/util/firma';
-import axios from 'axios';
+import kyInstance from '@/util/kyService';
 
 import { COINGECKO, COINGECKO_PRICE_LIST } from '../../../config';
 
@@ -198,13 +198,19 @@ export const useFetchPrices = () => {
 
     const fetchPrices = async () => {
         try {
-            const response = await axios.get(COINGECKO, {
-                params: {
-                    ids: COINGECKO_PRICE_LIST,
-                    vs_currencies: 'usd'
-                }
-            });
-            const transformedPrices = transformPrices(response.data);
+            const data = await kyInstance
+                .get<any>(COINGECKO, {
+                    searchParams: {
+                        ids: COINGECKO_PRICE_LIST,
+                        vs_currencies: 'usd'
+                    },
+                    context: {
+                        disableProgress: true
+                    }
+                })
+                .json();
+
+            const transformedPrices = transformPrices(data);
             setPriceData(transformedPrices);
         } catch (error) {
             console.error('Error fetching prices:', error);

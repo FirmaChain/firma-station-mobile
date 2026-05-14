@@ -53,7 +53,7 @@ const AppStateManager = () => {
 
     const handleValidatorsProfile = useCallback(async () => {
         try {
-            const result: IValidatorsProfileState = (await getValidatorsProfile()).data;
+            const result: IValidatorsProfileState = await getValidatorsProfile();
             const lastUpdatedTime = result.lastUpdatedTime;
             const storageInfoExist = validatorsProfile !== undefined;
 
