@@ -25,9 +25,10 @@ interface IProps {
     open: boolean;
     setOpenModal: Function;
     validationHandler: (password: string) => void;
+    handleShow?: () => void;
 }
 
-const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps) => {
+const ValidationModal = ({ type, open, setOpenModal, validationHandler, handleShow }: IProps) => {
     const { name: walletName } = useAppSelector((state) => state.wallet);
     const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
 

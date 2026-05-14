@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { QRCODE_SCANNER_MODAL_TEXT } from '@/constants/common';
 import { BlackColor, Lato, TextCatTitleColor, WhiteColor } from '@/constants/theme';
-import { CommonActions, ModalActions } from '@/redux/actions';
+import { ModalActions } from '@/redux/actions';
 import { ScreenHeight, ScreenWidth } from '@/util/getScreenSize';
 import { Modal, PixelRatio, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,9 +40,8 @@ const QRCodeScannerModal = () => {
                 return;
             }
 
-            CommonActions.handleLoadingProgress(true);
-            ModalActions.handleModalData({ result: first.value });
             closeModal();
+            ModalActions.handleModalData({ result: first.value });
         }
     });
 

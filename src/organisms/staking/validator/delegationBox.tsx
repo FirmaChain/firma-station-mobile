@@ -74,14 +74,15 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
     };
 
     const getGasFromDelegation = async () => {
+        const loadingRequestId = CommonActions.beginLoadingProgress();
+
         try {
-            CommonActions.handleLoadingProgress(true);
             const gas = await getEstimateGasFromDelegation(walletName, validatorAddress);
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setWithdrawGas(gas);
             setAlertDescription('');
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             handleModalOpen(true);
             throw error;

@@ -91,7 +91,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
     const handleSend = async () => {
         if (sendInfoState.address === '' || sendInfoState.tokenId === '') return;
         const isValidAddress = addressCheck(sendInfoState.address);
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         try {
             if (isValidAddress) {
                 const gas = await getEstimateGasSendCW721(walletName, contract, sendInfoState.address, sendInfoState.tokenId);
@@ -99,17 +99,17 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
             } else {
                 setAlertDescription(WRONG_TARGET_ADDRESS_WARN_TEXT);
                 setOpenAlertModal(true);
-                CommonActions.handleLoadingProgress(false);
+                CommonActions.endLoadingProgress(loadingRequestId);
                 return;
             }
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             setOpenAlertModal(true);
             return;
         }
-        CommonActions.handleLoadingProgress(false);
+        CommonActions.endLoadingProgress(loadingRequestId);
         handleTransactionModal(true);
     };
 

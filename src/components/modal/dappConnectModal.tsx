@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CHAIN_NETWORK } from '@/../config';
 import { DAPP_SERVICE_CONNECTION, DAPP_SERVICE_CONNECTION_DESCRIPTION_1, DAPP_SERVICE_CONNECTION_DESCRIPTION_2 } from '@/constants/common';
-import { ModalActions } from '@/redux/actions';
+import { CommonActions, ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { wait } from '@/util/common';
 import ConnectClient from '@/util/connectClient';
@@ -93,7 +93,7 @@ const DappConnectModal = () => {
     }, [appState]);
 
     return (
-        <CustomModal visible={isVisible} handleOpen={handleModal}>
+        <CustomModal visible={isVisible} handleOpen={handleModal} handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}>
             <View style={styles.modalTextContents}>
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
                     <DappURLBox certifiedState={isCertified} url={url} />

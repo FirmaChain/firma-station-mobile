@@ -106,7 +106,7 @@ const Send = () => {
 
         if (sendInfoState.address === '' || sendInfoState.amount <= 0) return;
         const isValidAddress = addressCheck(sendInfoState.address);
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         try {
             if (isValidAddress) {
                 if (activeType === 'SEND_IBC') {
@@ -128,17 +128,17 @@ const Send = () => {
             } else {
                 setAlertDescription(WRONG_TARGET_ADDRESS_WARN_TEXT);
                 setOpenAlertModal(true);
-                CommonActions.handleLoadingProgress(false);
+                CommonActions.endLoadingProgress(loadingRequestId);
                 return;
             }
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             setOpenAlertModal(true);
             return;
         }
-        CommonActions.handleLoadingProgress(false);
+        CommonActions.endLoadingProgress(loadingRequestId);
         handleTransactionModal(true);
     };
 

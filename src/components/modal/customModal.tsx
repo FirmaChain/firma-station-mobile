@@ -16,6 +16,7 @@ interface IProps {
     forceActive?: boolean;
     bgColor?: string;
     handleOpen: (open: boolean) => void;
+    handleShow?: () => void;
     children: ReactNode;
     toastInModal?: boolean;
 }
@@ -28,6 +29,7 @@ const CustomModal = ({
     forceActive = false,
     bgColor = BoxColor,
     handleOpen,
+    handleShow,
     toastInModal = true,
     children
 }: IProps) => {

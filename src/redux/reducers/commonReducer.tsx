@@ -8,7 +8,6 @@ import {
     CURRENT_APP_VERSION,
     CURRENT_ROUTE,
     DATA_LOAD_STATUS,
-    HANDLE_LOADING_PROGRESS,
     HANDLE_NETWORK_CHANGE_ACTIVATE,
     HANDLE_SCROLL_TO_TOP,
     IS_BIOAUTH_IN_PROGRESS,
@@ -20,6 +19,8 @@ import {
     SDK_VERSION,
     SET_REQUEST_ID
 } from '../types';
+
+const resolveLoadingState = (requestIds: string[]) => requestIds.length > 0;
 
 export interface ICommonStateProps {
     appState: string;
@@ -72,7 +73,6 @@ export const ACTION_CREATORS = {
     CLEAR_REQUEST_ID: createAction<string>(CLEAR_REQUEST_ID),
     APP_PAUSED_TIME: createAction<string>(APP_PAUSED_TIME),
     LOCK_STATION: createAction<boolean>(LOCK_STATION),
-    HANDLE_LOADING_PROGRESS: createAction<boolean>(HANDLE_LOADING_PROGRESS),
     HANDLE_SCROLL_TO_TOP: createAction<boolean>(HANDLE_SCROLL_TO_TOP),
     HANDLE_NETWORK_CHANGE_ACTIVATE: createAction<boolean>(HANDLE_NETWORK_CHANGE_ACTIVATE),
     IS_BIOAUTH_IN_PROGRESS: createAction<boolean>(IS_BIOAUTH_IN_PROGRESS),
@@ -93,7 +93,6 @@ export const ACTIONS = {
     clearRequestId: ACTION_CREATORS.CLEAR_REQUEST_ID,
     handleAppPausedTime: ACTION_CREATORS.APP_PAUSED_TIME,
     handleLockStation: ACTION_CREATORS.LOCK_STATION,
-    handleLoadingProgress: ACTION_CREATORS.HANDLE_LOADING_PROGRESS,
     handleScrollToTop: ACTION_CREATORS.HANDLE_SCROLL_TO_TOP,
     handleNetworkChangeActivate: ACTION_CREATORS.HANDLE_NETWORK_CHANGE_ACTIVATE,
     handleBioAuthInProgress: ACTION_CREATORS.IS_BIOAUTH_IN_PROGRESS,
@@ -121,19 +120,20 @@ const reducer = createReducer(initialState, (builder) => {
         state.sdkVer = payload;
     });
     builder.addCase(ACTION_CREATORS.SET_REQUEST_ID, (state, { payload }) => {
-        state.requestIds.push(payload);
+        if (!state.requestIds.includes(payload)) {
+            state.requestIds.push(payload);
+        }
+        state.loading = resolveLoadingState(state.requestIds);
     });
     builder.addCase(ACTION_CREATORS.CLEAR_REQUEST_ID, (state, { payload }) => {
         state.requestIds = state.requestIds.filter((v) => v !== payload);
+        state.loading = resolveLoadingState(state.requestIds);
     });
     builder.addCase(ACTION_CREATORS.APP_PAUSED_TIME, (state, { payload }) => {
         state.appPausedTime = payload;
     });
     builder.addCase(ACTION_CREATORS.LOCK_STATION, (state, { payload }) => {
         state.lockStation = payload;
-    });
-    builder.addCase(ACTION_CREATORS.HANDLE_LOADING_PROGRESS, (state, { payload }) => {
-        state.loading = payload;
     });
     builder.addCase(ACTION_CREATORS.HANDLE_SCROLL_TO_TOP, (state, { payload }) => {
         state.scrollToTop = payload;

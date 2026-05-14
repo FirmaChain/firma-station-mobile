@@ -42,10 +42,6 @@ const DappServiceRegistModal = () => {
         return dappServiceRegModal;
     }, [dappServiceRegModal]);
 
-    useEffect(() => {
-        CommonActions.handleLoadingProgress(false);
-    }, [isVisible]);
-
     const QRData = useMemo(() => {
         if (isVisible) {
             return modalData.data;
@@ -113,7 +109,7 @@ const DappServiceRegistModal = () => {
     }, [appState]);
 
     return (
-        <CustomModal visible={isVisible} handleOpen={handleModal} toastInModal={false}>
+        <CustomModal visible={isVisible} handleOpen={handleModal} handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)} toastInModal={false}>
             <View style={styles.modalTextContents}>
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
                     {project !== undefined && (

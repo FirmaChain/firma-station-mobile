@@ -97,18 +97,18 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
 
     const handleOpenCreateFavoriteModal = () => {
         setOpenFavoriteModal(false);
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         wait(600).then(() => {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setOpenFavoriteCreateModal(true);
         });
     };
 
     const handleCreatedFavoriteModal = (_isAdded: boolean) => {
         setOpenFavoriteCreateModal(false);
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         wait(600).then(() => {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setOpenFavoriteModal(true);
         });
     };

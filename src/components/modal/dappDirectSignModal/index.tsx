@@ -74,7 +74,7 @@ const DappDirectSignModal = () => {
 
     const closeModal = () => {
         ModalActions.handleModalData(null);
-        CommonActions.handleLoadingProgress(false);
+        CommonActions.endLoadingProgress(modalData?.loadingRequestId);
         ModalActions.handleDAppDirectSignModal(false);
     };
 
@@ -104,7 +104,7 @@ const DappDirectSignModal = () => {
 
     useEffect(() => {
         if (isLoadedAllBalanceData) {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(modalData?.loadingRequestId);
         }
     }, [isLoadedAllBalanceData]);
 
@@ -250,7 +250,7 @@ const DappDirectSignModal = () => {
                 setIsCertified(Certified(QRData.projectMetaData));
                 getBalance();
             } catch (error) {
-                CommonActions.handleLoadingProgress(false);
+                CommonActions.endLoadingProgress(modalData?.loadingRequestId);
                 Toast.show({
                     type: 'error',
                     text1: String(error)

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { VERSION } from '@/../config';
 import { setApiAddress } from '@/api';
 import { getValidatorsProfile } from '@/api/validator.api';
@@ -47,6 +47,7 @@ const AppStateManager = () => {
     const [maintenance, setMaintenance] = useState<boolean | null>(null);
     const [maintenanceData, setMaintenanceData] = useState({});
     const [openAlertModal, setOpenAlertModal] = useState(false);
+    const networkLoadingRequestId = useRef<string | null>(null);
 
     const navigation: ScreenNavgationProps = useNavigation();
 
@@ -125,20 +126,31 @@ const AppStateManager = () => {
         }
     }, [appState, appPausedTime]);
 
-    const handleLoadingProgress = useCallback(() => {
-        if (lockStation === false && (connect === false || isNetworkChanged)) {
-            CommonActions.handleLoadingProgress(true);
+    const beginNetworkLoadingProgress = useCallback(() => {
+        if (networkLoadingRequestId.current === null) {
+            networkLoadingRequestId.current = CommonActions.beginLoadingProgress();
         }
-    }, [lockStation, connect, isNetworkChanged]);
+    }, []);
 
-    const handleLoadingProgressWithNetworkChange = useCallback(() => {
+    const endNetworkLoadingProgress = useCallback(() => {
+        CommonActions.endLoadingProgress(networkLoadingRequestId.current);
+        networkLoadingRequestId.current = null;
+    }, []);
+
+    const syncConnectivityLoadingProgress = useCallback(() => {
+        if (lockStation === false && (connect === false || isNetworkChanged)) {
+            beginNetworkLoadingProgress();
+        }
+    }, [lockStation, connect, isNetworkChanged, beginNetworkLoadingProgress]);
+
+    const syncNetworkChangeLoadingProgress = useCallback(() => {
         if (loggedIn) {
             wait(3000).then(() => {
                 CommonActions.handleIsNetworkChange(false);
-                CommonActions.handleLoadingProgress(false);
+                endNetworkLoadingProgress();
             });
         }
-    }, [loggedIn]);
+    }, [loggedIn, endNetworkLoadingProgress]);
 
     useEffect(() => {
         handleInitialize();
@@ -211,18 +223,22 @@ const AppStateManager = () => {
         //     SplashScreen.hide();
         // }
         CommonActions.handleIsNetworkChange(false);
-        CommonActions.handleLoadingProgress(!connect);
+        if (connect === false) {
+            beginNetworkLoadingProgress();
+        } else {
+            endNetworkLoadingProgress();
+        }
         CommonActions.handleIsConnection(connect);
     }, [netInfo]);
 
     useEffect(() => {
         if (navigation.getState()) {
-            handleLoadingProgress();
+            syncConnectivityLoadingProgress();
         }
     }, [connect, isNetworkChanged, lockStation]);
 
     useEffect(() => {
-        handleLoadingProgressWithNetworkChange();
+        syncNetworkChangeLoadingProgress();
     }, [network]);
 
     return (

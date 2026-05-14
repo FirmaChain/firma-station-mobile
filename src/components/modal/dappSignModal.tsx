@@ -40,10 +40,6 @@ const DappSignModal = () => {
         return dappSignModal;
     }, [dappSignModal]);
 
-    useEffect(() => {
-        CommonActions.handleLoadingProgress(false);
-    }, [isVisible]);
-
     const QRData = useMemo(() => {
         if (isVisible) {
             return modalData;
@@ -122,7 +118,7 @@ const DappSignModal = () => {
     }, [appState]);
 
     return (
-        <CustomModal visible={isVisible} handleOpen={handleModal}>
+        <CustomModal visible={isVisible} handleOpen={handleModal} handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}>
             <React.Fragment>
                 <View style={styles.modalTextContents}>
                     <View style={[styles.boxV, { alignItems: 'center', paddingBottom: 30 }]}>

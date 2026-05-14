@@ -9,15 +9,16 @@ interface IProps {
 
 export type CreateStepTwoParams = {
     wallet: any;
+    loadingRequestId?: string;
 };
 
 const CreateStepTwoScreen = (props: IProps) => {
-    const { wallet } = props.route.params;
+    const { wallet, loadingRequestId } = props.route.params;
 
     useFocusEffect(
         useCallback(() => {
-            CommonActions.handleLoadingProgress(false);
-        }, [])
+            CommonActions.endLoadingProgress(loadingRequestId);
+        }, [loadingRequestId])
     );
 
     return <StepTwo wallet={wallet} />;

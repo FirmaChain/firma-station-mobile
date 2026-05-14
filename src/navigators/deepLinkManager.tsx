@@ -5,7 +5,7 @@ import { useIBCTokenContext } from '@/context/ibcTokenContext';
 import { IBCDataState } from '@/organisms/wallet/wallet';
 import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { wait } from '@/util/common';
+import { wait, waitForNextFrame } from '@/util/common';
 import ConnectClient from '@/util/connectClient';
 import { addressCheck } from '@/util/firma';
 import { getDAppProjectIdList } from '@/util/wallet';
@@ -107,10 +107,10 @@ const DeepLinkManager = () => {
             return;
         }
         if (deepLink !== '' && deepLink !== undefined) {
-            CommonActions.handleLoadingProgress(true);
+            const loadingRequestId = CommonActions.beginLoadingProgress();
             const convertLink = deepLink.replace('firmastation', 'sign');
             setDeepLink('');
-            ModalActions.handleModalData({ deeplink: convertLink });
+            ModalActions.handleModalData({ deeplink: convertLink, loadingRequestId });
         }
     }, [appState, isBioAuthInProgress, lockStation, deepLink]);
 
@@ -148,76 +148,78 @@ const DeepLinkManager = () => {
     const handleQRResult = async (result: any) => {
         const isValidAddress = addressCheck(result);
         const isURL = urlForWebLinkCheck(result);
+        let loadingRequestId: string | null = null;
 
         if (isValidAddress) {
-            CommonActions.handleLoadingProgress(false);
             WalletActions.handleDstAddress(result);
-        } else if (isURL) {
-            CommonActions.handleLoadingProgress(false);
+            return;
+        }
+
+        if (isURL) {
             Linking.openURL(result);
-        } else {
-            try {
-                const session = await connectClient.getUserSession(walletName + network);
-                const isDappQR = connectClient.isDappQR(result);
-                if (isDappQR) {
-                    const DappQRData = await connectClient.requestDappQRData(session, result);
-                    CommonActions.handleLoadingProgress(true);
-                    ModalActions.handleModalData({ data: DappQRData });
-                    ModalActions.handleDAppServiceRegistModal(true);
-                    return;
-                }
+            return;
+        }
 
-                const QRData = await connectClient.requestQRData(session, result);
-                const verification = await connectClient.verifyConnectedWallet(walletAddress, QRData);
-                if (verification === false) {
-                    //? If verification has failed, show the error message and remove loading progress, and return false.
-                    Toast.show({
-                        type: 'error',
-                        text1: DAPP_INVALID_QR
-                    });
-                    CommonActions.handleLoadingProgress(false);
-                    return false;
-                }
+        try {
+            await waitForNextFrame();
+            loadingRequestId = CommonActions.beginLoadingProgress();
+            const session = await connectClient.getUserSession(walletName + network);
+            const isDappQR = connectClient.isDappQR(result);
+            if (isDappQR) {
+                const DappQRData = await connectClient.requestDappQRData(session, result);
+                ModalActions.handleModalData({ data: DappQRData, loadingRequestId });
+                ModalActions.handleDAppServiceRegistModal(true);
+                return;
+            }
 
-                const projectId = QRData.projectMetaData === undefined ? '' : QRData.projectMetaData.projectId;
-                const idList = await getProjectId();
-
-                const list = idList ? idList : [];
-
-                if (list.includes(projectId)) {
-                    ModalActions.handleModalData(QRData);
-
-                    if (connectClient.isDirectSign(QRData)) {
-                        wait(500).then(() => {
-                            CommonActions.handleLoadingProgress(false);
-                            ModalActions.handleDAppDirectSignModal(true);
-                        });
-                    } else {
-                        wait(500).then(() => {
-                            CommonActions.handleLoadingProgress(false);
-                            ModalActions.handleDAppSignModal(true);
-                        });
-                    }
-                } else {
-                    const updateList = { list: [...list, projectId] };
-                    ModalActions.handleModalData({
-                        data: QRData,
-                        idState: updateList
-                    });
-                    wait(500).then(() => {
-                        CommonActions.handleLoadingProgress(false);
-                        ModalActions.handleDAppConnectModal(true);
-                    });
-                }
-            } catch (error) {
-                CommonActions.handleLoadingProgress(false);
-                ModalActions.handleModalData(null);
-                ModalActions.handleDAppData(null);
-                return Toast.show({
+            const QRData = await connectClient.requestQRData(session, result);
+            const verification = await connectClient.verifyConnectedWallet(walletAddress, QRData);
+            if (verification === false) {
+                //? If verification has failed, show the error message and remove loading progress, and return false.
+                Toast.show({
                     type: 'error',
-                    text1: String(error)
+                    text1: DAPP_INVALID_QR
+                });
+                CommonActions.endLoadingProgress(loadingRequestId);
+                return false;
+            }
+
+            const projectId = QRData.projectMetaData === undefined ? '' : QRData.projectMetaData.projectId;
+            const idList = await getProjectId();
+
+            const list = idList ? idList : [];
+
+            if (list.includes(projectId)) {
+                ModalActions.handleModalData({ ...QRData, loadingRequestId });
+
+                if (connectClient.isDirectSign(QRData)) {
+                    wait(500).then(() => {
+                        ModalActions.handleDAppDirectSignModal(true);
+                    });
+                } else {
+                    wait(500).then(() => {
+                        ModalActions.handleDAppSignModal(true);
+                    });
+                }
+            } else {
+                const updateList = { list: [...list, projectId] };
+                ModalActions.handleModalData({
+                    data: QRData,
+                    idState: updateList,
+                    loadingRequestId
+                });
+                wait(500).then(() => {
+                    ModalActions.handleDAppConnectModal(true);
                 });
             }
+        } catch (error) {
+            CommonActions.endLoadingProgress(loadingRequestId);
+            ModalActions.handleModalData(null);
+            ModalActions.handleDAppData(null);
+            return Toast.show({
+                type: 'error',
+                text1: String(error)
+            });
         }
     };
 

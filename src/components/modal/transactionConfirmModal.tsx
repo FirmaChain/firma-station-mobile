@@ -60,6 +60,7 @@ const TransactionConfirmModal = ({
         setOpenValidationModal(open);
     };
 
+
     const handleTransaction = (result: string) => {
         if (appState === 'active') {
             setTransactionStart(result !== '');
@@ -107,7 +108,12 @@ const TransactionConfirmModal = ({
     return (
         <CustomModal visible={open} bgColor={BgColor} handleOpen={handleModal}>
             <>
-                <View style={[styles.modalTextContents, { display: openValidationModal || transactionStart ? 'none' : 'flex' }]}>
+                <View
+                    style={[
+                        styles.modalTextContents,
+                        { display: openValidationModal ? 'none' : transactionStart ? 'none' : 'flex' }
+                    ]}
+                >
                     <View style={[styles.boxH, { justifyContent: 'flex-start', alignItems: 'center' }]}>
                         <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
                     </View>

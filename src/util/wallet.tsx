@@ -260,8 +260,9 @@ export const setEncryptPassword = async (password: string) => {
 };
 
 export const setWalletWithBioAuth = async (name: string, password: string, recoverValue: string) => {
+    const loadingRequestId = CommonActions.beginLoadingProgress();
+
     try {
-        CommonActions.handleLoadingProgress(true);
         const address = await setNewWallet(name, password, recoverValue, true);
 
         await setWalletWithAutoLogin(
@@ -281,8 +282,9 @@ export const setWalletWithBioAuth = async (name: string, password: string, recov
 
         return result;
     } catch (error) {
-        CommonActions.handleLoadingProgress(false);
         throw error;
+    } finally {
+        CommonActions.endLoadingProgress(loadingRequestId);
     }
 };
 
@@ -291,7 +293,6 @@ export const setDAppConnectSession = async (name: string, session: string) => {
         const encSession = encrypt(session, UNIQUE_ID + name);
         await setChain(CONNECT_SESSION + name, encSession);
     } catch (error) {
-        CommonActions.handleLoadingProgress(false);
         throw error;
     }
 };
@@ -324,7 +325,6 @@ export const setDAppProjectIdList = async (name: string, key: string, list: stri
         const encList = encrypt(list, CONNECT_ID_LIST + key + '_' + name);
         await setChain(CONNECT_ID_LIST + name, encList);
     } catch (error) {
-        CommonActions.handleLoadingProgress(false);
         throw error;
     }
 };
@@ -356,7 +356,6 @@ export const setDAppServiceId = async (name: string, value: string) => {
         const encList = encrypt(value, DAPPS_SERVICE_IDENTITY + '_' + name + '_' + UNIQUE_ID);
         await setChain(DAPPS_SERVICE_IDENTITY + name, encList);
     } catch (error) {
-        CommonActions.handleLoadingProgress(false);
         throw error;
     }
 };

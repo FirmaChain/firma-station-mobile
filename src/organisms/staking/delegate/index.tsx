@@ -118,15 +118,16 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
 
     const handleNext = async () => {
         if (status > 0) return;
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
 
         let gas = getFirmaConfig().defaultGas;
         try {
             switch (type) {
-                case 'Delegate':
+                case 'Delegate': {
                     const amount = standardAvailable > delegateState.amount ? delegateState.amount : standardAvailable;
                     gas = await getEstimateGasDelegate(walletName, delegateState.operatorAddressDst, amount);
                     break;
+                }
                 case 'Undelegate':
                     gas = await getEstimateGasUndelegate(walletName, delegateState.operatorAddressDst, delegateState.amount);
                     break;
@@ -144,7 +145,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
             setStatus(1);
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setAlertState({
                 title: 'Failed',
                 desc: String(error),
@@ -154,7 +155,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
             handleModalOpen(true);
             return;
         }
-        CommonActions.handleLoadingProgress(false);
+        CommonActions.endLoadingProgress(loadingRequestId);
     };
 
     const handleTransaction = (password: string) => {

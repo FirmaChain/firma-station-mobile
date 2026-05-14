@@ -55,7 +55,6 @@ const Version = () => {
     const handleSelectNetwork = (index: number) => {
         if (index === selectedNetworkIndex) return setOpenNetworkSelectModal(false);
         CommonActions.handleIsNetworkChange(true);
-        CommonActions.handleLoadingProgress(true);
         setFirmaSDK(networkList[index]);
         setApiAddress(networkList[index]);
         setClient(networkList[index]);

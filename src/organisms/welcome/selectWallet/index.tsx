@@ -114,7 +114,7 @@ const SelectWallet = () => {
     };
 
     const onSelectWalletAndMoveToHome = async () => {
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         await waitForNextFrame();
         try {
             let adr = '';
@@ -141,7 +141,7 @@ const SelectWallet = () => {
                 type: 'error',
                 text1: String(error)
             });
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 

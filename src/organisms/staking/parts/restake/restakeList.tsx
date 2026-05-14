@@ -62,7 +62,6 @@ const RestakeList = ({ isRefresh, delegationState, restakeState, handleIsRefresh
     const refreshStakings = useCallback(async () => {
         try {
             await getLatestRestakeInfo();
-            CommonActions.handleLoadingProgress(false);
             handleIsRefresh(false);
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);

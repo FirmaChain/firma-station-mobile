@@ -20,9 +20,10 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
 interface IProps {
     title: string;
+    loadingRequestId?: string;
 }
 
-const Home = ({ title }: IProps) => {
+const Home = ({ title, loadingRequestId }: IProps) => {
     const { address: walletAddress } = useAppSelector((state) => state.wallet);
 
     const { walletJson, getWalletJsonData } = useWalletJSON();
@@ -69,10 +70,13 @@ const Home = ({ title }: IProps) => {
     }, [walletJson]);
 
     useEffect(() => {
+        CommonActions.endLoadingProgress(loadingRequestId);
+    }, [loadingRequestId]);
+
+    useEffect(() => {
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime('');
         CommonActions.handleLoggedIn(true);
-        CommonActions.handleLoadingProgress(false);
         getWalletJsonData();
     }, []);
 

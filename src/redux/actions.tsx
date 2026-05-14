@@ -1,14 +1,29 @@
-import { bindActionCreators } from '@reduxjs/toolkit';
+import { bindActionCreators, type ActionCreatorsMapObject, type Dispatch } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
 
 import { ACTIONS as commonActions } from './reducers/commonReducer';
 import { ACTIONS as modalActions } from './reducers/modalReducer';
 import { ACTIONS as stakingActions } from './reducers/stakingReducer';
 import { ACTIONS as storageActions } from './reducers/storageReducer';
+import { getRandomKey } from '@/util/keystore';
+
 import { ACTIONS as walletActions } from './reducers/walletReducer';
 import { store } from './store';
 
 const { dispatch } = store;
+const boundCommonActions = bindActionCreators(commonActions, dispatch);
+
+const beginLoadingProgress = () => {
+    const requestId = getRandomKey();
+    boundCommonActions.setRequestId(requestId);
+    return requestId;
+};
+
+const endLoadingProgress = (requestId?: string | null) => {
+    if (requestId) {
+        boundCommonActions.clearRequestId(requestId);
+    }
+};
 
 declare module 'redux' {
     export function bindActionCreators<M extends ActionCreatorsMapObject<any>>(
@@ -21,7 +36,11 @@ declare module 'redux' {
     };
 }
 
-export const CommonActions = bindActionCreators(commonActions, dispatch);
+export const CommonActions = {
+    ...boundCommonActions,
+    beginLoadingProgress,
+    endLoadingProgress
+};
 export const ModalActions = bindActionCreators(modalActions, dispatch);
 export const StakingActions = bindActionCreators(stakingActions, dispatch);
 export const StorageActions = bindActionCreators(storageActions, dispatch);

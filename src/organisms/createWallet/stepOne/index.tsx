@@ -54,11 +54,11 @@ const StepOne = ({ recoverValue = null }: IProps) => {
         if (inProgress) return;
         setInProgress(true);
 
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         try {
             const result = await createNewWallet();
             if (result === undefined) {
-                CommonActions.handleLoadingProgress(false);
+                CommonActions.endLoadingProgress(loadingRequestId);
                 return Toast.show({
                     type: 'error',
                     text1: CREATE_WALLET_FAILED
@@ -69,9 +69,9 @@ const StepOne = ({ recoverValue = null }: IProps) => {
                 password: password,
                 mnemonic: result.mnemonic
             };
-            navigation.navigate(Screens.CreateStepTwo, { wallet: newWallet });
+            navigation.navigate(Screens.CreateStepTwo, { wallet: newWallet, loadingRequestId });
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
                 text1: CREATE_WALLET_FAILED

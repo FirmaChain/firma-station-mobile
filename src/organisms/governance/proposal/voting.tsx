@@ -74,13 +74,13 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
 
     const handleVoting = async () => {
         handleVoteModal(false);
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         try {
             const result = await getEstimateGasVoting(walletName, proposalId, getVotingOption(selectedVote));
             setVotingGas(result);
             setAlertDescription('');
             setProgress(true); // prevent modal transition gap makes vote button enabled
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             wait(100).then(() => {
                 handleTransactionModal(true);
                 setProgress(false);
@@ -88,7 +88,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
         } catch (error) {
             console.log(error);
             setProgress(true);
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             wait(100).then(() => {
                 handleModalOpen(true);

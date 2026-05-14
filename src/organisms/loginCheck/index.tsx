@@ -55,6 +55,8 @@ const LoginCheck = () => {
         setIsLoginProgress(true);
         await waitForNextFrame();
 
+        let loadingRequestId: string | null = null;
+
         try {
             const adr = await getAddressFromRecoverValue(recoverValue);
             if (adr) {
@@ -71,12 +73,12 @@ const LoginCheck = () => {
                 WalletActions.handleWalletAddress(adr);
 
                 await setBioAuth(name, password);
-                CommonActions.handleLoadingProgress(true);
-                navigation.reset({ routes: [{ name: Screens.Home }] });
+                loadingRequestId = CommonActions.beginLoadingProgress();
+                navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
             }
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -88,6 +90,9 @@ const LoginCheck = () => {
     let isProcessing = false;
     const handleLoginViaBioAuth = async () => {
         if (isProcessing === true) return;
+
+        let loadingRequestId: string | null = null;
+
         try {
             isProcessing = true;
             let passwordFromBio = '';
@@ -105,11 +110,11 @@ const LoginCheck = () => {
             const result = passwordFromBio;
             if (result !== '') {
                 isProcessing = false;
-                CommonActions.handleLoadingProgress(true);
-                navigation.reset({ routes: [{ name: Screens.Home }] });
+                loadingRequestId = CommonActions.beginLoadingProgress();
+                navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
             }
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
                 text1: String(error)

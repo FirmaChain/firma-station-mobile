@@ -78,7 +78,7 @@ export type StackParamList = {
     SelectWallet: undefined;
     RecoverWallet: undefined;
 
-    Home: undefined;
+    Home: { loadingRequestId?: string } | undefined;
     History: undefined;
     Transaction: TransactionParams;
 

@@ -118,16 +118,17 @@ const Restake = () => {
     }, [restakeInfo]);
 
     const handleRefresh = async (progress: boolean) => {
+        const loadingRequestId = progress ? CommonActions.beginLoadingProgress() : null;
+
         try {
-            CommonActions.handleLoadingProgress(progress);
             await getStakingState();
             await handleDelegationState();
             await handleStakingGrantState();
             await handleRestakeInfo();
-            CommonActions.handleLoadingProgress(false);
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
+        } finally {
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 
@@ -143,7 +144,6 @@ const Restake = () => {
             }
             setOpenTransactionModal(open);
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
             handleAlertModalOpen(true);
             throw error;
@@ -151,7 +151,8 @@ const Restake = () => {
     };
 
     const getEstimateGasGrantOrRevoke = async () => {
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
+
         try {
             if (TRANSACTION_TYPE[restakeType] === TRANSACTION_TYPE['GRANT']) {
                 if (validatorAddressList !== null) {
@@ -166,12 +167,12 @@ const Restake = () => {
             setAlertDescription('');
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
             setAlertDescription(String(error));
             handleAlertModalOpen(true);
             throw error;
+        } finally {
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
-        CommonActions.handleLoadingProgress(false);
     };
 
     const handleTransaction = (password: string) => {

@@ -32,8 +32,8 @@ const RecoverWallet = () => {
     const { modalData, qrScannerModal } = useAppSelector((state) => state.modal);
 
     const recoverWalletViaQR = async (value: string) => {
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         try {
-            CommonActions.handleLoadingProgress(true);
             await waitForNextFrame();
 
             await recoverWallet(value); // Try to get wallet from QR data
@@ -45,7 +45,7 @@ const RecoverWallet = () => {
                 text1: String(error)
             });
         } finally {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 

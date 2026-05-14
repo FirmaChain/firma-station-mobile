@@ -65,13 +65,14 @@ const ChangeWalletName = () => {
     };
 
     const changeNewWalletName = async () => {
+        const loadingRequestId = CommonActions.beginLoadingProgress();
+
         try {
-            CommonActions.handleLoadingProgress(true);
             await removeCurrentWallet();
             await createNewWallet();
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
                 text1: String(error)

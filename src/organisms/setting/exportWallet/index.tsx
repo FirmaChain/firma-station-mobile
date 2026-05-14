@@ -72,8 +72,9 @@ const ExportWallet = ({ type }: IProps) => {
     };
 
     const getMnemonicFromChain = async (password: string) => {
-        try {
-            CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
+
+        try {    
             const result = await getRecoverValue(walletName, password);
             if (result !== null) {
                 handleModalOpen(false);
@@ -98,9 +99,9 @@ const ExportWallet = ({ type }: IProps) => {
             } else {
                 handleModalOpen(true);
             }
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
         } catch (error) {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
                 text1: String(error)

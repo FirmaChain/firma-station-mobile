@@ -55,7 +55,7 @@ const ChangePassword = () => {
 
     const changeNewPassword = async () => {
         if (loading) return;
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         await waitForNextFrame();
 
         try {
@@ -67,7 +67,7 @@ const ChangePassword = () => {
                 text1: String(error)
             });
         } finally {
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 

@@ -70,19 +70,19 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
     };
 
     const getGasFromAllDelegations = async () => {
-        CommonActions.handleLoadingProgress(true);
+        const loadingRequestId = CommonActions.beginLoadingProgress();
         try {
             const result = await getEstimateGasFromAllDelegations(walletName);
             setWithdrawAllGas(result);
             setAlertDescription('');
         } catch (error) {
             console.log(error);
-            CommonActions.handleLoadingProgress(false);
+            CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             handleModalOpen(true);
             throw error;
         }
-        CommonActions.handleLoadingProgress(false);
+        CommonActions.endLoadingProgress(loadingRequestId);
     };
 
     useEffect(() => {

@@ -60,7 +60,6 @@ const ValidatorList = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps
     const refreshValidators = useCallback(async () => {
         try {
             await handleValidatorsPolling();
-            CommonActions.handleLoadingProgress(false);
             handleIsRefresh(false);
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
