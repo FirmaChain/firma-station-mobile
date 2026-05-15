@@ -116,7 +116,7 @@ const CustomModal = ({
         return () => {
             clearTimeout(timeoutId);
         };
-    }, [backdropOpacity, fade, handleShow, keyboardOffset, sheetOpacity, sheetTranslateY, visible]);
+    }, [fade, visible]);
 
     useInterval(
         () => {
