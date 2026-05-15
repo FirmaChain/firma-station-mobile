@@ -1,4 +1,3 @@
-import React from 'react';
 import RecoverWallet from '@/organisms/welcome/recoverWallet';
 
 const RecoverWalletScreen = () => {

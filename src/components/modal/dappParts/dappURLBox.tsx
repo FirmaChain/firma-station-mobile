@@ -1,4 +1,3 @@
-import React from 'react';
 import { ICON_CERTIFIED_SITE } from '@/constants/images';
 import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import FastImage from '@d11/react-native-fast-image';

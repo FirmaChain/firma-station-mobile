@@ -23,7 +23,7 @@ interface IProps {
     resetValues?: boolean;
     enableMaxAmount?: boolean;
     handleMaxActive?: (active: boolean) => void;
-    onChangeEvent: Function;
+    onChangeEvent: (value: number) => void;
 }
 
 const InputSetVerticalForAmount = ({
@@ -61,7 +61,7 @@ const InputSetVerticalForAmount = ({
                     handleMaxActive(false);
                 }
             }
-            onChangeEvent && onChangeEvent(Number(result));
+            onChangeEvent(Number(result));
         }
     };
 

@@ -1,8 +1,8 @@
-import React from 'react';
+import { memo } from 'react';
 import Wallet from '@/organisms/wallet/wallet';
 
 const WalletScreen = () => {
     return <Wallet />;
 };
 
-export default React.memo(WalletScreen);
+export default memo(WalletScreen);

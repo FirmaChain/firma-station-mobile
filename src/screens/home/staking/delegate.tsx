@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import Delegate from '@/organisms/staking/delegate';
 
 interface IProps {
@@ -14,4 +14,4 @@ const DelegateScreen = (props: IProps) => {
     return <Delegate type={state.type} operatorAddress={state.operatorAddress} />;
 };
 
-export default React.memo(DelegateScreen);
+export default memo(DelegateScreen);

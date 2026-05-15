@@ -9,7 +9,7 @@ import TextButton from '../button/textButton';
 interface IProps {
     title: string;
     placeholder: string;
-    onChangeEvent: Function;
+    onChangeEvent: (value: number) => void;
 }
 
 const InputSetVerticalForRestake = ({ title, placeholder, onChangeEvent }: IProps) => {

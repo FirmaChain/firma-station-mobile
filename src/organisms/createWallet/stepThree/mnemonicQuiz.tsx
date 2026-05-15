@@ -6,7 +6,7 @@ import QuestionItem from './questionItem';
 
 interface IProps {
     mnemonic: string;
-    handleConfirm: Function;
+    handleConfirm: (value: boolean) => void;
 }
 
 const MnemonicQuiz = ({ mnemonic, handleConfirm }: IProps) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { BoxDarkColor } from '@/constants/theme';
 import { StyleSheet, View } from 'react-native';
 
@@ -12,9 +12,9 @@ interface IProps {
     titleOn?: boolean;
     step?: number;
     bgColor?: string;
-    backEvent: Function;
+    backEvent: () => void;
     handleGuide?: () => void;
-    children: JSX.Element;
+    children: ReactNode;
 }
 
 const Container = ({
@@ -28,7 +28,7 @@ const Container = ({
     children
 }: IProps) => {
     const handleMoveBack = () => {
-        backEvent && backEvent();
+        backEvent();
     };
 
     return (

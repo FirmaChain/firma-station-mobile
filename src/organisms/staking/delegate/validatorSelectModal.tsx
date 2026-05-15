@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BgColor } from '@/constants/theme';
-import { StyleSheet } from 'react-native';
 
 import { IStakeInfo } from '@/hooks/staking/hooks';
 import CustomModal from '@/components/modal/customModal';
@@ -10,8 +9,8 @@ interface IProps {
     list: Array<IStakeInfo>;
     open: boolean;
     myAddress: string;
-    setOpenModal: Function;
-    setValue: Function;
+    setOpenModal: (value: boolean) => void;
+    setValue: (address: string) => void;
     resetValues: boolean;
 }
 
@@ -19,7 +18,7 @@ const ValidatorSelectModal = ({ list, open, myAddress, setOpenModal, setValue, r
     const [selected, setSelected] = useState('');
 
     const handleOpenModal = (open: boolean) => {
-        setOpenModal && setOpenModal(open);
+        setOpenModal(open);
     };
 
     const handleSelectWallet = (address: string) => {
@@ -44,7 +43,5 @@ const ValidatorSelectModal = ({ list, open, myAddress, setOpenModal, setValue, r
         </CustomModal>
     );
 };
-
-const styles = StyleSheet.create({});
 
 export default ValidatorSelectModal;

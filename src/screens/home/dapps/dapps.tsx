@@ -1,8 +1,8 @@
-import React from 'react';
+import { memo } from 'react';
 import Dapps from '@/organisms/dapps';
 
 const DappsScreen = () => {
     return <Dapps />;
 };
 
-export default React.memo(DappsScreen);
+export default memo(DappsScreen);

@@ -11,7 +11,7 @@ import RecentHistorySkeleton from '@/components/skeleton/recentHistorySkeleton';
 interface IProps {
     recentHistory: any;
     historyVolume: number | null;
-    handleHistory: Function;
+    handleHistory: () => void;
     handleExplorer: (uri: string) => void;
 }
 
@@ -30,7 +30,7 @@ const HistoryBox = ({ recentHistory, historyVolume, handleHistory, handleExplore
 
     const moveToHistory = () => {
         if (recentHistory === undefined) return;
-        handleHistory && handleHistory();
+        handleHistory();
     };
 
     useEffect(() => {

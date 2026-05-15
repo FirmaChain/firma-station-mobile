@@ -1,4 +1,3 @@
-import React from 'react';
 import StepRecover from '@/organisms/createWallet/stepRecover';
 
 interface IProps {

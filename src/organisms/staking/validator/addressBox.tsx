@@ -1,4 +1,3 @@
-import React from 'react';
 import { EXPLORER_URL } from '@/constants/common';
 import { BoxColor, Lato, TextAddressColor, TextColor } from '@/constants/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';

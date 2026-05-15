@@ -1,11 +1,11 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { StyleSheet, Text, View } from 'react-native';
 
 import CustomModal from './customModal';
 
 interface IRestakeValidatorListModalProps {
-    children: JSX.Element;
+    children: ReactNode;
     open: boolean;
     closeModal: () => void;
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { BgColor, BoxDarkColor } from '@/constants/theme';
 import { isMainTabScreen } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface IProps {
-    children: Element;
+    children: ReactNode;
     bgColor?: string;
 }
 

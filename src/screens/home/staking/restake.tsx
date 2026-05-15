@@ -1,8 +1,8 @@
-import React from 'react';
+import { memo } from 'react';
 import Restake from '@/organisms/staking/restake';
 
 const RestakeScreen = () => {
     return <Restake />;
 };
 
-export default React.memo(RestakeScreen);
+export default memo(RestakeScreen);

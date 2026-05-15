@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import Proposal from '@/organisms/governance/proposal';
 
 interface IProps {
@@ -15,4 +15,4 @@ const ProposalScreen = (props: IProps) => {
     return <Proposal proposalId={proposalId} />;
 };
 
-export default React.memo(ProposalScreen);
+export default memo(ProposalScreen);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { BorderColor, DisableColor, Lato, PointColor, TextColor, TextDisableColor, TextGrayColor } from '@/constants/theme';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 

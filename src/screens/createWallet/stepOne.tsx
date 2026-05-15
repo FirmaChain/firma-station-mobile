@@ -1,4 +1,3 @@
-import React from 'react';
 import StepOne from '@/organisms/createWallet/stepOne';
 
 interface IProps {

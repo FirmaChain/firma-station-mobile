@@ -157,11 +157,12 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                 return <Fragment />;
             }
             switch (DAPP_MESSAGE_TYPE[type]) {
-                case BANK_SEND:
+                case BANK_SEND: {
                     const sendAmount = QRData.fctPrice;
                     return <RenderAmountInfo title={'Amount'} amount={sendAmount} />;
+                }
                 case STAKING_DELEGATE:
-                case STAKING_UNDELEGATE:
+                case STAKING_UNDELEGATE: {
                     const stakingAmount = QRData.amount;
                     getValidatorInfo(QRData.validatorAddress, 0);
                     return (
@@ -170,7 +171,8 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                             <RenderAmountInfo title={'Amount'} amount={stakingAmount} />
                         </Fragment>
                     );
-                case STAKING_REDELEGATE:
+                }
+                case STAKING_REDELEGATE: {
                     const _stakingAmount = QRData.amount;
                     getValidatorInfo(QRData.validatorSrcAddress, 0);
                     getValidatorInfo(QRData.validatorDstAddress, 1);
@@ -181,6 +183,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                             <RenderAmountInfo title={'Amount'} amount={_stakingAmount} />
                         </Fragment>
                     );
+                }
                 case STAKING_WITHDRAW:
                     getValidatorInfo(QRData.validatorAddress, 0);
                     getWithdrawInfo(QRData.validatorAddress);
@@ -193,7 +196,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                 case STAKING_WITHDRAW_ALL:
                     getWithdrawAllInfo();
                     return <RenderAmountInfo title={'Amount'} amount={stakingState === null ? 0 : stakingState.stakingReward} />;
-                case GOV_PROPOSAL:
+                case GOV_PROPOSAL: {
                     const proposalTitle = QRData.title;
                     const initialDepositFCT = QRData.initialDepositFCT;
                     return (
@@ -202,7 +205,8 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                             <RenderAmountInfo title={'Initial Deposit'} amount={initialDepositFCT} />
                         </Fragment>
                     );
-                case GOV_DEPOSIT:
+                }
+                case GOV_DEPOSIT: {
                     getProposalInfo(QRData.proposalId);
                     const proposalTitleDeposit = proposalState === null ? '' : proposalState.titleState.title;
                     const depositAmount = QRData.amount;
@@ -212,7 +216,8 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                             <RenderAmountInfo title={'Deposit'} amount={depositAmount} />
                         </Fragment>
                     );
-                case GOV_VOTE:
+                }
+                case GOV_VOTE: {
                     getProposalInfo(QRData.proposalId);
                     const proposalTitleVote = proposalState === null ? '' : proposalState.titleState.title;
                     const option = QRData.option;
@@ -223,9 +228,11 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                             <RenderDefaultInfo title={'Vote'} value={VOTE_TYPE[voteIndex]} />
                         </Fragment>
                     );
-                case AUTHZ_GRANT:
+                }
+                case AUTHZ_GRANT: {
                     const expirationDate = QRData.expirationDate;
                     return <RenderDefaultInfo title={'Expiry Date'} value={convertTime(expirationDate, false, false)} />;
+                }
                 default:
                     return <Fragment />;
             }

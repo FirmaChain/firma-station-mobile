@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { VALIDATOR_PROFILE } from '@/constants/images';
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from '@/constants/theme';
 import FastImage from '@d11/react-native-fast-image';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { IStakeInfo } from '@/hooks/staking/hooks';
 
@@ -13,7 +13,7 @@ interface IProps {
     initVal: string;
     data: Array<IStakeInfo>;
     myAddress: string;
-    onPressEvent: Function;
+    onPressEvent: (address: string) => void;
 }
 
 const ModalItemsForValidator = ({ title, initVal, data, myAddress, onPressEvent }: IProps) => {
@@ -22,7 +22,7 @@ const ModalItemsForValidator = ({ title, initVal, data, myAddress, onPressEvent 
 
     const handleSelect = (address: string) => {
         if (myAddress === address) return;
-        onPressEvent && onPressEvent(address);
+        onPressEvent(address);
         setSelected(address);
     };
 
@@ -115,9 +115,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: TextColor
-    },
-    icon: {
-        marginRight: 10
     },
     noticeBox: {
         width: '100%',

@@ -1,5 +1,5 @@
-import React from 'react';
-import { BoxColor, DividerColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { Fragment } from 'react';
+import { BoxColor, DividerColor, Lato, TextDarkGrayColor } from '@/constants/theme';
 import { getGMT } from '@/util/common';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { StyleSheet, Text, View } from 'react-native';
@@ -20,7 +20,7 @@ const RecentHistorySkeleton = () => {
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <View
                 style={[
                     styles.wrapperH,
@@ -55,41 +55,21 @@ const RecentHistorySkeleton = () => {
                     {skeleton()}
                 </View>
             </View>
-        </React.Fragment>
+        </Fragment>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        height: 'auto',
-        paddingHorizontal: 20,
-        marginBottom: 20
-    },
     historyWrapper: {
         flex: 1,
         justifyContent: 'space-between',
         alignItems: 'flex-start'
-    },
-    box: {
-        borderRadius: 8,
-        backgroundColor: BoxColor,
-        paddingHorizontal: 20,
-        paddingTop: 24,
-        paddingBottom: 30
     },
     wrapperH: {
         flexDirection: 'row'
     },
     wrapper: {
         paddingBottom: 20
-    },
-    contentItem: {
-        fontFamily: Lato,
-        fontSize: 14,
-        fontWeight: 'normal',
-        color: TextColor,
-        marginTop: 6,
-        paddingVertical: 5
     },
     contentTitle: {
         fontFamily: Lato,

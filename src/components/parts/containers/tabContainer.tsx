@@ -11,8 +11,8 @@ import NetworkBadge from '../networkBadge';
 
 interface IProps {
     title: string;
-    settingNavEvent: Function;
-    historyNavEvent: Function;
+    settingNavEvent: () => void;
+    historyNavEvent: () => void;
     handleGuide?: () => void;
     children: ReactNode;
 }

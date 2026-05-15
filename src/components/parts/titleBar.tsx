@@ -1,5 +1,4 @@
-import React from 'react';
-import { GrayColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, TextWarnColor } from '@/constants/theme';
+import { GrayColor, InputPlaceholderColor, Lato, TextColor } from '@/constants/theme';
 import { ScreenWidth } from '@/util/getScreenSize';
 import { Keyboard, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
 

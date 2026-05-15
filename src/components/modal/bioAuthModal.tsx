@@ -1,4 +1,3 @@
-import React from 'react';
 import { CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT } from '@/constants/common';
 import { Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
 import { confirmViaBioAuth } from '@/util/bioAuth';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { Keyboard, Pressable, StyleSheet } from 'react-native';
 
@@ -34,16 +33,6 @@ const styles = StyleSheet.create({
     contents: {
         flex: 2,
         paddingVertical: 20
-    },
-    wallet: {
-        paddingVertical: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#aaa'
-    },
-    buttonBox: {
-        flex: 1,
-        justifyContent: 'flex-end'
     }
 });
 

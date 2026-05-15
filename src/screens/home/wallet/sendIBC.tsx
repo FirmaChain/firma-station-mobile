@@ -1,4 +1,3 @@
-import React from 'react';
 import SendIBC from '@/organisms/wallet/sendIBC';
 import { IBCDataState } from '@/organisms/wallet/wallet';
 

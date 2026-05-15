@@ -1,4 +1,3 @@
-import React from 'react';
 import { DisableColor, Lato, TextButtonColor, TextColor } from '@/constants/theme';
 import { Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
@@ -7,15 +6,13 @@ interface IProps {
     bgColor?: string;
     active?: boolean;
     opacity?: boolean;
-    onPressEvent: Function;
+    onPressEvent: () => void;
 }
 
 const TextButton = ({ title, bgColor = TextButtonColor, active = true, opacity = true, onPressEvent }: IProps) => {
     const backgroundColor = active ? (bgColor ? bgColor : TextButtonColor) : DisableColor;
 
-    const handleOnPress = (value?: any) => {
-        onPressEvent && onPressEvent(value);
-    };
+    const handleOnPress = () => onPressEvent();
 
     return (
         <>

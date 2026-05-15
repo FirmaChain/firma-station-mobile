@@ -1,6 +1,5 @@
-import React from 'react';
 import { COPIED_CLIPBOARD, MNEMONIC_WARN_MESSAGE } from '@/constants/common';
-import { BgColor, BoxColor, Lato, TextColor, TextDisableColor, TextGrayColor } from '@/constants/theme';
+import { BgColor, BoxColor, Lato, TextColor, TextDisableColor } from '@/constants/theme';
 import { ScreenWidth } from '@/util/getScreenSize';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { StyleSheet, Text, View } from 'react-native';
@@ -63,12 +62,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
         paddingBottom: 15
-    },
-    copyText: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextGrayColor,
-        paddingHorizontal: 10
     },
     mnemonicContainer: {
         justifyContent: 'center',

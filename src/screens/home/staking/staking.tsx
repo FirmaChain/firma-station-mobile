@@ -1,8 +1,8 @@
-import React from 'react';
+import { memo } from 'react';
 import Staking from '@/organisms/staking/staking';
 
 const StakingScreen = () => {
     return <Staking />;
 };
 
-export default React.memo(StakingScreen);
+export default memo(StakingScreen);

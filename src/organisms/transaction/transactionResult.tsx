@@ -1,4 +1,3 @@
-import React from 'react';
 import { EXPLORER_URL } from '@/constants/common';
 import { BgColor, Lato, PointLightColor, TextAddressColor, TextColor, TextGrayColor, TextWarnColor } from '@/constants/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -82,16 +81,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
         paddingBottom: 20
-    },
-    noticeBox: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'flex-start'
-    },
-    warnText: {
-        fontSize: 14,
-        lineHeight: 20,
-        paddingLeft: 10
     }
 });
 

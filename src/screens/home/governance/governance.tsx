@@ -1,8 +1,8 @@
-import React from 'react';
+import { memo } from 'react';
 import Governance from '@/organisms/governance/governance';
 
 const GovernanceScreen = () => {
     return <Governance />;
 };
 
-export default React.memo(GovernanceScreen);
+export default memo(GovernanceScreen);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { FailedColor, Lato, TextColor } from '@/constants/theme';
 import { StyleSheet, Text, View } from 'react-native';
 

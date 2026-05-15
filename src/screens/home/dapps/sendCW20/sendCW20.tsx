@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import SendCW20 from '@/organisms/dapps/sendCW20';
 
 interface IProps {
@@ -16,4 +16,4 @@ const SendCW20Screen = (props: IProps) => {
     return <SendCW20 contract={contract} symbol={symbol} />;
 };
 
-export default React.memo(SendCW20Screen);
+export default memo(SendCW20Screen);

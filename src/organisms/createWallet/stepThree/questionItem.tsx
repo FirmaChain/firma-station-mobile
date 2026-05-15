@@ -1,4 +1,3 @@
-import React from 'react';
 import { InputBgColor, InputPlaceholderColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -6,7 +5,7 @@ interface IProps {
     title: string;
     value: string;
     focus: boolean;
-    onPressEvent: Function;
+    onPressEvent: () => void;
 }
 
 const QuestionItem = ({ title, value, focus, onPressEvent }: IProps) => {

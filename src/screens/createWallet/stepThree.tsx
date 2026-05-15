@@ -1,4 +1,3 @@
-import React from 'react';
 import StepThree from '@/organisms/createWallet/stepThree';
 
 interface IProps {

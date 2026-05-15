@@ -20,7 +20,7 @@ const Governance = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
-    const { dataLoadStatus, isNetworkChanged, connect } = useAppSelector((state) => state.common);
+    const { dataLoadStatus, isNetworkChanged, connect, appState } = useAppSelector((state) => state.common);
     const { contentVolume } = useAppSelector((state) => state.storage);
 
     const { governanceState, handleGovernanceListPolling } = useGovernanceList();
@@ -56,19 +56,21 @@ const Governance = () => {
         }
     }, [refreshStates]);
 
+    const isAppActive = appState === 'active';
+
     useInterval(
         () => {
             refreshStates();
         },
-        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        isAppActive && dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 
     useEffect(() => {
-        if (isFocused && isNetworkChanged === false) {
+        if (isFocused && isNetworkChanged === false && isAppActive) {
             refreshStates();
         }
-    }, [isFocused, isNetworkChanged, refreshStates]);
+    }, [isFocused, isNetworkChanged, isAppActive, refreshStates]);
 
     const listData = governanceState.list;
     const isListReady = proposalVolumes !== null;

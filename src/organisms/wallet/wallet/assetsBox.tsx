@@ -1,4 +1,3 @@
-import React from 'react';
 import { BoxColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 

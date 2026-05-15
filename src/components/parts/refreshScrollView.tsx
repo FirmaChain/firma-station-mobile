@@ -18,7 +18,7 @@ import {
 import { ScrollToTop } from '../icon/icon';
 
 interface IProps {
-    scrollEndFunc?: Function;
+    scrollEndFunc?: (evt: NativeSyntheticEvent<NativeScrollEvent>) => void;
     refreshFunc: () => void;
     background?: string;
     scrollToTop?: boolean;

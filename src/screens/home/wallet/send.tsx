@@ -1,4 +1,3 @@
-import React from 'react';
 import Send from '@/organisms/wallet/send';
 
 const SendScreen = () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import { EXPLORER_URL } from '@/constants/common';
 import { BoxColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { convertTime } from '@/util/common';
@@ -15,15 +15,12 @@ interface IProps {
 
 const HistoryList = ({ item, loading, handleExplorer }: IProps) => {
     return (
-        <React.Fragment>
+        <Fragment>
             {loading ? (
                 <View style={{ paddingHorizontal: 20, width: '100%', height: 102, marginBottom: 10 }}>
                     <RectangleSkeleton width={'100%'} height={'100%'} bgColor={BoxColor} />
                 </View>
             ) : (
-                // <View style={{ paddingHorizontal: 20, width: '100%', height: 102, marginBottom: 10 }}>
-                //     <RectangleSkeleton width={'100%'} height={'100%'} bgColor={BoxColor} />
-                // </View>
                 <TouchableOpacity
                     style={{ paddingHorizontal: 20 }}
                     onPress={() => handleExplorer(EXPLORER_URL() + '/transactions/' + item.hash)}
@@ -78,7 +75,7 @@ const HistoryList = ({ item, loading, handleExplorer }: IProps) => {
                     </View>
                 </TouchableOpacity>
             )}
-        </React.Fragment>
+        </Fragment>
     );
 };
 

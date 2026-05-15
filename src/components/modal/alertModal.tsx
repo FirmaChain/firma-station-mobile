@@ -1,11 +1,11 @@
 import React, { Fragment, ReactNode, useEffect } from 'react';
-import { BoxColor, FailedColor, Lato, PointColor, TextCatTitleColor, TextColor } from '@/constants/theme';
+import { AlertShadowColor, BlackColor, BoxColor, FailedColor, Lato, PointColor, TextCatTitleColor, TextColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
     visible: boolean;
-    handleOpen: Function;
+    handleOpen: (value: boolean) => void;
     title: string;
     desc: string;
     children?: ReactNode;
@@ -17,9 +17,7 @@ interface IProps {
 const AlertModal = ({ visible, handleOpen, title, desc, children = <Fragment />, confirmTitle, type, forcedActive = false }: IProps) => {
     const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
 
-    const closeModal = () => {
-        if (handleOpen) handleOpen(false);
-    };
+    const closeModal = () => handleOpen(false);
 
     useEffect(() => {
         if (forcedActive === false) {
@@ -75,14 +73,14 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         position: 'absolute',
-        backgroundColor: '#000',
+        backgroundColor: BlackColor,
         opacity: 0.5
     },
     modalBox: {
         width: 300,
         height: 'auto',
         maxHeight: 500,
-        shadowColor: '#171717',
+        shadowColor: AlertShadowColor,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
         shadowRadius: 5,

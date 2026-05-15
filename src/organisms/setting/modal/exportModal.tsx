@@ -1,4 +1,3 @@
-import React from 'react';
 import { COPIED_CLIPBOARD } from '@/constants/common';
 import { BgColor, BoxColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -67,10 +66,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: TextCatTitleColor
     },
-    desc: {
-        fontFamily: Lato,
-        fontSize: 14
-    },
     container: {
         borderRadius: 4,
         backgroundColor: BoxColor,
@@ -93,21 +88,12 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         backgroundColor: WhiteColor
     },
-    icon: {
-        position: 'absolute',
-        top: 10,
-        right: 10
-    },
     privatekey: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
         marginRight: 15,
         color: TextColor
-    },
-    IconWrapper: {
-        maxWidth: 40,
-        alignItems: 'flex-end'
     }
 });
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import Web from '@/organisms/web/web';
 
 interface IProps {
@@ -14,4 +14,4 @@ const WebScreen = (props: IProps) => {
     return <Web uri={uri} />;
 };
 
-export default React.memo(WebScreen);
+export default memo(WebScreen);

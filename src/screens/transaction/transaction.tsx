@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import Transaction from '@/organisms/transaction';
 
 interface IProps {
@@ -14,4 +14,4 @@ const TransactionScreen = (props: IProps) => {
     return <Transaction state={state} />;
 };
 
-export default React.memo(TransactionScreen);
+export default memo(TransactionScreen);

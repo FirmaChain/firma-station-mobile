@@ -1,4 +1,3 @@
-import React from 'react';
 import StepRecoverScreen from '@/screens/createWallet/stepRecover';
 import AssetsScreen from '@/screens/home/assets/assets';
 import CW721Screen from '@/screens/home/assets/cw721';

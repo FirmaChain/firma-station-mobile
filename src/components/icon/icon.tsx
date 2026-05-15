@@ -1,4 +1,3 @@
-import React from 'react';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';

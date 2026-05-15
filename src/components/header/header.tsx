@@ -1,5 +1,4 @@
-import React from 'react';
-import { BorderColor, BoxDarkColor, FailedColor, Lato, PointColor, TextColor } from '@/constants/theme';
+import { BorderColor, BoxDarkColor, Lato, PointColor, TextColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { ScreenWidth } from '@/util/getScreenSize';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -10,7 +9,7 @@ import NetworkBadge from '../parts/networkBadge';
 interface IProps {
     step: number;
     bgColor?: string;
-    onPressEvent: Function;
+    onPressEvent: () => void;
 }
 
 const Header = ({ step, bgColor = BoxDarkColor, onPressEvent }: IProps) => {
@@ -81,12 +80,6 @@ const styles = StyleSheet.create({
         width: 16,
         height: 0.5,
         backgroundColor: BorderColor
-    },
-    network: {
-        fontFamily: Lato,
-        fontSize: 14,
-        textAlign: 'right',
-        color: FailedColor
     }
 });
 

@@ -1,11 +1,10 @@
-import React from 'react';
 import { WhiteColor } from '@/constants/theme';
 import { TouchableOpacity } from 'react-native';
 
 import { BackArrow } from '../icon/icon';
 
 interface IProps {
-    onPressEvent: Function;
+    onPressEvent: () => void;
 }
 
 const ArrowButton = ({ onPressEvent }: IProps) => {

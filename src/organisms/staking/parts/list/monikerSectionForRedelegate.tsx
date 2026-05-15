@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { VALIDATOR_PROFILE } from '@/constants/images';
-import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor } from '@/constants/theme';
+import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { IRedelegationInfo } from '@/hooks/staking/hooks';
@@ -8,7 +8,7 @@ import { ForwardArrow, ForwardArrowWithTail } from '@/components/icon/icon';
 
 interface IProps {
     validators: IRedelegationInfo;
-    navigateValidator: Function;
+    navigateValidator: (address: string) => void;
 }
 
 const MonikerSectionForRedelegate = ({ validators, navigateValidator }: IProps) => {
@@ -63,15 +63,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between'
     },
-    vdWrapper: {
-        flex: 1,
-        alignItems: 'flex-start'
-    },
-    desc: {
-        fontFamily: Lato,
-        fontSize: 12,
-        color: TextDisableColor
-    },
     monikerWrapperH: {
         flex: 1,
         flexDirection: 'row',
@@ -95,9 +86,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
         color: TextColor
-    },
-    icon: {
-        marginRight: 10
     }
 });
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD, TRANSACTION_AUTH_TEXT, UNLOCK_AUTH_TEXT } from '@/constants/common';
 import { BgColor, DisableColor, Lato, PointColor, TextCatTitleColor, WhiteColor } from '@/constants/theme';
-// import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { useAppSelector } from '@/redux/hooks';
 import { easeInAndOutAnim, LayoutAnim } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
@@ -23,12 +22,12 @@ import CustomModal from './customModal';
 interface IProps {
     type: string;
     open: boolean;
-    setOpenModal: Function;
+    setOpenModal: (value: boolean) => void;
     validationHandler: (password: string) => void;
     handleShow?: () => void;
 }
 
-const ValidationModal = ({ type, open, setOpenModal, validationHandler, handleShow }: IProps) => {
+const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps) => {
     const { name: walletName } = useAppSelector((state) => state.wallet);
     const { appState, isBioAuthInProgress } = useAppSelector((state) => state.common);
 
@@ -213,7 +212,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler, handleSh
             fade={true}
             bgColor={BgColor}
             lockBackButton={backbuttonLock}
-            keyboardAvoiing={false}
+            keyboardAvoiding={false}
             handleOpen={handleModal}
         >
             <Pressable

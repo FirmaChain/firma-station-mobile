@@ -1,4 +1,3 @@
-import React from 'react';
 import ExportWallet from '@/organisms/setting/exportWallet';
 
 interface IProps {

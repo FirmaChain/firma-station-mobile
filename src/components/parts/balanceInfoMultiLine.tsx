@@ -1,4 +1,3 @@
-import React from 'react';
 import { CHAIN_SYMBOL } from '@/constants/common';
 import { BorderColor, Lato, TextCatTitleColor, TextColor } from '@/constants/theme';
 import { convertAmount } from '@/util/common';

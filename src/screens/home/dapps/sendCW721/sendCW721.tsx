@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import SendCW721 from '@/organisms/dapps/sendCW721';
 
 interface IProps {
@@ -18,4 +18,4 @@ const SendCW721Screen = (props: IProps) => {
     return <SendCW721 contract={contract} imageURL={imageURL} nftName={nftName} tokenId={tokenId} />;
 };
 
-export default React.memo(SendCW721Screen);
+export default memo(SendCW721Screen);

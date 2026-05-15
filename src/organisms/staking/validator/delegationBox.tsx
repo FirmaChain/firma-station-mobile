@@ -18,7 +18,7 @@ interface IProps {
     validatorAddress: string;
     stakingState: IStakingState | null;
     delegations: number;
-    handleDelegate: Function;
+    handleDelegate: (type: string) => void;
     transactionHandler: (password: string, gas: number) => void;
 }
 

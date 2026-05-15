@@ -1,6 +1,5 @@
-import React from 'react';
 import { Lato, TextDisableColor } from '@/constants/theme';
-import { StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     title: string;
@@ -15,13 +14,15 @@ const DataSection = ({ title, data, color = TextDisableColor, label = false }: I
             <Text style={[styles.descTitle, { paddingTop: label ? 3 : 0 }]}>{title}</Text>
 
             <View
-                style={label && {
+                style={
+                    label && {
                         flexShrink: 1,
                         backgroundColor: color + '30',
                         borderRadius: 10,
                         paddingHorizontal: 10,
                         paddingVertical: 3
-                    }}
+                    }
+                }
             >
                 <Text
                     style={[

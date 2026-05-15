@@ -1,4 +1,3 @@
-import React from 'react';
 import { BoxColor, DividerColor } from '@/constants/theme';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { StyleSheet, View } from 'react-native';

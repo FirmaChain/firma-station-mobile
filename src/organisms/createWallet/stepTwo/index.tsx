@@ -1,4 +1,3 @@
-import React from 'react';
 import { GUIDE_URI } from '@/../config';
 import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';

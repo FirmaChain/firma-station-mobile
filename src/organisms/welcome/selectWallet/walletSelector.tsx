@@ -5,7 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DownArrow } from '@/components/icon/icon';
 
 interface IProps {
-    handleOpenModal: Function;
+    handleOpenModal: (value: boolean) => void;
     selectedWallet: string;
 }
 

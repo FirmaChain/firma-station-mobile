@@ -1,4 +1,3 @@
-import React from 'react';
 import { TextCatTitleColor } from '@/constants/theme';
 import { View } from 'react-native';
 

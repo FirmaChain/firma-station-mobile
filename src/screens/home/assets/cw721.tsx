@@ -1,4 +1,3 @@
-import React from 'react';
 import CW721 from '@/organisms/wallet/cw721';
 
 interface IProps {

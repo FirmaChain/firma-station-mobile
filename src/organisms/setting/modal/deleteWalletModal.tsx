@@ -12,16 +12,14 @@ import CustomModal from '@/components/modal/customModal';
 interface IProps {
     walletName: string;
     open: boolean;
-    setOpenModal: Function;
-    deleteWallet: Function;
+    setOpenModal: (value: boolean) => void;
+    deleteWallet: () => void;
 }
 
 const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IProps) => {
-    const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
 
     const handleInputChange = async (val: string) => {
-        setPassword(val);
         if (val.length >= 10) {
             const nameCheck = await WalletNameValidationCheck(walletName);
             if (nameCheck) {
@@ -43,31 +41,22 @@ const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IPr
     };
 
     const handleDeleteWallet = () => {
-        if (active === false) return;
-        deleteWallet && deleteWallet();
-    };
-
-    const handleDelModal = (open: boolean) => {
-        setOpenModal && setOpenModal(open);
+        if (active) deleteWallet();
     };
 
     useEffect(() => {
         if (open === false) {
-            setPassword('');
             setActive(false);
         }
     }, [open]);
 
     return (
-        <CustomModal visible={open} handleOpen={handleDelModal}>
+        <CustomModal visible={open} handleOpen={(v) => setOpenModal(v)}>
             <View style={styles.modalTextContents}>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.title}>{SETTING_DELETE_WALLET_TEXT.title}</Text>
                 </View>
                 <Text style={styles.desc}>{SETTING_DELETE_WALLET_TEXT.desc}</Text>
-                {/* <View style={{paddingVertical: 20}}>
-                        <WarnContainer text={SETTING_DELETE_WALLET_TEXT.desc} bgColor={BgColor}/>
-                    </View> */}
                 <View style={{ paddingBottom: 15 }}>
                     <InputSetVertical
                         title={'Password'}

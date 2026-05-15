@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { BgColor, DisableButtonColor, FailedColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
+import React, { useMemo } from 'react';
+import { BgColor, DisableButtonColor, Lato, PointColor, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
     title: string;
-    onPressEvent: Function;
+    onPressEvent: () => void;
     size?: number;
     height?: number;
     color?: string;
@@ -25,11 +25,8 @@ const SmallButton = ({
     disableColor = DisableButtonColor,
     disableTextColor = TextDarkGrayColor
 }: IProps) => {
-    const [buttonHeight, setButtonHeight] = useState(height);
-
-    const handleOnPress = (value?: any) => {
-        if (active === false) return;
-        onPressEvent && onPressEvent(value);
+    const handleOnPress = () => {
+        if (active) onPressEvent();
     };
 
     const buttonColor = useMemo(() => {
@@ -54,11 +51,6 @@ const SmallButton = ({
         }
     }, [active, active, border, color]);
 
-    useEffect(() => {
-        if (height === 0) return setButtonHeight(0);
-        return setButtonHeight(height);
-    }, [height]);
-
     return (
         <View>
             <TouchableOpacity
@@ -67,7 +59,7 @@ const SmallButton = ({
                     styles.button,
                     {
                         width: size,
-                        height: buttonHeight,
+                        height,
                         borderWidth: border && active ? 1 : 0,
                         borderColor: WhiteColor,
                         backgroundColor: buttonColor.background

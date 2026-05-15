@@ -31,7 +31,7 @@ const Proposal = ({ proposalId }: IProps) => {
     const isFocused = useIsFocused();
 
     const { address: walletAddress } = useAppSelector((state) => state.wallet);
-    const { dataLoadStatus } = useAppSelector((state) => state.common);
+    const { dataLoadStatus, appState } = useAppSelector((state) => state.common);
 
     const { proposalState, handleProposalPolling } = useProposalData();
 
@@ -81,19 +81,21 @@ const Proposal = ({ proposalId }: IProps) => {
         }
     };
 
+    const isAppActive = appState === 'active';
+
     useInterval(
         () => {
             refreshStates();
         },
-        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
+        isAppActive && dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
         true
     );
 
     useEffect(() => {
-        if (isFocused) {
+        if (isFocused && isAppActive) {
             refreshStates();
         }
-    }, [isFocused]);
+    }, [isFocused, isAppActive]);
 
     return (
         <Container title="Proposal" handleGuide={handleMoveToWeb} backEvent={handleBack}>

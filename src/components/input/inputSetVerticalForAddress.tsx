@@ -32,7 +32,7 @@ interface IProps {
     resetValues?: boolean;
     enableFavorite?: boolean;
     enableQrScanner?: boolean;
-    onChangeEvent: Function;
+    onChangeEvent: (value: string) => void;
     type?: SendType;
 }
 
@@ -198,20 +198,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 8
     },
-    messageContainer: {
-        height: 17,
-        alignItems: 'flex-end'
-    },
     text: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 16,
         color: TextCatTitleColor
-    },
-    message: {
-        fontSize: 14,
-        fontFamily: Lato,
-        textAlign: 'right'
     },
     input: {
         color: TextColor,
@@ -222,27 +213,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
-    },
-    modalTextContents: {
-        width: '100%',
-        paddingBottom: 40
-    },
-    title: {
-        fontFamily: Lato,
-        fontSize: 20,
-        color: TextCatTitleColor,
-        marginBottom: 15
-    },
-    desc: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextColor
-    },
-    QRWrapper: {
-        padding: 20,
-        width: '100%',
-        height: 350,
-        alignItems: 'center'
     },
     noticeText: {
         fontFamily: Lato,

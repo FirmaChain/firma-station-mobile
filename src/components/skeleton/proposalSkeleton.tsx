@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import { BoxColor, DividerColor } from '@/constants/theme';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { StyleSheet } from 'react-native';
@@ -10,7 +10,7 @@ interface IProps {
 const ProposalSkeleton = ({ volumes }: IProps) => {
     const skeleton = Array.from({ length: volumes });
     return (
-        <React.Fragment>
+        <Fragment>
             {skeleton.map((item, index) => {
                 return (
                     <ContentLoader
@@ -25,7 +25,7 @@ const ProposalSkeleton = ({ volumes }: IProps) => {
                     </ContentLoader>
                 );
             })}
-        </React.Fragment>
+        </Fragment>
     );
 };
 

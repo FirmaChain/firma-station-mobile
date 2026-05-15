@@ -1,4 +1,3 @@
-import React from 'react';
 import NFT from '@/organisms/dapps/nft';
 
 import { INFTProps } from '@/hooks/dapps/hooks';

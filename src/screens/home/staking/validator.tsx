@@ -1,4 +1,3 @@
-import React from 'react';
 import Validator from '@/organisms/staking/validator';
 
 interface IProps {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { CHAIN_SYMBOL } from '@/constants/common';
 import { AddressTextColor, Lato, TextDarkGrayColor } from '@/constants/theme';
 import { convertCurrent } from '@/util/common';

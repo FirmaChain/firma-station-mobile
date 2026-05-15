@@ -1,6 +1,5 @@
-import React from 'react';
 import { Lato, TextDisableColor } from '@/constants/theme';
-import { StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
     title: string;
