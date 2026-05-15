@@ -134,7 +134,7 @@ const SelectWallet = () => {
             WalletActions.handleWalletAddress(adr);
 
             await setBioAuth(selectedWallet, password);
-            navigation.reset({ routes: [{ name: Screens.Home }] });
+            navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
         } catch (error) {
             console.log(error);
             Toast.show({

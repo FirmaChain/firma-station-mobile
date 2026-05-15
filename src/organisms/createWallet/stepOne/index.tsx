@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GUIDE_URI } from '@/../config';
 import { CREATE_WALLET_FAILED } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { wait } from '@/util/common';
+import { wait, waitForNextFrame } from '@/util/common';
 import { createNewWallet, getAddressFromRecoverValue, IWallet } from '@/util/firma';
 import { setPasswordViaBioAuth, setRecoverType, setUseBioAuth, setWalletWithBioAuth } from '@/util/wallet';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -39,6 +39,12 @@ const StepOne = ({ recoverValue = null }: IProps) => {
 
     const [inProgress, setInProgress] = useState(false);
 
+    useFocusEffect(
+        useCallback(() => {
+            setInProgress(false);
+        }, [])
+    );
+
     const handleWalletInfo = (name: string, _password: string, _validation: boolean) => {
         setWalletName(name);
         setPassword(_password);
@@ -55,10 +61,12 @@ const StepOne = ({ recoverValue = null }: IProps) => {
         setInProgress(true);
 
         const loadingRequestId = CommonActions.beginLoadingProgress();
+        await waitForNextFrame();
         try {
             const result = await createNewWallet();
             if (result === undefined) {
                 CommonActions.endLoadingProgress(loadingRequestId);
+                setInProgress(false);
                 return Toast.show({
                     type: 'error',
                     text1: CREATE_WALLET_FAILED
