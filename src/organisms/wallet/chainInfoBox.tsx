@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { TextColor } from '@/constants/theme';
 import { makeDecimalPoint } from '@/util/common';
 import { StyleSheet, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+
+import { TrendingDownIcon, TrendingUpIcon } from '@/components/icon/icon';
 
 interface IProps {
     chainInfo: any;
@@ -35,7 +36,8 @@ const ChainInfoBox = ({ chainInfo }: IProps) => {
             <View style={styles.box}>
                 <Text style={styles.desc}>(coingecko)</Text>
                 <View style={styles.box}>
-                    <Icon name={isMinus ? 'trending-down' : 'trending-up'} color={isMinus ? 'tomato' : 'forestgreen'} size={15} />
+                    {/* <Icon name={isMinus ? 'trending-down' : 'trending-up'} color={isMinus ? 'tomato' : 'forestgreen'} size={15} /> */}
+                    {isMinus ? <TrendingDownIcon size={15} color="tomato" /> : <TrendingUpIcon size={15} color="forestgreen" />}
                     <Text style={[styles.changePercentage, { color: isMinus ? 'tomato' : 'forestgreen' }]}>{priceChangePercentage}</Text>
                 </View>
             </View>

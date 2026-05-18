@@ -19,11 +19,25 @@ import IosCloseLineIcon from '@/assets/icons/ionIcons/iosCloseLine.svg';
 import IosFingerPrintIcon from '@/assets/icons/ionIcons/iosFingerPrint.svg';
 import IosRemoveCircleLineIcon from '@/assets/icons/ionIcons/iosRemoveCircleLineIcon.svg';
 import IosSquareIcon from '@/assets/icons/ionIcons/iosSquare.svg';
+import _TrendingDownIcon from '@/assets/icons/ionIcons/trendingDownIcon.svg';
+import _TrendingUpIcon from '@/assets/icons/ionIcons/trendingUpIcon.svg';
 import WalletLineIcon from '@/assets/icons/ionIcons/walletLineIcon.svg';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Octicons from 'react-native-vector-icons/Octicons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import ArrowBackIosIcon from '@/assets/icons/material/arrowBackIos.svg';
+import ArrorForwardIosIcon from '@/assets/icons/material/arrowForwardIos.svg';
+import _QRCodeIcon from '@/assets/icons/material/qrCode.svg';
+import _QRCodeScannerIcon from '@/assets/icons/material/qrCodeScanner.svg';
+import _RefreshIcon from '@/assets/icons/material/refresh.svg';
+import _VerifiedIcon from '@/assets/icons/material/verified.svg';
+import CardAccountDetailsStarLine from '@/assets/icons/materialCommunity/cardAccountDetailsStarLine.svg';
+import ContentCopy from '@/assets/icons/materialCommunity/contentCopy.svg';
+import ContentPaste from '@/assets/icons/materialCommunity/contentPaste.svg';
+import _MenuIcon from '@/assets/icons/materialCommunity/menu.svg';
+import RadioboxEmptyIcon from '@/assets/icons/materialCommunity/radioboxEmpty.svg';
+import RadioboxMarkedIcon from '@/assets/icons/materialCommunity/radioboxMarked.svg';
+import CheckCircleFillIcon from '@/assets/icons/octIcons/checkCircleFill.svg';
+import SortAscIcon from '@/assets/icons/octIcons/sortAsc.svg';
+import SortDescIcon from '@/assets/icons/octIcons/sortDesc.svg';
+import _LockIcon from '@/assets/icons/simpleLine/lock.svg';
 
 interface IProps {
     size: number;
@@ -36,31 +50,27 @@ export const Close = ({ size, color }: IProps) => {
 };
 
 export const QRCodeIcon = ({ size, color }: IProps) => {
-    return <MaterialIcons name="qr-code" size={size} color={color} />;
+    return <_QRCodeIcon width={size} height={size} color={color} />;
 };
 
 export const QRCodeScannerIcon = ({ size, color }: IProps) => {
-    return <MaterialIcons name="qr-code-scanner" size={size} color={color} />;
+    return <_QRCodeScannerIcon width={size} height={size} color={color} />;
 };
 
 export const Copy = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="content-copy" size={size} color={color} />;
+    return <ContentCopy width={size} height={size} color={color} />;
 };
 
 export const Paste = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="content-paste" size={size} color={color} />;
+    return <ContentPaste width={size} height={size} color={color} />;
 };
 
 export const Setting = ({ size, color }: IProps) => {
     return <SettingsIcon width={size} height={size} color={color} />;
 };
 
-export const TopRightArrow = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="arrow-top-right" size={size} color={color} />;
-};
-
 export const BackArrow = ({ size, color }: IProps) => {
-    return <MaterialIcons name="arrow-back-ios" size={size} color={color} />;
+    return <ArrowBackIosIcon width={size} height={size} color={color} />;
 };
 
 export const ForwardArrowWithTail = ({ size, color }: IProps) => {
@@ -68,7 +78,7 @@ export const ForwardArrowWithTail = ({ size, color }: IProps) => {
 };
 
 export const ForwardArrow = ({ size, color }: IProps) => {
-    return <MaterialIcons name="arrow-forward-ios" size={size} color={color} />;
+    return <ArrorForwardIosIcon width={size} height={size} color={color} />;
 };
 
 export const DownArrow = ({ size, color }: IProps) => {
@@ -87,11 +97,15 @@ export const DownEmptyArrow = ({ size, color }: IProps) => {
 };
 
 export const RefreshIcon = ({ size, color }: IProps) => {
-    return <MaterialIcons name="refresh" size={size} color={color} />;
+    return <_RefreshIcon width={size} height={size} color={color} />;
 };
 
 export const Radio = ({ size, color, active }: IProps) => {
-    return <MaterialCommunityIcons name={active ? 'radiobox-marked' : 'radiobox-blank'} size={size} color={color} />;
+    return active ? (
+        <RadioboxMarkedIcon width={size} height={size} color={color} />
+    ) : (
+        <RadioboxEmptyIcon width={size} height={size} color={color} />
+    );
 };
 
 export const ExclamationCircle = ({ size, color }: IProps) => {
@@ -111,11 +125,11 @@ export const SuccessCircle = ({ size, color }: IProps) => {
 };
 
 export const VerifiedCircle = ({ size, color }: IProps) => {
-    return <MaterialIcons name="verified" size={size} color={color} />;
+    return <_VerifiedIcon width={size} height={size} color={color} />;
 };
 
 export const VoteCircle = ({ size, color }: IProps) => {
-    return <Octicons name="check-circle-fill" size={size} color={color} />;
+    return <CheckCircleFillIcon width={size} height={size} color={color} />;
 };
 
 export const SuccessFilledCircle = ({ size, color }: IProps) => {
@@ -131,31 +145,19 @@ export const FailFilledCircle = ({ size, color }: IProps) => {
 };
 
 export const SortASC = ({ size, color }: IProps) => {
-    return <Octicons name="sort-asc" size={size} color={color} />;
+    return <SortAscIcon width={size} height={size} color={color} />;
 };
 
 export const SortDESC = ({ size, color }: IProps) => {
-    return <Octicons name="sort-desc" size={size} color={color} />;
+    return <SortDescIcon width={size} height={size} color={color} />;
 };
 
 export const FingerPrint = ({ size, color }: IProps) => {
     return <IosFingerPrintIcon width={size} height={size} color={color} />;
 };
 
-export const ExternalLink = ({ size, color }: IProps) => {
-    return <Octicons name="link-external" size={size} color={color} />;
-};
-
-export const ListEdit = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="playlist-edit" size={size} color={color} />;
-};
-
-export const ListEditDone = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="playlist-check" size={size} color={color} />;
-};
-
 export const MenuIcon = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="menu" size={size} color={color} />;
+    return <_MenuIcon width={size} height={size} color={color} />;
 };
 
 export const ScrollToTop = ({ size, color }: IProps) => {
@@ -167,7 +169,7 @@ export const SendIcon = ({ size, color }: IProps) => {
 };
 
 export const LockIcon = ({ size, color }: IProps) => {
-    return <SimpleLineIcons name="lock" size={size} color={color} />;
+    return <_LockIcon width={size} height={size} color={color} />;
 };
 
 export const URLLockIcon = ({ size, color }: IProps) => {
@@ -183,11 +185,7 @@ export const StarIcon = ({ size, color }: IProps) => {
 };
 
 export const FavoriteIcon = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="card-account-details-star-outline" size={size} color={color} />;
-};
-
-export const BookmarkPlusIcon = ({ size, color }: IProps) => {
-    return <MaterialCommunityIcons name="bookmark-plus-outline" size={size} color={color} />;
+    return <CardAccountDetailsStarLine width={size} height={size} color={color} />;
 };
 
 export const RemoveIcon = ({ size, color }: IProps) => {
@@ -204,4 +202,12 @@ export const InboxIcon = ({ size, color }: IProps) => {
 
 export const AppstoreIcon = ({ size, color }: IProps) => {
     return <AppstoreFillIcon width={size} height={size} color={color} />;
+};
+
+export const TrendingDownIcon = ({ size, color }: IProps) => {
+    return <_TrendingDownIcon width={size} height={size} color={color} />;
+};
+
+export const TrendingUpIcon = ({ size, color }: IProps) => {
+    return <_TrendingUpIcon width={size} height={size} color={color} />;
 };

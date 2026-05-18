@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { ARROW_DISABLE, ARROW_ENABLE, FIRMA_LOGO } from '@/constants/images';
 import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor, TextWarnColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import WalletIcon from 'react-native-vector-icons/Ionicons';
+
+import { WalletIcon } from '@/components/icon/icon';
 
 interface IProps {
     title: string;
@@ -33,7 +34,7 @@ const Description = ({ title, desc }: IProps) => {
             <View>
                 <Text style={styles.title}>{title}</Text>
                 <View style={styles.box}>
-                    <WalletIcon name={'ios-wallet-outline'} size={50} color={GrayColor} />
+                    <WalletIcon size={50} color={GrayColor} />
                     <View style={styles.arrowBox}>
                         <Image style={styles.arrow} source={arrowIndex === 0 ? ARROW_ENABLE : ARROW_DISABLE} />
                         <Image style={styles.arrow} source={arrowIndex === 1 ? ARROW_ENABLE : ARROW_DISABLE} />
