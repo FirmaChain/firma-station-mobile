@@ -8,7 +8,15 @@ import { useAppSelector } from '@/redux/hooks';
 import { waitForNextFrame } from '@/util/common';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import { PasswordCheck } from '@/util/validationCheck';
-import { getWalletList, setBioAuth, setEncryptPassword, setWalletList, setWalletWithAutoLogin } from '@/util/wallet';
+import {
+    getRecoverValueWithMeta,
+    migrateRecoverValueToV2,
+    getWalletList,
+    setBioAuth,
+    setEncryptPassword,
+    setWalletList,
+    setWalletWithAutoLogin
+} from '@/util/wallet';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
@@ -40,7 +48,6 @@ const SelectWallet = () => {
 
     const [pwValidation, setPwValidation] = useState(false);
     const [password, setPassword] = useState('');
-    const [mnemonic, setMnemonic] = useState('');
 
     const passwordText = {
         title: 'Password',
@@ -79,7 +86,6 @@ const SelectWallet = () => {
         if (items !== null) {
             if (selected >= 0 && selectedWallet !== items[selected]) {
                 setSelectedWallet(items[selected]);
-                setMnemonic('');
                 setResetValues(false);
             }
         }
@@ -101,7 +107,6 @@ const SelectWallet = () => {
             const result = await PasswordCheck(selectedWallet, value);
             if (result) {
                 setPwValidation(true);
-                setMnemonic(result);
             } else {
                 setPwValidation(false);
             }
@@ -117,8 +122,13 @@ const SelectWallet = () => {
         const loadingRequestId = CommonActions.beginLoadingProgress();
         await waitForNextFrame();
         try {
+            const { recoverValue, needsMigration } = await getRecoverValueWithMeta(selectedWallet, password);
+            if (recoverValue === null) {
+                throw new Error('Failed to decrypt wallet data.');
+            }
+
             let adr = '';
-            const result = await getAddressFromRecoverValue(mnemonic);
+            const result = await getAddressFromRecoverValue(recoverValue);
             if (result !== undefined) adr = result;
 
             await setWalletWithAutoLogin(
@@ -134,6 +144,18 @@ const SelectWallet = () => {
             WalletActions.handleWalletAddress(adr);
 
             await setBioAuth(selectedWallet, password);
+
+            if (needsMigration) {
+                try {
+                    await migrateRecoverValueToV2(selectedWallet, password, recoverValue);
+                } catch (error) {
+                    console.log(error);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Wallet encryption migration failed. Please try logging in again.'
+                    });
+                }
+            }
             navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
         } catch (error) {
             console.log(error);

@@ -11,8 +11,10 @@ import { removeAllData } from '@/util/detect';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import {
     getPasswordViaBioAuth,
+    getRecoverValueWithMeta,
     getUseBioAuth,
     getWalletWithAutoLogin,
+    migrateRecoverValueToV2,
     removeWalletWithAutoLogin,
     setBioAuth,
     setEncryptPassword,
@@ -50,7 +52,7 @@ const LoginCheck = () => {
     const [loading, setLoading] = useState(true); // Get wallet information
     const [isLoginProgress, setIsLoginProgress] = useState(false); // Login progress
 
-    const handleLogin = async (recoverValue: string, name: string, password: string) => {
+    const handleLogin = async (_recoverValue: string, name: string, password: string) => {
         if (isLoginProgress === true) return;
         setIsLoginProgress(true);
         await waitForNextFrame();
@@ -58,7 +60,12 @@ const LoginCheck = () => {
         let loadingRequestId: string | null = null;
 
         try {
-            const adr = await getAddressFromRecoverValue(recoverValue);
+            const { recoverValue: resolvedRecoverValue, needsMigration } = await getRecoverValueWithMeta(name, password);
+            if (resolvedRecoverValue === null) {
+                throw new Error('Failed to decrypt wallet data.');
+            }
+
+            const adr = await getAddressFromRecoverValue(resolvedRecoverValue);
             if (adr) {
                 await setWalletWithAutoLogin(
                     JSON.stringify({
@@ -73,6 +80,19 @@ const LoginCheck = () => {
                 WalletActions.handleWalletAddress(adr);
 
                 await setBioAuth(name, password);
+
+                if (needsMigration) {
+                    try {
+                        await migrateRecoverValueToV2(name, password, resolvedRecoverValue);
+                    } catch (error) {
+                        console.log(error);
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Wallet encryption migration failed. Please try logging in again.'
+                        });
+                    }
+                }
+
                 loadingRequestId = CommonActions.beginLoadingProgress();
                 navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
             }
@@ -109,6 +129,23 @@ const LoginCheck = () => {
 
             const result = passwordFromBio;
             if (result !== '') {
+                const { recoverValue, needsMigration } = await getRecoverValueWithMeta(walletName, result);
+                if (recoverValue === null) {
+                    throw new Error('Failed to decrypt wallet data.');
+                }
+
+                if (needsMigration) {
+                    try {
+                        await migrateRecoverValueToV2(walletName, result, recoverValue);
+                    } catch (error) {
+                        console.log(error);
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Wallet encryption migration failed. Please try logging in again.'
+                        });
+                    }
+                }
+
                 isProcessing = false;
                 loadingRequestId = CommonActions.beginLoadingProgress();
                 navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
@@ -119,6 +156,7 @@ const LoginCheck = () => {
                 type: 'error',
                 text1: String(error)
             });
+            isProcessing = false;
         }
     };
 

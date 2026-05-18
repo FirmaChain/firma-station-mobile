@@ -1,79 +1,35 @@
-import CryptoJS from 'crypto-js';
+import { decryptLegacy, encryptLegacy, getRandomKey, keyEncrypt } from './keystoreLegacy';
+import { decryptV2, encryptV2, isV2EncryptedEnvelope } from './keystoreV2';
 
-const keySize = 256;
-const iterations = 100;
-
-export const getRandomKey = () => {
-    return Math.floor(new Date().valueOf() * Math.random())
-        .toString()
-        .padStart(40, Math.random().toString(36).substring(2, 13));
-};
-
-export const keyEncrypt = (name: string, password: string): string => {
-    try {
-        const key = CryptoJS.enc.Utf8.parse(password);
-        const iv = CryptoJS.enc.Utf8.parse(name);
-
-        const encObj = CryptoJS.AES.encrypt('key', key, { iv: iv });
-
-        return encObj.toString();
-    } catch (error) {
-        console.log(error);
-        return '';
-    }
-};
+export { decryptLegacy, decryptV2, encryptLegacy, encryptV2, getRandomKey, isV2EncryptedEnvelope, keyEncrypt };
 
 export const encrypt = (originalMessage: string, pass: string): string => {
-    try {
-        const salt = CryptoJS.lib.WordArray.random(128 / 8);
-        const key = CryptoJS.PBKDF2(pass, salt, {
-            keySize: keySize / 32,
-            iterations: iterations
-        });
-
-        const iv = CryptoJS.lib.WordArray.random(128 / 8);
-
-        const encrypted = CryptoJS.AES.encrypt(originalMessage, key, {
-            iv: iv,
-            padding: CryptoJS.pad.Pkcs7,
-            mode: CryptoJS.mode.CBC
-        });
-
-        return salt.toString() + iv.toString() + encrypted.toString();
-    } catch (error) {
-        console.log(error);
-        return '';
-    }
+    // maybeLogEncryptionPerformance(originalMessage, pass);
+    return encryptV2(originalMessage, pass);
 };
 
 export const decrypt = (encryptedMessage: string, pass: string): any => {
-    try {
-        if (encryptedMessage.length < 64) {
-            throw new Error('Invalid encrypted message length.');
-        }
-
-        const salt = CryptoJS.enc.Hex.parse(encryptedMessage.substring(0, 32));
-        const iv = CryptoJS.enc.Hex.parse(encryptedMessage.substring(32, 64));
-        const encrypted = encryptedMessage.substring(64);
-
-        const key = CryptoJS.PBKDF2(pass, salt, {
-            keySize: keySize / 32,
-            iterations: iterations
-        });
-
-        const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
-            iv: iv,
-            padding: CryptoJS.pad.Pkcs7,
-            mode: CryptoJS.mode.CBC
-        }).toString(CryptoJS.enc.Utf8);
-
-        if (!decrypted) {
-            throw new Error('Decryption failed.');
-        }
-
-        return decrypted;
-    } catch (error) {
-        console.log(error);
-        return '';
+    if (isV2EncryptedEnvelope(encryptedMessage)) {
+        return decryptV2(encryptedMessage, pass);
     }
+    return decryptLegacy(encryptedMessage, pass);
 };
+
+//? Benchmark Encryption Performance
+// const maybeLogEncryptionPerformance = (message: string, pass: string) => {
+//     try {
+//         const legacyStart = Date.now();
+//         const legacyResult = encryptLegacy(message, pass);
+//         const legacyMs = Date.now() - legacyStart;
+
+//         const v2Start = Date.now();
+//         const v2Result = encryptV2(message, pass);
+//         const v2Ms = Date.now() - v2Start;
+
+//         console.log(
+//             `[keystore] encrypt benchmark legacy=${legacyMs}ms v2=${v2Ms}ms legacy_ok=${legacyResult !== ''} v2_ok=${v2Result !== ''}`
+//         );
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };

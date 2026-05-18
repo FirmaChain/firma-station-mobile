@@ -6,10 +6,17 @@ import { getUniqueIdSync } from 'react-native-device-info';
 
 import { checkBioMetrics } from './bioAuth';
 import { getAddressFromRecoverValue, mnemonicCheck } from './firma';
-import { decrypt, encrypt, keyEncrypt } from './keystore';
+import { decrypt, decryptLegacy, decryptV2, encrypt, encryptV2, isV2EncryptedEnvelope, keyEncrypt } from './keystore';
 import { getChain, removeChain, setChain } from './secureKeyChain';
 
 const UNIQUE_ID = getUniqueIdSync(); // Device identifierForVendor (IDFV)
+
+interface IRecoverValueWithMeta {
+    recoverValue: string | null;
+    needsMigration: boolean;
+}
+
+const getWalletMigrationKey = (walletName: string) => `${walletName}__migrate_v2`;
 
 const setWalletListArray = (list: string) => {
     const arr = list.split('/');
@@ -22,10 +29,9 @@ const setWalletListArray = (list: string) => {
 
 export const getWalletList = async () => {
     try {
-        let walletList;
         const result = await getChain(WALLET_LIST);
         if (result === false) return null;
-        walletList = setWalletListArray(result.password);
+        const walletList = setWalletListArray(result.password);
 
         return walletList;
     } catch (error) {
@@ -85,23 +91,73 @@ export const removeWallet = async (name: string) => {
 };
 
 export const getRecoverValue = async (walletName: string, password: string) => {
+    const result = await getRecoverValueWithMeta(walletName, password);
+    return result.recoverValue;
+};
+
+export const getRecoverValueWithMeta = async (walletName: string, password: string): Promise<IRecoverValueWithMeta> => {
     let recoverValue = null;
+    let needsMigration = false;
     const key: string = keyEncrypt(walletName, password);
 
     try {
         const result = await getChain(walletName);
 
         if (result) {
-            const w = decrypt(result.password, key.toString());
-            if (w !== '') {
-                recoverValue = w;
+            if (isV2EncryptedEnvelope(result.password)) {
+                const v2 = decryptV2(result.password, key.toString());
+                if (v2 !== '') {
+                    return { recoverValue: v2, needsMigration: false };
+                }
+            }
+
+            const legacy = decryptLegacy(result.password, key.toString());
+            if (legacy !== '') {
+                recoverValue = legacy;
+                needsMigration = true;
             }
         }
-        return recoverValue;
+
+        return { recoverValue, needsMigration };
     } catch (error) {
         console.log(error);
         throw error;
     }
+};
+
+export const migrateRecoverValueToV2 = async (walletName: string, password: string, recoverValue: string) => {
+    const key: string = keyEncrypt(walletName, password);
+    const encrypted = encryptV2(recoverValue, key.toString());
+    if (encrypted === '') {
+        throw new Error('Failed to encrypt wallet data with v2.');
+    }
+
+    const migrationKey = getWalletMigrationKey(walletName);
+    await setChain(migrationKey, encrypted);
+
+    const staged = await getChain(migrationKey);
+    if (staged === false || isV2EncryptedEnvelope(staged.password) === false) {
+        throw new Error('Failed to stage wallet data migration.');
+    }
+
+    const stagedValue = decryptV2(staged.password, key.toString());
+    if (stagedValue !== recoverValue) {
+        throw new Error('Wallet migration verification failed.');
+    }
+
+    await setChain(walletName, staged.password);
+
+    const migrated = await getChain(walletName);
+    if (migrated === false || isV2EncryptedEnvelope(migrated.password) === false) {
+        throw new Error('Wallet migration write failed.');
+    }
+
+    const migratedValue = decryptV2(migrated.password, key.toString());
+    if (migratedValue !== recoverValue) {
+        throw new Error('Wallet migration verification failed after write.');
+    }
+
+    await removeChain(migrationKey).catch((error) => console.log(error));
 };
 
 export const getWalletWithAutoLogin = async () => {
