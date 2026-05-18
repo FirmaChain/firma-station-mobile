@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { GUIDE_URI } from '@/../config';
-import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
+import { CRYPTO_MIGRATION_DESCRIPTION, CRYPTO_MIGRATION_TITLE, PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, StorageActions, WalletActions } from '@/redux/actions';
@@ -10,8 +10,8 @@ import { getAddressFromRecoverValue } from '@/util/firma';
 import { PasswordCheck } from '@/util/validationCheck';
 import {
     getRecoverValueWithMeta,
-    migrateRecoverValueToV2,
     getWalletList,
+    migrateRecoverValueToV2,
     setBioAuth,
     setEncryptPassword,
     setWalletList,
@@ -19,7 +19,7 @@ import {
 } from '@/util/wallet';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import Button from '@/components/button/button';
@@ -150,10 +150,7 @@ const SelectWallet = () => {
                     await migrateRecoverValueToV2(selectedWallet, password, recoverValue);
                 } catch (error) {
                     console.log(error);
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Wallet encryption migration failed. Please try logging in again.'
-                    });
+                    Alert.alert(CRYPTO_MIGRATION_TITLE, CRYPTO_MIGRATION_DESCRIPTION);
                 }
             }
             navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });

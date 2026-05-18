@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LOGIN_DESCRIPTION } from '@/constants/common';
+import { CRYPTO_MIGRATION_DESCRIPTION, CRYPTO_MIGRATION_TITLE, LOGIN_DESCRIPTION } from '@/constants/common';
 import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, WalletActions } from '@/redux/actions';
@@ -23,7 +23,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Alert, Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import Button from '@/components/button/button';
@@ -86,10 +86,7 @@ const LoginCheck = () => {
                         await migrateRecoverValueToV2(name, password, resolvedRecoverValue);
                     } catch (error) {
                         console.log(error);
-                        Toast.show({
-                            type: 'error',
-                            text1: 'Wallet encryption migration failed. Please try logging in again.'
-                        });
+                        Alert.alert(CRYPTO_MIGRATION_TITLE, CRYPTO_MIGRATION_DESCRIPTION);
                     }
                 }
 
@@ -139,10 +136,7 @@ const LoginCheck = () => {
                         await migrateRecoverValueToV2(walletName, result, recoverValue);
                     } catch (error) {
                         console.log(error);
-                        Toast.show({
-                            type: 'error',
-                            text1: 'Wallet encryption migration failed. Please try logging in again.'
-                        });
+                        Alert.alert(CRYPTO_MIGRATION_TITLE, CRYPTO_MIGRATION_DESCRIPTION);
                     }
                 }
 

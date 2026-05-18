@@ -206,6 +206,10 @@ export const EXIST_CW_CONTRACT_TO_LIST = 'Contract address already registered.';
 export const NON_EXIST_CW_CONTRACT = 'Contract information does not exist.';
 export const ERROR_CW_CONTRACT = 'The contract address is invalid.';
 
+export const CRYPTO_MIGRATION_TITLE = 'Wallet migration failed';
+export const CRYPTO_MIGRATION_DESCRIPTION =
+    'Failed to migrate wallet encryption.\nYou can continue using your existing login session, but we recommend re-logging in or re-registering your wallet to apply the upgraded encryption method.';
+
 // transaction
 export const TRANSACTION_TYPE: IKeyValue = {
     SEND: 'TRANSACTION_SEND',
