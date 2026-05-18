@@ -6966,7 +6966,6 @@ __metadata:
     react-native-gesture-handler: "npm:^2.29.1"
     react-native-get-random-values: "npm:^2.0.0"
     react-native-keychain: "npm:^10.0.0"
-    react-native-linear-gradient: "npm:^2.8.3"
     react-native-markdown-display: "npm:^7.0.2"
     react-native-nitro-modules: "npm:^0.35.0"
     react-native-permissions: "npm:^5.4.4"
@@ -10181,16 +10180,6 @@ __metadata:
   version: 10.0.0
   resolution: "react-native-keychain@npm:10.0.0"
   checksum: 10c0/a632ad27e58264506d2b373d329a867f042fb014e8a78db3a63031e953d61b5c98066eed1be238ee6c186d3f213d0efaa2a26526fb3a1d36a624c4460e982230
-  languageName: node
-  linkType: hard
-
-"react-native-linear-gradient@npm:^2.8.3":
-  version: 2.8.3
-  resolution: "react-native-linear-gradient@npm:2.8.3"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/cd41bf28e9f468173f1e5e768685128ebf8bbf9077710e43b63482c1a76f37bff8ab3d1d6adfd7b4d54e648672356c02bea46c47cdbdb1844ebe5c5caf720114
   languageName: node
   linkType: hard
 

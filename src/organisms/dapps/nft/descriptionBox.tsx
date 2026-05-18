@@ -11,8 +11,8 @@ import {
 } from '@/constants/theme';
 import { easeInAndOutCustomAnim, fadeOut, LayoutAnim } from '@/util/animation';
 import FastImage from '@d11/react-native-fast-image';
-import { Animated, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { Animated, StyleSheet, Text, TextLayoutEvent, TouchableOpacity, View } from 'react-native';
+import Svg, { Defs, Rect, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 import SquareSkeleton from '@/components/skeleton/squareSkeleton';
@@ -37,7 +37,7 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
         setOpenAccordion(!openAccordion);
     };
 
-    const onTextLayout = (event: NativeSyntheticEvent<TextLayoutEventData>) => {
+    const onTextLayout = (event: TextLayoutEvent) => {
         if (descLines === 0) {
             setDescLines(event.nativeEvent.lines.length);
         }
@@ -107,23 +107,26 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
                     </Text>
                 )}
                 <View style={[styles.moreButtonBox, { width: '100%', display: showMore ? 'flex' : 'none' }]}>
-                    <LinearGradient
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        colors={[BoxDarkColor + 90, BoxDarkColor, BoxDarkColor, BoxDarkColor, BoxDarkColor]}
-                        style={{ paddingLeft: 30 }}
-                    >
-                        <TouchableOpacity style={styles.moreButton} onPress={() => handleMaxLines()}>
-                            {openAccordion ? (
-                                <UpEmptyArrow size={14} color={TextGrayColor} />
-                            ) : (
-                                <DownEmptyArrow size={14} color={TextGrayColor} />
-                            )}
-                            <Text style={[styles.desc, { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }]}>
-                                {openAccordion ? 'Less' : 'More'}
-                            </Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
+                    <TouchableOpacity style={styles.moreButton} onPress={() => handleMaxLines()}>
+                        <Svg width="100%" height="100%" style={{ position: 'absolute', left: 0, top: 0 }} pointerEvents="none">
+                            <Defs>
+                                <SvgLinearGradient id="nftDescriptionMoreGradient" x1="0" y1="0" x2="1" y2="0">
+                                    <Stop offset="0%" stopColor={BoxDarkColor} stopOpacity={0.56} />
+                                    <Stop offset="20%" stopColor={BoxDarkColor} stopOpacity={1} />
+                                    <Stop offset="100%" stopColor={BoxDarkColor} stopOpacity={1} />
+                                </SvgLinearGradient>
+                            </Defs>
+                            <Rect x="0" y="0" width="100%" height="100%" fill="url(#nftDescriptionMoreGradient)" />
+                        </Svg>
+                        {openAccordion ? (
+                            <UpEmptyArrow size={14} color={TextGrayColor} />
+                        ) : (
+                            <DownEmptyArrow size={14} color={TextGrayColor} />
+                        )}
+                        <Text style={[styles.desc, { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }]}>
+                            {openAccordion ? 'Less' : 'More'}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </React.Fragment>

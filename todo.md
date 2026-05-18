@@ -10,10 +10,6 @@
 
 ## Open guide within webview
 
-## Replace react-native-linear-gradient
-- Looks EOL (latest is 3 years old)
-- Need to replace with other lib or svg
-
 ## Replace crpto-js
 - It is quite hard work and could make serious bug
 - Need to replace with native crypto or latest AES

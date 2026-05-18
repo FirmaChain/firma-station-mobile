@@ -12,7 +12,7 @@ import {
 } from '@/constants/theme';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import { Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import Svg, { Defs, Rect, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 
@@ -25,6 +25,7 @@ const DescriptionBox = ({ data }: IProps) => {
     const [descLines, setDescLines] = useState(0);
     const [showMore, setShowMore] = useState(false);
     const [openAccordion, setOpenAccordion] = useState(false);
+    const [moreButtonWidth, setMoreButtonWidth] = useState(0);
 
     const CW20Contract = useMemo(() => {
         if (data.cw20ContractAddress === null || data.cw20ContractAddress === '' || data.cw20ContractAddress === '0x') return '';
@@ -113,24 +114,31 @@ const DescriptionBox = ({ data }: IProps) => {
                     <Text style={styles.desc} numberOfLines={maxLines} ellipsizeMode={'tail'} onTextLayout={onTextLayout}>
                         {data.description}
                     </Text>
-                    <View style={[styles.moreButtonBox, { width: '100%', display: showMore ? 'flex' : 'none' }]}>
-                        <LinearGradient
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={[BoxDarkColor + 90, BoxDarkColor, BoxDarkColor, BoxDarkColor, BoxDarkColor]}
-                            style={{ paddingLeft: 30 }}
+                    <View style={[styles.moreButtonBox, { display: showMore ? 'flex' : 'none' }]}>
+                        <TouchableOpacity
+                            style={[styles.moreButton, { paddingLeft: 30 }]}
+                            onPress={() => handleMaxLines()}
+                            onLayout={event => setMoreButtonWidth(event.nativeEvent.layout.width)}
                         >
-                            <TouchableOpacity style={styles.moreButton} onPress={() => handleMaxLines()}>
-                                {openAccordion ? (
-                                    <UpEmptyArrow size={14} color={TextGrayColor} />
-                                ) : (
-                                    <DownEmptyArrow size={14} color={TextGrayColor} />
-                                )}
-                                <Text style={[styles.desc, { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }]}>
-                                    {openAccordion ? 'Less' : 'More'}
-                                </Text>
-                            </TouchableOpacity>
-                        </LinearGradient>
+                            <Svg width={moreButtonWidth} height="100%" style={{ position: 'absolute', left: 0, top: 0 }} pointerEvents="none">
+                                <Defs>
+                                    <SvgLinearGradient id="dappDetailMoreGradient" x1="0" y1="0" x2="1" y2="0">
+                                        <Stop offset="0%" stopColor={BoxDarkColor} stopOpacity={0.56} />
+                                        <Stop offset="20%" stopColor={BoxDarkColor} stopOpacity={1} />
+                                        <Stop offset="100%" stopColor={BoxDarkColor} stopOpacity={1} />
+                                    </SvgLinearGradient>
+                                </Defs>
+                                <Rect x="0" y="0" width={moreButtonWidth} height="100%" fill="url(#dappDetailMoreGradient)" />
+                            </Svg>
+                            {openAccordion ? (
+                                <UpEmptyArrow size={14} color={TextGrayColor} />
+                            ) : (
+                                <DownEmptyArrow size={14} color={TextGrayColor} />
+                            )}
+                            <Text style={[styles.desc, { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }]}>
+                                {openAccordion ? 'Less' : 'More'}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>

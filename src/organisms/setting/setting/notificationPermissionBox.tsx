@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BoxColor, DisableColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from '@/constants/theme';
+import { BoxColor, Lato, PointColor, TextColor, TextGrayColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { isNotificationPermissionGranted } from '@/services/notifications';
 import { AppState, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
