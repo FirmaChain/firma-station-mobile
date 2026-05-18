@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { BgColor, BoxColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { EmitterSubscription, Keyboard, Modal, Platform, Pressable, StatusBar, StyleSheet, View } from 'react-native';
@@ -41,11 +41,17 @@ const CustomModal = ({
     const { appState, isBioAuthInProgress, appPausedTime } = useAppSelector((state) => state.common);
 
     const [mounted, setMounted] = useState(visible);
+    const handleShowRef = useRef(handleShow);
+    const prevVisibleRef = useRef(false);
 
     const backdropOpacity = useSharedValue(0);
     const sheetOpacity = useSharedValue(0);
     const sheetTranslateY = useSharedValue(fade ? 0 : SHEET_HIDDEN_OFFSET);
     const keyboardOffset = useSharedValue(0);
+
+    useEffect(() => {
+        handleShowRef.current = handleShow;
+    }, [handleShow]);
 
     const closeModal = useCallback(() => {
         if (lockBackButton) return;
@@ -74,9 +80,14 @@ const CustomModal = ({
     }, [keyboardAvoiding, keyboardOffset]);
 
     useEffect(() => {
+        const becameVisible = visible && prevVisibleRef.current === false;
+        prevVisibleRef.current = visible;
+
         if (visible) {
             setMounted(true);
-            handleShow?.();
+            if (becameVisible) {
+                handleShowRef.current?.();
+            }
 
             backdropOpacity.value = withTiming(1, {
                 duration: ANIMATION_DURATION

@@ -1,4 +1,16 @@
-import AntDesignIcons from 'react-native-vector-icons/AntDesign';
+import AppstoreFillIcon from '@/assets/icons/antDesign/appstore.svg';
+import CloseFillIcon from '@/assets/icons/antDesign/close-fill.svg';
+import DownFillIcon from '@/assets/icons/antDesign/down-fill.svg';
+import DownLineIcon from '@/assets/icons/antDesign/down-line.svg';
+import ErrorCircleLineIcon from '@/assets/icons/antDesign/error-line.svg';
+import QuestionCircleFillIcon from '@/assets/icons/antDesign/question-fill.svg';
+import QuestionCircleLineIcon from '@/assets/icons/antDesign/question-line.svg';
+import SettingsIcon from '@/assets/icons/antDesign/settings-line.svg';
+import SuccessCircleFillIcon from '@/assets/icons/antDesign/success-fill.svg';
+import SuccessCircleLineIcon from '@/assets/icons/antDesign/success-line.svg';
+import UpCircleFillIcon from '@/assets/icons/antDesign/up-circle-fill.svg';
+import InboxLineIcon from '@/assets/icons/inbox-line.svg';
+import PaperPlaneIcon from '@/assets/icons/paper-plane.svg';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -34,7 +46,7 @@ export const Paste = ({ size, color }: IProps) => {
 };
 
 export const Setting = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="setting" size={size} color={color} />;
+    return <SettingsIcon width={size} height={size} color={color} />;
 };
 
 export const TopRightArrow = ({ size, color }: IProps) => {
@@ -58,18 +70,18 @@ export const ForwardArrow = ({ size, color }: IProps) => {
 };
 
 export const DownArrow = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="caretdown" size={size} color={color} />;
+    return <DownFillIcon width={size} height={size} color={color} />;
 };
 export const UpArrow = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="caretup" size={size} color={color} />;
+    return <DownFillIcon width={size} height={size} color={color} style={{ transform: [{ rotate: '180deg' }] }} />;
 };
 
 export const UpEmptyArrow = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="up" size={size} color={color} />;
+    return <DownLineIcon width={size} height={size} color={color} style={{ transform: [{ rotate: '180deg' }] }} />;
 };
 
 export const DownEmptyArrow = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="down" size={size} color={color} />;
+    return <DownLineIcon width={size} height={size} color={color} />;
 };
 
 export const MoreViewArrow = ({ size, color }: IProps) => {
@@ -89,19 +101,19 @@ export const Person = ({ size, color }: IProps) => {
 };
 
 export const ExclamationCircle = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="exclamationcircleo" size={size} color={color} />;
+    return <ErrorCircleLineIcon width={size} height={size} color={color} />;
 };
 
 export const QuestionCircle = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="questioncircleo" size={size} color={color} />;
+    return <QuestionCircleLineIcon width={size} height={size} color={color} />;
 };
 
 export const QuestionFilledCircle = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="questioncircle" size={size} color={color} />;
+    return <QuestionCircleFillIcon width={size} height={size} color={color} />;
 };
 
 export const SuccessCircle = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="checkcircleo" size={size} color={color} />;
+    return <SuccessCircleLineIcon width={size} height={size} color={color} />;
 };
 
 export const VerifiedCircle = ({ size, color }: IProps) => {
@@ -113,15 +125,15 @@ export const VoteCircle = ({ size, color }: IProps) => {
 };
 
 export const SuccessFilledCircle = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="checkcircle" size={size} color={color} />;
+    return <SuccessCircleFillIcon width={size} height={size} color={color} />;
 };
 
 export const FailCircle = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="closecircleo" size={size} color={color} />;
+    return <ErrorCircleLineIcon width={size} height={size} color={color} />;
 };
 
 export const FailFilledCircle = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="closecircle" size={size} color={color} />;
+    return <CloseFillIcon width={size} height={size} color={color} />;
 };
 
 export const SortASC = ({ size, color }: IProps) => {
@@ -157,11 +169,11 @@ export const MenuIcon = ({ size, color }: IProps) => {
 };
 
 export const ScrollToTop = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="upcircle" size={size} color={color} />;
+    return <UpCircleFillIcon width={size} height={size} color={color} />;
 };
 
 export const SendIcon = ({ size, color }: IProps) => {
-    return <FontAwesome name="send" size={size} color={color} />;
+    return <PaperPlaneIcon width={size} height={size} color={color} />;
 };
 
 export const LockIcon = ({ size, color }: IProps) => {
@@ -170,10 +182,6 @@ export const LockIcon = ({ size, color }: IProps) => {
 
 export const URLLockIcon = ({ size, color }: IProps) => {
     return <FontAwesome name="lock" size={size} color={color} />;
-};
-
-export const ValidateIcon = ({ size, color }: IProps) => {
-    return <AntDesignIcons name="rightsquare" size={size} color={color} />;
 };
 
 export const SquareIcon = ({ size, color }: IProps) => {
@@ -194,4 +202,16 @@ export const BookmarkPlusIcon = ({ size, color }: IProps) => {
 
 export const RemoveIcon = ({ size, color }: IProps) => {
     return <Ionicons name="ios-remove-circle-outline" size={size} color={color} />;
+};
+
+export const WalletIcon = ({ size, color }: IProps) => {
+    return <Ionicons name="ios-wallet-outline" size={size} color={color} />;
+};
+
+export const InboxIcon = ({ size, color }: IProps) => {
+    return <InboxLineIcon width={size} height={size} color={color} />;
+};
+
+export const AppstoreIcon = ({ size, color }: IProps) => {
+    return <AppstoreFillIcon width={size} height={size} color={color} />;
 };

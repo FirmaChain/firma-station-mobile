@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
         height: 20,
         top: 5,
         left: 5,
-        backgroundColor: WhiteColor
+        backgroundColor: WhiteColor,
+        borderRadius: '100%'
     },
     titleWrapper: {
         borderRadius: 18,

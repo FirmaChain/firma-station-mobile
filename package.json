@@ -87,6 +87,7 @@
     "prettier": "^3.6.2",
     "react-native-fs": "^2.20.0",
     "react-native-get-random-values": "^2.0.0",
+    "react-native-svg-transformer": "^1.5.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.46.3"
   },

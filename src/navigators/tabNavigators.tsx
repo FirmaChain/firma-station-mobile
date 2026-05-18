@@ -8,9 +8,8 @@ import StakingScreen from '@/screens/home/staking/staking';
 import WalletScreen from '@/screens/home/wallet/wallet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
-import StakingIcon from 'react-native-vector-icons/AntDesign';
-import DappIcon from 'react-native-vector-icons/AntDesign';
-import WalletIcon from 'react-native-vector-icons/Ionicons';
+
+import { AppstoreIcon, InboxIcon, WalletIcon } from '@/components/icon/icon';
 
 const Tab = createBottomTabNavigator();
 
@@ -46,7 +45,7 @@ const TabNavigators = () => {
                 })}
                 options={{
                     tabBarIcon: ({ focused }) => {
-                        return <WalletIcon name={'ios-wallet-outline'} size={24} color={focused ? WhiteColor : GrayColor} />;
+                        return <WalletIcon size={24} color={focused ? WhiteColor : GrayColor} />;
                     }
                 }}
             />
@@ -60,7 +59,7 @@ const TabNavigators = () => {
                 })}
                 options={{
                     tabBarIcon: ({ focused }) => {
-                        return <StakingIcon name={'inbox'} size={24} color={focused ? WhiteColor : GrayColor} />;
+                        return <InboxIcon size={24} color={focused ? WhiteColor : GrayColor} />;
                     }
                 }}
             />
@@ -88,7 +87,7 @@ const TabNavigators = () => {
                 })}
                 options={{
                     tabBarIcon: ({ focused }) => {
-                        return <DappIcon name={'appstore1'} size={20} color={focused ? WhiteColor : GrayColor} />;
+                        return <AppstoreIcon size={20} color={focused ? WhiteColor : GrayColor} />;
                     }
                 }}
             />
