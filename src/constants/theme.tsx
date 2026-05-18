@@ -64,3 +64,5 @@ export const CWLabelBorderColor = '#383838';
 export const IBCConnectedColor = '#02E191';
 
 export const AlertShadowColor = '#171717';
+
+export const VerifiedColor = '#2ABC65';

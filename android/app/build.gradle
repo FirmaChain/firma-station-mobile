@@ -6,8 +6,6 @@ if (file("google-services.json").exists()) {
 } else {
     println("[FCM] google-services.json not found; Android Firebase setup is disabled until the file is added.")
 }
-// For react-native-vector-icons
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -145,19 +143,19 @@ dependencies {
 }
 
 // Ensure vector icon fonts are copied before release lint model tasks
-afterEvaluate {
-    def copyFontsTask = tasks.findByName("copyReactNativeVectorIconFonts")
+// afterEvaluate {
+//     def copyFontsTask = tasks.findByName("copyReactNativeVectorIconFonts")
 
-    if (copyFontsTask != null) {
-        tasks.matching { task ->
-            task.name in [
-                "generateReleaseLintVitalReportModel",
-                "lintVitalAnalyzeRelease",
-                "lintAnalyzeRelease",
-                "generateReleaseLintReportModel"
-            ]
-        }.configureEach { task ->
-            task.dependsOn(copyFontsTask)
-        }
-    }
-}
+//     if (copyFontsTask != null) {
+//         tasks.matching { task ->
+//             task.name in [
+//                 "generateReleaseLintVitalReportModel",
+//                 "lintVitalAnalyzeRelease",
+//                 "lintAnalyzeRelease",
+//                 "generateReleaseLintReportModel"
+//             ]
+//         }.configureEach { task ->
+//             task.dependsOn(copyFontsTask)
+//         }
+//     }
+// }

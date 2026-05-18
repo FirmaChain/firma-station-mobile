@@ -3131,8 +3131,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNVectorIcons (9.2.0):
-    - React-Core
   - RNWorklets (0.6.1):
     - boost
     - DoubleConversion
@@ -3342,7 +3340,6 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - RNWorklets (from `../node_modules/react-native-worklets`)
   - SocketRocket (~> 0.7.1)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
@@ -3565,8 +3562,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  RNVectorIcons:
-    :path: "../node_modules/react-native-vector-icons"
   RNWorklets:
     :path: "../node_modules/react-native-worklets"
   VisionCamera:
@@ -3685,7 +3680,6 @@ SPEC CHECKSUMS:
   RNReanimated: fe6e74170e4b5c5acdbe10cf8f6883e410ba80d3
   RNScreens: 69f68c95d395bc4261d27c3aae7b4a458b947b7e
   RNSVG: 7da7ec33015df45de2516f43bb67ab85c58754bc
-  RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   RNWorklets: daa0a3e7946a9c4042f3a962c87a12dc5bc0badd
   SDWebImage: e9c98383c7572d713c1a0d7dd2783b10599b9838
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
