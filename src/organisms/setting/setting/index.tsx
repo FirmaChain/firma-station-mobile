@@ -16,6 +16,7 @@ import BioAuthRadio from './bioAuthRadio';
 import Delete from './delete';
 import Disconnect from './disconnect';
 import MenuItem from './menuItem';
+import NotificationRadio from './notificationRadio';
 import TextMenuItem from './textMenuItem';
 
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Setting>;
@@ -93,6 +94,7 @@ const Setting = () => {
                             />
                         </View>
                         <BioAuthRadio walletName={walletName} />
+                        <NotificationRadio />
                         {settingList.map((item, index) => {
                             return <MenuItem key={index} title={item.title} path={item.path} handleMenus={handleMenus} />;
                         })}

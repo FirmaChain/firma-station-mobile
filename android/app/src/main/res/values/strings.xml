@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Firma Station</string>
     <!-- Cannot change ID. We have to use mainnet as default -->
-    <string name="default_notification_channel_id">firma-station-mainnet</string>
+    <string name="default_notification_channel_id">firma-station-mobile</string>
 </resources>

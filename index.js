@@ -16,7 +16,7 @@ registerBackgroundNotificationHandler();
 
 notifee.onBackgroundEvent(async ({ type, detail }) => {
     if (type === EventType.PRESS) {
-        console.log('[FCM] background notification pressed:', detail.notification?.data);
+        console.info('[FCM] background notification pressed:', detail.notification?.data);
     }
 });
 
