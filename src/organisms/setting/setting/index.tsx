@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 
+import { SquareEditLine } from '@/components/icon/icon';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 
@@ -16,6 +17,7 @@ import BioAuthRadio from './bioAuthRadio';
 import Delete from './delete';
 import Disconnect from './disconnect';
 import MenuItem from './menuItem';
+import NotificationPermissionBox from './notificationPermissionBox';
 import NotificationRadio from './notificationRadio';
 import TextMenuItem from './textMenuItem';
 
@@ -85,14 +87,11 @@ const Setting = () => {
                                 title="Wallet"
                                 content={walletName}
                                 bgColor={AddressBoxColor}
-                                icon={true}
-                                iconColor={TextCatTitleColor}
-                                iconSize={20}
-                                iconName={'square-edit-outline'}
-                                iconType={'MaterialCommunityIcons'}
+                                icon={<SquareEditLine size={20} color={TextCatTitleColor} />}
                                 onPressEvent={() => handleMenus('ChangeWN')}
                             />
                         </View>
+                        <NotificationPermissionBox />
                         <BioAuthRadio walletName={walletName} />
                         <NotificationRadio />
                         {settingList.map((item, index) => {

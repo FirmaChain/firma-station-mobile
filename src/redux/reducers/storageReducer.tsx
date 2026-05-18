@@ -11,6 +11,7 @@ import {
     HANDLE_HISTORY_VOLUME,
     HANDLE_LAST_SELECTED_WALLET_INDEX,
     HANDLE_NOTIFICATION_ENABLED,
+    HANDLE_NOTIFICATION_PERMISSION_PROMPTED,
     HANDLE_NETWORK,
     HANDLE_RECOVER_TYPE,
     HANDLE_VALIDATORS_PROFILE_INFO,
@@ -41,6 +42,7 @@ export interface IStorageStateProps {
     currency: string;
     network: string;
     notificationEnabled: boolean;
+    notificationPermissionPrompted: boolean;
     contentVolume: IContentVolume;
     historyVolume: IKeyValue;
     dappServicesVolume: IKeyValue;
@@ -56,6 +58,7 @@ const initialState: IStorageStateProps = {
     currency: 'USD',
     network: 'MainNet',
     notificationEnabled: false,
+    notificationPermissionPrompted: false,
     contentVolume: {
         proposals: null,
         dapps: null
@@ -84,6 +87,7 @@ export const ACTION_CREATORS = {
     HANDLE_LAST_SELECTED_WALLET_INDEX: createAction<number>(HANDLE_LAST_SELECTED_WALLET_INDEX),
     HANDLE_FAVORITE: createAction<IFavoriteState[]>(HANDLE_FAVORITE),
     HANDLE_NOTIFICATION_ENABLED: createAction<boolean>(HANDLE_NOTIFICATION_ENABLED),
+    HANDLE_NOTIFICATION_PERMISSION_PROMPTED: createAction<boolean>(HANDLE_NOTIFICATION_PERMISSION_PROMPTED),
     HANDLE_CW20_CONTRACTS: createAction<IKeyValueForCWContract>(HANDLE_CW20_CONTRACTS),
     HANDLE_CW721_CONTRACTS: createAction<IKeyValueForCWContract>(HANDLE_CW721_CONTRACTS)
 };
@@ -99,6 +103,7 @@ export const ACTIONS = {
     handleLastSelectedWalletIndex: ACTION_CREATORS.HANDLE_LAST_SELECTED_WALLET_INDEX,
     handleFavorite: ACTION_CREATORS.HANDLE_FAVORITE,
     handleNotificationEnabled: ACTION_CREATORS.HANDLE_NOTIFICATION_ENABLED,
+    handleNotificationPermissionPrompted: ACTION_CREATORS.HANDLE_NOTIFICATION_PERMISSION_PROMPTED,
     handleCW20Contracts: ACTION_CREATORS.HANDLE_CW20_CONTRACTS,
     handleCW721Contracts: ACTION_CREATORS.HANDLE_CW721_CONTRACTS
 };
@@ -130,6 +135,9 @@ const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(ACTION_CREATORS.HANDLE_NOTIFICATION_ENABLED, (state, { payload }) => {
         state.notificationEnabled = payload;
+    });
+    builder.addCase(ACTION_CREATORS.HANDLE_NOTIFICATION_PERMISSION_PROMPTED, (state, { payload }) => {
+        state.notificationPermissionPrompted = payload;
     });
     builder.addCase(ACTION_CREATORS.HANDLE_FAVORITE, (state, { payload }) => {
         state.favorite = payload;

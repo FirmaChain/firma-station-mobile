@@ -1,5 +1,6 @@
+import { ReactNode } from 'react';
 import { BgColor, BoxColor, Lato, TextColor } from '@/constants/theme';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
     title: string;
@@ -7,14 +8,33 @@ interface IProps {
     bgColor?: string;
     titleColor?: string;
     contentColor?: string;
+    icon?: ReactNode;
+    onPressEvent?: () => void;
 }
 
-const TextMenuItem = ({ title, content, bgColor = BoxColor, titleColor = TextColor, contentColor = TextColor }: IProps) => {
+const TextMenuItem = ({
+    title,
+    content,
+    bgColor = BoxColor,
+    titleColor = TextColor,
+    contentColor = TextColor,
+    icon,
+    onPressEvent
+}: IProps) => {
     return (
         <View style={[styles.listItem, { backgroundColor: bgColor }]}>
             <Text style={[styles.itemTitle, { color: titleColor }]}>{title}</Text>
             <View style={styles.contentWrapper}>
                 <Text style={[styles.content, { color: contentColor, paddingRight: 0 }]}>{content}</Text>
+                {icon && (
+                    <TouchableOpacity
+                        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                        onPress={() => onPressEvent?.()}
+                        style={{ marginLeft: 8 }}
+                    >
+                        <View style={{ paddingTop: 1 }}>{icon}</View>
+                    </TouchableOpacity>
+                )}
             </View>
         </View>
     );

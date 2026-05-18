@@ -34,6 +34,7 @@ import ContentPaste from '@/assets/icons/materialCommunity/contentPaste.svg';
 import _MenuIcon from '@/assets/icons/materialCommunity/menu.svg';
 import RadioboxEmptyIcon from '@/assets/icons/materialCommunity/radioboxEmpty.svg';
 import RadioboxMarkedIcon from '@/assets/icons/materialCommunity/radioboxMarked.svg';
+import SquareEditLintIcon from '@/assets/icons/materialCommunity/squareEditLine.svg';
 import CheckCircleFillIcon from '@/assets/icons/octIcons/checkCircleFill.svg';
 import SortAscIcon from '@/assets/icons/octIcons/sortAsc.svg';
 import SortDescIcon from '@/assets/icons/octIcons/sortDesc.svg';
@@ -210,4 +211,8 @@ export const TrendingDownIcon = ({ size, color }: IProps) => {
 
 export const TrendingUpIcon = ({ size, color }: IProps) => {
     return <_TrendingUpIcon width={size} height={size} color={color} />;
+};
+
+export const SquareEditLine = ({ size, color }: IProps) => {
+    return <SquareEditLintIcon width={size} height={size} color={color} />;
 };

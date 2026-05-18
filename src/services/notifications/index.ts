@@ -78,6 +78,14 @@ export const setNotificationEnabled = async (enabled: boolean) => {
     StorageActions.handleNotificationEnabled(enabled);
 };
 
+export const getNotificationPermissionPrompted = async () => {
+    return store.getState().storage.notificationPermissionPrompted;
+};
+
+export const setNotificationPermissionPrompted = async (prompted: boolean) => {
+    StorageActions.handleNotificationPermissionPrompted(prompted);
+};
+
 const hasFirebaseApp = () => getApps().length > 0;
 
 const getFirebaseMessaging = () => getMessaging(getApp());
@@ -130,7 +138,9 @@ export const isNotificationPermissionGranted = async () => {
 };
 
 export const requestNotificationPermission = async () => {
-    return hasNotificationPermission(true);
+    const granted = await hasNotificationPermission(true);
+    await setNotificationPermissionPrompted(true);
+    return granted;
 };
 
 export const syncNotificationTopics = async ({
@@ -223,6 +233,15 @@ export const initializeForegroundNotifications = async (network: string) => {
         return () => {};
     }
 
+    const permissionStatus = await getNotificationPermissionStatus();
+    const notificationPermissionPrompted = await getNotificationPermissionPrompted();
+    if (permissionStatus === RESULTS.DENIED && !notificationPermissionPrompted) {
+        const granted = await requestNotificationPermission();
+        if (granted) {
+            await setNotificationEnabled(true);
+        }
+    }
+
     const fcm = getFirebaseMessaging();
     logNotification(`foreground init start for ${normalizeNetwork(network)}`);
     await registerDeviceForRemoteMessages(fcm);
@@ -261,7 +280,7 @@ export const initializeForegroundNotifications = async (network: string) => {
         }
     });
 
-    const synced = await syncNotificationTopics({ network, requestPermission: true });
+    const synced = await syncNotificationTopics({ network, requestPermission: false });
     logNotification(`foreground init complete for ${normalizeNetwork(network)}`, { synced });
 
     return () => {

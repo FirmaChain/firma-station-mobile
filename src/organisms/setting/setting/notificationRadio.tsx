@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import {
-    getNotificationEnabled,
-    getNotificationPermissionStatus,
-    isNotificationPermissionGranted,
-    setNotificationEnabled,
-    syncNotificationTopics
-} from '@/services/notifications';
-import { Alert, AppState, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { openSettings, RESULTS } from 'react-native-permissions';
+import { getNotificationEnabled, requestNotificationPermission, setNotificationEnabled, syncNotificationTopics } from '@/services/notifications';
+import { AppState, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const NotificationRadio = () => {
     const { network, notificationEnabled } = useAppSelector((state) => state.storage);
 
-    const [hasPermission, setHasPermission] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -25,13 +17,12 @@ const NotificationRadio = () => {
 
         const loadNotificationState = async () => {
             try {
-                const [storedEnabled, nextHasPermission] = await Promise.all([getNotificationEnabled(), isNotificationPermissionGranted()]);
+                const storedEnabled = await getNotificationEnabled();
 
                 if (!isMounted) {
                     return;
                 }
 
-                setHasPermission(nextHasPermission);
                 await syncNotificationTopics({
                     network,
                     enabled: storedEnabled,
@@ -69,53 +60,38 @@ const NotificationRadio = () => {
         };
     }, [network]);
 
-    const openNotificationSettings = async () => {
-        try {
-            await openSettings('notifications');
-        } catch {
-            await Linking.openSettings();
-        }
-    };
-
     const handleToggle = async () => {
         if (isLoading || isUpdating) {
             return;
         }
 
-        const nextEnabled = !(notificationEnabled && hasPermission);
+        const nextEnabled = !notificationEnabled;
         setIsUpdating(true);
 
         try {
-            if (nextEnabled) {
-                const permissionStatus = await getNotificationPermissionStatus();
-                const hasPermission = permissionStatus === RESULTS.GRANTED || permissionStatus === RESULTS.LIMITED;
-
-                if (!hasPermission) {
-                    Alert.alert('Notifications are off', 'Please enable notifications to use this feature.', [
-                        {
-                            text: 'Cancel',
-                            style: 'cancel'
-                        },
-                        {
-                            text: 'Go to settings',
-                            onPress: () => {
-                                void openNotificationSettings();
-                            }
-                        }
-                    ]);
-                    await syncNotificationTopics({
-                        network,
-                        enabled: false,
-                        requestPermission: false
-                    });
-                    return;
-                }
+            if (!nextEnabled) {
+                await setNotificationEnabled(false);
+                await syncNotificationTopics({
+                    network,
+                    enabled: false,
+                    requestPermission: false
+                });
+                return;
             }
 
-            await setNotificationEnabled(nextEnabled);
+            const granted = await requestNotificationPermission();
+            if (!granted) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Notification permission is required to turn on alerts.'
+                });
+                return;
+            }
+
+            await setNotificationEnabled(true);
             await syncNotificationTopics({
                 network,
-                enabled: nextEnabled,
+                enabled: true,
                 requestPermission: false
             });
         } catch {
@@ -132,7 +108,7 @@ const NotificationRadio = () => {
         <View style={styles.listItem}>
             <Text style={styles.itemTitle}>Notifications</Text>
             <TouchableOpacity activeOpacity={0.8} disabled={isLoading || isUpdating} onPress={handleToggle}>
-                <View style={[styles.radioWrapper, notificationEnabled && hasPermission ? styles.radioWrapperOn : styles.radioWrapperOff]}>
+                <View style={[styles.radioWrapper, notificationEnabled ? styles.radioWrapperOn : styles.radioWrapperOff]}>
                     <View style={styles.radio} />
                 </View>
             </TouchableOpacity>
