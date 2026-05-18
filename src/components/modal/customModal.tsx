@@ -172,10 +172,7 @@ const CustomModal = ({
                 {toastInModal && <CustomToast />}
 
                 <Animated.View style={[styles.sheet, sheetAnimatedStyle]}>
-                    <Pressable
-                        style={[styles.modalBox, { backgroundColor: bgColor, marginTop: statusBarHeight }]}
-                        onPress={Keyboard.dismiss}
-                    >
+                    <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={Keyboard.dismiss}>
                         {children}
                     </Pressable>
                 </Animated.View>
@@ -192,7 +189,8 @@ const styles = StyleSheet.create({
 
     dimmedBackground: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.7)'
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        paddingTop: StatusBar.currentHeight || 0
     },
 
     backdrop: {
@@ -225,6 +223,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 4,
         borderTopRightRadius: 4,
 
+        paddingTop: StatusBar.currentHeight || 0,
         paddingBottom: Platform.OS === 'ios' ? 30 : 0
     }
 });

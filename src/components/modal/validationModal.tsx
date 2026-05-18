@@ -248,27 +248,29 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                         <Text style={[styles.title, { fontWeight: 'bold' }]}>{titleText}</Text>
                         <View style={[styles.passwordBox, { height: dimActive ? 0 : 'auto' }]}>
                             {dimActive === false && (
-                                <View style={{ flex: 1 }}>
-                                    <InputSetVertical
-                                        title={'Password'}
-                                        value={''}
-                                        validation={true}
-                                        secure={true}
-                                        placeholder={PLACEHOLDER_FOR_PASSWORD}
-                                        onChangeEvent={handleInputChange}
-                                    />
-                                </View>
+                                <>
+                                    <View style={{ flex: 1 }}>
+                                        <InputSetVertical
+                                            title={'Password'}
+                                            value={''}
+                                            validation={true}
+                                            secure={true}
+                                            placeholder={PLACEHOLDER_FOR_PASSWORD}
+                                            onChangeEvent={handleInputChange}
+                                        />
+                                    </View>
+                                    <TouchableOpacity
+                                        style={styles.confirmButton}
+                                        disabled={active === false}
+                                        onPress={() => handleValidation(false)}
+                                    >
+                                        <SquareIcon size={58} color={active ? PointColor : DisableColor} />
+                                        <View style={styles.buttonArrow}>
+                                            <ForwardArrow size={25} color={active ? WhiteColor : BgColor} />
+                                        </View>
+                                    </TouchableOpacity>
+                                </>
                             )}
-                            <TouchableOpacity
-                                style={styles.confirmButton}
-                                disabled={active === false}
-                                onPress={() => handleValidation(false)}
-                            >
-                                <SquareIcon size={55} color={active ? PointColor : DisableColor} />
-                                <View style={styles.buttonArrow}>
-                                    <ForwardArrow size={25} color={active ? WhiteColor : BgColor} />
-                                </View>
-                            </TouchableOpacity>
                         </View>
                     </View>
                 </Animated.View>
@@ -327,8 +329,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: 25,
         height: 25,
-        top: 17.5,
-        left: 14
+        top: 16.5,
+        left: 16.5
     }
 });
 
