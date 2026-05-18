@@ -3,17 +3,23 @@ import CloseFillIcon from '@/assets/icons/antDesign/close-fill.svg';
 import DownFillIcon from '@/assets/icons/antDesign/down-fill.svg';
 import DownLineIcon from '@/assets/icons/antDesign/down-line.svg';
 import ErrorCircleLineIcon from '@/assets/icons/antDesign/error-line.svg';
+import ExclamationCircleLineIcon from '@/assets/icons/antDesign/exclamationCircleLine.svg';
+import InboxLineIcon from '@/assets/icons/antDesign/inbox-line.svg';
 import QuestionCircleFillIcon from '@/assets/icons/antDesign/question-fill.svg';
 import QuestionCircleLineIcon from '@/assets/icons/antDesign/question-line.svg';
 import SettingsIcon from '@/assets/icons/antDesign/settings-line.svg';
 import SuccessCircleFillIcon from '@/assets/icons/antDesign/success-fill.svg';
 import SuccessCircleLineIcon from '@/assets/icons/antDesign/success-line.svg';
 import UpCircleFillIcon from '@/assets/icons/antDesign/up-circle-fill.svg';
-import InboxLineIcon from '@/assets/icons/inbox-line.svg';
-import PaperPlaneIcon from '@/assets/icons/paper-plane.svg';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import AstariskFillIcon from '@/assets/icons/fontAwesome/astarisk.svg';
+import LockFillIcon from '@/assets/icons/fontAwesome/lock.svg';
+import PaperPlaneIcon from '@/assets/icons/fontAwesome/paper-plane.svg';
+import ArrowForwardTailLineIcon from '@/assets/icons/ionIcons/arrowForwardTailLineIcon.svg';
+import IosCloseLineIcon from '@/assets/icons/ionIcons/iosCloseLine.svg';
+import IosFingerPrintIcon from '@/assets/icons/ionIcons/iosFingerPrint.svg';
+import IosRemoveCircleLineIcon from '@/assets/icons/ionIcons/iosRemoveCircleLineIcon.svg';
+import IosSquareIcon from '@/assets/icons/ionIcons/iosSquare.svg';
+import WalletLineIcon from '@/assets/icons/ionIcons/walletLineIcon.svg';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
@@ -26,7 +32,7 @@ interface IProps {
 }
 
 export const Close = ({ size, color }: IProps) => {
-    return <Ionicons name="ios-close" size={size} color={color} />;
+    return <IosCloseLineIcon width={size} height={size} color={color} />;
 };
 
 export const QRCodeIcon = ({ size, color }: IProps) => {
@@ -58,11 +64,7 @@ export const BackArrow = ({ size, color }: IProps) => {
 };
 
 export const ForwardArrowWithTail = ({ size, color }: IProps) => {
-    return <Ionicons name="arrow-forward" size={size} color={color} />;
-};
-
-export const BackArrowWithTail = ({ size, color }: IProps) => {
-    return <Ionicons name="arrow-back" size={size} color={color} />;
+    return <ArrowForwardTailLineIcon width={size} height={size} color={color} />;
 };
 
 export const ForwardArrow = ({ size, color }: IProps) => {
@@ -84,10 +86,6 @@ export const DownEmptyArrow = ({ size, color }: IProps) => {
     return <DownLineIcon width={size} height={size} color={color} />;
 };
 
-export const MoreViewArrow = ({ size, color }: IProps) => {
-    return <Ionicons name="caret-up" size={size} color={color} />;
-};
-
 export const RefreshIcon = ({ size, color }: IProps) => {
     return <MaterialIcons name="refresh" size={size} color={color} />;
 };
@@ -96,12 +94,8 @@ export const Radio = ({ size, color, active }: IProps) => {
     return <MaterialCommunityIcons name={active ? 'radiobox-marked' : 'radiobox-blank'} size={size} color={color} />;
 };
 
-export const Person = ({ size, color }: IProps) => {
-    return <Ionicons name="ios-person-circle-outline" size={size} color={color} />;
-};
-
 export const ExclamationCircle = ({ size, color }: IProps) => {
-    return <ErrorCircleLineIcon width={size} height={size} color={color} />;
+    return <ExclamationCircleLineIcon width={size} height={size} color={color} />;
 };
 
 export const QuestionCircle = ({ size, color }: IProps) => {
@@ -145,7 +139,7 @@ export const SortDESC = ({ size, color }: IProps) => {
 };
 
 export const FingerPrint = ({ size, color }: IProps) => {
-    return <Ionicons name="ios-finger-print" size={size} color={color} />;
+    return <IosFingerPrintIcon width={size} height={size} color={color} />;
 };
 
 export const ExternalLink = ({ size, color }: IProps) => {
@@ -158,10 +152,6 @@ export const ListEdit = ({ size, color }: IProps) => {
 
 export const ListEditDone = ({ size, color }: IProps) => {
     return <MaterialCommunityIcons name="playlist-check" size={size} color={color} />;
-};
-
-export const CheckIcon = ({ size, color }: IProps) => {
-    return <Ionicons name="checkmark-sharp" size={size} color={color} />;
 };
 
 export const MenuIcon = ({ size, color }: IProps) => {
@@ -181,15 +171,15 @@ export const LockIcon = ({ size, color }: IProps) => {
 };
 
 export const URLLockIcon = ({ size, color }: IProps) => {
-    return <FontAwesome name="lock" size={size} color={color} />;
+    return <LockFillIcon width={size} height={size} color={color} />;
 };
 
 export const SquareIcon = ({ size, color }: IProps) => {
-    return <Ionicons name="ios-square" size={size} color={color} />;
+    return <IosSquareIcon width={size} height={size} color={color} />;
 };
 
 export const StarIcon = ({ size, color }: IProps) => {
-    return <Fontisto name="asterisk" size={size} color={color} />;
+    return <AstariskFillIcon width={size} height={size} color={color} />;
 };
 
 export const FavoriteIcon = ({ size, color }: IProps) => {
@@ -201,11 +191,11 @@ export const BookmarkPlusIcon = ({ size, color }: IProps) => {
 };
 
 export const RemoveIcon = ({ size, color }: IProps) => {
-    return <Ionicons name="ios-remove-circle-outline" size={size} color={color} />;
+    return <IosRemoveCircleLineIcon width={size} height={size} color={color} />;
 };
 
 export const WalletIcon = ({ size, color }: IProps) => {
-    return <Ionicons name="ios-wallet-outline" size={size} color={color} />;
+    return <WalletLineIcon width={size} height={size} color={color} />;
 };
 
 export const InboxIcon = ({ size, color }: IProps) => {
