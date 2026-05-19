@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { ICON_VOTE_CHECK } from '@/constants/images';
 import {
     AbstainColor,
     BgColor,
     BorderColor,
+    DarkGrayColor,
     Lato,
     NoColor,
     NoWithVetoColor,
@@ -16,10 +16,10 @@ import { useAppSelector } from '@/redux/hooks';
 import { convertAmount, convertNumber, makeDecimalPoint } from '@/util/common';
 import { ScreenWidth } from '@/util/getScreenSize';
 import { FirmaUtil } from '@firmachain/firma-js';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { IProposalTallyState } from '@/hooks/governance/hooks';
-import { UpArrow } from '@/components/icon/icon';
+import { UpArrow, VoteCircle } from '@/components/icon/icon';
 
 interface IProps {
     data: any;
@@ -163,7 +163,7 @@ const VotingPercentage = ({ data }: IProps) => {
                                 <Text style={[styles.amount, { textAlign: 'right' }]}>{convertAmount({ value: item.vote })}</Text>
                             </View>
                             <View style={[styles.stampWrapper, { display: myVote[index] ? 'flex' : 'none' }]}>
-                                <Image style={styles.stamp} source={ICON_VOTE_CHECK} />
+                                <VoteCircle size={32} color={BgColor} />
                             </View>
                         </View>
                     );
@@ -266,13 +266,10 @@ const styles = StyleSheet.create({
     stampWrapper: {
         position: 'absolute',
         marginTop: -14,
-        borderRadius: 50,
         alignItems: 'center',
-        justifyContent: 'center'
-    },
-    stamp: {
-        width: 32,
-        height: 32
+        justifyContent: 'center',
+        backgroundColor: DarkGrayColor,
+        borderRadius: 20
     }
 });
 

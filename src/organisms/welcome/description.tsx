@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ARROW_DISABLE, ARROW_ENABLE, FIRMA_LOGO } from '@/constants/images';
-import { ChakraPetch, GrayColor, Lato, TextColor, TextGrayColor, TextWarnColor } from '@/constants/theme';
+import ArrowForward from '@/assets/icons/material/arrowForward.svg';
+import { FIRMA_LOGO } from '@/constants/images';
+import { ChakraPetch, GrayColor, Lato, PointLightColor, TextColor, TextGrayColor } from '@/constants/theme';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { WalletIcon } from '@/components/icon/icon';
@@ -36,9 +37,9 @@ const Description = ({ title, desc }: IProps) => {
                 <View style={styles.box}>
                     <WalletIcon size={50} color={GrayColor} />
                     <View style={styles.arrowBox}>
-                        <Image style={styles.arrow} source={arrowIndex === 0 ? ARROW_ENABLE : ARROW_DISABLE} />
-                        <Image style={styles.arrow} source={arrowIndex === 1 ? ARROW_ENABLE : ARROW_DISABLE} />
-                        <Image style={styles.arrow} source={arrowIndex === 2 ? ARROW_ENABLE : ARROW_DISABLE} />
+                        <ArrowForward style={styles.arrow} color={arrowIndex === 0 ? PointLightColor : GrayColor} />
+                        <ArrowForward style={styles.arrow} color={arrowIndex === 1 ? PointLightColor : GrayColor} />
+                        <ArrowForward style={styles.arrow} color={arrowIndex === 2 ? PointLightColor : GrayColor} />
                     </View>
                     <Image style={styles.logo} source={FIRMA_LOGO} />
                 </View>
@@ -70,13 +71,6 @@ const styles = StyleSheet.create({
         color: TextGrayColor,
         textAlign: 'center'
     },
-    accent: {
-        fontFamily: Lato,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: TextWarnColor,
-        textAlign: 'center'
-    },
     box: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -87,7 +81,9 @@ const styles = StyleSheet.create({
         width: 93,
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        display: 'flex',
+        gap: 2
     },
     arrow: {
         width: 16,

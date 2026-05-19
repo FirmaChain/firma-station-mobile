@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import DownWideLine from '@/assets/icons/material/downWideLine.svg';
 import { CHAIN_SYMBOL } from '@/constants/common';
-import { ARROW_ACCORDION } from '@/constants/images';
-import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDisableColor } from '@/constants/theme';
+import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor } from '@/constants/theme';
 import { CommonActions } from '@/redux/actions';
 import { degree, easeInAndOutCustomAnim, LayoutAnim, TurnToOpposite, TurnToOriginal } from '@/util/animation';
 import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
@@ -205,7 +205,9 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
                     </View>
                 </View>
                 <TouchableOpacity style={styles.boxArrow} onPress={() => handleOpenAccordion()}>
-                    <Animated.Image style={[styles.icon_arrow, { transform: [{ rotate: degree(arrowDeg) }] }]} source={ARROW_ACCORDION} />
+                    <Animated.View style={{ transform: [{ rotate: degree(arrowDeg) }] }}>
+                        <DownWideLine color={TextDarkGrayColor} width={18} height={18} />
+                    </Animated.View>
                 </TouchableOpacity>
             </View>
             {isAlertModalOpen && (
