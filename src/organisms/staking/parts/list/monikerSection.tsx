@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { VALIDATOR_PROFILE } from '@/constants/images';
 import { DarkGrayColor, Lato, TextColor } from '@/constants/theme';
-import FastImage from '@d11/react-native-fast-image';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { ForwardArrow } from '@/components/icon/icon';
+import ValidatorProfile from '@/components/parts/validatorProfile';
 
 interface IProps {
     validator: {
@@ -14,22 +12,10 @@ interface IProps {
 }
 
 const MonikerSection = ({ validator }: IProps) => {
-    const [avatarError, setAvatarError] = useState(false);
-
     return (
         <View style={[styles.vdWrapperH, { alignItems: 'center' }]}>
             <View style={styles.monikerWrapperH}>
-                <FastImage
-                    style={styles.avatar}
-                    onError={() => {
-                        setAvatarError(true);
-                    }}
-                    source={
-                        avatarError || validator.avatarURL === null || validator.avatarURL === ''
-                            ? VALIDATOR_PROFILE
-                            : { uri: validator.avatarURL, priority: FastImage.priority.low }
-                    }
-                />
+                <ValidatorProfile uri={validator.avatarURL} size={32} customStyle={{ marginRight: 10 }} />
                 <Text numberOfLines={1} ellipsizeMode="middle" style={styles.moniker}>
                     {validator.moniker}
                 </Text>
@@ -55,23 +41,12 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         borderRadius: 50
     },
-    avatar: {
-        width: 32,
-        maxWidth: 32,
-        height: 32,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 10
-    },
     moniker: {
         flex: 1,
         fontFamily: Lato,
         fontSize: 18,
         fontWeight: '600',
         color: TextColor
-    },
-    icon: {
-        marginRight: 10
     }
 });
 

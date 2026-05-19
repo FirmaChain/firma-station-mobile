@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 import { CHAIN_SYMBOL, RESTAKE_STATUS } from '@/constants/common';
-import { VALIDATOR_PROFILE } from '@/constants/images';
 import { BgColor, Lato, RestakeActiveColor, RestakeNoDelegationColor, TextColor, TextDisableColor } from '@/constants/theme';
 import { convertAmount, convertNumber } from '@/util/common';
 import { FirmaUtil } from '@firmachain/firma-js';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import ValidatorProfile from '@/components/parts/validatorProfile';
 
 interface IProps {
     data: any;
@@ -13,8 +14,6 @@ interface IProps {
 
 const ValidatorSection = ({ data, minimumRewards }: IProps) => {
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
-
-    const [avatarError, setAvatarError] = useState(false);
 
     const state = useMemo(() => {
         return {
@@ -49,22 +48,14 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
     return (
         <Pressable style={styles.box}>
             <View style={styles.monikerWrapperH}>
-                <Image
-                    style={styles.avatar}
-                    onError={() => {
-                        setAvatarError(true);
-                    }}
-                    source={
-                        avatarError || state.avatarURL === null || state.avatarURL === '' ? VALIDATOR_PROFILE : { uri: state.avatarURL }
-                    }
-                />
+                <ValidatorProfile uri={state.avatarURL} size={20} customStyle={{ marginRight: 7 }} />
                 <Text numberOfLines={1} ellipsizeMode="middle" style={styles.moniker}>
                     {state.moniker}
                 </Text>
             </View>
             <View style={[styles.wrapperH, { justifyContent: 'flex-end' }]}>
                 {isGranted ? (
-                    <React.Fragment>
+                    <Fragment>
                         <View
                             style={[
                                 styles.dot,
@@ -79,7 +70,7 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
                                 style={{ fontSize: 12, fontWeight: 'normal', color: RestakeNoDelegationColor }}
                             >{` / ${minimumRewards} ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
-                    </React.Fragment>
+                    </Fragment>
                 ) : (
                     <Text
                         style={[
@@ -122,14 +113,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    avatar: {
-        width: 20,
-        maxWidth: 20,
-        height: 20,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 7
     },
     moniker: {
         flex: 1,

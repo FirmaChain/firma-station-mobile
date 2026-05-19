@@ -1,5 +1,6 @@
 import React from 'react';
-import { ICON_DOCUMENT } from '@/constants/images';
+import DocumentIcon from '@/assets/icons/material/document.svg';
+// import { ICON_DOCUMENT } from '@/constants/images';
 import { BoxDarkColor, GrayColor, Lato, WhiteColor } from '@/constants/theme';
 import { CommonActions } from '@/redux/actions';
 import DappsScreen from '@/screens/home/dapps/dapps';
@@ -7,7 +8,8 @@ import GovernanceScreen from '@/screens/home/governance/governance';
 import StakingScreen from '@/screens/home/staking/staking';
 import WalletScreen from '@/screens/home/wallet/wallet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
+
+// import { Image } from 'react-native';
 
 import { AppstoreIcon, InboxIcon, WalletIcon } from '@/components/icon/icon';
 
@@ -73,7 +75,8 @@ const TabNavigators = () => {
                 })}
                 options={{
                     tabBarIcon: ({ focused }) => {
-                        return <Image style={{ width: 24, height: 24, opacity: focused ? 1 : 0.6 }} source={ICON_DOCUMENT} />;
+                        return <DocumentIcon width={24} height={24} color={focused ? WhiteColor : GrayColor} />;
+                        // return <Image style={{ width: 24, height: 24, opacity: focused ? 1 : 0.6 }} source={ICON_DOCUMENT} />;
                     }
                 }}
             />

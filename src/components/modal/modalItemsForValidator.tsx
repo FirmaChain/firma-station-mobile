@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { VALIDATOR_PROFILE } from '@/constants/images';
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, TextWarnColor, WhiteColor } from '@/constants/theme';
-import FastImage from '@d11/react-native-fast-image';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { IStakeInfo } from '@/hooks/staking/hooks';
 
 import { ExclamationCircle, Radio } from '../icon/icon';
+import ValidatorProfile from '../parts/validatorProfile';
 
 interface IProps {
     title: string;
@@ -18,7 +17,6 @@ interface IProps {
 
 const ModalItemsForValidator = ({ title, initVal, data, myAddress, onPressEvent }: IProps) => {
     const [selected, setSelected] = useState(initVal);
-    const [avatarError, setAvatarError] = useState(false);
 
     const handleSelect = (address: string) => {
         if (myAddress === address) return;
@@ -39,17 +37,7 @@ const ModalItemsForValidator = ({ title, initVal, data, myAddress, onPressEvent 
                             <View key={index} style={styles.modalContentBox}>
                                 <Pressable onPress={() => handleSelect(item.validatorAddress)}>
                                     <View style={[styles.modalPressBox, mine && { opacity: 0.15 }]}>
-                                        <FastImage
-                                            style={styles.avatar}
-                                            onError={() => {
-                                                setAvatarError(true);
-                                            }}
-                                            source={
-                                                avatarError || item.avatarURL === null || item.avatarURL === ''
-                                                    ? VALIDATOR_PROFILE
-                                                    : { uri: item.avatarURL, priority: FastImage.priority.low }
-                                            }
-                                        />
+                                        <ValidatorProfile uri={item.avatarURL} size={32} customStyle={{ marginRight: 10 }} />
                                         <Text style={styles.moniker}>{item.moniker}</Text>
                                         <Radio size={20} color={WhiteColor} active={item.validatorAddress === selected} />
                                     </View>
@@ -100,14 +88,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 1
-    },
-    avatar: {
-        width: 32,
-        maxWidth: 32,
-        height: 32,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 10
     },
     moniker: {
         flex: 1,

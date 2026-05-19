@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
+import LaunchIcon from '@/assets/icons/material/launch.svg';
 import { CHAIN_SYMBOL, PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from '@/constants/common';
-import { ICON_LINK_ARROW } from '@/constants/images';
 import { BoxColor, DividerColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { convertAmount, convertTime } from '@/util/common';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { IProposalDescriptionState } from '@/hooks/governance/hooks';
 import MarkdownRender from '@/components/parts/markdownRender';
@@ -202,7 +202,7 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
             <View style={[styles.boxH, { justifyContent: 'flex-end', paddingBottom: 30 }]}>
                 <TouchableOpacity style={[styles.boxH, { width: 'auto' }]} onPress={handleMoveToExplorer}>
                     <Text style={[styles.desc, { fontSize: 16, color: TextAddressColor }]}>More View</Text>
-                    <Image style={styles.arrowIcon} source={ICON_LINK_ARROW} />
+                    <LaunchIcon width={16} height={16} color={TextAddressColor} />
                 </TouchableOpacity>
             </View>
             <View style={styles.dividerDashed} />
@@ -355,13 +355,6 @@ const styles = StyleSheet.create({
     titleV: {
         fontSize: 18,
         paddingBottom: 11
-    },
-    arrowIcon: {
-        width: 16,
-        maxWidth: 16,
-        height: 16,
-        overflow: 'hidden',
-        marginLeft: 2
     }
 });
 

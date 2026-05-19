@@ -1,6 +1,6 @@
 import React, { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CHAIN_NETWORK } from '@/../config';
-import { FIRMA_LOGO, VALIDATOR_PROFILE } from '@/constants/images';
+import { FIRMA_LOGO } from '@/constants/images';
 import { Lato, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { fadeIn } from '@/util/animation';
@@ -8,6 +8,7 @@ import { wait } from '@/util/common';
 import { getCW721NFTItemFromId } from '@/util/firma';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 
+import ValidatorProfile from '@/components/parts/validatorProfile';
 import CircleSkeleton from '@/components/skeleton/circleSkeleton';
 import TextSkeleton from '@/components/skeleton/textSkeleton';
 
@@ -81,10 +82,9 @@ const InfoBox = ({ data }: IProps) => {
                 <Fragment>
                     {loaded ? (
                         <View style={styles.wrap}>
-                            <Animated.Image
-                                style={{ width: 15, height: 15, opacity: fadeAnimText, borderRadius: 50 }}
-                                source={imageURI === undefined || imageURI === '' ? VALIDATOR_PROFILE : { uri: imageURI }}
-                            />
+                            <Animated.View style={{ opacity: fadeAnimText }}>
+                                <ValidatorProfile uri={imageURI ?? ''} size={15} />
+                            </Animated.View>
                             <Animated.Text
                                 style={[styles.value, { color: color, opacity: fadeAnimText, flex: 0, paddingLeft: 5, lineHeight: 17 }]}
                                 numberOfLines={1}

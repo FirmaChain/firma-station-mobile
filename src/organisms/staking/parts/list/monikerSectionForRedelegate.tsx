@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { VALIDATOR_PROFILE } from '@/constants/images';
 import { DarkGrayColor, Lato, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { IRedelegationInfo } from '@/hooks/staking/hooks';
 import { ForwardArrow, ForwardArrowWithTail } from '@/components/icon/icon';
+import ValidatorProfile from '@/components/parts/validatorProfile';
 
 interface IProps {
     validators: IRedelegationInfo;
@@ -12,22 +11,10 @@ interface IProps {
 }
 
 const MonikerSectionForRedelegate = ({ validators, navigateValidator }: IProps) => {
-    const [srcAvatarError, setSrcAvatarError] = useState(false);
-    const [dstAvatarError, setDstAvatarError] = useState(false);
     return (
         <View style={[styles.vdWrapperH, { alignItems: 'center' }]}>
             <TouchableOpacity style={styles.monikerWrapperH} onPress={() => navigateValidator(validators.srcAddress)}>
-                <Image
-                    style={styles.avatar}
-                    onError={() => {
-                        setSrcAvatarError(true);
-                    }}
-                    source={
-                        srcAvatarError || validators.srcAvatarURL === null || validators.srcAvatarURL === ''
-                            ? VALIDATOR_PROFILE
-                            : { uri: validators.srcAvatarURL }
-                    }
-                />
+                <ValidatorProfile uri={validators.srcAvatarURL} size={32} customStyle={{ marginRight: 10 }} />
                 <Text numberOfLines={1} ellipsizeMode="tail" style={styles.moniker}>
                     {validators.srcMoniker}
                 </Text>
@@ -36,17 +23,7 @@ const MonikerSectionForRedelegate = ({ validators, navigateValidator }: IProps) 
                 <ForwardArrowWithTail size={20} color={TextDarkGrayColor} />
             </View>
             <TouchableOpacity style={styles.monikerWrapperH} onPress={() => navigateValidator(validators.dstAddress)}>
-                <Image
-                    style={styles.avatar}
-                    onError={() => {
-                        setDstAvatarError(true);
-                    }}
-                    source={
-                        dstAvatarError || validators.dstAvatarURL === null || validators.dstAvatarURL === ''
-                            ? VALIDATOR_PROFILE
-                            : { uri: validators.dstAvatarURL }
-                    }
-                />
+                <ValidatorProfile uri={validators.dstAvatarURL} size={32} customStyle={{ marginRight: 10 }} />
                 <Text numberOfLines={1} ellipsizeMode="tail" style={styles.moniker}>
                     {validators.dstMoniker}
                 </Text>
@@ -70,15 +47,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         paddingRight: 5,
         paddingVertical: 6
-    },
-    avatar: {
-        flex: 1,
-        width: 32,
-        maxWidth: 32,
-        height: 32,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 10
     },
     moniker: {
         flex: 1,

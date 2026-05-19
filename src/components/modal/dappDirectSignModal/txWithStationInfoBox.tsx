@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { CHAIN_SYMBOL } from '@/constants/common';
-import { VALIDATOR_PROFILE } from '@/constants/images';
 import { AddressTextColor, Lato, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
 import {
     AUTHZ_GRANT,
@@ -20,11 +19,11 @@ import {
 import { useAppSelector } from '@/redux/hooks';
 import { convertAmount, convertNumber, convertTime, convertToFctNumber } from '@/util/common';
 import { getStakingFromvalidator, getValidatorFromAddress } from '@/util/firma';
-import FastImage from '@d11/react-native-fast-image';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useProposalData } from '@/hooks/governance/hooks';
 import { getValidatorAvatarURL, useStakingData } from '@/hooks/staking/hooks';
+import ValidatorProfile from '@/components/parts/validatorProfile';
 
 interface IProps {
     type: string;
@@ -61,7 +60,6 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
     const { stakingState, getStakingState } = useStakingData();
     const { proposalState, handleProposalPolling } = useProposalData();
 
-    const [avatarError, setAvatarError] = useState<boolean>(false);
     const [srcMoniker, setSrcMoniker] = useState<string>('');
     const [srcAvatarURL, setSrcAvatarURL] = useState<string>('');
     const [dstMoniker, setDstMoniker] = useState<string>('');
@@ -133,17 +131,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
         return (
             <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
                 <Text style={styles.catTitle}>{title}</Text>
-                <FastImage
-                    style={styles.avatar}
-                    onError={() => {
-                        setAvatarError(true);
-                    }}
-                    source={
-                        avatarError || avatarURL === null || avatarURL === ''
-                            ? VALIDATOR_PROFILE
-                            : { uri: avatarURL, priority: FastImage.priority.low }
-                    }
-                />
+                <ValidatorProfile uri={avatarURL} size={20} customStyle={{ marginRight: 7 }} />
                 <Text style={[styles.value, { flex: 0, color: AddressTextColor, fontSize: 15 }]} numberOfLines={1} ellipsizeMode={'middle'}>
                     {moniker}
                 </Text>
@@ -335,14 +323,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: TextDarkGrayColor,
         textAlign: 'right'
-    },
-    avatar: {
-        width: 20,
-        maxWidth: 20,
-        height: 20,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 7
     }
 });
 

@@ -9,15 +9,9 @@ export const LOADING_LOGO_1 = require('@/assets/images/ic-loding-step-1-wh-68-px
 export const LOADING_LOGO_2 = require('@/assets/images/ic-loding-step-2-wh-68-px.png');
 export const LOADING_LOGO_3 = require('@/assets/images/ic-loding-step-3-wh-68-px.png');
 
-export const ICON_HISTORY = require('@/assets/images/ic_history_bxnone_wh_32px.png');
-export const ICON_DOCUMENT = require('@/assets/images/ic_document_wh_32px.png');
-
 export const ARROW_ACCORDION = require('@/assets/images/ic-m-chevron-gy-24-px.png');
 
-export const VALIDATOR_PROFILE = require('@/assets/images/ic_profile.png');
-
 export const ICON_VOTE_CHECK = require('@/assets/images/ic-check-round-32-px.png');
-export const ICON_LINK_ARROW = require('@/assets/images/ic-arrow-rignt-top-bl-16-px.png');
 
 export const ICON_OSMO_LOGO = require('@assets/images/ic_osmo_logo.png');
 export const ICON_ATOM_LOGO = require('@assets/images/ic_atom_logo.png');

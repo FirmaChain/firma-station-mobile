@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
-import { ICON_HISTORY } from '@/constants/images';
+import HistoryIcon from '@/assets/icons/material/history.svg';
 import { BgColor, GrayColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import { ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { QRCodeScannerIcon, QuestionFilledCircle, Setting } from '@/components/icon/icon';
 
@@ -47,17 +47,13 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
                     )}
                 </View>
 
-                <View style={[styles.boxH, { justifyContent: 'flex-end', paddingRight: 20 }]}>
+                <View style={[styles.boxH, { justifyContent: 'flex-end', gap: 25, paddingRight: 20 }]}>
                     <TouchableOpacity hitSlop={{ top: 5, bottom: 5, left: 10, right: 10 }} onPress={() => handleQRScanner(true)}>
                         <QRCodeScannerIcon size={30} color={WhiteColor} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        hitSlop={{ top: 5, bottom: 5, left: 10, right: 10 }}
-                        style={{ marginHorizontal: 25 }}
-                        onPress={() => handleMoveToHistory()}
-                    >
-                        <Image style={{ width: 30, height: 30, resizeMode: 'contain' }} source={ICON_HISTORY} />
+                    <TouchableOpacity hitSlop={{ top: 5, bottom: 5, left: 10, right: 10 }} onPress={() => handleMoveToHistory()}>
+                        <HistoryIcon width={30} height={30} color={WhiteColor} />
                     </TouchableOpacity>
 
                     <TouchableOpacity hitSlop={{ top: 5, bottom: 5, left: 10, right: 10 }} onPress={() => handleMoveToSetting()}>

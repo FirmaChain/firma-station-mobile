@@ -1,17 +1,15 @@
-import React, { useMemo, useState } from 'react';
-import { VALIDATOR_PROFILE } from '@/constants/images';
+import React, { useMemo } from 'react';
 import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
-import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { IValidatorDescription } from '@/hooks/staking/hooks';
+import ValidatorProfile from '@/components/parts/validatorProfile';
 
 interface IProps {
     validator: IValidatorDescription | undefined;
 }
 
 const DescriptionBox = ({ validator }: IProps) => {
-    const [avatarError, setAvatarError] = useState(false);
-
     const Avatar = useMemo(() => {
         if (validator === undefined) return '';
         return validator.avatar;
@@ -45,15 +43,7 @@ const DescriptionBox = ({ validator }: IProps) => {
 
     return (
         <View style={[styles.boxH, { backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10 }]}>
-            <View style={{ height: '100%', justifyContent: 'flex-start' }}>
-                <Image
-                    style={styles.avatar}
-                    onError={() => {
-                        setAvatarError(true);
-                    }}
-                    source={avatarError || Avatar === '' ? VALIDATOR_PROFILE : { uri: Avatar }}
-                />
-            </View>
+            <ValidatorProfile uri={Avatar} size={68} customStyle={{ marginRight: 10 }} />
             <View style={[styles.boxV, { flex: 1 }]}>
                 <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.moniker, { paddingBottom: MonikerPaddingBottom }]}>
                     {Moniker}
@@ -71,18 +61,10 @@ const DescriptionBox = ({ validator }: IProps) => {
 
 const styles = StyleSheet.create({
     boxH: {
-        flexDirection: 'row',
-        alignItems: 'center'
+        flexDirection: 'row'
     },
     boxV: {
         alignItems: 'flex-start'
-    },
-    avatar: {
-        width: 68,
-        height: 68,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 10
     },
     moniker: {
         width: '100%',
