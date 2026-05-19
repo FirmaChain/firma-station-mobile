@@ -5,6 +5,7 @@ const V2_ITERATIONS = 2000;
 const V2_KEY_BYTES = 32;
 const V2_SALT_BYTES = 16;
 const V2_IV_BYTES = 12;
+const V2_TAG_BYTES = 16;
 
 interface IEncryptV2Envelope {
     v: 2;
@@ -87,13 +88,26 @@ const parseEncryptV2Envelope = (value: string): IEncryptV2Envelope | null => {
         if (parsed === null || typeof parsed !== 'object') return null;
         if (parsed.v !== 2) return null;
         if (parsed.kdf !== 'pbkdf2-sha256') return null;
-        if (typeof parsed.iter !== 'number') return null;
+        if (parsed.iter !== V2_ITERATIONS) return null;
         if (typeof parsed.salt !== 'string') return null;
         if (typeof parsed.iv !== 'string') return null;
         if (typeof parsed.tag !== 'string') return null;
         if (typeof parsed.ct !== 'string') return null;
+        if (!isBase64WithByteLength(parsed.salt, V2_SALT_BYTES)) return null;
+        if (!isBase64WithByteLength(parsed.iv, V2_IV_BYTES)) return null;
+        if (!isBase64WithByteLength(parsed.tag, V2_TAG_BYTES)) return null;
+        if (!isBase64WithByteLength(parsed.ct)) return null;
         return parsed as IEncryptV2Envelope;
     } catch {
         return null;
     }
+};
+
+const isBase64WithByteLength = (value: string, byteLength?: number) => {
+    if (value === '' || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)) {
+        return false;
+    }
+
+    const decoded = Buffer.from(value, 'base64');
+    return byteLength === undefined ? decoded.length > 0 : decoded.length === byteLength;
 };

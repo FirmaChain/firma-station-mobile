@@ -35,7 +35,8 @@ export const decryptLegacy = (encryptedMessage: string, pass: string): string =>
 
         const key = CryptoJS.PBKDF2(pass, salt, {
             keySize: keySize / 32,
-            iterations: iterations
+            iterations: iterations,
+            hasher: CryptoJS.algo.SHA1
         });
 
         const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
@@ -60,7 +61,8 @@ export const encryptLegacy = (originalMessage: string, pass: string): string => 
         const salt = CryptoJS.lib.WordArray.random(128 / 8);
         const key = CryptoJS.PBKDF2(pass, salt, {
             keySize: keySize / 32,
-            iterations: iterations
+            iterations: iterations,
+            hasher: CryptoJS.algo.SHA1
         });
 
         const iv = CryptoJS.lib.WordArray.random(128 / 8);

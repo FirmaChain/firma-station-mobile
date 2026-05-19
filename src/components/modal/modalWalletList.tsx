@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
-import { getChain } from '@/util/secureKeyChain';
 import { isV2EncryptedEnvelope } from '@/util/keystore';
+import { getChain } from '@/util/secureKeyChain';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -115,7 +115,7 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
     const RenderListItem = useCallback(
         ({ item, drag }: RenderItemParams<Item>) => {
             const index = listData.findIndex((dataItem) => dataItem.key === item.key);
-            const version = walletVersions[item.label] ?? 'v1';
+            const version = walletVersions[item.label]; // ?? 'v1';
 
             return (
                 <TouchableOpacity
@@ -130,9 +130,11 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
                 >
                     <View style={styles.itemLabelBox}>
                         <Text style={styles.itemTitle}>{item.label}</Text>
-                        <View style={styles.versionBadge}>
-                            <Text style={styles.versionText}>{version}</Text>
-                        </View>
+                        {version && (
+                            <View style={styles.versionBadge}>
+                                <Text style={styles.versionText}>{version}</Text>
+                            </View>
+                        )}
                     </View>
                     {isEdit ? (
                         <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onPressIn={drag}>
