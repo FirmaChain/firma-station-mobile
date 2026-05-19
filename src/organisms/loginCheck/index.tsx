@@ -113,7 +113,7 @@ const LoginCheck = () => {
     const handleLoginViaBioAuth = async () => {
         if (isProcessing === true) return;
 
-        const loadingRequestId = CommonActions.beginLoadingProgress();
+        let loadingRequestId: string | null = null;
 
         try {
             isProcessing = true;
@@ -121,6 +121,7 @@ const LoginCheck = () => {
 
             const auth = await confirmViaBioAuth();
             if (auth) {
+                loadingRequestId = CommonActions.beginLoadingProgress();
                 const result = await getPasswordViaBioAuth();
                 passwordFromBio = result;
             } else {
@@ -149,12 +150,13 @@ const LoginCheck = () => {
                 finishLogin();
             }
         } catch (error) {
-            CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
                 text1: String(error)
             });
             isProcessing = false;
+        } finally {
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 

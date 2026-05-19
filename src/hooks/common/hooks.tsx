@@ -91,6 +91,9 @@ export const useServerMessage = () => {
                         'Cache-Control': 'no-store',
                         Pragma: 'no-store',
                         Expires: '0'
+                    },
+                    context: {
+                        disableProgress: true
                     }
                 })
                 .json();
