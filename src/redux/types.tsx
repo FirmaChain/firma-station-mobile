@@ -20,6 +20,16 @@ export interface ICWContractsState {
     network: string;
 }
 
+export interface IPendingNotificationDeepLinkTarget {
+    kind: 'proposal';
+    proposalId: number;
+}
+
+export interface IPendingNotificationDeepLinkState {
+    target: IPendingNotificationDeepLinkTarget | null;
+    resetOnConsume: boolean;
+}
+
 // common
 export const APP_STATE = 'APP_STATE';
 export const MAINTENANCE_STATE = 'MAINTENANCE_STATE';
@@ -37,6 +47,7 @@ export const IS_NETWORK_CHANGED = 'IS_NETWORK_CHANGED';
 export const IS_CONNECTION = 'IS_CONNECTION';
 export const LOGGEDIN = 'LOGGEDIN';
 export const DATA_LOAD_STATUS = 'DATA_LOAD_STATUS';
+export const PENDING_NOTIFICATION_DEEP_LINK = 'PENDING_NOTIFICATION_DEEP_LINK';
 export const CURRENT_ROUTE = 'CURRENT_ROUTE';
 
 // modal

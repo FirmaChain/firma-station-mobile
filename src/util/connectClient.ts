@@ -1,3 +1,4 @@
+import { CommonActions } from '@/redux/actions';
 import { FirmaUtil } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 
@@ -203,7 +204,7 @@ class ConnectClient {
         return qrcode.includes('dapp://');
     }
 
-    public async requestQRData(session: UserSession, QRCode: string): Promise<QRData> {
+    public async requestQRData(session: UserSession, QRCode: string, loadingRequestId?: string): Promise<QRData> {
         try {
             if (QRCode.split('://').length < 2) throw new Error('Invalid QR Format');
 
@@ -232,6 +233,7 @@ class ConnectClient {
             }
         } catch (e) {
             console.log(e);
+            CommonActions.endLoadingProgress(loadingRequestId);
             throw new Error('Invalid QR(' + e + ')');
         }
     }

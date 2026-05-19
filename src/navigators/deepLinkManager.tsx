@@ -145,10 +145,9 @@ const DeepLinkManager = () => {
         return false;
     };
 
-    const handleQRResult = async (result: any) => {
+    const handleQRResult = async (result: any, loadingRequestId?: string) => {
         const isValidAddress = addressCheck(result);
         const isURL = urlForWebLinkCheck(result);
-        let loadingRequestId: string | null = null;
 
         if (isValidAddress) {
             WalletActions.handleDstAddress(result);
@@ -162,7 +161,10 @@ const DeepLinkManager = () => {
 
         try {
             await waitForNextFrame();
-            loadingRequestId = CommonActions.beginLoadingProgress();
+
+            // If not provided (like Dapp sign) add loading queue
+            if (!loadingRequestId) loadingRequestId = CommonActions.beginLoadingProgress();
+
             const session = await connectClient.getUserSession(walletName + network);
             const isDappQR = connectClient.isDappQR(result);
             if (isDappQR) {
@@ -172,7 +174,7 @@ const DeepLinkManager = () => {
                 return;
             }
 
-            const QRData = await connectClient.requestQRData(session, result);
+            const QRData = await connectClient.requestQRData(session, result, loadingRequestId);
             const verification = await connectClient.verifyConnectedWallet(walletAddress, QRData);
             if (verification === false) {
                 //? If verification has failed, show the error message and remove loading progress, and return false.
@@ -180,7 +182,6 @@ const DeepLinkManager = () => {
                     type: 'error',
                     text1: DAPP_INVALID_QR
                 });
-                CommonActions.endLoadingProgress(loadingRequestId);
                 return false;
             }
 
@@ -208,18 +209,19 @@ const DeepLinkManager = () => {
                     idState: updateList,
                     loadingRequestId
                 });
-                wait(500).then(() => {
-                    ModalActions.handleDAppConnectModal(true);
-                });
+                await wait(500);
+                ModalActions.handleDAppConnectModal(true);
             }
         } catch (error) {
-            CommonActions.endLoadingProgress(loadingRequestId);
             ModalActions.handleModalData(null);
             ModalActions.handleDAppData(null);
             return Toast.show({
                 type: 'error',
                 text1: String(error)
             });
+        } finally {
+            // Clear loading id at last
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 
@@ -228,9 +230,9 @@ const DeepLinkManager = () => {
             const data = modalData;
             if (data !== null) {
                 if (data?.result !== undefined) {
-                    handleQRResult(data.result);
+                    handleQRResult(data.result, data.loadingRequestId);
                 } else if (data?.deeplink !== undefined) {
-                    handleQRResult(data.deeplink);
+                    handleQRResult(data.deeplink, data.loadingRequestId);
                 }
             }
         }

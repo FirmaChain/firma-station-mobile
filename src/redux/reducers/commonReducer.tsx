@@ -10,12 +10,14 @@ import {
     DATA_LOAD_STATUS,
     HANDLE_NETWORK_CHANGE_ACTIVATE,
     HANDLE_SCROLL_TO_TOP,
+    IPendingNotificationDeepLinkState,
     IS_BIOAUTH_IN_PROGRESS,
     IS_CONNECTION,
     IS_NETWORK_CHANGED,
     LOCK_STATION,
     LOGGEDIN,
     MAINTENANCE_STATE,
+    PENDING_NOTIFICATION_DEEP_LINK,
     SDK_VERSION,
     SET_REQUEST_ID
 } from '../types';
@@ -39,6 +41,7 @@ export interface ICommonStateProps {
     connect: boolean | null;
     loggedIn: boolean;
     dataLoadStatus: number;
+    pendingNotificationDeepLink: IPendingNotificationDeepLinkState;
     //? Share current route name
     currentRoute: string;
 }
@@ -60,6 +63,10 @@ const initialState: ICommonStateProps = {
     connect: null, // Default is null, because it's not initialized yet
     loggedIn: false,
     dataLoadStatus: 0,
+    pendingNotificationDeepLink: {
+        target: null,
+        resetOnConsume: false
+    },
     currentRoute: '' // Save current route name. for rootView
 };
 
@@ -80,6 +87,7 @@ export const ACTION_CREATORS = {
     IS_CONNECTION: createAction<boolean | null>(IS_CONNECTION),
     LOGGEDIN: createAction<boolean>(LOGGEDIN),
     DATA_LOAD_STATUS: createAction<number>(DATA_LOAD_STATUS),
+    PENDING_NOTIFICATION_DEEP_LINK: createAction<IPendingNotificationDeepLinkState>(PENDING_NOTIFICATION_DEEP_LINK),
     CURRENT_ROUTE: createAction<string>(CURRENT_ROUTE)
 };
 
@@ -100,6 +108,7 @@ export const ACTIONS = {
     handleIsConnection: ACTION_CREATORS.IS_CONNECTION,
     handleLoggedIn: ACTION_CREATORS.LOGGEDIN,
     handleDataLoadStatus: ACTION_CREATORS.DATA_LOAD_STATUS,
+    handlePendingNotificationDeepLink: ACTION_CREATORS.PENDING_NOTIFICATION_DEEP_LINK,
     handleCurrentRoute: ACTION_CREATORS.CURRENT_ROUTE
 };
 
@@ -155,6 +164,9 @@ const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(ACTION_CREATORS.DATA_LOAD_STATUS, (state, { payload }) => {
         state.dataLoadStatus = payload;
+    });
+    builder.addCase(ACTION_CREATORS.PENDING_NOTIFICATION_DEEP_LINK, (state, { payload }) => {
+        state.pendingNotificationDeepLink = payload;
     });
     builder.addCase(ACTION_CREATORS.CURRENT_ROUTE, (state, { payload }) => {
         state.currentRoute = payload;

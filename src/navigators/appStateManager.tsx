@@ -7,11 +7,21 @@ import { BgColor } from '@/constants/theme';
 import { CommonActions, StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { IValidatorsProfileState } from '@/redux/reducers/storageReducer';
+import {
+    clearPendingNotificationDeepLink,
+    getPendingNotificationDeepLink,
+    parseNotificationDeepLink,
+    subscribeNotificationDeepLink,
+    type NotificationDeepLinkTarget
+} from '@/services/notificationDeepLink';
 import { convertNumber, getTimeStamp, wait } from '@/util/common';
 import { Detect } from '@/util/detect';
 import { setFirmaSDK } from '@/util/firma';
 import { VersionCheck } from '@/util/validationCheck';
+import notifee, { EventType } from '@notifee/react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { getApp, getApps } from '@react-native-firebase/app';
+import { getInitialNotification, getMessaging, onNotificationOpenedApp } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppState, Dimensions, Platform, StyleSheet, View } from 'react-native';
@@ -29,13 +39,24 @@ import DeepLinkManager from './deepLinkManager';
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Home>;
 
 const { width, height } = Dimensions.get('window');
+const PENDING_NOTIFICATION_NAVIGATION_DELAY_MS = 500;
+
+const getNotificationDeepLinkKey = (target: NotificationDeepLinkTarget) => `${target.kind}:${target.proposalId}`;
 
 const AppStateManager = () => {
     const { name: walletName } = useAppSelector((state) => state.wallet);
     const { network, validatorsProfile, currency } = useAppSelector((state) => state.storage);
-    const { lockStation, appState, appPausedTime, connect, isNetworkChanged, loggedIn, loading, isBioAuthInProgress } = useAppSelector(
-        (state) => state.common
-    );
+    const {
+        lockStation,
+        appState,
+        appPausedTime,
+        connect,
+        isNetworkChanged,
+        loggedIn,
+        loading,
+        isBioAuthInProgress,
+        pendingNotificationDeepLink
+    } = useAppSelector((state) => state.common);
     const { qrScannerModal } = useAppSelector((state) => state.modal);
 
     const netInfo = useNetInfo();
@@ -47,6 +68,8 @@ const AppStateManager = () => {
     const [maintenanceData, setMaintenanceData] = useState({});
     const [openAlertModal, setOpenAlertModal] = useState(false);
     const networkLoadingRequestId = useRef<string | null>(null);
+    const lastHandledDeepLinkRef = useRef('');
+    const navigationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const navigation: ScreenNavgationProps = useNavigation();
 
@@ -95,6 +118,13 @@ const AppStateManager = () => {
         CommonActions.handleLoggedIn(true);
         CommonActions.handleLockStation(false);
         CommonActions.handleAppPausedTime('');
+    };
+
+    const handleLockModalOpen = (open: boolean) => {
+        CommonActions.handleLockStation(open);
+        if (open === false) {
+            CommonActions.handleAppPausedTime('');
+        }
     };
 
     const handleAlertModalOpen = (open: boolean) => {
@@ -149,6 +179,87 @@ const AppStateManager = () => {
             });
         }
     }, [loggedIn, endNetworkLoadingProgress]);
+
+    const clearNavigationTimer = useCallback(() => {
+        if (navigationTimerRef.current !== null) {
+            clearTimeout(navigationTimerRef.current);
+            navigationTimerRef.current = null;
+        }
+    }, []);
+
+    const routeNotificationDeepLink = useCallback(
+        (target: NotificationDeepLinkTarget, shouldResetStack: boolean) => {
+            const targetKey = getNotificationDeepLinkKey(target);
+            if (lastHandledDeepLinkRef.current === targetKey) {
+                return;
+            }
+
+            lastHandledDeepLinkRef.current = targetKey;
+            CommonActions.handlePendingNotificationDeepLink({ target: null, resetOnConsume: false });
+            console.info('[NotificationDeepLink] handling:', {
+                kind: target.kind,
+                proposalId: target.proposalId,
+                shouldResetStack
+            });
+
+            if (shouldResetStack) {
+                navigation.reset({
+                    routes: [{ name: Screens.Home }, { name: Screens.Proposal, params: { proposalId: target.proposalId } }]
+                });
+            } else {
+                navigation.navigate(Screens.Proposal, { proposalId: target.proposalId });
+            }
+        },
+        [navigation]
+    );
+
+    const handleNotificationTarget = useCallback(
+        (target: NotificationDeepLinkTarget) => {
+            const targetKey = getNotificationDeepLinkKey(target);
+            if (lastHandledDeepLinkRef.current === targetKey) {
+                return;
+            }
+
+            const shouldResetStack = !loggedIn || walletName === '';
+            const canRouteImmediately = appState === 'active' && loggedIn && walletName !== '' && lockStation === false;
+
+            if (canRouteImmediately) {
+                routeNotificationDeepLink(target, false);
+                return;
+            }
+
+            CommonActions.handlePendingNotificationDeepLink({ target, resetOnConsume: shouldResetStack });
+            console.info('[NotificationDeepLink] queued:', {
+                kind: target.kind,
+                proposalId: target.proposalId,
+                shouldResetStack
+            });
+        },
+        [appState, loggedIn, lockStation, routeNotificationDeepLink, walletName]
+    );
+
+    const handleNotificationDeepLink = useCallback(
+        (deepLink: string) => {
+            const target = parseNotificationDeepLink(deepLink);
+            console.info('[NotificationDeepLink] candidate received:', {
+                supported: target !== null,
+                kind: target?.kind,
+                proposalId: target?.proposalId,
+                appState,
+                loggedIn,
+                lockStation,
+                walletName
+            });
+
+            if (!target) {
+                console.info('[NotificationDeepLink] unsupported deep link:', { length: deepLink.length });
+                return;
+            }
+
+            handleNotificationTarget(target);
+        },
+        [appState, handleNotificationTarget, loggedIn, lockStation, walletName]
+    );
 
     useEffect(() => {
         handleInitialize();
@@ -239,6 +350,151 @@ const AppStateManager = () => {
         syncNetworkChangeLoadingProgress();
     }, [network]);
 
+    useEffect(() => {
+        const unsubscribe = subscribeNotificationDeepLink(handleNotificationTarget);
+        return () => {
+            unsubscribe();
+        };
+    }, [handleNotificationTarget]);
+
+    useEffect(() => {
+        const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ type, detail }) => {
+            if (type !== EventType.PRESS) {
+                return;
+            }
+
+            const deepLink = detail.notification?.data?.deeplink;
+            console.info('[NotificationDeepLink] foreground press deeplink:', {
+                hasDeepLink: typeof deepLink === 'string' && deepLink !== '',
+                length: typeof deepLink === 'string' ? deepLink.length : 0
+            });
+            if (typeof deepLink === 'string' && deepLink !== '') {
+                handleNotificationDeepLink(deepLink);
+            }
+        });
+
+        return () => {
+            unsubscribeForegroundEvent();
+        };
+    }, [handleNotificationDeepLink]);
+
+    useEffect(() => {
+        if (getApps().length === 0) {
+            return;
+        }
+
+        const fcm = getMessaging(getApp());
+        const unsubscribeOpenedApp = onNotificationOpenedApp(fcm, (message) => {
+            const deepLink = message.data?.deeplink;
+            console.info('[NotificationDeepLink] opened-app deeplink:', {
+                hasDeepLink: typeof deepLink === 'string' && deepLink !== '',
+                length: typeof deepLink === 'string' ? deepLink.length : 0
+            });
+            if (typeof deepLink === 'string' && deepLink !== '') {
+                handleNotificationDeepLink(deepLink);
+            }
+        });
+
+        return () => {
+            unsubscribeOpenedApp();
+        };
+    }, [handleNotificationDeepLink]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        void (async () => {
+            if (getApps().length === 0) {
+                return;
+            }
+
+            const initialNotification = await getInitialNotification(getMessaging(getApp()));
+            const deepLink = initialNotification?.data?.deeplink;
+            console.info('[NotificationDeepLink] initial notification deeplink:', {
+                hasDeepLink: typeof deepLink === 'string' && deepLink !== '',
+                length: typeof deepLink === 'string' ? deepLink.length : 0
+            });
+
+            if (!isMounted || typeof deepLink !== 'string' || deepLink === '') {
+                return;
+            }
+
+            handleNotificationDeepLink(deepLink);
+        })();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [handleNotificationDeepLink]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        void (async () => {
+            if (pendingNotificationDeepLink?.target !== null) {
+                return;
+            }
+
+            const storedTarget = await getPendingNotificationDeepLink();
+            console.info('[NotificationDeepLink] stored target snapshot:', {
+                hasTarget: storedTarget !== null,
+                kind: storedTarget?.kind,
+                proposalId: storedTarget?.proposalId
+            });
+
+            if (!isMounted || storedTarget === null) {
+                return;
+            }
+
+            CommonActions.handlePendingNotificationDeepLink({ target: storedTarget, resetOnConsume: true });
+            await clearPendingNotificationDeepLink();
+            console.info('[NotificationDeepLink] stored target restored into redux');
+        })();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [pendingNotificationDeepLink.target]);
+
+    useEffect(() => {
+        clearNavigationTimer();
+
+        console.info('[NotificationDeepLink] pending effect snapshot:', {
+            loggedIn,
+            lockStation,
+            hasPendingTarget: pendingNotificationDeepLink.target !== null,
+            kind: pendingNotificationDeepLink.target?.kind,
+            proposalId: pendingNotificationDeepLink.target?.proposalId,
+            resetOnConsume: pendingNotificationDeepLink.resetOnConsume
+        });
+
+        if (!loggedIn || lockStation || pendingNotificationDeepLink.target === null) {
+            console.info('[NotificationDeepLink] pending effect skipped:', {
+                loggedIn,
+                lockStation,
+                hasPendingTarget: pendingNotificationDeepLink.target !== null
+            });
+            return;
+        }
+
+        const targetToHandle = pendingNotificationDeepLink.target;
+        const shouldResetStack = pendingNotificationDeepLink.resetOnConsume;
+        console.info('[NotificationDeepLink] waiting before routing pending deep link:', {
+            kind: targetToHandle.kind,
+            proposalId: targetToHandle.proposalId,
+            shouldResetStack
+        });
+
+        navigationTimerRef.current = setTimeout(() => {
+            navigationTimerRef.current = null;
+            routeNotificationDeepLink(targetToHandle, shouldResetStack);
+        }, PENDING_NOTIFICATION_NAVIGATION_DELAY_MS);
+
+        return () => {
+            clearNavigationTimer();
+        };
+    }, [clearNavigationTimer, loggedIn, lockStation, pendingNotificationDeepLink]);
+
     return (
         <React.Fragment>
             {loading && <Progress />}
@@ -247,7 +503,7 @@ const AppStateManager = () => {
                     {isBioAuthInProgress === false && appState !== 'active' && appPausedTime !== '' && <View style={styles.dim} />}
                     {isBioAuthInProgress === false && appPausedTime !== '' && <View style={styles.dim} />}
                     <DeepLinkManager />
-                    <ValidationModal type={'lock'} open={lockStation} setOpenModal={handleUnlock} validationHandler={handleUnlock} />
+                    <ValidationModal type={'lock'} open={lockStation} setOpenModal={handleLockModalOpen} validationHandler={handleUnlock} />
                 </React.Fragment>
             )}
             {qrScannerModal && <QRCodeScannerModal />}

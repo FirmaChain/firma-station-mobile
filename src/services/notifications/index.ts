@@ -1,15 +1,13 @@
 import { CHAIN_NETWORK } from '@/../config';
 import { StorageActions } from '@/redux/actions';
 import { store } from '@/redux/store';
-import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import { getApp, getApps } from '@react-native-firebase/app';
 import {
     FirebaseMessagingTypes,
-    getInitialNotification,
     getMessaging,
     getToken,
     onMessage,
-    onNotificationOpenedApp,
     onTokenRefresh,
     registerDeviceForRemoteMessages,
     setBackgroundMessageHandler,
@@ -27,20 +25,12 @@ const logNotification = (message: string, ...detail: unknown[]) => {
     console.info('[FCM]', message, ...detail);
 };
 
-const resolveText = (value: unknown, fallback = '') => {
-    if (typeof value === 'string') {
-        return value;
-    }
-
-    return value ? JSON.stringify(value) : fallback;
-};
-
 const resolveTitle = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-    return resolveText(remoteMessage.notification?.title ?? remoteMessage.data?.title, 'Notification');
+    return remoteMessage.notification?.title ?? remoteMessage.data?.title ?? 'Notification';
 };
 
 const resolveBody = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-    return resolveText(remoteMessage.notification?.body ?? remoteMessage.data?.body ?? remoteMessage.data?.message);
+    return remoteMessage.notification?.body ?? remoteMessage.data?.body ?? remoteMessage.data?.message ?? '';
 };
 
 const normalizeData = (data: FirebaseMessagingTypes.RemoteMessage['data']): Record<string, string> => {
@@ -177,7 +167,7 @@ export const syncNotificationTopics = async ({
     return true;
 };
 
-export const showRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
+const displayRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const enabled = await getNotificationEnabled();
     const hasPermission = await hasNotificationPermission(false);
     logNotification('message received', {
@@ -189,7 +179,7 @@ export const showRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.Re
 
     if (!enabled || !hasPermission) {
         logNotification('message skipped because notifications are disabled or permission is missing');
-        return;
+        return false;
     }
 
     const title = resolveTitle(remoteMessage);
@@ -215,6 +205,11 @@ export const showRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.Re
         }
     });
     logNotification('notification displayed', { messageId: remoteMessage.messageId, title });
+    return true;
+};
+
+export const showRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
+    await displayRemoteMessage(remoteMessage);
 };
 
 export const registerBackgroundNotificationHandler = () => {
@@ -259,27 +254,6 @@ export const initializeForegroundNotifications = async (network: string) => {
         void syncNotificationTopics({ network, requestPermission: false });
     });
 
-    const unsubscribeOnNotificationOpenedApp = onNotificationOpenedApp(fcm, (message) => {
-        logNotification('notification opened from background', {
-            messageId: message.messageId,
-            title: resolveTitle(message)
-        });
-    });
-
-    const initialNotification = await getInitialNotification(fcm);
-    if (initialNotification) {
-        logNotification('opened from quit state by notification', {
-            messageId: initialNotification.messageId,
-            title: resolveTitle(initialNotification)
-        });
-    }
-
-    const unsubscribeOnForegroundEvent = notifee.onForegroundEvent(({ type, detail }) => {
-        if (type === EventType.PRESS) {
-            logNotification('foreground notification pressed', detail.notification?.data);
-        }
-    });
-
     const synced = await syncNotificationTopics({ network, requestPermission: false });
     logNotification(`foreground init complete for ${normalizeNetwork(network)}`, { synced });
 
@@ -287,7 +261,5 @@ export const initializeForegroundNotifications = async (network: string) => {
         logNotification(`foreground init cleanup for ${normalizeNetwork(network)}`);
         unsubscribeOnMessage();
         unsubscribeOnTokenRefresh();
-        unsubscribeOnNotificationOpenedApp();
-        unsubscribeOnForegroundEvent();
     };
 };

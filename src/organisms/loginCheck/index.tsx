@@ -52,12 +52,17 @@ const LoginCheck = () => {
     const [loading, setLoading] = useState(true); // Get wallet information
     const [isLoginProgress, setIsLoginProgress] = useState(false); // Login progress
 
+    const finishLogin = () => {
+        CommonActions.handleLoggedIn(true);
+        navigateAfterLogin();
+    };
+
     const handleLogin = async (_recoverValue: string, name: string, password: string) => {
         if (isLoginProgress === true) return;
         setIsLoginProgress(true);
         await waitForNextFrame();
 
-        let loadingRequestId: string | null = null;
+        const loadingRequestId = CommonActions.beginLoadingProgress();
 
         try {
             const { recoverValue: resolvedRecoverValue, needsMigration } = await getRecoverValueWithMeta(name, password);
@@ -90,17 +95,17 @@ const LoginCheck = () => {
                     }
                 }
 
-                loadingRequestId = CommonActions.beginLoadingProgress();
-                navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
+                finishLogin();
             }
         } catch (error) {
             console.log(error);
-            CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
                 text1: String(error)
             });
             setIsLoginProgress(false);
+        } finally {
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 
@@ -108,7 +113,7 @@ const LoginCheck = () => {
     const handleLoginViaBioAuth = async () => {
         if (isProcessing === true) return;
 
-        let loadingRequestId: string | null = null;
+        const loadingRequestId = CommonActions.beginLoadingProgress();
 
         try {
             isProcessing = true;
@@ -141,8 +146,7 @@ const LoginCheck = () => {
                 }
 
                 isProcessing = false;
-                loadingRequestId = CommonActions.beginLoadingProgress();
-                navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
+                finishLogin();
             }
         } catch (error) {
             CommonActions.endLoadingProgress(loadingRequestId);
@@ -179,6 +183,11 @@ const LoginCheck = () => {
         easeInAndOutAnim();
         setDimActive(false);
         fadeIn(Animated, fadeAnim, 950);
+    };
+
+    const navigateAfterLogin = () => {
+        const loadingRequestId = CommonActions.beginLoadingProgress();
+        navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
     };
 
     useEffect(() => {
