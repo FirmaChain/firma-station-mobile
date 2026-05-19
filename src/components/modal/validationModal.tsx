@@ -10,7 +10,7 @@ import { decrypt, keyEncrypt } from '@/util/keystore';
 import { getChain } from '@/util/secureKeyChain';
 import { WalletNameValidationCheck } from '@/util/validationCheck';
 import { getPasswordViaBioAuth, getUseBioAuth } from '@/util/wallet';
-import { Animated, Keyboard, KeyboardEvent, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Keyboard, KeyboardEvent, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -216,7 +216,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
             handleOpen={handleModal}
         >
             <Pressable
-                style={styles.container}
+                style={[styles.container, { paddingTop: insets.top }]}
                 onPress={() => {
                     Keyboard.dismiss();
                 }}
@@ -225,7 +225,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                     style={[
                         styles.backArrowButton,
                         {
-                            top: (Platform.OS === 'ios' ? insets.top : 0) + 2, // 2 is added to match slight gap between normal back btn.
+                            top: insets.top + 2,
                             display: type === 'transaction' ? (backbuttonLock ? 'none' : 'flex') : 'none'
                         }
                     ]}
@@ -286,6 +286,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: BgColor
+        // paddingTop: insets. || 0,
+        // position: 'relative'
     },
     // dim: {
     //   width: '100%',
@@ -318,7 +320,6 @@ const styles = StyleSheet.create({
     },
     backArrowButton: {
         position: 'absolute',
-        // top: Platform.select({ android: 0, ios: getStatusBarHeight() }),
         left: 0
     },
     confirmButton: {

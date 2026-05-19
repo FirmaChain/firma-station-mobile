@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Lato, toastError, toastInfo, toastSuccess } from '@/constants/theme';
 import { wait } from '@/util/common';
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 const CustomToast = () => {
     const [display, setDisplay] = useState('none');
-    const statusBarHeight = StatusBar.currentHeight || 0;
+    const inset = useSafeAreaInsets();
 
     const toastConfig = {
         success: (props: any) => (
@@ -17,7 +18,7 @@ const CustomToast = () => {
                     borderLeftWidth: 0,
                     backgroundColor: toastSuccess,
                     display: display,
-                    marginTop: statusBarHeight + 20
+                    marginTop: inset.top / 2
                 }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
@@ -34,7 +35,7 @@ const CustomToast = () => {
                     backgroundColor: toastInfo,
                     color: 'white',
                     display: display,
-                    marginTop: statusBarHeight + 20
+                    marginTop: inset.top / 2
                 }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={styles.text1Style}
@@ -51,7 +52,7 @@ const CustomToast = () => {
                     backgroundColor: toastError,
                     color: 'white',
                     display: display,
-                    marginTop: statusBarHeight + 20
+                    marginTop: inset.top / 2
                 }}
                 text1Style={styles.text1Style}
                 text1NumberOfLines={5}

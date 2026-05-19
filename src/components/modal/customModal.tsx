@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { BgColor, BoxColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { EmitterSubscription, Keyboard, Modal, Platform, Pressable, StatusBar, StyleSheet, View } from 'react-native';
+import { EmitterSubscription, Keyboard, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { useInterval } from '@/hooks/common/hooks';
@@ -36,8 +36,6 @@ const CustomModal = ({
     toastInModal = true,
     children
 }: IProps) => {
-    const statusBarHeight = StatusBar.currentHeight || 0;
-
     const { appState, isBioAuthInProgress, appPausedTime } = useAppSelector((state) => state.common);
 
     const [mounted, setMounted] = useState(visible);
@@ -189,8 +187,7 @@ const styles = StyleSheet.create({
 
     dimmedBackground: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        paddingTop: StatusBar.currentHeight || 0
+        backgroundColor: 'rgba(0,0,0,0.7)'
     },
 
     backdrop: {
@@ -221,10 +218,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
 
         borderTopLeftRadius: 4,
-        borderTopRightRadius: 4,
-
-        paddingTop: StatusBar.currentHeight || 0,
-        paddingBottom: Platform.OS === 'ios' ? 30 : 0
+        borderTopRightRadius: 4
     }
 });
 

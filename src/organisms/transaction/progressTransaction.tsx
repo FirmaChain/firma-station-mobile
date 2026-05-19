@@ -6,7 +6,6 @@ import { fadeIn } from '@/util/animation';
 import { useFocusEffect } from '@react-navigation/native';
 import { Animated, BackHandler, Easing, Platform, StyleSheet, Text, View } from 'react-native';
 
-// import { getStatusBarHeight } from "react-native-status-bar-height";
 import { QuestionCircle } from '@/components/icon/icon';
 
 const ProgressTransaction = () => {
@@ -122,7 +121,6 @@ const styles = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center'
-        // paddingTop: getStatusBarHeight(),
     },
     background: {
         position: 'absolute',
