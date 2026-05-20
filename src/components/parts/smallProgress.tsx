@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { LOADING_LOGO_0, LOADING_LOGO_1, LOADING_LOGO_2, LOADING_LOGO_3 } from '@/constants/images';
+import { TextCatTitleColor } from '@/constants/theme';
 import { fadeIn, fadeOut } from '@/util/animation';
 import { Animated, StyleSheet, View } from 'react-native';
+
+import LogoProgress from './logoProgress';
 
 const SmallProgress = () => {
     const fadeAnim_1 = useRef(new Animated.Value(0)).current;
@@ -42,10 +44,7 @@ const SmallProgress = () => {
 
     return (
         <View style={styles.box}>
-            <Animated.Image style={[styles.logo, { opacity: 0.5 }]} source={LOADING_LOGO_0} />
-            <Animated.Image style={[styles.logo, { opacity: fadeAnim_1 }]} source={LOADING_LOGO_1} />
-            <Animated.Image style={[styles.logo, { opacity: fadeAnim_2 }]} source={LOADING_LOGO_2} />
-            <Animated.Image style={[styles.logo, { opacity: fadeAnim_3 }]} source={LOADING_LOGO_3} />
+            <LogoProgress size={19.5} fillColor={TextCatTitleColor} style={styles.box} />
         </View>
     );
 };
@@ -55,15 +54,7 @@ const styles = StyleSheet.create({
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 9,
-        paddingHorizontal: 13
-    },
-    logo: {
-        width: 20,
-        height: 20,
-        position: 'absolute',
-        top: 0,
-        left: 0
+        padding: 8
     }
 });
 

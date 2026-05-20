@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
+import AtomLogo from '@/assets/icons/blockchain/cosmos.svg';
+import FirmaLogo from '@/assets/icons/blockchain/firmachain.svg';
+import OsmoLogo from '@/assets/icons/blockchain/osmo.svg';
 import { FAVORITE_REMOVE_SUCCESS, FAVORITE_REMOVE_WARN_TEXT } from '@/constants/common';
-import { ICON_ATOM_LOGO, ICON_OSMO_LOGO, LOADING_LOGO_3 } from '@/constants/images';
 import {
     BgColor,
     BoxDarkColor,
@@ -17,7 +19,6 @@ import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { IFavoriteProps } from '@/redux/types';
 import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
-import FastImage from '@d11/react-native-fast-image';
 import { filter, isEqual } from 'es-toolkit/compat';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
@@ -118,11 +119,10 @@ interface FavoriteListItemProps {
 }
 
 const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, onRemove, drag }: FavoriteListItemProps) => {
-    const getLogoImage = (address: string) => {
-        if (address.includes('firma')) return LOADING_LOGO_3;
-        if (address.includes('cosmos')) return ICON_ATOM_LOGO;
-        if (address.includes('osmo')) return ICON_OSMO_LOGO;
-        return LOADING_LOGO_3;
+    const getLogoSVG = (address: string) => {
+        if (address.includes('cosmos')) return <AtomLogo width={20} height={20} />;
+        if (address.includes('osmo')) return <OsmoLogo width={20} height={20} />;
+        return <FirmaLogo color={TextColor} width={20} height={20} />;
     };
 
     return (
@@ -131,7 +131,8 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
                 <Animated.View
                     style={{
                         marginRight: animationState.iconMargin,
-                        width: animationState.iconWidth
+                        width: animationState.iconWidth,
+                        opacity: isEdit ? 1 : 0
                     }}
                 >
                     <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} onPress={() => isEdit && onRemove(item)}>
@@ -141,9 +142,7 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
 
                 <TouchableOpacity style={styles.favoriteItemBox} onPress={() => onSelect(item.address, item.memo || '', isEdit)}>
                     <View style={styles.nameBox}>
-                        <View style={{ justifyContent: 'center' }}>
-                            <FastImage style={styles.logo} source={getLogoImage(item.address)} />
-                        </View>
+                        <View style={{ justifyContent: 'center', marginRight: 7 }}>{getLogoSVG(item.address)}</View>
                         <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>
                             {item.name}
                         </Text>

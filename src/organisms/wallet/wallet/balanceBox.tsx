@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
+import FirmaLogo from '@/assets/icons/blockchain/firmachain.svg';
 import { CHAIN_SYMBOL, CURRENCY_SYMBOL } from '@/constants/common';
-import { FIRMA_LOGO } from '@/constants/images';
-import { BoxColor, DisableColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import { BoxColor, DisableColor, GrayColor, Lato, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
 import { useIBCTokenContext } from '@/context/ibcTokenContext';
 import { convertAmount, convertCurrent, convertNumber, makeDecimalPoint, resizeFontSize } from '@/util/common';
 import { FirmaUtil } from '@firmachain/firma-js';
@@ -99,7 +99,7 @@ const BalanceBox = ({ stakingValues, handleSend, handleSendIBC }: IProps) => {
                 <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 }]}>
                     <View>
                         <View style={[styles.wrapperH, { alignItems: 'center' }]}>
-                            <Image style={styles.logo} source={FIRMA_LOGO} />
+                            <FirmaLogo style={styles.logo} color={GrayColor} />
                             <View style={[styles.currency, { alignItems: 'flex-end' }]}>
                                 <Text style={[styles.balance, { fontSize: balanceTextSize }]}>{convertAmount({ value: available })}</Text>
                                 <Text style={[styles.chainName, { paddingLeft: 2, fontSize: 16 }]}>{` ${_CHAIN_SYMBOL}`}</Text>

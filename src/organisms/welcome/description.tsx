@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import FirmaLogo from '@/assets/icons/blockchain/firmachain.svg';
 import ArrowForward from '@/assets/icons/material/arrowForward.svg';
-import { FIRMA_LOGO } from '@/constants/images';
 import { ChakraPetch, GrayColor, Lato, PointLightColor, TextColor, TextGrayColor } from '@/constants/theme';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { WalletIcon } from '@/components/icon/icon';
 
@@ -41,7 +41,7 @@ const Description = ({ title, desc }: IProps) => {
                         <ArrowForward style={styles.arrow} color={arrowIndex === 1 ? PointLightColor : GrayColor} />
                         <ArrowForward style={styles.arrow} color={arrowIndex === 2 ? PointLightColor : GrayColor} />
                     </View>
-                    <Image style={styles.logo} source={FIRMA_LOGO} />
+                    <FirmaLogo width={50} height={50} color={GrayColor} />
                 </View>
                 {desc && <Text style={styles.desc}>{desc}</Text>}
             </View>

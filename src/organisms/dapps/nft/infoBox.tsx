@@ -1,12 +1,12 @@
 import React, { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CHAIN_NETWORK } from '@/../config';
-import { FIRMA_LOGO } from '@/constants/images';
-import { Lato, TextColor, TextDarkGrayColor, WhiteColor } from '@/constants/theme';
+import FirmaLogo from '@/assets/icons/blockchain/firmachain.svg';
+import { Lato, TextColor, TextDarkGrayColor, TextGrayColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { fadeIn } from '@/util/animation';
 import { wait } from '@/util/common';
 import { getCW721NFTItemFromId } from '@/util/firma';
-import { Animated, Image, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import ValidatorProfile from '@/components/parts/validatorProfile';
 import CircleSkeleton from '@/components/skeleton/circleSkeleton';
@@ -123,7 +123,7 @@ const InfoBox = ({ data }: IProps) => {
                         paddingLeft: 2
                     }}
                 >
-                    <Image source={FIRMA_LOGO} style={{ width: 15, height: 15, borderRadius: 50, marginRight: 3 }} />
+                    <FirmaLogo width={15} height={15} color={TextGrayColor} style={{ marginRight: 3 }} />
                     <Text style={[styles.value, { flex: 0 }]}>
                         {'FIRMACHAIN '}
                         <Text style={[styles.value, { flex: 0, fontSize: 14, color: TextDarkGrayColor }]}>{chainID}</Text>
