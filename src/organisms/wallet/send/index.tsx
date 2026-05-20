@@ -128,17 +128,17 @@ const Send = () => {
             } else {
                 setAlertDescription(WRONG_TARGET_ADDRESS_WARN_TEXT);
                 setOpenAlertModal(true);
-                CommonActions.endLoadingProgress(loadingRequestId);
                 return;
             }
         } catch (error) {
             console.log(error);
-            CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             setOpenAlertModal(true);
             return;
+        } finally {
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
-        CommonActions.endLoadingProgress(loadingRequestId);
+
         handleTransactionModal(true);
     };
 

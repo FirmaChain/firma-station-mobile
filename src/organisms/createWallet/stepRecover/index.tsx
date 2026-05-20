@@ -38,7 +38,7 @@ const StepRecover = ({ type }: IProps) => {
         const loadingRequestId = CommonActions.beginLoadingProgress();
         try {
             if (loading) return;
-            
+
             await waitForNextFrame();
 
             let recover = false;
@@ -49,7 +49,6 @@ const StepRecover = ({ type }: IProps) => {
                 recover = await privateKeyCheck(recoverValue);
             }
 
-            CommonActions.endLoadingProgress(loadingRequestId);
             if (recover === false) {
                 const message = type === 'mnemonic' ? CHECK_MNEMONIC : CHECK_PRIVATEKEY;
                 return Toast.show({
@@ -59,12 +58,13 @@ const StepRecover = ({ type }: IProps) => {
             }
             navigation.navigate(Screens.CreateStepOne, { recoverValue: recoverValue });
         } catch (error) {
-            CommonActions.endLoadingProgress(loadingRequestId);
             console.log('[StepRecover] error : ', error);
             Toast.show({
                 type: 'error',
                 text1: RECOVER_WALLET_FAILED
             });
+        } finally {
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 

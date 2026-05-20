@@ -149,17 +149,19 @@ const DeepLinkManager = () => {
         const isValidAddress = addressCheck(result);
         const isURL = urlForWebLinkCheck(result);
 
-        if (isValidAddress) {
-            WalletActions.handleDstAddress(result);
-            return;
-        }
-
-        if (isURL) {
-            Linking.openURL(result);
-            return;
-        }
+        // If loading finished by modal, it will be handled by the modal
+        let handedOffLoading = false;
 
         try {
+            if (isValidAddress) {
+                WalletActions.handleDstAddress(result);
+                return;
+            }
+            if (isURL) {
+                Linking.openURL(result);
+                return;
+            }
+
             await waitForNextFrame();
 
             // If not provided (like Dapp sign) add loading queue
@@ -170,6 +172,7 @@ const DeepLinkManager = () => {
             if (isDappQR) {
                 const DappQRData = await connectClient.requestDappQRData(session, result);
                 ModalActions.handleModalData({ data: DappQRData, loadingRequestId });
+                handedOffLoading = true;
                 ModalActions.handleDAppServiceRegistModal(true);
                 return;
             }
@@ -192,15 +195,14 @@ const DeepLinkManager = () => {
 
             if (list.includes(projectId)) {
                 ModalActions.handleModalData({ ...QRData, loadingRequestId });
+                handedOffLoading = true;
 
                 if (connectClient.isDirectSign(QRData)) {
-                    wait(500).then(() => {
-                        ModalActions.handleDAppDirectSignModal(true);
-                    });
+                    await wait(500);
+                    ModalActions.handleDAppDirectSignModal(true);
                 } else {
-                    wait(500).then(() => {
-                        ModalActions.handleDAppSignModal(true);
-                    });
+                    await wait(500);
+                    ModalActions.handleDAppSignModal(true);
                 }
             } else {
                 const updateList = { list: [...list, projectId] };
@@ -209,10 +211,12 @@ const DeepLinkManager = () => {
                     idState: updateList,
                     loadingRequestId
                 });
+                handedOffLoading = true;
                 await wait(500);
                 ModalActions.handleDAppConnectModal(true);
             }
         } catch (error) {
+            handedOffLoading = false;
             ModalActions.handleModalData(null);
             ModalActions.handleDAppData(null);
             return Toast.show({
@@ -220,8 +224,10 @@ const DeepLinkManager = () => {
                 text1: String(error)
             });
         } finally {
-            // Clear loading id at last
-            CommonActions.endLoadingProgress(loadingRequestId);
+            // Clear locally-owned loading id only. Modal-owned ids are cleared by the modal show/ready handler.
+            if (!handedOffLoading && loadingRequestId) {
+                CommonActions.endLoadingProgress(loadingRequestId);
+            }
         }
     };
 

@@ -8,7 +8,7 @@ import { install } from 'react-native-quick-crypto';
 
 import App from './App';
 import { name as appName } from './app.json';
-import { emitNotificationDeepLink, savePendingNotificationDeepLink } from './src/services/notificationDeepLink';
+import { savePendingNotificationDeepLink } from './src/services/notificationDeepLink';
 import { registerBackgroundNotificationHandler } from './src/services/notifications';
 
 install();
@@ -25,10 +25,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
         });
 
         if (typeof deepLink === 'string' && deepLink !== '') {
-            const target = await savePendingNotificationDeepLink(deepLink);
-            if (target !== null) {
-                emitNotificationDeepLink(target);
-            }
+            await savePendingNotificationDeepLink(deepLink);
         }
     }
 });
