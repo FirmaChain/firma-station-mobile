@@ -31,8 +31,12 @@ export default Button;
 
 const styles = StyleSheet.create({
     button: {
-        paddingVertical: 16,
-        borderRadius: 4
+        minHeight: 56,
+        maxHeight: 56,
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     disableButton: {
         backgroundColor: DisableColor
