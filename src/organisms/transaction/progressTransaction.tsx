@@ -8,10 +8,14 @@ import { Animated, BackHandler, Easing, Platform, StyleSheet, Text, View } from 
 
 import { QuestionCircle } from '@/components/icon/icon';
 
+const getNow = () => (typeof globalThis.performance?.now === 'function' ? globalThis.performance.now() : Date.now());
+
 const ProgressTransaction = () => {
     const progressAnim = useRef(new Animated.Value(0)).current;
     const fadeAnim_notice = useRef(new Animated.Value(0)).current;
-    const startedAtRef = useRef<number>(Date.now());
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const elapsedSecRef = useRef(0);
+    const noticeShownRef = useRef(false);
 
     const fadeAnim_1 = progressAnim.interpolate({
         inputRange: [0, 0.15, 0.75, 0.9, 1],
@@ -41,16 +45,41 @@ const ProgressTransaction = () => {
     };
 
     useEffect(() => {
-        if (elapsedSec % 60 >= 15) {
+        if (elapsedSec >= 15 && !noticeShownRef.current) {
+            noticeShownRef.current = true;
             fadeIn(Animated, fadeAnim_notice, 300);
         }
-    }, [elapsedSec]);
+    }, [elapsedSec, fadeAnim_notice]);
 
     useEffect(() => {
-        startedAtRef.current = Date.now();
-        const updateElapsed = () => {
-            setElapsedSec(Math.floor((Date.now() - startedAtRef.current) / 1000));
+        const startedAt = getNow();
+
+        const clearTimer = () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+                timerRef.current = null;
+            }
         };
+
+        const updateElapsed = () => {
+            const now = getNow();
+            const targetElapsed = Math.floor((now - startedAt) / 1000);
+            const currentElapsed = elapsedSecRef.current;
+            const elapsedMs = now - startedAt;
+
+            if (currentElapsed < targetElapsed) {
+                const nextElapsed = currentElapsed + 1;
+                elapsedSecRef.current = nextElapsed;
+                setElapsedSec(nextElapsed);
+
+                const catchUpDelay = nextElapsed < targetElapsed ? 50 : Math.max(1000 - (elapsedMs % 1000), 50);
+                timerRef.current = setTimeout(updateElapsed, catchUpDelay);
+                return;
+            }
+
+            timerRef.current = setTimeout(updateElapsed, Math.max(1000 - (elapsedMs % 1000), 50));
+        };
+
         updateElapsed();
 
         const animation = Animated.loop(
@@ -64,10 +93,8 @@ const ProgressTransaction = () => {
         );
         animation.start();
 
-        const timerId = setInterval(updateElapsed, 250);
-
         return () => {
-            clearInterval(timerId);
+            clearTimer();
             animation.stop();
             progressAnim.stopAnimation();
             progressAnim.setValue(0);
