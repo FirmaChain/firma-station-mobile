@@ -3,6 +3,7 @@ import { BgColor, BoxColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { EmitterSubscription, Keyboard, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useInterval } from '@/hooks/common/hooks';
 
@@ -37,8 +38,11 @@ const CustomModal = ({
     children
 }: IProps) => {
     const { appState, isBioAuthInProgress, appPausedTime } = useAppSelector((state) => state.common);
+    const insets = useSafeAreaInsets();
 
     const [mounted, setMounted] = useState(visible);
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
+
     const handleShowRef = useRef(handleShow);
     const prevVisibleRef = useRef(false);
 
@@ -63,11 +67,13 @@ const CustomModal = ({
 
         if (keyboardAvoiding) {
             showSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (event) => {
-                keyboardOffset.value = event.endCoordinates.height;
+                keyboardOffset.value = event.endCoordinates.height + (Platform.OS === 'android' ? insets.bottom : 0);
+                setKeyboardOpen(true);
             });
 
             hideSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => {
                 keyboardOffset.value = 0;
+                setKeyboardOpen(false);
             });
         }
 
@@ -170,7 +176,10 @@ const CustomModal = ({
                 {toastInModal && <CustomToast />}
 
                 <Animated.View style={[styles.sheet, sheetAnimatedStyle]}>
-                    <Pressable style={[styles.modalBox, { backgroundColor: bgColor }]} onPress={Keyboard.dismiss}>
+                    <Pressable
+                        style={[styles.modalBox, { backgroundColor: bgColor, paddingBottom: keyboardOpen ? 0 : insets.bottom }]}
+                        onPress={Keyboard.dismiss}
+                    >
                         {children}
                     </Pressable>
                 </Animated.View>

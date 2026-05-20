@@ -274,7 +274,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                 <View style={styles.headerBox}>
                     <Text style={styles.headerTitle}>{'Add CW Contract'}</Text>
                 </View>
-                <View style={[styles.inputContainer, { marginTop: 15, marginBottom: 8 }]}>
+                <View style={styles.inputContainer}>
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>{'Address'}</Text>
                         <TextButton title={'Paste'} onPressEvent={handlePaste} />
@@ -411,7 +411,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     inputContainer: {
-        paddingHorizontal: 20
+        padding: 20,
+        paddingTop: 10
     },
     textContainer: {
         display: 'flex',
