@@ -7,7 +7,7 @@ import {
     setNotificationEnabled,
     syncNotificationTopics
 } from '@/services/notifications';
-import { AppState, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, AppState, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const NotificationRadio = () => {
@@ -21,6 +21,10 @@ const NotificationRadio = () => {
         let activeRefreshTimer: ReturnType<typeof setTimeout> | undefined;
 
         const loadNotificationState = async () => {
+            if (isMounted) {
+                setIsLoading(true);
+            }
+
             try {
                 const storedEnabled = await getNotificationEnabled();
 
@@ -65,8 +69,10 @@ const NotificationRadio = () => {
         };
     }, [network]);
 
+    const isBusy = isLoading || isUpdating;
+
     const handleToggle = async () => {
-        if (isLoading || isUpdating) {
+        if (isBusy) {
             return;
         }
 
@@ -112,16 +118,15 @@ const NotificationRadio = () => {
     return (
         <View style={styles.listItem}>
             <Text style={styles.itemTitle}>Notifications</Text>
-            <TouchableOpacity
-                activeOpacity={0.8}
-                disabled={isLoading || isUpdating}
-                onPress={handleToggle}
-                style={isLoading || isUpdating ? styles.radioDisabled : {}}
-            >
-                <View style={[styles.radioWrapper, notificationEnabled ? styles.radioWrapperOn : styles.radioWrapperOff]}>
-                    <View style={styles.radio} />
-                </View>
-            </TouchableOpacity>
+            {isBusy ? (
+                <ActivityIndicator size={24} color={WhiteColor} />
+            ) : (
+                <TouchableOpacity activeOpacity={0.8} disabled={isBusy} onPress={handleToggle} style={isBusy ? styles.radioDisabled : {}}>
+                    <View style={[styles.radioWrapper, notificationEnabled ? styles.radioWrapperOn : styles.radioWrapperOff]}>
+                        <View style={styles.radio} />
+                    </View>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
@@ -163,6 +168,12 @@ const styles = StyleSheet.create({
         height: 18,
         borderRadius: 50,
         backgroundColor: WhiteColor
+    },
+    radioSpinner: {
+        width: 18,
+        height: 18,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 
