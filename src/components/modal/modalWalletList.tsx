@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
-import { isV2EncryptedEnvelope } from '@/util/keystore';
-import { getChain } from '@/util/secureKeyChain';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -44,7 +42,6 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
     const [isEdit, setIsEdit] = useState(false);
     const [listData, setListData] = useState(initialData);
     const [containerSize, setContainerSize] = useState(0);
-    const [walletVersions, setWalletVersions] = useState<Record<string, 'v1' | 'v2'>>({});
 
     const handleSelect = (index: number) => {
         onPressEvent(index);
@@ -77,45 +74,11 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
         recreateList();
     }, [listData]);
 
-    useEffect(() => {
-        let cancelled = false;
-
-        const loadWalletVersions = async () => {
-            if (data === null) {
-                if (!cancelled) setWalletVersions({});
-                return;
-            }
-
-            const pairs = await Promise.all(
-                data.map(async (name) => {
-                    try {
-                        const result = await getChain(String(name));
-                        const version = result !== false && isV2EncryptedEnvelope(result.password) ? 'v2' : 'v1';
-                        return [String(name), version] as const;
-                    } catch {
-                        return [String(name), 'v1'] as const;
-                    }
-                })
-            );
-
-            if (!cancelled) {
-                setWalletVersions(Object.fromEntries(pairs));
-            }
-        };
-
-        loadWalletVersions();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [data]);
-
     const canInitialScroll = containerSize > 0 && initVal >= 0 && listData.length > 0;
 
     const RenderListItem = useCallback(
         ({ item, drag }: RenderItemParams<Item>) => {
             const index = listData.findIndex((dataItem) => dataItem.key === item.key);
-            const version = walletVersions[item.label]; // ?? 'v1';
 
             return (
                 <TouchableOpacity
@@ -130,11 +93,6 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
                 >
                     <View style={styles.itemLabelBox}>
                         <Text style={styles.itemTitle}>{item.label}</Text>
-                        {version && (
-                            <View style={styles.versionBadge}>
-                                <Text style={styles.versionText}>{version}</Text>
-                            </View>
-                        )}
                     </View>
                     {isEdit ? (
                         <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onPressIn={drag}>
@@ -148,7 +106,7 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
                 </TouchableOpacity>
             );
         },
-        [containerSize, isEdit, listData, selected, walletVersions]
+        [containerSize, isEdit, listData, selected]
     );
 
     return (
@@ -234,17 +192,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingLeft: 20,
         paddingRight: 8
-    },
-    versionBadge: {
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 999,
-        backgroundColor: BoxColor
-    },
-    versionText: {
-        fontFamily: Lato,
-        fontSize: 12,
-        color: TextCatTitleColor
     }
 });
 
