@@ -3,7 +3,7 @@ import { BgColor, BoxDarkColor } from '@/constants/theme';
 import { isMainTabScreen } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface IProps {
     children: ReactNode;
@@ -28,7 +28,7 @@ const RootView = ({ children, bgColor = BgColor }: IProps) => {
     const bottomViewBg = isMainPage && !isModalOpen && !isLockStation && !isDim && !isDim2 ? BoxDarkColor : 'transparent';
 
     return (
-        <SafeAreaView
+        <View
             style={[
                 styles.container,
                 {
@@ -38,6 +38,7 @@ const RootView = ({ children, bgColor = BgColor }: IProps) => {
                 }
             ]}
         >
+            <View style={{ height: insets.top }} />
             {children}
             <View
                 style={[
@@ -48,7 +49,7 @@ const RootView = ({ children, bgColor = BgColor }: IProps) => {
                     }
                 ]}
             />
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -58,7 +59,6 @@ const styles = StyleSheet.create({
     },
     bottomView: {
         width: '100%',
-        position: 'absolute',
         bottom: 0
     }
 });

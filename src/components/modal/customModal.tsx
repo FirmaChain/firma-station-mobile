@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { BgColor, BoxColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { EmitterSubscription, Keyboard, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Dimensions, EmitterSubscription, Keyboard, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -41,7 +41,6 @@ const CustomModal = ({
     const insets = useSafeAreaInsets();
 
     const [mounted, setMounted] = useState(visible);
-    const [keyboardOpen, setKeyboardOpen] = useState(false);
 
     const handleShowRef = useRef(handleShow);
     const prevVisibleRef = useRef(false);
@@ -67,13 +66,13 @@ const CustomModal = ({
 
         if (keyboardAvoiding) {
             showSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (event) => {
-                keyboardOffset.value = event.endCoordinates.height + (Platform.OS === 'android' ? insets.bottom : 0);
-                setKeyboardOpen(true);
+                const screenHeight = Dimensions.get('screen').height;
+                const keyboardTop = event.endCoordinates.screenY ?? screenHeight - event.endCoordinates.height;
+                keyboardOffset.value = Math.max(0, screenHeight - keyboardTop);
             });
 
             hideSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => {
                 keyboardOffset.value = 0;
-                setKeyboardOpen(false);
             });
         }
 
@@ -151,6 +150,11 @@ const CustomModal = ({
         }
     }, [appPausedTime, appState, closeModal, forceActive, isBioAuthInProgress]);
 
+    const bottomSheetInset =
+        Platform.OS === 'android'
+            ? Math.max(insets.bottom, Math.max(0, Dimensions.get('screen').height - Dimensions.get('window').height))
+            : insets.bottom;
+
     const backdropAnimatedStyle = useAnimatedStyle(() => ({
         opacity: backdropOpacity.value
     }));
@@ -161,13 +165,21 @@ const CustomModal = ({
             {
                 translateY: sheetTranslateY.value - keyboardOffset.value
             }
-        ]
+        ],
+        paddingBottom: keyboardOffset.value ? 0 : bottomSheetInset
     }));
 
     if (!mounted) return null;
 
     return (
-        <Modal visible={mounted} transparent animationType="none" onRequestClose={closeModal} statusBarTranslucent>
+        <Modal
+            visible={mounted}
+            transparent
+            animationType="none"
+            onRequestClose={closeModal}
+            statusBarTranslucent
+            navigationBarTranslucent={Platform.OS === 'android'}
+        >
             <View style={styles.root}>
                 {!fade && <Animated.View pointerEvents="none" style={[styles.dimmedBackground, backdropAnimatedStyle]} />}
 
@@ -175,11 +187,8 @@ const CustomModal = ({
 
                 {toastInModal && <CustomToast />}
 
-                <Animated.View style={[styles.sheet, sheetAnimatedStyle]}>
-                    <Pressable
-                        style={[styles.modalBox, { backgroundColor: bgColor, paddingBottom: keyboardOpen ? 0 : insets.bottom }]}
-                        onPress={Keyboard.dismiss}
-                    >
+                <Animated.View style={[styles.sheet, sheetAnimatedStyle, { backgroundColor: bgColor }]}>
+                    <Pressable style={styles.modalBox} onPress={Keyboard.dismiss}>
                         {children}
                     </Pressable>
                 </Animated.View>
