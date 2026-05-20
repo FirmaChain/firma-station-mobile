@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { getNotificationEnabled, requestNotificationPermission, setNotificationEnabled, syncNotificationTopics } from '@/services/notifications';
+import {
+    getNotificationEnabled,
+    requestNotificationPermission,
+    setNotificationEnabled,
+    syncNotificationTopics
+} from '@/services/notifications';
 import { AppState, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -107,7 +112,12 @@ const NotificationRadio = () => {
     return (
         <View style={styles.listItem}>
             <Text style={styles.itemTitle}>Notifications</Text>
-            <TouchableOpacity activeOpacity={0.8} disabled={isLoading || isUpdating} onPress={handleToggle}>
+            <TouchableOpacity
+                activeOpacity={0.8}
+                disabled={isLoading || isUpdating}
+                onPress={handleToggle}
+                style={isLoading || isUpdating ? styles.radioDisabled : {}}
+            >
                 <View style={[styles.radioWrapper, notificationEnabled ? styles.radioWrapperOn : styles.radioWrapperOff]}>
                     <View style={styles.radio} />
                 </View>
@@ -144,6 +154,9 @@ const styles = StyleSheet.create({
     radioWrapperOff: {
         backgroundColor: DisableColor,
         alignItems: 'flex-start'
+    },
+    radioDisabled: {
+        opacity: 0.45
     },
     radio: {
         width: 18,
