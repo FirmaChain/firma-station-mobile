@@ -57,8 +57,6 @@ export const getWalletList = async () => {
     }
 };
 
-
-
 export const setWalletList = async (list: string) => {
     if (list === '') {
         StorageActions.handleLastSelectedWalletIndex(-1);
@@ -242,70 +240,64 @@ export const setBioAuth = async (name: string, password: string) => {
     }
 };
 
+export const getAutoLoginTimestamp = async (): Promise<string> => {
+    try {
+        const result = await getWalletWithAutoLogin();
+        if (result === '') return '';
+
+        const json = JSON.parse(result);
+        const timestamp = json?.timestamp;
+        if (typeof timestamp !== 'string' && typeof timestamp !== 'number') return '';
+
+        return String(timestamp);
+    } catch (e) {
+        console.error(e);
+        return '';
+    }
+};
+
 export const getPasswordViaBioAuth = async () => {
-    let timestamp = 0;
-    let password = '';
+    const timestamp = await getAutoLoginTimestamp();
+    if (!timestamp) return '';
 
-    const result = await getWalletWithAutoLogin();
-    if (result === '') return '';
-    const json = JSON.parse(result);
-    timestamp = json.timestamp;
-
-    const passwordResult = await getChain(UNIQUE_ID + timestamp.toString());
+    const passwordResult = await getChain(UNIQUE_ID + timestamp);
     if (passwordResult === false) return '';
-    password = decrypt(passwordResult.password, UNIQUE_ID + timestamp.toString());
-    return password;
+
+    return decrypt(passwordResult.password, UNIQUE_ID + timestamp);
 };
 
 // Save encrypted password
 export const setPasswordViaBioAuth = async (password: string) => {
-    let timestamp = 0; // Wallet timestamp (maybe addedAt, or else)
     try {
-        // Get current wallet info
-        const result = await getWalletWithAutoLogin();
+        const timestamp = await getAutoLoginTimestamp();
+        if (!timestamp) return '';
 
-        if (result === '') return '';
-
-        const json = JSON.parse(result);
-        timestamp = json.timestamp; // Get timestamp from wallet info -> What timestamp? addedAt?
-
-        const encWallet = encrypt(password, UNIQUE_ID + timestamp.toString());
+        const encWallet = encrypt(password, UNIQUE_ID + timestamp);
 
         // Save encrypted password to Keychain
-        await setChain(UNIQUE_ID + timestamp.toString(), encWallet);
+        await setChain(UNIQUE_ID + timestamp, encWallet);
     } catch (error) {
         console.log(error);
         throw error;
     }
 };
 
-
-
 export const getDecryptPassword = async () => {
-    let timestamp = 0;
-    let password = '';
+    const timestamp = await getAutoLoginTimestamp();
+    if (!timestamp) return '';
 
-    const result = await getWalletWithAutoLogin();
-    if (result === '') return '';
-    const json = JSON.parse(result);
-    timestamp = json.timestamp;
-
-    const passwordResult = await getChain(timestamp.toString() + UNIQUE_ID);
+    const passwordResult = await getChain(timestamp + UNIQUE_ID);
     if (passwordResult === false) return '';
-    password = decrypt(passwordResult.password, timestamp.toString() + UNIQUE_ID);
-    return password;
+    return decrypt(passwordResult.password, timestamp + UNIQUE_ID);
 };
 
 export const setEncryptPassword = async (password: string) => {
-    let timestamp = 0;
     try {
-        const result = await getWalletWithAutoLogin();
-        if (result === '') return '';
-        const json = JSON.parse(result);
-        timestamp = json.timestamp;
+        const timestamp = await getAutoLoginTimestamp();
+        if (!timestamp) return '';
 
-        const encWallet = encrypt(password, timestamp.toString() + UNIQUE_ID);
-        await setChain(timestamp.toString() + UNIQUE_ID, encWallet);
+        const encWallet = encrypt(password, timestamp + UNIQUE_ID);
+        await setChain(timestamp + UNIQUE_ID, encWallet);
     } catch (error) {
         console.log(error);
         throw error;
@@ -497,7 +489,7 @@ export const writeWalletSecretOnly = async (name: string, password: string, reco
         if (written === false) {
             throw new Error('Failed to write wallet data.');
         }
-        
+
         const verified = getRecoverValueFromEncryptedPayload(written.password, walletKey.toString());
         if (verified.recoverValue !== recoverValue) {
             throw new Error('Wallet write verification failed.');
@@ -505,19 +497,6 @@ export const writeWalletSecretOnly = async (name: string, password: string, reco
     } catch (error) {
         console.log(error);
         throw error;
-    }
-};
-
-export const getAutoLoginTimestamp = async () => {
-    try {
-        const result = await getChain(UNIQUE_ID);
-        if (result === false) return '';
-        const autoLoginWallet = decrypt(result.password, UNIQUE_ID);
-        if (autoLoginWallet === '') return '';
-        const json = JSON.parse(autoLoginWallet);
-        return json.timestamp as string;
-    } catch (error) {
-        return '';
     }
 };
 
