@@ -1,7 +1,9 @@
 import { Buffer } from '@craftzdog/react-native-buffer';
 import { createCipheriv, createDecipheriv, pbkdf2Sync, randomBytes } from 'react-native-quick-crypto';
 
-const V2_ITERATIONS = 2000;
+const V2_ITERATIONS = 100_000;
+const V2_MIN_ITERATIONS = 1_000;
+const V2_MAX_ITERATIONS = 1_000_000;
 const V2_KEY_BYTES = 32;
 const V2_SALT_BYTES = 16;
 const V2_IV_BYTES = 12;
@@ -88,7 +90,8 @@ const parseEncryptV2Envelope = (value: string): IEncryptV2Envelope | null => {
         if (parsed === null || typeof parsed !== 'object') return null;
         if (parsed.v !== 2) return null;
         if (parsed.kdf !== 'pbkdf2-sha256') return null;
-        if (parsed.iter !== V2_ITERATIONS) return null;
+        if (Number.isInteger(parsed.iter) === false) return null;
+        if (parsed.iter < V2_MIN_ITERATIONS || parsed.iter > V2_MAX_ITERATIONS) return null;
         if (typeof parsed.salt !== 'string') return null;
         if (typeof parsed.iv !== 'string') return null;
         if (typeof parsed.tag !== 'string') return null;

@@ -5,10 +5,11 @@ import { useAppSelector } from '@/redux/hooks';
 import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import {
+    getAutoLoginTimestamp,
     getUseBioAuth,
     removeDAppConnectSession,
     removeDAppProjectIdList,
-    removePasswordViaBioAuth,
+    removePasswordViaBioAuthByTimestamp,
     removeUseBioAuth,
     setPasswordViaBioAuth,
     setUseBioAuth
@@ -65,7 +66,10 @@ const BioAuthRadio = ({ walletName }: IProps) => {
                 }
                 setOpenBioModal(false);
             } else {
-                await removePasswordViaBioAuth();
+                const timestamp = await getAutoLoginTimestamp();
+                if (timestamp) {
+                    await removePasswordViaBioAuthByTimestamp(timestamp);
+                }
                 await removeUseBioAuth(walletName);
                 await removeDAppProjectIdList(walletName);
                 await removeDAppConnectSession(walletName);

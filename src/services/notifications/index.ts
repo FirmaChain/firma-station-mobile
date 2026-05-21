@@ -242,8 +242,7 @@ export const initializeForegroundNotifications = async (network: string) => {
     await registerDeviceForRemoteMessages(fcm);
     await ensureChannel();
 
-    const token = await getToken(fcm);
-    logNotification('FCM token ready', token);
+    logNotification('FCM token ready');
 
     const unsubscribeOnMessage = onMessage(fcm, async (remoteMessage) => {
         await showRemoteMessage(remoteMessage);

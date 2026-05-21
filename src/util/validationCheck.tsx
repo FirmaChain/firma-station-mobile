@@ -15,18 +15,14 @@ export function PasswordValidationCheck(password: string) {
 }
 
 export const PasswordCheck = async (walletName: string, password: string) => {
-    try {
-        if (password.length >= 10) {
-            const nameCheck = await WalletNameValidationCheck(walletName);
+    if (password.length >= 10) {
+        const nameCheck = await WalletNameValidationCheck(walletName);
 
-            let recoverValue = null;
-            if (nameCheck) {
-                recoverValue = await getRecoverValue(walletName, password);
-            }
-            return recoverValue;
+        let recoverValue = null;
+        if (nameCheck) {
+            recoverValue = await getRecoverValue(walletName, password);
         }
-    } catch (error) {
-        throw error;
+        return recoverValue;
     }
 };
 

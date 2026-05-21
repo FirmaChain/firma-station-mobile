@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD, SETTING_DELETE_WALLET_TEXT } from '@/constants/common';
 import { BgColor, FailedColor, Lato, TextCatTitleColor, TextWarnColor } from '@/constants/theme';
-import { decrypt, keyEncrypt } from '@/util/keystore';
-import { getChain } from '@/util/secureKeyChain';
 import { WalletNameValidationCheck } from '@/util/validationCheck';
+import { getRecoverValueWithMeta } from '@/util/wallet';
+import { debounce } from 'es-toolkit';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import InputSetVertical from '@/components/input/inputSetVertical';
@@ -13,40 +13,52 @@ interface IProps {
     walletName: string;
     open: boolean;
     setOpenModal: (value: boolean) => void;
-    deleteWallet: () => void;
+    deleteWallet: () => Promise<void>;
 }
 
 const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IProps) => {
     const [active, setActive] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [password, setPassword] = useState('');
 
-    const handleInputChange = async (val: string) => {
-        if (val.length >= 10) {
+    const validatePassword = debounce(async (value) => {
+        if (value.length >= 10) {
             const nameCheck = await WalletNameValidationCheck(walletName);
             if (nameCheck) {
-                const key: string = keyEncrypt(walletName, val);
-                try {
-                    const result = await getChain(walletName);
-                    if (result) {
-                        const w = decrypt(result.password, key);
-                        setActive(w !== '');
-                    }
-                } catch (error) {
-                    console.log(error);
-                    setActive(false);
-                }
+                const { recoverValue } = await getRecoverValueWithMeta(walletName, value);
+                setActive(recoverValue !== null);
             }
         } else {
             setActive(false);
         }
+    }, 200);
+
+    const handleInputChange = async (val: string) => {
+        setPassword(val);
+
+        validatePassword(val);
     };
 
-    const handleDeleteWallet = () => {
-        if (active) deleteWallet();
+    const handleDeleteWallet = async () => {
+        if (!active || loading) return;
+
+        setLoading(true);
+        try {
+            const { recoverValue } = await getRecoverValueWithMeta(walletName, password);
+            if (recoverValue !== null) {
+                await deleteWallet();
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         if (open === false) {
             setActive(false);
+            setPassword('');
         }
     }, [open]);
 
@@ -68,8 +80,8 @@ const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IPr
                     />
                 </View>
                 <TouchableOpacity
-                    disabled={!active}
-                    style={[styles.delButton, { opacity: active ? 1 : 0.3 }]}
+                    disabled={!active || loading}
+                    style={[styles.delButton, { opacity: active && !loading ? 1 : 0.3 }]}
                     onPress={() => handleDeleteWallet()}
                 >
                     <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>{SETTING_DELETE_WALLET_TEXT.confirmTitle}</Text>

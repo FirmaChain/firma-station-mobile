@@ -6,21 +6,23 @@ import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { updateArray } from '@/util/common';
-import { getAddressFromRecoverValue } from '@/util/firma';
 import {
+    getAutoLoginTimestamp,
     getUseBioAuth,
     getWalletList,
     removeDAppConnectSession,
     removeDAppProjectIdList,
-    removePasswordViaBioAuth,
-    removeRecoverType,
+    removeEncryptPasswordByTimestamp,
+    removePasswordViaBioAuthByTimestamp,
     removeUseBioAuth,
     removeWallet,
     setBioAuth,
-    setNewWallet,
+    setEncryptPassword,
     setRecoverType,
     setUseBioAuth,
-    setWalletList
+    setWalletList,
+    setWalletWithAutoLogin,
+    writeWalletSecretOnly
 } from '@/util/wallet';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -39,6 +41,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.ChangeWa
 const ChangeWalletName = () => {
     const navigation: ScreenNavgationProps = useNavigation();
 
+    const { loading } = useAppSelector((state) => state.common);
     const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
     const { recoverType } = useAppSelector((state) => state.storage);
 
@@ -65,72 +68,66 @@ const ChangeWalletName = () => {
     };
 
     const changeNewWalletName = async () => {
+        if (loading) return;
         const loadingRequestId = CommonActions.beginLoadingProgress();
 
         try {
+            const setWalletResult = await createNewWallet();
             await removeCurrentWallet();
-            await createNewWallet();
-            CommonActions.endLoadingProgress(loadingRequestId);
-        } catch (error) {
-            CommonActions.endLoadingProgress(loadingRequestId);
-            Toast.show({
-                type: 'error',
-                text1: String(error)
-            });
-        }
-    };
-
-    const removeCurrentWallet = useCallback(async () => {
-        try {
-            await getAddressFromRecoverValue(recoverValue);
-            removeRecoverType(recoverType, walletAddress);
-            await removeWallet(walletName);
-            await removeDAppProjectIdList(walletName);
-            await removeDAppConnectSession(walletName);
-            await removePasswordViaBioAuth();
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
-    }, [recoverType, walletName, recoverValue]);
-
-    const createNewWallet = async () => {
-        let newList: string = '';
-        try {
-            const result = await getWalletList();
-            const arr = result ? updateArray(result, walletName, newWalletName) : [];
-            if (arr.length >= 1) {
-                arr.map((item) => {
-                    newList += item + '/';
-                });
-                newList = newList.slice(0, -1);
-            }
-            await setWalletList(newList);
-
-            const setWalletResult = await setNewWallet(newWalletName, password, recoverValue, false);
-            await setRecoverType(recoverType, recoverValue, walletAddress);
-
-            await handleUseBioAuthForNewWallet();
             WalletActions.handleWalletName(newWalletName);
             if (setWalletResult) {
                 handleModalOpen(true);
             }
         } catch (error) {
-            console.log(error);
-            throw error;
+            Toast.show({
+                type: 'error',
+                text1: String(error)
+            });
+        } finally {
+            CommonActions.endLoadingProgress(loadingRequestId);
         }
     };
 
+    const removeCurrentWallet = useCallback(async () => {
+        await removeWallet(walletName);
+        await removeDAppProjectIdList(walletName);
+        await removeDAppConnectSession(walletName);
+    }, [walletName]);
+
+    const createNewWallet = async () => {
+        const oldTimestamp = await getAutoLoginTimestamp();
+
+        await writeWalletSecretOnly(newWalletName, password, recoverValue);
+
+        const result = await getWalletList();
+        const arr = result ? updateArray([...result], walletName, newWalletName) : [];
+        if (arr.length < 1 || arr.includes(walletName)) {
+            throw new Error('Failed to update wallet list.');
+        }
+        const newList = arr.join('/');
+
+        await setWalletList(newList);
+
+        await setWalletWithAutoLogin(JSON.stringify({ name: newWalletName, address: walletAddress }));
+        await setEncryptPassword(password);
+
+        await setRecoverType(recoverType, recoverValue, walletAddress);
+        await handleUseBioAuthForNewWallet();
+
+        if (oldTimestamp) {
+            await removePasswordViaBioAuthByTimestamp(oldTimestamp);
+            await removeEncryptPasswordByTimestamp(oldTimestamp);
+        }
+
+        return true;
+    };
+
     const handleUseBioAuthForNewWallet = async () => {
-        try {
-            const result = await getUseBioAuth(walletName);
-            if (result) {
-                await setUseBioAuth(newWalletName);
-            }
-            setBioAuth(newWalletName, password);
+        const result = await getUseBioAuth(walletName);
+        if (result) {
+            await setUseBioAuth(newWalletName);
+            await setBioAuth(newWalletName, password);
             await removeUseBioAuth(walletName);
-        } catch (error) {
-            throw error;
         }
     };
 
@@ -155,7 +152,7 @@ const ChangeWalletName = () => {
                         recoverValue={handleRecoverValue}
                     />
                     <View style={styles.buttonBox}>
-                        <Button title="Change" active={activeButton} onPressEvent={changeNewWalletName} />
+                        <Button title="Change" active={activeButton && !loading} onPressEvent={changeNewWalletName} />
                     </View>
                     {isModalOpen && (
                         <AlertModal

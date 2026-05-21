@@ -17,6 +17,23 @@ interface IRecoverValueWithMeta {
 }
 
 const getWalletMigrationKey = (walletName: string) => `${walletName}__migrate_v2`;
+const getWalletLegacyBackupKey = (walletName: string) => `${walletName}__legacy_backup_v1`;
+
+const getRecoverValueFromEncryptedPayload = (encryptedPayload: string, key: string): IRecoverValueWithMeta => {
+    if (isV2EncryptedEnvelope(encryptedPayload)) {
+        const v2 = decryptV2(encryptedPayload, key);
+        if (v2 !== '') {
+            return { recoverValue: v2, needsMigration: false };
+        }
+    }
+
+    const legacy = decryptLegacy(encryptedPayload, key);
+    if (legacy !== '') {
+        return { recoverValue: legacy, needsMigration: true };
+    }
+
+    return { recoverValue: null, needsMigration: false };
+};
 
 const setWalletListArray = (list: string) => {
     const arr = list.split('/');
@@ -40,42 +57,7 @@ export const getWalletList = async () => {
     }
 };
 
-export const setNewWallet = async (name: string, password: string, recoverValue: string, makeList: boolean) => {
-    try {
-        const walletKey: string = keyEncrypt(name, password);
-        const encWallet = encrypt(recoverValue, walletKey.toString());
-        await setChain(name, encWallet);
 
-        if (makeList) {
-            let list = name;
-            const result = await getChain(WALLET_LIST);
-            if (result) list += '/' + result.password;
-
-            await setWalletList(list);
-        }
-
-        let adr = null;
-        const result = await getAddressFromRecoverValue(recoverValue);
-        if (result !== undefined) adr = result;
-
-        await setWalletWithAutoLogin(
-            JSON.stringify({
-                name: name,
-                address: adr
-            })
-        );
-        await setEncryptPassword(password);
-
-        const useBioAuth = await getUseBioAuth(name);
-        if (useBioAuth) {
-            await setPasswordViaBioAuth(password);
-        }
-        return adr;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
 
 export const setWalletList = async (list: string) => {
     if (list === '') {
@@ -87,7 +69,7 @@ export const setWalletList = async (list: string) => {
 };
 
 export const removeWallet = async (name: string) => {
-    await removeChain(name);
+    await Promise.all([removeChain(name), removeChain(getWalletMigrationKey(name)), removeChain(getWalletLegacyBackupKey(name))]);
 };
 
 export const getRecoverValue = async (walletName: string, password: string) => {
@@ -96,29 +78,35 @@ export const getRecoverValue = async (walletName: string, password: string) => {
 };
 
 export const getRecoverValueWithMeta = async (walletName: string, password: string): Promise<IRecoverValueWithMeta> => {
-    let recoverValue = null;
-    let needsMigration = false;
     const key: string = keyEncrypt(walletName, password);
 
     try {
         const result = await getChain(walletName);
 
         if (result) {
-            if (isV2EncryptedEnvelope(result.password)) {
-                const v2 = decryptV2(result.password, key.toString());
-                if (v2 !== '') {
-                    return { recoverValue: v2, needsMigration: false };
-                }
-            }
-
-            const legacy = decryptLegacy(result.password, key.toString());
-            if (legacy !== '') {
-                recoverValue = legacy;
-                needsMigration = true;
+            const primary = getRecoverValueFromEncryptedPayload(result.password, key.toString());
+            if (primary.recoverValue !== null) {
+                return primary;
             }
         }
 
-        return { recoverValue, needsMigration };
+        const staged = await getChain(getWalletMigrationKey(walletName));
+        if (staged) {
+            const stagedValue = decryptV2(staged.password, key.toString());
+            if (stagedValue !== '') {
+                return { recoverValue: stagedValue, needsMigration: true };
+            }
+        }
+
+        const backup = await getChain(getWalletLegacyBackupKey(walletName));
+        if (backup) {
+            const backupValue = decryptLegacy(backup.password, key.toString());
+            if (backupValue !== '') {
+                return { recoverValue: backupValue, needsMigration: true };
+            }
+        }
+
+        return { recoverValue: null, needsMigration: false };
     } catch (error) {
         console.log(error);
         throw error;
@@ -130,6 +118,23 @@ export const migrateRecoverValueToV2 = async (walletName: string, password: stri
     const encrypted = encryptV2(recoverValue, key.toString());
     if (encrypted === '') {
         throw new Error('Failed to encrypt wallet data with v2.');
+    }
+
+    const backupKey = getWalletLegacyBackupKey(walletName);
+    const current = await getChain(walletName);
+    const backup = await getChain(backupKey);
+    const backupValue = backup === false ? '' : decryptLegacy(backup.password, key.toString());
+
+    if (backupValue !== recoverValue && current !== false) {
+        const currentLegacyValue = decryptLegacy(current.password, key.toString());
+        if (currentLegacyValue === recoverValue) {
+            await setChain(backupKey, current.password);
+
+            const writtenBackup = await getChain(backupKey);
+            if (writtenBackup === false || decryptLegacy(writtenBackup.password, key.toString()) !== recoverValue) {
+                throw new Error('Failed to back up legacy wallet data.');
+            }
+        }
     }
 
     const migrationKey = getWalletMigrationKey(walletName);
@@ -157,7 +162,7 @@ export const migrateRecoverValueToV2 = async (walletName: string, password: stri
         throw new Error('Wallet migration verification failed after write.');
     }
 
-    await removeChain(migrationKey).catch((error) => console.log(error));
+    await Promise.all([removeChain(migrationKey)]).catch((error) => console.log(error));
 };
 
 export const getWalletWithAutoLogin = async () => {
@@ -194,6 +199,11 @@ export const setWalletWithAutoLogin = async (walletInfo: string) => {
 };
 
 export const removeWalletWithAutoLogin = async () => {
+    const timestamp = await getAutoLoginTimestamp();
+    if (timestamp) {
+        await removePasswordViaBioAuthByTimestamp(timestamp);
+        await removeEncryptPasswordByTimestamp(timestamp);
+    }
     await removeChain(UNIQUE_ID);
 };
 
@@ -269,20 +279,7 @@ export const setPasswordViaBioAuth = async (password: string) => {
     }
 };
 
-export const removePasswordViaBioAuth = async () => {
-    let timestamp = 0;
-    try {
-        const result = await getWalletWithAutoLogin();
-        if (result === '') return '';
-        const json = JSON.parse(result);
-        timestamp = json.timestamp;
 
-        await removeChain(UNIQUE_ID + timestamp.toString());
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
 
 export const getDecryptPassword = async () => {
     let timestamp = 0;
@@ -319,7 +316,21 @@ export const setWalletWithBioAuth = async (name: string, password: string, recov
     const loadingRequestId = CommonActions.beginLoadingProgress();
 
     try {
-        const address = await setNewWallet(name, password, recoverValue, true);
+        const oldTimestamp = await getAutoLoginTimestamp();
+
+        // 1. Write the wallet secret and verify
+        await writeWalletSecretOnly(name, password, recoverValue);
+
+        // 2. Add to wallet list
+        const chainList = await getChain(WALLET_LIST);
+        let list = name;
+        if (chainList) list += '/' + chainList.password;
+        await setWalletList(list);
+
+        // 3. Auto-login and password encrypt
+        let address = null;
+        const resultAdr = await getAddressFromRecoverValue(recoverValue);
+        if (resultAdr !== undefined) address = resultAdr;
 
         await setWalletWithAutoLogin(
             JSON.stringify({
@@ -330,6 +341,11 @@ export const setWalletWithBioAuth = async (name: string, password: string, recov
 
         await setEncryptPassword(password);
         await setBioAuth(name, password);
+
+        if (oldTimestamp) {
+            await removePasswordViaBioAuthByTimestamp(oldTimestamp);
+            await removeEncryptPasswordByTimestamp(oldTimestamp);
+        }
 
         WalletActions.handleWalletName(name);
         WalletActions.handleWalletAddress(address === null ? '' : address);
@@ -464,5 +480,59 @@ export const removeRecoverType = (typeList: IKeyValue | undefined, address: stri
         delete recoverTypeList[`${address}`];
 
         StorageActions.handleRecoverType(recoverTypeList);
+    }
+};
+
+export const writeWalletSecretOnly = async (name: string, password: string, recoverValue: string) => {
+    try {
+        const walletKey: string = keyEncrypt(name, password);
+        const encWallet = encrypt(recoverValue, walletKey.toString());
+        if (encWallet === '') {
+            throw new Error('Failed to encrypt wallet data.');
+        }
+
+        await setChain(name, encWallet);
+
+        const written = await getChain(name);
+        if (written === false) {
+            throw new Error('Failed to write wallet data.');
+        }
+        
+        const verified = getRecoverValueFromEncryptedPayload(written.password, walletKey.toString());
+        if (verified.recoverValue !== recoverValue) {
+            throw new Error('Wallet write verification failed.');
+        }
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
+export const getAutoLoginTimestamp = async () => {
+    try {
+        const result = await getChain(UNIQUE_ID);
+        if (result === false) return '';
+        const autoLoginWallet = decrypt(result.password, UNIQUE_ID);
+        if (autoLoginWallet === '') return '';
+        const json = JSON.parse(autoLoginWallet);
+        return json.timestamp as string;
+    } catch (error) {
+        return '';
+    }
+};
+
+export const removePasswordViaBioAuthByTimestamp = async (timestamp: string) => {
+    try {
+        if (timestamp) await removeChain(UNIQUE_ID + timestamp);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const removeEncryptPasswordByTimestamp = async (timestamp: string) => {
+    try {
+        if (timestamp) await removeChain(timestamp + UNIQUE_ID);
+    } catch (error) {
+        console.log(error);
     }
 };

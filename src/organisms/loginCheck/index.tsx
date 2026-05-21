@@ -10,11 +10,14 @@ import { wait, waitForNextFrame } from '@/util/common';
 import { removeAllData } from '@/util/detect';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import {
+    getAutoLoginTimestamp,
     getPasswordViaBioAuth,
     getRecoverValueWithMeta,
     getUseBioAuth,
     getWalletWithAutoLogin,
     migrateRecoverValueToV2,
+    removeEncryptPasswordByTimestamp,
+    removePasswordViaBioAuthByTimestamp,
     removeWalletWithAutoLogin,
     setBioAuth,
     setEncryptPassword,
@@ -72,6 +75,8 @@ const LoginCheck = () => {
 
             const adr = await getAddressFromRecoverValue(resolvedRecoverValue);
             if (adr) {
+                const oldTimestamp = await getAutoLoginTimestamp();
+
                 await setWalletWithAutoLogin(
                     JSON.stringify({
                         name: name,
@@ -80,6 +85,11 @@ const LoginCheck = () => {
                 );
 
                 await setEncryptPassword(password);
+
+                if (oldTimestamp) {
+                    await removePasswordViaBioAuthByTimestamp(oldTimestamp);
+                    await removeEncryptPasswordByTimestamp(oldTimestamp);
+                }
 
                 WalletActions.handleWalletName(name);
                 WalletActions.handleWalletAddress(adr);
@@ -234,6 +244,7 @@ const LoginCheck = () => {
                 }
             };
 
+            // Check if the app is launched first
             AsyncStorage.getItem('alreadyLaunched').then((value) => {
                 if (value == null) {
                     removeAllData().then(() => getWalletForAutoLogin());
