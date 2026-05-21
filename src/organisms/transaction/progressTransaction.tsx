@@ -1,90 +1,57 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback } from 'react';
 import { TRANSACTION_PROCESS_DESCRIPTION_TEXT, TRANSACTION_PROCESS_NOTICE_TEXT, TRANSACTION_PROCESS_TEXT } from '@/constants/common';
 import { BgColor, Lato, TextCatTitleColor, TextColor, TextLightGrayColor, TextWarnColor } from '@/constants/theme';
-import { fadeIn } from '@/util/animation';
 import { useFocusEffect } from '@react-navigation/native';
-import { Animated, BackHandler, Easing, Platform, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import Animated, { createAnimatedComponent, useAnimatedProps, useAnimatedStyle, useFrameCallback, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { QuestionCircle } from '@/components/icon/icon';
 import LogoProgress from '@/components/parts/logoProgress';
 
 const getNow = () => (typeof globalThis.performance?.now === 'function' ? globalThis.performance.now() : Date.now());
 
+const createTimerText = (time: number) => {
+    'worklet';
+
+    let min: string | number = parseInt((time / 60).toString());
+    let sec: string | number = time % 60;
+
+    if (min < 10) min = '0' + min.toString();
+    if (sec < 10) sec = '0' + sec.toString();
+
+    return min + ' : ' + sec;
+};
+
+const AnimatedTextInput = createAnimatedComponent(TextInput);
+
 const ProgressTransaction = () => {
-    const progressAnim = useRef(new Animated.Value(0)).current;
-    const fadeAnim_notice = useRef(new Animated.Value(0)).current;
-    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const elapsedSecRef = useRef(0);
-    const noticeShownRef = useRef(false);
+    const startedAt = useSharedValue(Number(getNow()));
+    const elapsedSec = useSharedValue(0);
+    const noticeOpacity = useSharedValue(0);
 
-    const [elapsedSec, setElapsedSec] = useState(0);
+    useFrameCallback(({ timestamp }) => {
+        const nextElapsed = Math.floor((timestamp - startedAt.value) / 1000);
 
-    const createTimerText = (time: number) => {
-        let min: string | number = parseInt((time / 60).toString());
-        let sec: string | number = time % 60;
-
-        if (min < 10) min = '0' + min.toString();
-        if (sec < 10) sec = '0' + sec.toString();
-
-        return min + ' : ' + sec;
-    };
-
-    useEffect(() => {
-        if (elapsedSec >= 15 && !noticeShownRef.current) {
-            noticeShownRef.current = true;
-            fadeIn(Animated, fadeAnim_notice, 300);
+        if (nextElapsed !== elapsedSec.value) {
+            elapsedSec.value = nextElapsed;
+            if (nextElapsed >= 15 && noticeOpacity.value === 0) {
+                noticeOpacity.value = withTiming(1, { duration: 300 });
+            }
         }
-    }, [elapsedSec, fadeAnim_notice]);
+    });
 
-    useEffect(() => {
-        const startedAt = getNow();
+    const noticeAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: noticeOpacity.value
+    }));
 
-        const clearTimer = () => {
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-                timerRef.current = null;
-            }
+    const timerAnimatedProps = useAnimatedProps(() => {
+        const text = createTimerText(elapsedSec.value);
+
+        return {
+            text,
+            defaultValue: text
         };
-
-        const updateElapsed = () => {
-            const now = getNow();
-            const targetElapsed = Math.floor((now - startedAt) / 1000);
-            const currentElapsed = elapsedSecRef.current;
-            const elapsedMs = now - startedAt;
-
-            if (currentElapsed < targetElapsed) {
-                const nextElapsed = currentElapsed + 1;
-                elapsedSecRef.current = nextElapsed;
-                setElapsedSec(nextElapsed);
-
-                const catchUpDelay = nextElapsed < targetElapsed ? 50 : Math.max(1000 - (elapsedMs % 1000), 50);
-                timerRef.current = setTimeout(updateElapsed, catchUpDelay);
-                return;
-            }
-
-            timerRef.current = setTimeout(updateElapsed, Math.max(1000 - (elapsedMs % 1000), 50));
-        };
-
-        updateElapsed();
-
-        const animation = Animated.loop(
-            Animated.timing(progressAnim, {
-                toValue: 1,
-                duration: 2000,
-                easing: Easing.linear,
-                useNativeDriver: true,
-                isInteraction: false
-            })
-        );
-        animation.start();
-
-        return () => {
-            clearTimer();
-            animation.stop();
-            progressAnim.stopAnimation();
-            progressAnim.setValue(0);
-        };
-    }, [progressAnim]);
+    });
 
     useFocusEffect(
         useCallback(() => {
@@ -106,11 +73,17 @@ const ProgressTransaction = () => {
                         <LogoProgress size={115} />
                     </View>
                     <Text style={styles.notice}>{TRANSACTION_PROCESS_TEXT}</Text>
-                    <Text style={styles.counter}>{createTimerText(elapsedSec)}</Text>
+                    <AnimatedTextInput
+                        animatedProps={timerAnimatedProps}
+                        editable={false}
+                        underlineColorAndroid="transparent"
+                        pointerEvents="none"
+                        style={styles.counter}
+                    />
                 </View>
                 <View style={[styles.counterBox, { flex: 1, width: '100%', justifyContent: 'center' }]}>
                     <Text style={[styles.description, { paddingBottom: 20, fontSize: 16 }]}>{TRANSACTION_PROCESS_DESCRIPTION_TEXT}</Text>
-                    <Animated.View style={[styles.descriptionWrapper, { opacity: fadeAnim_notice }]}>
+                    <Animated.View style={[styles.descriptionWrapper, noticeAnimatedStyle]}>
                         <View style={{ paddingTop: 3 }}>
                             <QuestionCircle size={15} color={TextWarnColor} />
                         </View>
@@ -160,7 +133,12 @@ const styles = StyleSheet.create({
     counter: {
         fontFamily: Lato,
         fontSize: 18,
-        color: TextCatTitleColor
+        color: TextCatTitleColor,
+        textAlign: 'center',
+        padding: 0,
+        margin: 0,
+        backgroundColor: 'transparent',
+        includeFontPadding: false
     },
     descriptionWrapper: {
         width: '100%',
