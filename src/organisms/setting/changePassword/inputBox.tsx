@@ -10,10 +10,11 @@ interface IProps {
     walletName: string;
     validate: (valid: boolean) => void;
     newPassword: (value: string) => void;
+    currentPassword: (value: string) => void;
     recoverValue: (value: string) => void;
 }
 
-const InputBox = ({ walletName, validate, newPassword, recoverValue }: IProps) => {
+const InputBox = ({ walletName, validate, newPassword, currentPassword, recoverValue }: IProps) => {
     const currentPasswordTextObj = {
         title: 'Current password',
         placeholder: PLACEHOLDER_FOR_PASSWORD
@@ -41,6 +42,7 @@ const InputBox = ({ walletName, validate, newPassword, recoverValue }: IProps) =
             const result = await PasswordCheck(walletName, value);
             if (result) {
                 recoverValue(result);
+                currentPassword(value);
                 setPwValidation(true);
             } else {
                 setPwValidation(false);

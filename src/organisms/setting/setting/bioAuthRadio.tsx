@@ -6,9 +6,8 @@ import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import {
     getAutoLoginTimestamp,
+    removeDAppData,
     getUseBioAuth,
-    removeDAppConnectSession,
-    removeDAppProjectIdList,
     removePasswordViaBioAuthByTimestamp,
     removeUseBioAuth,
     setPasswordViaBioAuth,
@@ -71,8 +70,7 @@ const BioAuthRadio = ({ walletName }: IProps) => {
                     await removePasswordViaBioAuthByTimestamp(timestamp);
                 }
                 await removeUseBioAuth(walletName);
-                await removeDAppProjectIdList(walletName);
-                await removeDAppConnectSession(walletName);
+                await removeDAppData(walletName);
             }
         } catch (error) {
             Toast.show({

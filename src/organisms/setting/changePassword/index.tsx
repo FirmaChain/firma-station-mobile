@@ -44,6 +44,7 @@ const ChangePassword = () => {
 
     const [newPassword, setNewPassword] = useState('');
     const [recoverValue, setRecoverValue] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
 
     const handleNewPassword = (password: string) => {
         setNewPassword(password);
@@ -81,26 +82,53 @@ const ChangePassword = () => {
 
     const createNewPassword = async () => {
         const oldTimestamp = await getAutoLoginTimestamp();
-
-        await writeWalletSecretOnly(walletName, newPassword, recoverValue);
-
-        await setWalletWithAutoLogin(JSON.stringify({ name: walletName, address: walletAddress }));
-        await setEncryptPassword(newPassword);
-
         const useBioAuth = await getUseBioAuth(walletName);
-        if (useBioAuth) {
-            await setPasswordViaBioAuth(newPassword);
+        let newTimestamp = '';
+
+        try {
+            await writeWalletSecretOnly(walletName, newPassword, recoverValue);
+            await setWalletWithAutoLogin(JSON.stringify({ name: walletName, address: walletAddress }));
+            newTimestamp = await getAutoLoginTimestamp();
+            await setEncryptPassword(newPassword);
+
+            if (useBioAuth) {
+                await setPasswordViaBioAuth(newPassword);
+            }
+
+            await setRecoverType(recoverType, recoverValue, walletAddress);
+
+            if (oldTimestamp) {
+                await removePasswordViaBioAuthByTimestamp(oldTimestamp);
+                await removeEncryptPasswordByTimestamp(oldTimestamp);
+            }
+
+            setStatus(1);
+            setIsModalOpen(true);
+        } catch (error) {
+            try {
+                if (newTimestamp) {
+                    await removePasswordViaBioAuthByTimestamp(newTimestamp);
+                    await removeEncryptPasswordByTimestamp(newTimestamp);
+                }
+
+                if (oldTimestamp) {
+                    await setWalletWithAutoLogin(JSON.stringify({ name: walletName, address: walletAddress }), oldTimestamp);
+                }
+
+                if (currentPassword) {
+                    await writeWalletSecretOnly(walletName, currentPassword, recoverValue);
+                    await setEncryptPassword(currentPassword);
+
+                    if (useBioAuth) {
+                        await setPasswordViaBioAuth(currentPassword);
+                    }
+                }
+            } catch (rollbackError) {
+                console.log(rollbackError);
+            }
+
+            throw error;
         }
-
-        await setRecoverType(recoverType, recoverValue, walletAddress);
-
-        if (oldTimestamp) {
-            await removePasswordViaBioAuthByTimestamp(oldTimestamp);
-            await removeEncryptPasswordByTimestamp(oldTimestamp);
-        }
-
-        setStatus(1);
-        setIsModalOpen(true);
     };
 
     const handleMoveToWeb = () => {
@@ -119,6 +147,7 @@ const ChangePassword = () => {
                         walletName={walletName}
                         validate={handleActiveButton}
                         newPassword={handleNewPassword}
+                        currentPassword={setCurrentPassword}
                         recoverValue={handleRecoverValue}
                     />
                     <View style={styles.buttonBox}>

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { BgColor, BoxColor, Lato, TextColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { getWalletList, removeRecoverType, removeUseBioAuth, removeWallet, setWalletList } from '@/util/wallet';
+import { getWalletList, removeDAppData, removeRecoverType, removeUseBioAuth, removeWallet, setWalletList } from '@/util/wallet';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -26,6 +26,7 @@ const Delete = ({ walletName, walletAddress, handleDisconnect }: IProps) => {
             removeRecoverType(recoverType, walletAddress);
             await removeWallet(walletName);
             await removeUseBioAuth(walletName);
+            await removeDAppData(walletName);
 
             let newList: string = '';
             const result = await getWalletList();

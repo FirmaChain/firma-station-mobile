@@ -16,8 +16,44 @@ interface IRecoverValueWithMeta {
     needsMigration: boolean;
 }
 
+interface IAutoLoginWalletInfo {
+    name: string;
+    address: string;
+    timestamp: string;
+}
+
 const getWalletMigrationKey = (walletName: string) => `${walletName}__migrate_v2`;
 const getWalletLegacyBackupKey = (walletName: string) => `${walletName}__legacy_backup_v1`;
+
+const parseAutoLoginWalletInfo = (walletInfo: string): IAutoLoginWalletInfo | null => {
+    try {
+        const parsed = JSON.parse(walletInfo);
+
+        if (typeof parsed?.name !== 'string') {
+            return null;
+        }
+
+        const address = typeof parsed?.address === 'string' ? parsed.address : '';
+        const timestamp = parsed?.timestamp;
+        if (timestamp !== undefined && timestamp !== null && typeof timestamp !== 'string' && typeof timestamp !== 'number') {
+            return null;
+        }
+
+        return {
+            name: parsed.name,
+            address,
+            timestamp: timestamp === undefined || timestamp === null ? '' : String(timestamp)
+        };
+    } catch {
+        return null;
+    }
+};
+
+const getValidTimestamp = (value?: string): string => {
+    if (typeof value !== 'string') return '';
+    const trimmed = value.trim();
+    return trimmed === '' ? '' : trimmed;
+};
 
 const getRecoverValueFromEncryptedPayload = (encryptedPayload: string, key: string): IRecoverValueWithMeta => {
     if (isV2EncryptedEnvelope(encryptedPayload)) {
@@ -178,11 +214,18 @@ export const getWalletWithAutoLogin = async () => {
     }
 };
 
-export const setWalletWithAutoLogin = async (walletInfo: string) => {
+export const setWalletWithAutoLogin = async (walletInfo: string, timestamp?: string) => {
     try {
-        const epochTimeSeconds = Math.round(new Date().getTime() / 1000).toString();
+        const parsed = parseAutoLoginWalletInfo(walletInfo);
+        if (!parsed) {
+            throw new Error('Invalid wallet auto-login payload.');
+        }
+
+        const epochTimeSeconds =
+            getValidTimestamp(timestamp) || getValidTimestamp(parsed.timestamp) || Math.round(new Date().getTime() / 1000).toString();
         const key = {
-            ...JSON.parse(walletInfo),
+            name: parsed.name,
+            address: parsed.address,
             timestamp: epochTimeSeconds
         };
 
@@ -196,11 +239,19 @@ export const setWalletWithAutoLogin = async (walletInfo: string) => {
     }
 };
 
+export const removeDAppData = async (name: string) => {
+    await Promise.all([removeDAppConnectSession(name), removeDAppProjectIdList(name), removeDAppServiceId(name)]);
+};
+
 export const removeWalletWithAutoLogin = async () => {
     const timestamp = await getAutoLoginTimestamp();
     if (timestamp) {
         await removePasswordViaBioAuthByTimestamp(timestamp);
         await removeEncryptPasswordByTimestamp(timestamp);
+    }
+    const walletInfo = await getWalletWithAutoLoginInfo();
+    if (walletInfo?.name) {
+        await removeDAppData(walletInfo.name);
     }
     await removeChain(UNIQUE_ID);
 };
@@ -242,11 +293,10 @@ export const setBioAuth = async (name: string, password: string) => {
 
 export const getAutoLoginTimestamp = async (): Promise<string> => {
     try {
-        const result = await getWalletWithAutoLogin();
-        if (result === '') return '';
+        const result = await getWalletWithAutoLoginInfo();
+        if (result === null) return '';
 
-        const json = JSON.parse(result);
-        const timestamp = json?.timestamp;
+        const timestamp = result.timestamp;
         if (typeof timestamp !== 'string' && typeof timestamp !== 'number') return '';
 
         return String(timestamp);
@@ -254,6 +304,13 @@ export const getAutoLoginTimestamp = async (): Promise<string> => {
         console.error(e);
         return '';
     }
+};
+
+export const getWalletWithAutoLoginInfo = async (): Promise<IAutoLoginWalletInfo | null> => {
+    const result = await getWalletWithAutoLogin();
+    if (result === '') return null;
+
+    return parseAutoLoginWalletInfo(result);
 };
 
 export const getPasswordViaBioAuth = async () => {
@@ -307,19 +364,16 @@ export const setEncryptPassword = async (password: string) => {
 export const setWalletWithBioAuth = async (name: string, password: string, recoverValue: string) => {
     const loadingRequestId = CommonActions.beginLoadingProgress();
 
+    let oldWalletList: string[] | null = null;
+
     try {
         const oldTimestamp = await getAutoLoginTimestamp();
+        oldWalletList = await getWalletList();
 
         // 1. Write the wallet secret and verify
         await writeWalletSecretOnly(name, password, recoverValue);
 
-        // 2. Add to wallet list
-        const chainList = await getChain(WALLET_LIST);
-        let list = name;
-        if (chainList) list += '/' + chainList.password;
-        await setWalletList(list);
-
-        // 3. Auto-login and password encrypt
+        // 2. Auto-login and password encrypt
         let address = null;
         const resultAdr = await getAddressFromRecoverValue(recoverValue);
         if (resultAdr !== undefined) address = resultAdr;
@@ -327,12 +381,18 @@ export const setWalletWithBioAuth = async (name: string, password: string, recov
         await setWalletWithAutoLogin(
             JSON.stringify({
                 name: name,
-                address: address
+                address: address === null ? '' : address
             })
         );
 
         await setEncryptPassword(password);
         await setBioAuth(name, password);
+
+        // 3. Add to wallet list after the new secret and pointers are readable.
+        const chainList = await getChain(WALLET_LIST);
+        let list = name;
+        if (chainList) list += '/' + chainList.password;
+        await setWalletList(list);
 
         if (oldTimestamp) {
             await removePasswordViaBioAuthByTimestamp(oldTimestamp);
@@ -346,6 +406,23 @@ export const setWalletWithBioAuth = async (name: string, password: string, recov
 
         return result;
     } catch (error) {
+        try {
+            const newTimestamp = await getAutoLoginTimestamp();
+            if (newTimestamp) {
+                await removePasswordViaBioAuthByTimestamp(newTimestamp);
+                await removeEncryptPasswordByTimestamp(newTimestamp);
+            }
+            await removeWallet(name);
+
+            if (oldWalletList) {
+                await setWalletList(oldWalletList.join('/'));
+            } else {
+                await setWalletList('');
+            }
+        } catch (rollbackError) {
+            console.log(rollbackError);
+        }
+
         throw error;
     } finally {
         CommonActions.endLoadingProgress(loadingRequestId);

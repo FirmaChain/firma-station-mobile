@@ -14,7 +14,7 @@ import {
     getPasswordViaBioAuth,
     getRecoverValueWithMeta,
     getUseBioAuth,
-    getWalletWithAutoLogin,
+    getWalletWithAutoLoginInfo,
     migrateRecoverValueToV2,
     removeEncryptPasswordByTimestamp,
     removePasswordViaBioAuthByTimestamp,
@@ -158,6 +158,9 @@ const LoginCheck = () => {
 
                 isProcessing = false;
                 finishLogin();
+            } else {
+                openSelectWallet();
+                isProcessing = false;
             }
         } catch (error) {
             Toast.show({
@@ -228,10 +231,9 @@ const LoginCheck = () => {
         if (maintenanceState === false) {
             const getWalletForAutoLogin = async () => {
                 try {
-                    const result = await getWalletWithAutoLogin();
+                    const parsed = await getWalletWithAutoLoginInfo();
 
-                    if (result !== '') {
-                        const parsed = JSON.parse(result);
+                    if (parsed) {
                         WalletActions.handleWalletName(parsed.name);
                         WalletActions.handleWalletAddress(parsed.address);
                     } else {

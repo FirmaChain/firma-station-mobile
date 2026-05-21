@@ -2,7 +2,7 @@ import { WALLET_LIST } from '@/../config';
 import JailMonkey from 'jail-monkey';
 
 import { removeChain } from './secureKeyChain';
-import { getWalletList, removeUseBioAuth, removeWallet, removeWalletWithAutoLogin } from './wallet';
+import { getWalletList, removeDAppData, removeUseBioAuth, removeWallet, removeWalletWithAutoLogin } from './wallet';
 
 export const Detect = () => {
     const jail = JailMonkey.isJailBroken();
@@ -19,6 +19,7 @@ export const removeAllData = async () => {
             result?.map(async (value) => {
                 await removeWallet(value);
                 await removeUseBioAuth(value);
+                await removeDAppData(value);
             })
         );
 

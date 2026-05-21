@@ -8,10 +8,9 @@ import { useAppSelector } from '@/redux/hooks';
 import { updateArray } from '@/util/common';
 import {
     getAutoLoginTimestamp,
+    removeDAppData,
     getUseBioAuth,
     getWalletList,
-    removeDAppConnectSession,
-    removeDAppProjectIdList,
     removeEncryptPasswordByTimestamp,
     removePasswordViaBioAuthByTimestamp,
     removeUseBioAuth,
@@ -90,36 +89,68 @@ const ChangeWalletName = () => {
 
     const removeCurrentWallet = useCallback(async () => {
         await removeWallet(walletName);
-        await removeDAppProjectIdList(walletName);
-        await removeDAppConnectSession(walletName);
+        await removeDAppData(walletName);
     }, [walletName]);
 
     const createNewWallet = async () => {
         const oldTimestamp = await getAutoLoginTimestamp();
+        const oldWalletList = await getWalletList();
+        const useBioAuth = await getUseBioAuth(walletName);
+        let newTimestamp = '';
 
-        await writeWalletSecretOnly(newWalletName, password, recoverValue);
+        try {
+            await writeWalletSecretOnly(newWalletName, password, recoverValue);
+            await setWalletWithAutoLogin(JSON.stringify({ name: newWalletName, address: walletAddress }));
+            newTimestamp = await getAutoLoginTimestamp();
+            await setEncryptPassword(password);
 
-        const result = await getWalletList();
-        const arr = result ? updateArray([...result], walletName, newWalletName) : [];
-        if (arr.length < 1 || arr.includes(walletName)) {
-            throw new Error('Failed to update wallet list.');
+            await setRecoverType(recoverType, recoverValue, walletAddress);
+            await handleUseBioAuthForNewWallet();
+
+            const result = oldWalletList;
+            const arr = result ? updateArray([...result], walletName, newWalletName) : [];
+            if (arr.length < 1 || arr.includes(walletName)) {
+                throw new Error('Failed to update wallet list.');
+            }
+            const newList = arr.join('/');
+            await setWalletList(newList);
+
+            if (oldTimestamp) {
+                await removePasswordViaBioAuthByTimestamp(oldTimestamp);
+                await removeEncryptPasswordByTimestamp(oldTimestamp);
+            }
+
+            return true;
+        } catch (error) {
+            try {
+                if (newTimestamp) {
+                    await removePasswordViaBioAuthByTimestamp(newTimestamp);
+                    await removeEncryptPasswordByTimestamp(newTimestamp);
+                }
+
+                if (oldTimestamp) {
+                    await setWalletWithAutoLogin(JSON.stringify({ name: walletName, address: walletAddress }), oldTimestamp);
+                }
+
+                if (useBioAuth) {
+                    await removeUseBioAuth(newWalletName);
+                    await setUseBioAuth(walletName);
+                    await setBioAuth(walletName, password);
+                }
+
+                await removeWallet(newWalletName);
+
+                if (oldWalletList) {
+                    await setWalletList(oldWalletList.join('/'));
+                } else {
+                    await setWalletList('');
+                }
+            } catch (rollbackError) {
+                console.log(rollbackError);
+            }
+
+            throw error;
         }
-        const newList = arr.join('/');
-
-        await setWalletList(newList);
-
-        await setWalletWithAutoLogin(JSON.stringify({ name: newWalletName, address: walletAddress }));
-        await setEncryptPassword(password);
-
-        await setRecoverType(recoverType, recoverValue, walletAddress);
-        await handleUseBioAuthForNewWallet();
-
-        if (oldTimestamp) {
-            await removePasswordViaBioAuthByTimestamp(oldTimestamp);
-            await removeEncryptPasswordByTimestamp(oldTimestamp);
-        }
-
-        return true;
     };
 
     const handleUseBioAuthForNewWallet = async () => {
