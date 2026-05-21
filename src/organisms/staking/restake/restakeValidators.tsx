@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { BgColor, BoxColor } from '@/constants/theme';
+import { Fragment, useMemo } from 'react';
+import { BgColor } from '@/constants/theme';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { IStakingGrantState } from '@/hooks/staking/hooks';
@@ -15,30 +15,26 @@ interface IProps {
 
 const RestakeValidators = ({ grantState, minimumRewards, closeModal }: IProps) => {
     const grantList = useMemo(() => {
-        const list = grantState.list.sort((a: any, b: any) => b.stakingReward - a.stakingReward);
-        return list;
+        return grantState.list.sort((a, b) => b.stakingReward - a.stakingReward);
     }, [grantState]);
 
     return (
-        <React.Fragment>
+        <Fragment>
             <ScrollView>
-                <View>
-                    {grantList.map((value, index) => {
-                        return <ValidatorSection key={index} data={value} minimumRewards={minimumRewards} />;
-                    })}
-                </View>
+                {grantList.map((value, index) => {
+                    return <ValidatorSection key={index} data={value} minimumRewards={minimumRewards} />;
+                })}
             </ScrollView>
             <View style={styles.buttonBox}>
                 <Button title={'Close'} active={true} onPressEvent={closeModal} />
             </View>
-        </React.Fragment>
+        </Fragment>
     );
 };
 
 const styles = StyleSheet.create({
     buttonBox: {
-        paddingTop: 20,
-        paddingHorizontal: 20,
+        padding: 20,
         backgroundColor: BgColor
     }
 });

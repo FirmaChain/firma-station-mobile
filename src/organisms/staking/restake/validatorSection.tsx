@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: BgColor,
         padding: 20,
-        marginBottom: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
