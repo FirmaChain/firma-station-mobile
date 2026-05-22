@@ -53,6 +53,13 @@ const InputSetVertical = ({
         onChangeEvent(value);
     };
 
+    const handleKeyPress = (key: string) => {
+        if (!secure) return;
+        if (key === 'Escape' || key === 'Esc') {
+            handleInputChange('');
+        }
+    };
+
     useEffect(() => {
         handleInputChange(value);
     }, [value]);
@@ -86,6 +93,7 @@ const InputSetVertical = ({
                 onFocus={() => setFocus(true)}
                 onBlur={() => setFocus(false)}
                 onChangeText={(text) => handleInputChange(text)}
+                onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key)}
                 editable={!isLoading} // block edit or focus when loading
             />
             {message !== undefined && (
