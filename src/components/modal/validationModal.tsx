@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD, TRANSACTION_AUTH_TEXT, UNLOCK_AUTH_TEXT } from '@/constants/common';
 import { BgColor, DisableColor, Lato, PointColor, TextCatTitleColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
@@ -9,6 +9,7 @@ import { ScreenHeight } from '@/util/getScreenSize';
 import { decrypt, keyEncrypt } from '@/util/keystore';
 import { getChain } from '@/util/secureKeyChain';
 import { WalletNameValidationCheck } from '@/util/validationCheck';
+import { debounce } from 'es-toolkit';
 import { getPasswordViaBioAuth, getUseBioAuth } from '@/util/wallet';
 import { Animated, Keyboard, KeyboardEvent, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,6 +42,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
     const [active, setActive] = useState(false);
     const [dimActive, setDimActive] = useState(true);
     const [useBio, setUseBio] = useState(false);
+    const validationRequestIdRef = useRef(0);
 
     const [backbuttonLock, setBackbuttonLock] = useState(true);
 
@@ -96,32 +98,57 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
         setOpenModal(open);
     };
 
-    const handleInputChange = async (val: string) => {
-        setPassword(val);
+    const validatePassword = useMemo(
+        () =>
+            debounce(async (val: string, requestId: number) => {
+                try {
+                    const nameCheck = await WalletNameValidationCheck(walletName);
+                    if (!nameCheck) {
+                        return;
+                    }
 
-        if (val.length >= 10) {
-            try {
-                const nameCheck = await WalletNameValidationCheck(walletName);
-                if (nameCheck) {
                     const key: string = keyEncrypt(walletName, val);
                     try {
                         const result = await getChain(walletName);
+                        if (requestId !== validationRequestIdRef.current) {
+                            return;
+                        }
+
                         if (result) {
                             const w = decrypt(result.password, key);
                             setActive(w !== '');
                         }
                     } catch (error) {
+                        if (requestId !== validationRequestIdRef.current) {
+                            return;
+                        }
+
                         console.log(error);
                         setActive(false);
                     }
+                } catch (error) {
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
+                    console.log(error);
+                    setActive(false);
                 }
-            } catch (error) {
-                console.log(error);
-                setActive(false);
-            }
-        } else {
-            setActive(false);
+            }, 250),
+        [walletName]
+    );
+
+    const handleInputChange = (val: string) => {
+        setPassword(val);
+        setActive(false);
+
+        if (val.length < 10) {
+            validationRequestIdRef.current += 1;
+            return;
         }
+
+        const requestId = ++validationRequestIdRef.current;
+        validatePassword(val, requestId);
     };
 
     let isProcessing = false;
@@ -184,6 +211,13 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
     }, [open]);
 
     useEffect(() => {
+        validationRequestIdRef.current += 1;
+        validatePassword.cancel();
+        setPassword('');
+        setActive(false);
+    }, [walletName, validatePassword]);
+
+    useEffect(() => {
         if (appState === 'background') {
             if (type === 'transaction') {
                 handleModal(false);
@@ -201,6 +235,8 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
         const showSubscription = Keyboard.addListener('keyboardWillShow', onKeyboardDidShow);
         const hideSubscription = Keyboard.addListener('keyboardWillHide', onKeyboardDidHide);
         return () => {
+            validationRequestIdRef.current += 1;
+            validatePassword.cancel();
             showSubscription.remove();
             hideSubscription.remove();
         };

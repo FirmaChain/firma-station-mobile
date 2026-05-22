@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { GUIDE_URI } from '@/../config';
 import { CRYPTO_MIGRATION_DESCRIPTION, CRYPTO_MIGRATION_TITLE, PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
@@ -8,6 +8,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { waitForNextFrame } from '@/util/common';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import { PasswordCheck } from '@/util/validationCheck';
+import { debounce } from 'es-toolkit';
 import {
     getRecoverValueWithMeta,
     getWalletList,
@@ -48,11 +49,38 @@ const SelectWallet = () => {
 
     const [pwValidation, setPwValidation] = useState(false);
     const [password, setPassword] = useState('');
+    const validationRequestIdRef = useRef(0);
 
     const passwordText = {
         title: 'Password',
         placeholder: PLACEHOLDER_FOR_PASSWORD
     };
+
+    const validatePassword = useMemo(
+        () =>
+            debounce(async (wallet: string, value: string, requestId: number) => {
+                try {
+                    const result = await PasswordCheck(wallet, value);
+
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
+                    setPwValidation(Boolean(result));
+                } catch (error) {
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
+                    Toast.show({
+                        type: 'error',
+                        text1: String(error)
+                    });
+                    setPwValidation(false);
+                }
+            }, 250),
+        []
+    );
 
     const handleOpenSelectModal = (open: boolean) => {
         setOpenSelectModal(open);
@@ -91,6 +119,12 @@ const SelectWallet = () => {
         }
     }, [selected, items]);
 
+    useEffect(() => {
+        validationRequestIdRef.current += 1;
+        setPassword('');
+        setPwValidation(false);
+    }, [selectedWallet]);
+
     const WalletList = async () => {
         try {
             const result = await getWalletList();
@@ -101,21 +135,17 @@ const SelectWallet = () => {
         }
     };
 
-    const onChangePassword = async (value: string) => {
+    const onChangePassword = (value: string) => {
         setPassword(value);
-        try {
-            const result = await PasswordCheck(selectedWallet, value);
-            if (result) {
-                setPwValidation(true);
-            } else {
-                setPwValidation(false);
-            }
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: String(error)
-            });
+        setPwValidation(false);
+
+        if (value.length < 10) {
+            validationRequestIdRef.current += 1;
+            return;
         }
+
+        const requestId = ++validationRequestIdRef.current;
+        validatePassword(selectedWallet, value, requestId);
     };
 
     const onSelectWalletAndMoveToHome = async () => {
@@ -183,6 +213,8 @@ const SelectWallet = () => {
         };
         initStatus();
         return () => {
+            validationRequestIdRef.current += 1;
+            validatePassword.cancel();
             setItems([]);
         };
     }, []);

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD, PLACEHOLDER_FOR_WALLET_NAME, WARNING_WALLET_NAME_IS_TOO_SHORT } from '@/constants/common';
 import { InputBgColor, Lato, TextGrayColor } from '@/constants/theme';
 import { PasswordCheck, WalletNameValidationCheck } from '@/util/validationCheck';
+import { debounce } from 'es-toolkit';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -29,6 +30,39 @@ const InputBox = ({ walletName, validate, newWalletName, password, recoverValue 
     const [pwValidation, setPwValidation] = useState(false);
     const [nameMessage, setNameMessage] = useState('');
     const [nameValidation, setNameValidation] = useState(false);
+    const validationRequestIdRef = useRef(0);
+
+    const validatePassword = useMemo(
+        () =>
+            debounce(async (value: string, requestId: number) => {
+                try {
+                    const result = await PasswordCheck(walletName, value);
+
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
+                    if (result) {
+                        recoverValue(result);
+                        password(value);
+                        setPwValidation(true);
+                    } else {
+                        setPwValidation(false);
+                    }
+                } catch (error) {
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
+                    Toast.show({
+                        type: 'error',
+                        text1: String(error)
+                    });
+                    setPwValidation(false);
+                }
+            }, 250),
+        [password, recoverValue, walletName]
+    );
 
     const onChangeWalletName = async (value: string) => {
         const result = value.length >= 5 && value.length <= 20;
@@ -41,27 +75,28 @@ const InputBox = ({ walletName, validate, newWalletName, password, recoverValue 
         setNameMessage(msg);
     };
 
-    const handlePassword = async (value: string) => {
-        try {
-            const result = await PasswordCheck(walletName, value);
-            if (result) {
-                recoverValue(result);
-                password(value);
-                setPwValidation(true);
-            } else {
-                setPwValidation(false);
-            }
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: String(error)
-            });
+    const handlePassword = (value: string) => {
+        setPwValidation(false);
+
+        if (value.length < 10) {
+            validationRequestIdRef.current += 1;
+            return;
         }
+
+        const requestId = ++validationRequestIdRef.current;
+        validatePassword(value, requestId);
     };
 
     useEffect(() => {
         validate(pwValidation && nameValidation);
     }, [pwValidation, nameValidation]);
+
+    useEffect(() => {
+        return () => {
+            validationRequestIdRef.current += 1;
+            validatePassword.cancel();
+        };
+    }, [validatePassword]);
 
     return (
         <Pressable style={styles.contents} onPress={() => Keyboard.dismiss()}>

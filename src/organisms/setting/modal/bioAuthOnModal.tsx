@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { decrypt, keyEncrypt } from '@/util/keystore';
 import { getChain } from '@/util/secureKeyChain';
 import { WalletNameValidationCheck } from '@/util/validationCheck';
+import { debounce } from 'es-toolkit';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '@/components/button/button';
@@ -26,29 +27,61 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
     const [password, setPassword] = useState('');
     const [active, setActive] = useState(false);
     const pending = useRef(false);
+    const validationRequestIdRef = useRef(0);
 
     const enabled = active && !pending.current;
 
-    const handleInputChange = async (val: string) => {
-        setPassword(val);
-        if (val.length >= 10) {
-            const nameCheck = await WalletNameValidationCheck(walletName);
-            if (nameCheck) {
-                const key: string = keyEncrypt(walletName, val);
+    const validatePassword = useMemo(
+        () =>
+            debounce(async (val: string, requestId: number) => {
                 try {
-                    const result = await getChain(walletName);
-                    if (result) {
-                        const w = decrypt(result.password, key);
-                        setActive(w !== '');
+                    const nameCheck = await WalletNameValidationCheck(walletName);
+                    if (!nameCheck) {
+                        return;
+                    }
+
+                    const key: string = keyEncrypt(walletName, val);
+                    try {
+                        const result = await getChain(walletName);
+                        if (requestId !== validationRequestIdRef.current) {
+                            return;
+                        }
+
+                        if (result) {
+                            const w = decrypt(result.password, key);
+                            setActive(w !== '');
+                        }
+                    } catch (error) {
+                        if (requestId !== validationRequestIdRef.current) {
+                            return;
+                        }
+
+                        console.log(error);
+                        setActive(false);
                     }
                 } catch (error) {
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
                     console.log(error);
                     setActive(false);
                 }
-            }
-        } else {
-            setActive(false);
+            }, 250),
+        [walletName]
+    );
+
+    const handleInputChange = (val: string) => {
+        setPassword(val);
+        setActive(false);
+
+        if (val.length < 10) {
+            validationRequestIdRef.current += 1;
+            return;
         }
+
+        const requestId = ++validationRequestIdRef.current;
+        validatePassword(val, requestId);
     };
 
     const handleBioAuth = () => {
@@ -68,6 +101,13 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
             pending.current = false;
         }
     }, [open]);
+
+    useEffect(() => {
+        return () => {
+            validationRequestIdRef.current += 1;
+            validatePassword.cancel();
+        };
+    }, [validatePassword]);
 
     return (
         <CustomModal visible={open} handleOpen={handleModal}>

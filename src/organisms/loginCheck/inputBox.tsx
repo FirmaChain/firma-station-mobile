@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { PasswordCheck } from '@/util/validationCheck';
 import { getWalletList, setWalletList } from '@/util/wallet';
+import { debounce } from 'es-toolkit';
 import { Animated, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -39,6 +40,40 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }:
     const [openSelectModal, setOpenSelectModal] = useState(false);
     const [selected, setSelected] = useState(-1);
     const [selectedWallet, setSelectedWallet] = useState('');
+    const validationRequestIdRef = useRef(0);
+
+    const validatePassword = useMemo(
+        () =>
+            debounce(async (wallet: string, value: string, requestId: number) => {
+                try {
+                    const result = await PasswordCheck(wallet, value);
+
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
+                    if (result) {
+                        setPwValidation(true);
+                        setRecoverValue(result);
+                    } else {
+                        setPwValidation(false);
+                        setRecoverValue('');
+                    }
+                } catch (error) {
+                    if (requestId !== validationRequestIdRef.current) {
+                        return;
+                    }
+
+                    Toast.show({
+                        type: 'error',
+                        text1: String(error)
+                    });
+                    setPwValidation(false);
+                    setRecoverValue('');
+                }
+            }, 250),
+        []
+    );
 
     const WalletList = async () => {
         try {
@@ -82,22 +117,13 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }:
         loginHandler(recoverValue, selectedWallet, password);
     };
 
-    const onChangePassword = async (value: string) => {
+    const onChangePassword = (value: string) => {
         setPassword(value);
-        try {
-            const result = await PasswordCheck(selectedWallet, value);
-            if (result) {
-                setPwValidation(true);
-                setRecoverValue(result);
-            } else {
-                setPwValidation(false);
-            }
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: String(error)
-            });
-        }
+        setPwValidation(false);
+        setRecoverValue('');
+
+        const requestId = ++validationRequestIdRef.current;
+        validatePassword(selectedWallet, value, requestId);
     };
 
     useEffect(() => {
@@ -120,6 +146,8 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }:
     useEffect(() => {
         if (selected >= 0 && selectedWallet !== items[selected]) {
             setSelectedWallet(items[selected]);
+            setPassword('');
+            setPwValidation(false);
             setRecoverValue('');
             setResetValues(false);
         }
@@ -140,6 +168,7 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }:
         };
         initStatus();
         return () => {
+            validatePassword.cancel();
             setItems([]);
         };
     }, []);
