@@ -3,12 +3,17 @@ import { TRANSACTION_PROCESS_DESCRIPTION_TEXT, TRANSACTION_PROCESS_NOTICE_TEXT, 
 import { BgColor, Lato, TextCatTitleColor, TextColor, TextLightGrayColor, TextWarnColor } from '@/constants/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import { BackHandler, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
-import Animated, { createAnimatedComponent, useAnimatedProps, useAnimatedStyle, useFrameCallback, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+    createAnimatedComponent,
+    useAnimatedProps,
+    useAnimatedStyle,
+    useFrameCallback,
+    useSharedValue,
+    withTiming
+} from 'react-native-reanimated';
 
 import { QuestionCircle } from '@/components/icon/icon';
 import LogoProgress from '@/components/parts/logoProgress';
-
-const getNow = () => (typeof globalThis.performance?.now === 'function' ? globalThis.performance.now() : Date.now());
 
 const createTimerText = (time: number) => {
     'worklet';
@@ -25,12 +30,17 @@ const createTimerText = (time: number) => {
 const AnimatedTextInput = createAnimatedComponent(TextInput);
 
 const ProgressTransaction = () => {
-    const startedAt = useSharedValue(Number(getNow()));
+    const startedAt = useSharedValue(-1);
     const elapsedSec = useSharedValue(0);
     const noticeOpacity = useSharedValue(0);
 
     useFrameCallback(({ timestamp }) => {
-        const nextElapsed = Math.floor((timestamp - startedAt.value) / 1000);
+        if (startedAt.value < 0) {
+            startedAt.value = timestamp;
+            return;
+        }
+
+        const nextElapsed = Math.max(0, Math.floor((timestamp - startedAt.value) / 1000));
 
         if (nextElapsed !== elapsedSec.value) {
             elapsedSec.value = nextElapsed;
@@ -40,10 +50,6 @@ const ProgressTransaction = () => {
         }
     });
 
-    const noticeAnimatedStyle = useAnimatedStyle(() => ({
-        opacity: noticeOpacity.value
-    }));
-
     const timerAnimatedProps = useAnimatedProps(() => {
         const text = createTimerText(elapsedSec.value);
 
@@ -52,6 +58,10 @@ const ProgressTransaction = () => {
             defaultValue: text
         };
     });
+
+    const noticeAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: noticeOpacity.value
+    }));
 
     useFocusEffect(
         useCallback(() => {
@@ -73,15 +83,21 @@ const ProgressTransaction = () => {
                         <LogoProgress size={115} />
                     </View>
                     <Text style={styles.notice}>{TRANSACTION_PROCESS_TEXT}</Text>
-                    <AnimatedTextInput
-                        animatedProps={timerAnimatedProps}
-                        editable={false}
-                        underlineColorAndroid="transparent"
-                        pointerEvents="none"
-                        style={styles.counter}
-                    />
+                    <View style={styles.counterWrapper}>
+                        <AnimatedTextInput
+                            animatedProps={timerAnimatedProps}
+                            editable={false}
+                            caretHidden
+                            contextMenuHidden
+                            selectTextOnFocus={false}
+                            showSoftInputOnFocus={false}
+                            underlineColorAndroid="transparent"
+                            pointerEvents="none"
+                            style={styles.counter}
+                        />
+                    </View>
                 </View>
-                <View style={[styles.counterBox, { flex: 1, width: '100%', justifyContent: 'center' }]}>
+                <View style={[styles.counterBox, { flex: 1, width: '100%', justifyContent: 'center' }]}> 
                     <Text style={[styles.description, { paddingBottom: 20, fontSize: 16 }]}>{TRANSACTION_PROCESS_DESCRIPTION_TEXT}</Text>
                     <Animated.View style={[styles.descriptionWrapper, noticeAnimatedStyle]}>
                         <View style={{ paddingTop: 3 }}>
@@ -130,6 +146,11 @@ const styles = StyleSheet.create({
         color: TextColor,
         paddingBottom: 10
     },
+    counterWrapper: {
+        width: 110,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     counter: {
         fontFamily: Lato,
         fontSize: 18,
@@ -138,7 +159,8 @@ const styles = StyleSheet.create({
         padding: 0,
         margin: 0,
         backgroundColor: 'transparent',
-        includeFontPadding: false
+        includeFontPadding: false,
+        fontVariant: ['tabular-nums']
     },
     descriptionWrapper: {
         width: '100%',
