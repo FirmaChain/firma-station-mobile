@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import ProfileIcon from '@/assets/icons/material/profile.svg';
 import { TextColor } from '@/constants/theme';
-import ProfileIcon from '@assets/icons/material/profile.svg';
 import FastImage from '@d11/react-native-fast-image';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 

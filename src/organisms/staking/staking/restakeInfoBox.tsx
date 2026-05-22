@@ -79,7 +79,7 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
     }, [restakeInfoJson]);
 
     useEffect(() => {
-        let timerId: NodeJS.Timeout;
+        let timerId: number;
         if (restakeInfoJson) {
             handleRestakeProgress();
             timerId = setTimeout(function progress() {

@@ -1,5 +1,5 @@
 import { CHAIN_NETWORK } from '@/../config';
-import TRANSACTION_LABELS from '@constants/message_labels.json';
+import TRANSACTION_LABELS from '@/constants/message_labels.json';
 
 import { RestakeActiveColor, RestakeInactiveColor, RestakeNoDelegationColor } from './theme';
 

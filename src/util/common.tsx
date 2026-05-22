@@ -1,8 +1,8 @@
 import { FirmaUtil } from '@firmachain/firma-js';
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 
-dayjs.extend(utc)
+dayjs.extend(utc);
 
 export const wait = (timeout: number) => {
     return new Promise<void>((resolve) => setTimeout(() => resolve(), timeout));
@@ -132,24 +132,15 @@ export const handleDecimalPointLimit = (value: string) => {
     return value;
 };
 
-export const isValid = (data: any) => {
-    if (typeof data === undefined) return false;
-    return true;
+export const convertTime = (time: string | number | Date, fulltime: boolean, addTime?: boolean) => {
+    if (time === undefined) return '';
+
+    const GMT = getGMT();
+    const format = fulltime || addTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+    const result = dayjs.utc(time).local().format(format);
+
+    return fulltime ? `${result} (${GMT})` : result;
 };
-
-export const convertTime = (
-  time: string | number | Date,
-  fulltime: boolean,
-  addTime?: boolean,
-) => {
-if (time === undefined) return ''
-
-  const GMT = getGMT()
-  const format = fulltime || addTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'
-  const result = dayjs.utc(time).local().format(format)
-
-  return fulltime ? `${result} (${GMT})` : result
-}
 
 export const convertTimerText = (time: string) => {
     if (time === '') return { diff: 0, time: '00:00:00' };

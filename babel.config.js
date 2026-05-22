@@ -10,11 +10,6 @@ module.exports = {
                 extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
                 alias: {
                     '@': './src',
-                    '@components': './src/components',
-                    '@constants': './src/constants',
-                    '@assets': './src/assets',
-                    '@hooks': './src/hooks',
-                    '@utils': './src/utils',
                     crypto: 'react-native-quick-crypto',
                     stream: 'readable-stream',
                     buffer: '@craftzdog/react-native-buffer'
