@@ -49,7 +49,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     const { name: walletName } = useAppSelector((state) => state.wallet);
     const { dataLoadStatus } = useAppSelector((state) => state.common);
 
-    const { delegationState, undelegationState, handleDelegationState, handleUndelegationState } = useDelegationData();
+    const { delegationState, undelegationState, stakingGrantState, handleDelegationState, handleUndelegationState } = useDelegationData();
 
     const [resetInputValues, setInputResetValues] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
@@ -223,6 +223,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
                                     type={type}
                                     operatorAddress={delegateState.operatorAddressDst}
                                     delegationState={delegationState}
+                                    stakingGrantState={stakingGrantState}
                                     undelegateCount={UndelegateCount}
                                     handleStandardAvailable={handleStandardAvailable}
                                     handleDelegateState={handleDelegateState}

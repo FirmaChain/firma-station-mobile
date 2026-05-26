@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import CheckLine from '@/assets/icons/material/checkLine.svg';
 import {
     AUTO_ENTERED_AMOUNT_TEXT,
     CHAIN_SYMBOL,
     FEE_INSUFFICIENT_NOTICE,
     REDELEGATE_NOTICE_TEXT,
+    REDELEGATE_RESTAKE_NOTICE_TEXT,
     UNDELEGATE_NOTICE_TEXT,
     WARNING_FOR_MAX_AMOUNT_TEST
 } from '@/constants/common';
 import {
+    BoxColor,
     DisableColor,
     InputBgColor,
     InputPlaceholderColor,
@@ -23,7 +26,7 @@ import { convertNumber, convertToFctNumber, convertToFctNumberForInput } from '@
 import { useFocusEffect } from '@react-navigation/native';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { IStakeInfo } from '@/hooks/staking/hooks';
+import { IStakeInfo, IStakingGrantState } from '@/hooks/staking/hooks';
 import { useBalanceData } from '@/hooks/wallet/hooks';
 import { DownArrow, StarIcon } from '@/components/icon/icon';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
@@ -36,6 +39,7 @@ interface IProps {
     type: string;
     operatorAddress: string;
     delegationState: Array<IStakeInfo>;
+    stakingGrantState: IStakingGrantState;
     undelegateCount: number;
     resetRedelegateValues: boolean;
     resetInputValues: boolean;
@@ -47,6 +51,7 @@ const InputBox = ({
     type,
     operatorAddress,
     delegationState,
+    stakingGrantState,
     undelegateCount,
     resetRedelegateValues,
     resetInputValues,
@@ -67,6 +72,8 @@ const InputBox = ({
     const [amount, setAmount] = useState(0);
     const [limitAvailable, setLimitAvailable] = useState(0);
     const [isMaxAmount, setIsMaxAmount] = useState(false);
+    const [keepSourceRestake, setKeepSourceRestake] = useState(false);
+    const [addTargetRestake, setAddTargetRestake] = useState(false);
 
     const redelegationList = useMemo(() => {
         return delegationState;
@@ -99,6 +106,22 @@ const InputBox = ({
         }
     }, [type]);
 
+    const hasRestakeUpdate = useMemo(() => {
+        if (type !== 'Redelegate') {
+            return false;
+        }
+
+        const isRestakeTarget = (address: string) => {
+            if (address === '') return false;
+            return stakingGrantState.list.some((item: any) => item.validatorAddress === address && item.isActive);
+        };
+
+        const currentKeepSourceRestake = isRestakeTarget(selectOperatorAddressSrc);
+        const currentAddTargetRestake = isRestakeTarget(operatorAddress);
+
+        return keepSourceRestake !== currentKeepSourceRestake || addTargetRestake !== currentAddTargetRestake;
+    }, [type, keepSourceRestake, addTargetRestake, selectOperatorAddressSrc, operatorAddress, stakingGrantState]);
+
     const handleSelectModal = (open: boolean) => {
         setOpenSelectModal(open);
     };
@@ -119,6 +142,22 @@ const InputBox = ({
         setSelectValidatorMoniker(selectedValidator === undefined ? '' : selectedValidator.moniker);
         setSelectDelegationAmount(selectedValidator === undefined ? 0 : selectedValidator.amount);
     };
+
+    useEffect(() => {
+        const isRestakeTarget = (address: string) => {
+            if (address === '') return false;
+            return stakingGrantState.list.some((item: any) => item.validatorAddress === address && item.isActive);
+        };
+
+        if (type !== 'Redelegate') {
+            setKeepSourceRestake(false);
+            setAddTargetRestake(false);
+            return;
+        }
+
+        setKeepSourceRestake(isRestakeTarget(selectOperatorAddressSrc));
+        setAddTargetRestake(isRestakeTarget(operatorAddress));
+    }, [type, selectOperatorAddressSrc, operatorAddress, stakingGrantState]);
 
     useEffect(() => {
         switch (type) {
@@ -241,15 +280,39 @@ const InputBox = ({
                         </Text>
                     </View>
                 )}
-
-                {(type === 'Undelegate' || type === 'Redelegate') &&
-                    noticeText.map((value, index) => {
-                        return (
-                            <View key={index} style={{ paddingVertical: 5 }}>
-                                <WarnContainer text={value} />
+                {type === 'Redelegate' && (
+                    <View style={styles.restakeBox}>
+                        <TouchableOpacity style={styles.restakeOption} onPress={() => setKeepSourceRestake(!keepSourceRestake)}>
+                            <View style={[styles.checkbox, keepSourceRestake && styles.checkboxActive]}>
+                                {keepSourceRestake && <CheckLine width={16} height={16} color={WhiteColor} />}
                             </View>
-                        );
-                    })}
+                            <Text style={styles.checkLabel}>Keep the current validator on restake</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.restakeOption} onPress={() => setAddTargetRestake(!addTargetRestake)}>
+                            <View style={[styles.checkbox, addTargetRestake && styles.checkboxActive]}>
+                                {addTargetRestake && <CheckLine width={16} height={16} color={WhiteColor} />}
+                            </View>
+                            <Text style={styles.checkLabel}>Add the new validator to restake</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+                {(type === 'Undelegate' || type === 'Redelegate') && (
+                    <>
+                        {noticeText.map((value, index) => {
+                            return (
+                                <View key={index} style={{ paddingVertical: 5 }}>
+                                    <WarnContainer text={value} />
+                                </View>
+                            );
+                        })}
+                        {hasRestakeUpdate && type === 'Redelegate' && (
+                            <View style={{ paddingVertical: 5 }}>
+                                <WarnContainer text={REDELEGATE_RESTAKE_NOTICE_TEXT} />
+                            </View>
+                        )}
+                    </>
+                )}
             </View>
         );
     };
@@ -347,6 +410,45 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 14,
         color: TextGrayColor
+    },
+    restakeBox: {
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 4,
+        backgroundColor: BoxColor,
+        marginVertical: 5,
+        gap: 12
+    },
+    restakeOption: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    checkbox: {
+        width: 18,
+        height: 18,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: TextGrayColor,
+        backgroundColor: WhiteColor,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 10
+    },
+    checkboxActive: {
+        borderColor: PointColor,
+        backgroundColor: PointColor
+    },
+    checkboxMark: {
+        fontFamily: Lato,
+        fontSize: 12,
+        color: WhiteColor,
+        lineHeight: 14
+    },
+    checkLabel: {
+        flex: 1,
+        fontFamily: Lato,
+        fontSize: 14,
+        color: TextColor
     }
 });
 
