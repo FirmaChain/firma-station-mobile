@@ -8,13 +8,21 @@ interface IProps {
     textColor?: string;
     bgColor?: string;
     align?: string;
-    paddingVertival?: number;
+    paddingVertical?: number;
     question?: boolean;
+    paddingHorizontal?: number;
 }
 
-const WarnContainer = ({ bgColor = BoxColor, paddingVertival = 15, text, textColor = TextWarnColor, question = false }: IProps) => {
+const WarnContainer = ({
+    bgColor = BoxColor,
+    paddingVertical = 15,
+    paddingHorizontal = 20,
+    text,
+    textColor = TextWarnColor,
+    question = false
+}: IProps) => {
     return (
-        <View style={[styles.wranContainer, { backgroundColor: bgColor, paddingVertical: paddingVertival }]}>
+        <View style={[styles.wranContainer, { backgroundColor: bgColor, paddingVertical, paddingHorizontal }]}>
             <View style={styles.box}>
                 <View style={{ height: 20, justifyContent: 'center' }}>
                     {question ? <QuestionCircle size={15} color={textColor} /> : <ExclamationCircle size={15} color={textColor} />}
@@ -31,7 +39,6 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         backgroundColor: BoxColor,
         borderRadius: 4,
-        paddingHorizontal: 20,
         overflow: 'hidden'
     },
     box: {

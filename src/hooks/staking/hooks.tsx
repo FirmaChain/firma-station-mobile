@@ -454,9 +454,7 @@ export const parseValidatorDescriptionForRedelegation = (
 
 export const useValidatorData = () => {
     const { network, validatorsProfile } = useAppSelector((state) => state.storage);
-    const { validator } = useAppSelector((state) => state.staking);
-
-    const [validators, setValidators] = useState<Array<IValidatorState> | []>([]);
+    const { validator, validators } = useAppSelector((state) => state.staking);
 
     const validatorsAvatarList: IValidatorProfileInfo[] = Array.isArray(validatorsProfile?.profileInfos)
         ? validatorsProfile.profileInfos
@@ -464,9 +462,9 @@ export const useValidatorData = () => {
 
     const handleValidatorsState = useCallback(async () => {
         try {
-            const [validators, commonState, signingInfos] = await Promise.all([getValidators(), getCommonState(), getSigningInfos()]);
+            const [validatorListResponse, commonState, signingInfos] = await Promise.all([getValidators(), getCommonState(), getSigningInfos()]);
 
-            const list = validators
+            const list = validatorListResponse
                 .filter((validator: ValidatorDataType) => {
                     const jailed = validator.jailed;
                     const status = getValidatorStatus(validator.status);
@@ -526,20 +524,8 @@ export const useValidatorData = () => {
                     };
                 });
 
-            setValidators(list);
-        } catch (error) {
-            console.log(error);
-        }
-    }, [validatorsAvatarList]);
-
-    useEffect(() => {
-        handleValidatorsState();
-    }, [validatorsAvatarList]);
-
-    useEffect(() => {
-        setValidators(
-            validators.map((vd: any) =>
-                validator !== null && vd.validatorAddress === validator.address.operatorAddress
+            const mergedList = validator === null ? list : list.map((vd: IValidatorState) =>
+                vd.validatorAddress === validator.address.operatorAddress
                     ? {
                           ...vd,
                           status: validator.status,
@@ -549,16 +535,24 @@ export const useValidatorData = () => {
                           APY: validator.percentageData.APY
                       }
                     : vd
-            )
-        );
-    }, [validator]);
+            );
+
+            StakingActions.updateValidatorsState(mergedList);
+        } catch (error) {
+            console.log(error);
+        }
+    }, [validator, validatorsAvatarList]);
+
+    useEffect(() => {
+        handleValidatorsState();
+    }, [validatorsAvatarList]);
 
     const handleValidatorsPolling = async () => {
         await handleValidatorsState();
     };
 
     useEffect(() => {
-        setValidators([]);
+        StakingActions.updateValidatorsState([]);
     }, [network]);
 
     return {

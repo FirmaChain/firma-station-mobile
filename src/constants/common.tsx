@@ -167,11 +167,11 @@ export const UNDELEGATE_NOTICE_TEXT = [
 
 export const NO_DELEGATION = 'No Delegation';
 export const REDELEGATE_NOTICE_TEXT = [
-    'Redelegated supply will be linked for a period of 21 days.',
-    'A maximum of 7 redelegations are allowed. ',
-    'Until the 21 day link period passes, you cannot redelegate your redelgated supply to another validator.'
+    'Redelegated supply is locked for 21 days and cannot be redelegated to another validator during that period.',
+    'A maximum of 7 redelegations are allowed.'
+    // 'Until the 21 day link period passes, you cannot redelegate your redelgated supply to another validator.'
 ];
-export const REDELEGATE_RESTAKE_NOTICE_TEXT = 'A single transaction with two messages (Redelegate + REStake update) will be broadcast.';
+export const REDELEGATE_RESTAKE_NOTICE_TEXT = 'A single transaction with two messages (Redelegate + Restake update) will be broadcast.';
 
 export const RESTAKE_NOTICE_TEXT = [
     'Performs a restake to all validators currently being delegated.',

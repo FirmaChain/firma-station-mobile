@@ -26,12 +26,13 @@ import { convertNumber, convertToFctNumber, convertToFctNumberForInput } from '@
 import { useFocusEffect } from '@react-navigation/native';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { IStakeInfo, IStakingGrantState } from '@/hooks/staking/hooks';
+import { IStakeInfo, IStakingGrantState, useValidatorData } from '@/hooks/staking/hooks';
 import { useBalanceData } from '@/hooks/wallet/hooks';
 import { DownArrow, StarIcon } from '@/components/icon/icon';
 import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmount';
 import BalanceInfo from '@/components/parts/balanceInfo';
 import WarnContainer from '@/components/parts/containers/warnContainer';
+import ValidatorProfile from '@/components/parts/validatorProfile';
 
 import ValidatorSelectModal from './validatorSelectModal';
 
@@ -59,12 +60,12 @@ const InputBox = ({
     handleDelegateState
 }: IProps) => {
     const { balance, getBalance } = useBalanceData();
+    const { validators } = useValidatorData();
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
     const [openSelectModal, setOpenSelectModal] = useState(false);
 
     const [selectOperatorAddressSrc, setSelectOperatorAddressSrc] = useState('');
-    const [selectValidatorMoniker, setSelectValidatorMoniker] = useState('');
     const [selectDelegationAmount, setSelectDelegationAmount] = useState(0);
 
     const [maxActive, setMaxActive] = useState(false);
@@ -75,9 +76,15 @@ const InputBox = ({
     const [keepSourceRestake, setKeepSourceRestake] = useState(false);
     const [addTargetRestake, setAddTargetRestake] = useState(false);
 
-    const redelegationList = useMemo(() => {
-        return delegationState;
-    }, [delegationState]);
+    const sourceValidator = useMemo(() => {
+        if (selectOperatorAddressSrc === '') return undefined;
+        return validators.find((item) => item.validatorAddress === selectOperatorAddressSrc);
+    }, [validators, selectOperatorAddressSrc]);
+
+    const targetValidator = useMemo(() => {
+        if (operatorAddress === '') return undefined;
+        return validators.find((item) => item.validatorAddress === operatorAddress);
+    }, [validators, operatorAddress]);
 
     const reward = useMemo(() => {
         if (type === 'Delegate') {
@@ -122,9 +129,9 @@ const InputBox = ({
         return keepSourceRestake !== currentKeepSourceRestake || addTargetRestake !== currentAddTargetRestake;
     }, [type, keepSourceRestake, addTargetRestake, selectOperatorAddressSrc, operatorAddress, stakingGrantState]);
 
-    const handleSelectModal = (open: boolean) => {
+    const handleSelectModal = useCallback((open: boolean) => {
         setOpenSelectModal(open);
-    };
+    }, []);
 
     const handleMaxActive = (active: boolean) => {
         setMaxActive(active);
@@ -138,8 +145,7 @@ const InputBox = ({
     const handleSelectValidator = (address: string) => {
         handleDelegateState('operatorAddressSrc', address);
         setSelectOperatorAddressSrc(address);
-        const selectedValidator = redelegationList.find((item: any) => item.validatorAddress === address);
-        setSelectValidatorMoniker(selectedValidator === undefined ? '' : selectedValidator.moniker);
+        const selectedValidator = delegationState.find((item: any) => item.validatorAddress === address);
         setSelectDelegationAmount(selectedValidator === undefined ? 0 : selectedValidator.amount);
     };
 
@@ -286,33 +292,40 @@ const InputBox = ({
                             <View style={[styles.checkbox, keepSourceRestake && styles.checkboxActive]}>
                                 {keepSourceRestake && <CheckLine width={16} height={16} color={WhiteColor} />}
                             </View>
-                            <Text style={styles.checkLabel}>Keep the current validator on restake</Text>
+                            <View style={styles.restakeLabelRow}>
+                                <Text style={styles.checkLabel}>Enable restake for</Text>
+                                <ValidatorProfile uri={sourceValidator?.validatorAvatar ?? ''} size={20} />
+                                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.validatorInlineName}>
+                                    {sourceValidator?.validatorMoniker ?? 'current validator'}
+                                </Text>
+                            </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.restakeOption} onPress={() => setAddTargetRestake(!addTargetRestake)}>
                             <View style={[styles.checkbox, addTargetRestake && styles.checkboxActive]}>
                                 {addTargetRestake && <CheckLine width={16} height={16} color={WhiteColor} />}
                             </View>
-                            <Text style={styles.checkLabel}>Add the new validator to restake</Text>
+                            <View style={styles.restakeLabelRow}>
+                                <Text style={styles.checkLabel}>Enable restake for</Text>
+                                <ValidatorProfile uri={targetValidator?.validatorAvatar ?? ''} size={20} />
+                                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.validatorInlineName}>
+                                    {targetValidator?.validatorMoniker ?? 'target validator'}
+                                </Text>
+                            </View>
                         </TouchableOpacity>
+                        {hasRestakeUpdate && (
+                            <WarnContainer text={REDELEGATE_RESTAKE_NOTICE_TEXT} paddingVertical={0} paddingHorizontal={0} />
+                        )}
                     </View>
                 )}
 
-                {(type === 'Undelegate' || type === 'Redelegate') && (
-                    <>
-                        {noticeText.map((value, index) => {
-                            return (
-                                <View key={index} style={{ paddingVertical: 5 }}>
-                                    <WarnContainer text={value} />
-                                </View>
-                            );
-                        })}
-                        {hasRestakeUpdate && type === 'Redelegate' && (
-                            <View style={{ paddingVertical: 5 }}>
-                                <WarnContainer text={REDELEGATE_RESTAKE_NOTICE_TEXT} />
+                {(type === 'Undelegate' || type === 'Redelegate') &&
+                    noticeText.map((value, index) => {
+                        return (
+                            <View key={index} style={{ paddingVertical: 5 }}>
+                                <WarnContainer text={value} />
                             </View>
-                        )}
-                    </>
-                )}
+                        );
+                    })}
             </View>
         );
     };
@@ -324,8 +337,12 @@ const InputBox = ({
                     <View style={styles.selectBox}>
                         <Text style={styles.title}>Source Validator</Text>
                         <TouchableOpacity style={styles.select} onPress={() => handleSelectModal(true)}>
-                            <Text style={[styles.selectTitle, selectOperatorAddressSrc === '' && { color: InputPlaceholderColor }]}>
-                                {selectOperatorAddressSrc === '' ? 'Select...' : selectValidatorMoniker}
+                            <Text
+                                numberOfLines={1}
+                                ellipsizeMode="middle"
+                                style={[styles.selectTitle, selectOperatorAddressSrc === '' && { color: InputPlaceholderColor }]}
+                            >
+                                {selectOperatorAddressSrc === '' ? 'Select...' : (sourceValidator?.validatorMoniker ?? '')}
                             </Text>
                             <DownArrow size={10} color={InputPlaceholderColor} />
                         </TouchableOpacity>
@@ -344,7 +361,7 @@ const InputBox = ({
             {ClassifyByType()}
             <ValidatorSelectModal
                 myAddress={operatorAddress}
-                list={redelegationList}
+                list={delegationState}
                 open={openSelectModal}
                 setOpenModal={handleSelectModal}
                 setValue={handleSelectValidator}
@@ -438,17 +455,26 @@ const styles = StyleSheet.create({
         borderColor: PointColor,
         backgroundColor: PointColor
     },
-    checkboxMark: {
-        fontFamily: Lato,
-        fontSize: 12,
-        color: WhiteColor,
-        lineHeight: 14
-    },
     checkLabel: {
-        flex: 1,
         fontFamily: Lato,
         fontSize: 14,
         color: TextColor
+    },
+    restakeLabelRow: {
+        flex: 1,
+        minWidth: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8
+    },
+    validatorInlineName: {
+        flex: 1,
+        minWidth: 0,
+        fontFamily: Lato,
+        fontSize: 14,
+        color: TextColor,
+        fontWeight: '600',
+        width: 'auto'
     }
 });
 
