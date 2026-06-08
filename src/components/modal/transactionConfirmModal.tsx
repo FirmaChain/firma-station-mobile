@@ -176,7 +176,7 @@ const TransactionConfirmModal = ({
                                         <View key={index} style={[styles.boxH, styles.receiptDesc, { paddingTop: 10 }]}>
                                             <Text style={styles.itemTitle}>{handleCapitalize(value)}</Text>
                                             <Text style={styles.itemBalance} numberOfLines={1} ellipsizeMode="tail">
-                                                {extraData[value]}
+                                                {extraData?.[value]}
                                             </Text>
                                         </View>
                                     );

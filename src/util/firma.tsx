@@ -1,8 +1,15 @@
 import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
 import { TOKEN_DENOM } from '@/constants/common';
+import { EncodeObject } from '@cosmjs/proto-signing';
 import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
+import { AuthzTxClient } from '@firmachain/firma-js/dist/sdk/firmachain/authz/AuthzTxClient';
+import { AuthorizationType, StakeAuthorization } from '@firmachain/firma-js/dist/sdk/firmachain/authz/AuthzTxTypes';
+import { Any } from '@firmachain/firma-js/dist/sdk/firmachain/google/protobuf/any';
+import { StakingTxClient } from '@firmachain/firma-js/dist/sdk/firmachain/staking/StakingTxClient';
 import { StakingValidatorStatus } from '@firmachain/firma-js/dist/sdk/FirmaStakingService';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
+import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
+import { MsgBeginRedelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx';
 
 import { IRedelegationInfo, IStakingState, IUndelegationInfo } from '@/hooks/staking/hooks';
 
@@ -223,14 +230,138 @@ export const getEstimateGasUndelegate = async (walletName: string, validatorAddr
     return await getFirmaSDK().Staking.getGasEstimationUndelegate(wallet, validatorAddress, amount);
 };
 
+const buildRestakeGrantExpiration = () => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+
+    return {
+        seconds: BigInt(Math.floor(date.getTime() / 1000)),
+        nanos: (date.getTime() % 1000) * 1000000
+    };
+};
+
+export const buildUpdatedRestakeValidatorAddressList = (
+    currentValidatorAddressList: string[],
+    sourceValidatorAddress: string,
+    destinationValidatorAddress: string,
+    sourceRestake: boolean,
+    destinationRestake: boolean
+) => {
+    const nextValidatorAddressList = [...currentValidatorAddressList];
+    const sourceAlreadyInRestake = currentValidatorAddressList.includes(sourceValidatorAddress);
+    const destinationAlreadyInRestake = currentValidatorAddressList.includes(destinationValidatorAddress);
+
+    const removeValidatorAddress = (validatorAddress: string) => {
+        const index = nextValidatorAddressList.indexOf(validatorAddress);
+        if (index !== -1) {
+            nextValidatorAddressList.splice(index, 1);
+        }
+    };
+
+    const addValidatorAddress = (validatorAddress: string) => {
+        if (nextValidatorAddressList.includes(validatorAddress) === false) {
+            nextValidatorAddressList.push(validatorAddress);
+        }
+    };
+
+    if (sourceAlreadyInRestake && sourceRestake === false) {
+        removeValidatorAddress(sourceValidatorAddress);
+    }
+
+    if (destinationAlreadyInRestake && destinationRestake === false) {
+        removeValidatorAddress(destinationValidatorAddress);
+    }
+
+    if (destinationAlreadyInRestake === false && destinationRestake) {
+        addValidatorAddress(destinationValidatorAddress);
+    }
+
+    return nextValidatorAddressList;
+};
+
+const registerAuthzRedelegateMessage = () => {
+    AuthzTxClient.getRegistry().register('/cosmos.staking.v1beta1.MsgBeginRedelegate', MsgBeginRedelegate);
+};
+
+const buildRedelegateTransactionMessages = async (
+    wallet: FirmaWalletService,
+    validatorSrcAddress: string,
+    validatorDstAddress: string,
+    amount: number,
+    validatorAddressList?: string[]
+) => {
+    const walletAddress = await wallet.getAddress();
+    const messageList: EncodeObject[] = [
+        StakingTxClient.msgRedelegate({
+            delegatorAddress: walletAddress,
+            validatorSrcAddress,
+            validatorDstAddress,
+            amount: Coin.fromPartial({
+                denom: TOKEN_DENOM(),
+                amount: FirmaUtil.getUFCTStringFromFCT(amount)
+            })
+        })
+    ];
+
+    if (validatorAddressList !== undefined) {
+        const authorization = StakeAuthorization.fromPartial({
+            authorizationType: AuthorizationType.AUTHORIZATION_TYPE_DELEGATE,
+            allowList: {
+                address: validatorAddressList
+            }
+        });
+
+        messageList.push(
+            AuthzTxClient.msgGrantAllowance({
+                granter: walletAddress,
+                grantee: getRestakeAddress(),
+                grant: {
+                    authorization: Any.fromPartial({
+                        typeUrl: '/cosmos.staking.v1beta1.StakeAuthorization',
+                        value: StakeAuthorization.encode(authorization).finish()
+                    }),
+                    expiration: buildRestakeGrantExpiration()
+                }
+            })
+        );
+    }
+
+    return messageList;
+};
+
 export const getEstimateGasRedelegate = async (
     walletName: string,
     validatorSrcAddress: string,
     validatorDstAddress: string,
-    amount: number
+    amount: number,
+    validatorAddressList?: string[]
 ) => {
     const wallet = await getDecryptWalletInfo(walletName);
-    return await getFirmaSDK().Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
+
+    if (validatorAddressList === undefined) {
+        return await getFirmaSDK().Staking.getGasEstimationRedelegate(wallet, validatorSrcAddress, validatorDstAddress, amount);
+    }
+
+    registerAuthzRedelegateMessage();
+    const authzTxClient = new AuthzTxClient(wallet, getFirmaConfig().rpcAddress);
+    const messageList = await buildRedelegateTransactionMessages(
+        wallet,
+        validatorSrcAddress,
+        validatorDstAddress,
+        amount,
+        validatorAddressList
+    );
+    const signedTxRaw = await authzTxClient.sign(
+        messageList,
+        FirmaUtil.getSignAndBroadcastOption(getFirmaConfig().denom, {
+            gas: getFirmaConfig().defaultGas,
+            fee: getFirmaConfig().defaultFee,
+            memo: ''
+        }),
+        false
+    );
+
+    return await FirmaUtil.estimateGas(signedTxRaw);
 };
 
 export const getEstimateGasGrantStakeAuthorization = async (walletName: string, validatorAddress: string[]) => {
@@ -489,12 +620,34 @@ export const delegate = async (recoverValue: string, address: string, amount: nu
     });
 };
 
-export const redelegate = async (recoverValue: string, srcAddress: string, dstAddress: string, amount: number, estimatedGas: number) => {
+export const redelegate = async (
+    recoverValue: string,
+    srcAddress: string,
+    dstAddress: string,
+    amount: number,
+    estimatedGas: number,
+    validatorAddressList?: string[]
+) => {
     const wallet = await recoverWallet(recoverValue);
-    return await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
-        gas: estimatedGas,
-        fee: getFeesFromGas(estimatedGas)
-    });
+
+    if (validatorAddressList === undefined) {
+        return await getFirmaSDK().Staking.redelegate(wallet, srcAddress, dstAddress, amount, {
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas)
+        });
+    }
+
+    registerAuthzRedelegateMessage();
+    const authzTxClient = new AuthzTxClient(wallet, getFirmaConfig().rpcAddress);
+    const messageList = await buildRedelegateTransactionMessages(wallet, srcAddress, dstAddress, amount, validatorAddressList);
+    return await authzTxClient.signAndBroadcast(
+        messageList,
+        FirmaUtil.getSignAndBroadcastOption(getFirmaConfig().denom, {
+            gas: estimatedGas,
+            fee: getFeesFromGas(estimatedGas),
+            memo: ''
+        })
+    );
 };
 
 export const undelegate = async (recoverValue: string, address: string, amount: number, estimatedGas: number) => {

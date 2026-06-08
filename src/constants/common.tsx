@@ -171,7 +171,7 @@ export const REDELEGATE_NOTICE_TEXT = [
     'A maximum of 7 redelegations are allowed.'
     // 'Until the 21 day link period passes, you cannot redelegate your redelgated supply to another validator.'
 ];
-export const REDELEGATE_RESTAKE_NOTICE_TEXT = 'A single transaction with two messages (Redelegate + Restake update) will be broadcast.';
+export const REDELEGATE_RESTAKE_NOTICE_TEXT = 'Changing Restake settings requires an additional gas fee.';
 
 export const RESTAKE_NOTICE_TEXT = [
     'Performs a restake to all validators currently being delegated.',

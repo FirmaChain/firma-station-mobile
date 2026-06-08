@@ -149,7 +149,8 @@ const Transaction = ({ state }: IProps) => {
                         state.operatorAddressSrc,
                         state.operatorAddressDst,
                         state.amount,
-                        state.gas
+                        state.gas,
+                        state.validatorAddressList
                     );
                     setTransactionResult({
                         ...transactionResult,

@@ -5,7 +5,14 @@ import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { convertNumber } from '@/util/common';
-import { getEstimateGasDelegate, getEstimateGasRedelegate, getEstimateGasUndelegate, getFeesFromGas, getFirmaConfig } from '@/util/firma';
+import {
+    buildUpdatedRestakeValidatorAddressList,
+    getEstimateGasDelegate,
+    getEstimateGasRedelegate,
+    getEstimateGasUndelegate,
+    getFeesFromGas,
+    getFirmaConfig
+} from '@/util/firma';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking, ScrollView, StyleSheet, View } from 'react-native';
@@ -33,6 +40,8 @@ interface IDelegateState {
     operatorAddressSrc: string;
     amount: number;
     gas: number;
+    sourceRestake?: boolean;
+    destinationRestake?: boolean;
 }
 
 interface IAlertState {
@@ -49,8 +58,16 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     const { name: walletName } = useAppSelector((state) => state.wallet);
     const { dataLoadStatus } = useAppSelector((state) => state.common);
 
-    const { delegationState, undelegationState, stakingGrantState, handleDelegationState, handleUndelegationState } = useDelegationData();
+    const {
+        delegationState,
+        undelegationState,
+        stakingGrantState,
+        handleDelegationState,
+        handleUndelegationState,
+        handleStakingGrantActivationState
+    } = useDelegationData();
 
+    const [redelegateStep, setRedelegateStep] = useState<'amount' | 'restake'>('amount');
     const [resetInputValues, setInputResetValues] = useState(false);
     const [resetRedelegateValues, setResetRedelegateValues] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
@@ -64,7 +81,9 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         operatorAddressDst: operatorAddress,
         operatorAddressSrc: '',
         amount: 0,
-        gas: getFirmaConfig().defaultGas
+        gas: getFirmaConfig().defaultGas,
+        sourceRestake: false,
+        destinationRestake: false
     });
 
     const handleModalOpen = (open: boolean) => {
@@ -81,10 +100,10 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         setStandardAvailable(balance);
     };
 
-    const handleDelegateState = (type: string, value: string | number) => {
+    const handleDelegateState = (key: string, value: string | number | boolean) => {
         setDelegateState((prevState) => ({
             ...prevState,
-            [type]: value
+            [key]: value
         }));
     };
 
@@ -96,6 +115,53 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
 
         return count;
     }, [undelegationState, operatorAddress]);
+
+    const hasCurrentSourceRestake = useMemo(() => {
+        if (type !== 'Redelegate' || delegateState.operatorAddressSrc === '') return false;
+        return stakingGrantState.list.some((item) => item.validatorAddress === delegateState.operatorAddressSrc && item.isActive);
+    }, [type, delegateState.operatorAddressSrc, stakingGrantState]);
+
+    const hasCurrentDestinationRestake = useMemo(() => {
+        if (type !== 'Redelegate' || delegateState.operatorAddressDst === '') return false;
+        return stakingGrantState.list.some((item) => item.validatorAddress === delegateState.operatorAddressDst && item.isActive);
+    }, [type, delegateState.operatorAddressDst, stakingGrantState]);
+
+    const currentRestakeValidatorAddressList = useMemo(() => {
+        return stakingGrantState.list.filter((item) => item.isActive).map((item) => item.validatorAddress);
+    }, [stakingGrantState.list]);
+
+    const updatedRestakeValidatorAddressList = useMemo(() => {
+        if (type !== 'Redelegate') return [];
+
+        return buildUpdatedRestakeValidatorAddressList(
+            currentRestakeValidatorAddressList,
+            delegateState.operatorAddressSrc,
+            delegateState.operatorAddressDst,
+            Boolean(delegateState.sourceRestake),
+            Boolean(delegateState.destinationRestake)
+        );
+    }, [
+        type,
+        currentRestakeValidatorAddressList,
+        delegateState.operatorAddressSrc,
+        delegateState.operatorAddressDst,
+        delegateState.sourceRestake,
+        delegateState.destinationRestake
+    ]);
+
+    const hasRestakeListChanged = useMemo(() => {
+        if (type !== 'Redelegate') return false;
+
+        if (currentRestakeValidatorAddressList.length !== updatedRestakeValidatorAddressList.length) return true;
+
+        return currentRestakeValidatorAddressList.some(
+            (validatorAddress) => updatedRestakeValidatorAddressList.includes(validatorAddress) === false
+        );
+    }, [type, currentRestakeValidatorAddressList, updatedRestakeValidatorAddressList]);
+
+    const shouldShowRedelegateRestakeStep = type === 'Redelegate' && currentRestakeValidatorAddressList.length > 0;
+
+    const primaryButtonTitle = type === 'Redelegate' && redelegateStep === 'restake' ? (hasRestakeListChanged ? 'Next' : 'Skip') : 'Next';
 
     const ActivateButton = useMemo(() => {
         const enteredAmount = convertNumber(delegateState.amount) > 0;
@@ -114,10 +180,16 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         }
 
         return enteredAmount;
-    }, [type, delegateState, UndelegateCount]);
+    }, [type, delegateState.amount, UndelegateCount]);
 
     const handleNext = async () => {
         if (status > 0) return;
+
+        if (type === 'Redelegate' && redelegateStep === 'amount' && shouldShowRedelegateRestakeStep) {
+            setRedelegateStep('restake');
+            return;
+        }
+
         const loadingRequestId = CommonActions.beginLoadingProgress();
 
         let gas = getFirmaConfig().defaultGas;
@@ -136,7 +208,8 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
                         walletName,
                         delegateState.operatorAddressSrc,
                         delegateState.operatorAddressDst,
-                        delegateState.amount
+                        delegateState.amount,
+                        hasRestakeListChanged ? updatedRestakeValidatorAddressList : undefined
                     );
                     break;
             }
@@ -160,12 +233,14 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
 
     const handleTransaction = (password: string) => {
         setStatus(0);
+        setRedelegateStep('amount');
         setInputResetValues(true);
         setResetRedelegateValues(true);
 
         const transactionState = {
             ...delegateState,
-            password: password
+            password: password,
+            validatorAddressList: hasRestakeListChanged ? updatedRestakeValidatorAddressList : undefined
         };
 
         navigation.navigate(Screens.Transaction, { state: transactionState });
@@ -175,6 +250,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         try {
             await handleDelegationState();
             await handleUndelegationState();
+            await handleStakingGrantActivationState();
             setResetRedelegateValues(false);
             setInputResetValues(false);
             CommonActions.handleDataLoadStatus(0);
@@ -191,12 +267,29 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     };
 
     const handleBack = () => {
+        if (type === 'Redelegate' && redelegateStep === 'restake') {
+            setRedelegateStep('amount');
+            return;
+        }
         navigation.goBack();
     };
 
     useEffect(() => {
         setIsSignModalOpen(status > 0);
     }, [status]);
+
+    useEffect(() => {
+        if (type !== 'Redelegate') {
+            setRedelegateStep('amount');
+        }
+    }, [type]);
+
+    useEffect(() => {
+        if (type === 'Redelegate' && redelegateStep === 'amount') {
+            handleDelegateState('sourceRestake', hasCurrentSourceRestake);
+            handleDelegateState('destinationRestake', hasCurrentDestinationRestake);
+        }
+    }, [type, redelegateStep, hasCurrentSourceRestake, hasCurrentDestinationRestake]);
 
     useInterval(
         () => {
@@ -213,7 +306,11 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     }, [isFocused]);
 
     return (
-        <Container title={type} handleGuide={handleMoveToWeb} backEvent={handleBack}>
+        <Container
+            title={type === 'Redelegate' && redelegateStep === 'restake' ? 'Restake' : type}
+            handleGuide={handleMoveToWeb}
+            backEvent={handleBack}
+        >
             <ViewContainer>
                 <>
                     <View style={{ flex: 1 }}>
@@ -223,25 +320,55 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
                                     type={type}
                                     operatorAddress={delegateState.operatorAddressDst}
                                     delegationState={delegationState}
-                                    stakingGrantState={stakingGrantState}
                                     undelegateCount={UndelegateCount}
-                                    handleStandardAvailable={handleStandardAvailable}
-                                    handleDelegateState={handleDelegateState}
                                     resetRedelegateValues={resetRedelegateValues}
                                     resetInputValues={resetInputValues}
+                                    redelegateStep={redelegateStep}
+                                    setRedelegateStep={setRedelegateStep}
+                                    stakingGrantState={stakingGrantState}
+                                    sourceRestake={Boolean(delegateState.sourceRestake)}
+                                    destinationRestake={Boolean(delegateState.destinationRestake)}
+                                    setSourceRestake={(value) => handleDelegateState('sourceRestake', value)}
+                                    setDestinationRestake={(value) => handleDelegateState('destinationRestake', value)}
+                                    handleStandardAvailable={handleStandardAvailable}
+                                    handleDelegateState={handleDelegateState}
                                 />
                                 <TransactionConfirmModal
                                     transactionHandler={handleTransaction}
-                                    title={type}
+                                    title={type === 'Redelegate' && hasRestakeListChanged ? 'Redelegate + Restake' : type}
                                     amount={delegateState.amount}
                                     fee={getFeesFromGas(delegateState.gas)}
+                                    extraData={
+                                        type === 'Redelegate' && hasRestakeListChanged
+                                            ? {
+                                                  messages: '2 messages in 1 transaction'
+                                              }
+                                            : null
+                                    }
                                     open={isSignModalOpen}
                                     setOpenModal={handleSignModal}
                                 />
                             </ScrollView>
                         </View>
                         <View style={[styles.buttonBox, { flex: 1 }]}>
-                            <Button title={'Next'} active={ActivateButton} onPressEvent={handleNext} />
+                            {type === 'Redelegate' && redelegateStep === 'restake' ? (
+                                <View style={styles.redelegateButtonRow}>
+                                    <View style={styles.redelegateButtonItem}>
+                                        <Button
+                                            title={'Back'}
+                                            active={true}
+                                            border={true}
+                                            borderColor={'#383745'}
+                                            onPressEvent={() => setRedelegateStep('amount')}
+                                        />
+                                    </View>
+                                    <View style={styles.redelegateButtonItem}>
+                                        <Button title={primaryButtonTitle} active={ActivateButton} onPressEvent={handleNext} />
+                                    </View>
+                                </View>
+                            ) : (
+                                <Button title={primaryButtonTitle} active={ActivateButton} onPressEvent={handleNext} />
+                            )}
                         </View>
                     </View>
 
@@ -266,6 +393,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         paddingHorizontal: 20
+    },
+    redelegateButtonRow: {
+        flexDirection: 'row',
+        gap: 10
+    },
+    redelegateButtonItem: {
+        flex: 1
     }
 });
 
