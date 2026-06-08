@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import CheckLine from '@/assets/icons/material/checkLine.svg';
-import { CHAIN_SYMBOL } from '@/constants/common';
-import { BoxColor, Lato, PointColor, TextCatTitleColor, TextColor, TextGrayColor, WhiteColor } from '@/constants/theme';
+import { CHAIN_SYMBOL, REDELEGATE_RESTAKE_TOOLTIP, REDELEGATE_RESTAKE_WARN, RESTAKE_VALIDATOR_TYPE } from '@/constants/common';
+import { BoxColor, Lato, NoColor, PointColor, TextCatTitleColor, TextColor, TextGrayColor, WhiteColor, YesColor } from '@/constants/theme';
 import { convertAmount, convertToFctNumber } from '@/util/common';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -21,14 +21,6 @@ interface IProps {
     setSourceRestake: (value: boolean) => void;
     setDestinationRestake: (value: boolean) => void;
 }
-
-const SOURCE_COLOR = '#ff8a8a';
-const DESTINATION_COLOR = '#2BA891';
-const OPTION_CARD_COLOR = '#3d3b48';
-const SECONDARY_BUTTON_COLOR = '#383745';
-const WARNING_BOX_COLOR = '#ffc54216';
-const INFO_TEXT =
-    'Check an option to update your Restake validator list along with this redelegation. A single transaction with two messages (Redelegation + Restake update) will be broadcast.';
 
 const RedelegateRestakeStepBox = ({
     sourceAddress,
@@ -82,6 +74,7 @@ const RedelegateRestakeStepBox = ({
     const sourceHint = useMemo(() => {
         if (currentSourceRestake && sourceRestake) return 'in Restake list';
         if (currentSourceRestake && sourceRestake === false) return 'will be removed from Restake list';
+        if (currentSourceRestake === false && sourceRestake) return 'will be added to Restake list';
         return 'not in Restake list';
     }, [currentSourceRestake, sourceRestake]);
 
@@ -116,28 +109,30 @@ const RedelegateRestakeStepBox = ({
         );
     };
 
-    const renderCheckbox = (checked: boolean, disabled: boolean, onPress: () => void) => {
+    const renderCheckbox = (checked: boolean, disabled: boolean) => {
         return (
-            <TouchableOpacity
-                disabled={disabled}
-                onPress={onPress}
-                style={[styles.checkbox, checked && styles.checkboxActive, disabled && styles.checkboxDisabled]}
-            >
+            <View style={[styles.checkbox, checked && styles.checkboxActive, disabled && styles.checkboxDisabled]}>
                 {checked && <CheckLine color={TextColor} />}
-            </TouchableOpacity>
+            </View>
         );
     };
 
     const renderValidator = (
+        startAdornment: ReactNode,
         validator: Pick<IValidatorState, 'validatorAvatar' | 'validatorMoniker'> | undefined,
-        fallbackLabel: string
+        fallbackLabel: string,
+        endAdornment: ReactNode
     ) => {
         return (
             <View style={styles.validatorIdentity}>
                 <ValidatorProfile uri={validator?.validatorAvatar ?? ''} size={40} />
-                <Text numberOfLines={1} ellipsizeMode="middle" style={styles.validatorName}>
-                    {validator?.validatorMoniker ?? fallbackLabel}
-                </Text>
+                <View style={styles.validatorTextBox}>
+                    {startAdornment}
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.validatorName}>
+                        {validator?.validatorMoniker ?? fallbackLabel}
+                    </Text>
+                    {endAdornment}
+                </View>
             </View>
         );
     };
@@ -145,8 +140,8 @@ const RedelegateRestakeStepBox = ({
     return (
         <View style={styles.container}>
             <View style={styles.topInfoBox}>
-                {renderTopRow('Source Validator', sourceDelegation?.moniker ?? sourceAddress)}
-                {renderTopRow('Destination Validator', destinationValidator?.validatorMoniker ?? destinationAddress)}
+                {renderTopRow(RESTAKE_VALIDATOR_TYPE.SOURCE, sourceDelegation?.moniker ?? sourceAddress)}
+                {renderTopRow(RESTAKE_VALIDATOR_TYPE.DESTINATION, destinationValidator?.validatorMoniker ?? destinationAddress)}
             </View>
 
             <View style={styles.sectionHeaderRow}>
@@ -157,31 +152,26 @@ const RedelegateRestakeStepBox = ({
             </View>
             {showInfo && (
                 <View style={styles.infoBox}>
-                    <Text style={styles.infoText}>{INFO_TEXT}</Text>
+                    <Text style={styles.infoText}>{REDELEGATE_RESTAKE_TOOLTIP}</Text>
                 </View>
             )}
 
             <View style={styles.validatorCard}>
-                <View style={styles.validatorHeader}>
-                    {renderCheckbox(currentSourceRestake && sourceRestake, currentSourceRestake === false, () =>
-                        setSourceRestake(!sourceRestake)
-                    )}
+                <TouchableOpacity style={styles.validatorHeader} onPress={() => setSourceRestake(!sourceRestake)}>
+                    {renderCheckbox(sourceRestake, false)}
                     {renderValidator(
+                        <Text style={[styles.roleLabel, { color: NoColor }]}>Source</Text>,
                         sourceDelegation
                             ? {
                                   validatorAvatar: sourceDelegation.avatarURL,
                                   validatorMoniker: sourceDelegation.moniker
                               }
                             : undefined,
-                        sourceAddress
+                        sourceAddress,
+                        <Text style={styles.hintText}>{sourceHint}</Text>
                     )}
-                </View>
-
-                <Text style={styles.hintText}>
-                    <Text style={[styles.roleLabel, { color: SOURCE_COLOR }]}>Source</Text> {sourceHint}
-                </Text>
-
-                {renderInfoRow('Redelegate amount', `-${amountText} ${_CHAIN_SYMBOL}`, SOURCE_COLOR)}
+                </TouchableOpacity>
+                {renderInfoRow('Redelegate amount', `-${amountText} ${_CHAIN_SYMBOL}`, NoColor)}
                 {renderInfoRow(
                     'Remaining balance',
                     `${convertAmount({ value: sourceRemainingAmount, isUfct: false, point: 6 })} ${_CHAIN_SYMBOL}`
@@ -189,37 +179,26 @@ const RedelegateRestakeStepBox = ({
             </View>
 
             <View style={styles.validatorCard}>
-                <View style={styles.validatorHeader}>
-                    {renderCheckbox(destinationRestake, false, () => setDestinationRestake(!destinationRestake))}
-                    {renderValidator(destinationValidator, destinationAddress)}
-                </View>
-
-                <Text style={styles.hintText}>
-                    <Text style={[styles.roleLabel, { color: DESTINATION_COLOR }]}>Destination</Text> {destinationHint}
-                </Text>
-
-                {renderInfoRow('Amount to receive', `+${amountText} ${_CHAIN_SYMBOL}`, DESTINATION_COLOR)}
+                <TouchableOpacity style={styles.validatorHeader} onPress={() => setDestinationRestake(!destinationRestake)}>
+                    {renderCheckbox(destinationRestake, false)}
+                    {renderValidator(
+                        <Text style={[styles.roleLabel, { color: YesColor }]}>Destination</Text>,
+                        destinationValidator,
+                        destinationAddress,
+                        <Text style={styles.hintText}>{destinationHint}</Text>
+                    )}
+                </TouchableOpacity>
+                {renderInfoRow('Amount to receive', `+${amountText} ${_CHAIN_SYMBOL}`, YesColor)}
                 {renderInfoRow(
-                    'Total delegation after redelegation',
+                    'Total delegation\nafter redelegation',
                     `${convertAmount({ value: destinationTotalAmount, isUfct: false, point: 6 })} ${_CHAIN_SYMBOL}`
                 )}
             </View>
 
-            <View style={styles.warningBox}>
-                <WarnContainer
-                    bgColor={WARNING_BOX_COLOR}
-                    paddingVertical={12}
-                    paddingHorizontal={12}
-                    text="A single transaction with two messages (Redelegation + Restake update) will be broadcast."
-                />
-            </View>
-            <View style={styles.warningBox}>
-                <WarnContainer
-                    bgColor={WARNING_BOX_COLOR}
-                    paddingVertical={12}
-                    paddingHorizontal={12}
-                    text="If no changes are made, clicking 'Skip' will only broadcast the redelegation."
-                />
+            <View style={{ gap: 12 }}>
+                {REDELEGATE_RESTAKE_WARN.map((text, idx) => (
+                    <WarnContainer paddingVertical={12} paddingHorizontal={12} text={text} key={idx} />
+                ))}
             </View>
         </View>
     );
@@ -271,7 +250,7 @@ const styles = StyleSheet.create({
     infoBox: {
         padding: 12,
         borderRadius: 4,
-        backgroundColor: SECONDARY_BUTTON_COLOR,
+        backgroundColor: BoxColor,
         marginBottom: 12
     },
     infoText: {
@@ -284,14 +263,14 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 14,
         borderRadius: 4,
-        backgroundColor: OPTION_CARD_COLOR,
-        marginBottom: 12,
-        gap: 10
+        backgroundColor: BoxColor,
+        marginBottom: 12
     },
     validatorHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10
+        gap: 10,
+        marginBottom: 8
     },
     checkbox: {
         width: 20,
@@ -317,9 +296,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 10
     },
-    validatorName: {
+    validatorTextBox: {
         flex: 1,
-        minWidth: 0,
+        minWidth: 0
+    },
+    validatorName: {
         fontFamily: Lato,
         fontSize: 15,
         color: TextColor,
@@ -339,7 +320,6 @@ const styles = StyleSheet.create({
     infoRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
         paddingVertical: 3,
         gap: 12
     },
@@ -355,9 +335,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '600',
         textAlign: 'right'
-    },
-    warningBox: {
-        marginBottom: 8
     }
 });
 

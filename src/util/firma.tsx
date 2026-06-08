@@ -268,6 +268,10 @@ export const buildUpdatedRestakeValidatorAddressList = (
         removeValidatorAddress(sourceValidatorAddress);
     }
 
+    if (sourceAlreadyInRestake === false && sourceRestake) {
+        addValidatorAddress(sourceValidatorAddress);
+    }
+
     if (destinationAlreadyInRestake && destinationRestake === false) {
         removeValidatorAddress(destinationValidatorAddress);
     }
@@ -366,18 +370,13 @@ export const getEstimateGasRedelegate = async (
 
 export const getEstimateGasGrantStakeAuthorization = async (walletName: string, validatorAddress: string[]) => {
     const wallet = await getDecryptWalletInfo(walletName);
-    const date = new Date();
-    date.setFullYear(date.getFullYear() + 1);
 
     return await getFirmaSDK().Authz.getGasEstimationGrantStakeAuthorization(
         wallet,
         getRestakeAddress(),
         validatorAddress,
         1,
-        {
-            seconds: BigInt(Math.floor(date.getTime() / 1000)),
-            nanos: (date.getTime() % 1000) * 1000000
-        },
+        buildRestakeGrantExpiration(),
         0
     );
 };
@@ -660,18 +659,13 @@ export const undelegate = async (recoverValue: string, address: string, amount: 
 
 export const grant = async (recoverValue: string, validatorAddress: string[], maxTokens: number, estimatedGas: number) => {
     const wallet = await recoverWallet(recoverValue);
-    const date = new Date();
-    date.setFullYear(date.getFullYear() + 1);
 
     return await getFirmaSDK().Authz.grantStakeAuthorization(
         wallet,
         getRestakeAddress(),
         validatorAddress,
         1,
-        {
-            seconds: BigInt(Math.floor(date.getTime() / 1000)),
-            nanos: (date.getTime() % 1000) * 1000000
-        },
+        buildRestakeGrantExpiration(),
         maxTokens,
         {
             gas: estimatedGas,

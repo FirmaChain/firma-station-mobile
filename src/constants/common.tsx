@@ -171,7 +171,6 @@ export const REDELEGATE_NOTICE_TEXT = [
     'A maximum of 7 redelegations are allowed.'
     // 'Until the 21 day link period passes, you cannot redelegate your redelgated supply to another validator.'
 ];
-export const REDELEGATE_RESTAKE_NOTICE_TEXT = 'Changing Restake settings requires an additional gas fee.';
 
 export const RESTAKE_NOTICE_TEXT = [
     'Performs a restake to all validators currently being delegated.',
@@ -244,10 +243,23 @@ export const RESTAKE_STATUS: IKeyValue = {
     }
 };
 
+export const REDELEGATE_RESTAKE_TOOLTIP =
+    'Check an option to update your Restake validator list along with this redelegation. A single transaction with two messages (Redelegation + Restake update) will be broadcast.';
+
 export const RESTAKE_TYPE: IKeyValue = {
     GRANT: 'Grant stake authorization',
     REVOKE: 'Revoke stake authorization'
 };
+
+export const RESTAKE_VALIDATOR_TYPE = {
+    SOURCE: 'Source Validator',
+    DESTINATION: 'Destination Validator'
+};
+
+export const REDELEGATE_RESTAKE_WARN = [
+    'A single transaction with two messages (Redelegation + Restake update) will be broadcast.',
+    "If no changes are made, clicking 'Skip' will only broadcast the redelegation."
+];
 
 // transaction & unlock
 export const TRANSACTION_AUTH_TEXT = 'Enter your password to make a transaction.';
