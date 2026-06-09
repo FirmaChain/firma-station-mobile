@@ -1,4 +1,4 @@
-import { Animated, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { Animated, LayoutAnimation } from 'react-native';
 
 export const fadeIn = (animated: any, value: Animated.Value, duration: number, toValue: number = 1) => {
     animated
@@ -45,15 +45,6 @@ export const degree = (value: Animated.Value) => {
         inputRange: [0, 1],
         outputRange: ['0deg', '180deg']
     });
-};
-
-export const LayoutAnim = () => {
-    // console.warn('LayoutAnim is not supported on New Arch');
-    if (Platform.OS === 'android') {
-        if (UIManager.setLayoutAnimationEnabledExperimental) {
-            UIManager.setLayoutAnimationEnabledExperimental(true);
-        }
-    }
 };
 
 export const easeInAndOutAnim = () => {

@@ -13,7 +13,7 @@ import {
 import { ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { IFavoriteProps } from '@/redux/types';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim } from '@/util/animation';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import CustomModal from '@/components/modal/customModal';
@@ -53,7 +53,6 @@ const FavoritesModal = ({ open, address, memo, setOpenModal, setValue, handleCre
     }, [FavoriteList]);
 
     const AnimationState = useMemo(() => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
         if (isEdit) {
             return {

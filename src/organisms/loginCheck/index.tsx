@@ -4,7 +4,7 @@ import { BgColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { easeInAndOutAnim, fadeIn, LayoutAnim } from '@/util/animation';
+import { easeInAndOutAnim, fadeIn } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import { wait, waitForNextFrame } from '@/util/common';
 import { removeAllData } from '@/util/detect';
@@ -194,7 +194,6 @@ const LoginCheck = () => {
     };
 
     const openSelectWallet = () => {
-        LayoutAnim();
         easeInAndOutAnim();
         setDimActive(false);
         fadeIn(Animated, fadeAnim, 950);

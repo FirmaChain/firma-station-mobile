@@ -13,7 +13,7 @@ import {
 import { SendType } from '@/organisms/wallet/common/senTypeSelector';
 import { ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim } from '@/util/animation';
 import { addressCheck } from '@/util/firma';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useIsFocused } from '@react-navigation/native';
@@ -63,7 +63,6 @@ const InputSetVerticalForAddress = ({
 
     useEffect(() => {
         if (type === 'SEND_IBC' && val.length > 0) {
-            LayoutAnim();
             easeInAndOutCustomAnim(150);
             setValidAddress(val.startsWith('osmo1'));
         } else {

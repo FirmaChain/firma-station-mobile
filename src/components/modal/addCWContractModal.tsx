@@ -22,12 +22,12 @@ import {
 } from '@/constants/theme';
 import { ModalActions, StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim } from '@/util/animation';
 import { wait } from '@/util/common';
 import { addressCheck, getCW20ContractInfo, getCW721ContractInfo, getCWContractInfo, ValidCWType, verifyCWContract } from '@/util/firma';
 import { ContractInfo, Cw20TokenInfo, Cw721ContractInfo } from '@firmachain/firma-js';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { Alert, Animated, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import CustomModal from '@/components/modal/customModal';
@@ -126,7 +126,6 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
     }, [validType, cwInfo?.address, address, nonExist20StoreValue, nonExist721StoreValue, network]);
 
     const contractInfo = useMemo(() => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
 
         if (validType === 'CW20') {
@@ -218,7 +217,6 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
     }, [open]);
 
     const ExistAddress = useMemo(() => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
         if (validType === 'CW20') {
             const filter = nonExist20StoreValue

@@ -10,7 +10,7 @@ import {
     TextColor,
     TextGrayColor
 } from '@/constants/theme';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim } from '@/util/animation';
 import { Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
 import Svg, { Defs, Rect, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 
@@ -62,7 +62,6 @@ const DescriptionBox = ({ data }: IProps) => {
 
     useEffect(() => {
         if (showMore) {
-            LayoutAnim();
             easeInAndOutCustomAnim(150);
             if (openAccordion) {
                 setMaxLines(999);
@@ -118,9 +117,14 @@ const DescriptionBox = ({ data }: IProps) => {
                         <TouchableOpacity
                             style={[styles.moreButton, { paddingLeft: 30 }]}
                             onPress={() => handleMaxLines()}
-                            onLayout={event => setMoreButtonWidth(event.nativeEvent.layout.width)}
+                            onLayout={(event) => setMoreButtonWidth(event.nativeEvent.layout.width)}
                         >
-                            <Svg width={moreButtonWidth} height="100%" style={{ position: 'absolute', left: 0, top: 0 }} pointerEvents="none">
+                            <Svg
+                                width={moreButtonWidth}
+                                height="100%"
+                                style={{ position: 'absolute', left: 0, top: 0 }}
+                                pointerEvents="none"
+                            >
                                 <Defs>
                                     <SvgLinearGradient id="dappDetailMoreGradient" x1="0" y1="0" x2="1" y2="0">
                                         <Stop offset="0%" stopColor={BoxDarkColor} stopOpacity={0.56} />

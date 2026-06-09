@@ -9,7 +9,7 @@ import {
     TextDarkGrayColor,
     TextGrayColor
 } from '@/constants/theme';
-import { easeInAndOutCustomAnim, fadeOut, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim, fadeOut } from '@/util/animation';
 import FastImage from '@d11/react-native-fast-image';
 import { Animated, StyleSheet, Text, TextLayoutEvent, TouchableOpacity, View } from 'react-native';
 import Svg, { Defs, Rect, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
@@ -56,7 +56,6 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
 
     useEffect(() => {
         if (showMore) {
-            LayoutAnim();
             easeInAndOutCustomAnim(150);
             if (openAccordion) {
                 setMaxLines(999);

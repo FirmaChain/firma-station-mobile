@@ -3,7 +3,7 @@ import DownWideLine from '@/assets/icons/material/downWideLine.svg';
 import { CHAIN_SYMBOL } from '@/constants/common';
 import { BgColor, BoxColor, DividerColor, Lato, TextColor, TextDarkGrayColor, TextDisableColor } from '@/constants/theme';
 import { CommonActions } from '@/redux/actions';
-import { degree, easeInAndOutCustomAnim, LayoutAnim, TurnToOpposite, TurnToOriginal } from '@/util/animation';
+import { degree, easeInAndOutCustomAnim, TurnToOpposite, TurnToOriginal } from '@/util/animation';
 import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
 import { getEstimateGasFromDelegation, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -103,7 +103,6 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
     };
 
     useEffect(() => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
         if (openAccordion) {
             setAccordionHeight(65);

@@ -20,7 +20,7 @@ import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { ICWContractsState } from '@/redux/types';
-import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim, fadeIn, fadeOut } from '@/util/animation';
 import { getCW721NFTImage } from '@/util/firma';
 import FastImage, { Source } from '@d11/react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
@@ -102,7 +102,6 @@ const CW721List = ({ data, isEdit }: IProps) => {
     };
 
     const AnimationState = useMemo(() => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
         if (isEdit) {
             fadeIn(Animated, fadeAnim, 300);
@@ -157,7 +156,6 @@ const CW721List = ({ data, isEdit }: IProps) => {
             const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
 
             const AnimationStateForRemoveBox = useMemo(() => {
-                LayoutAnim();
                 easeInAndOutCustomAnim(150);
                 if (item.address.toLowerCase() === removeItemAddr.toLowerCase()) {
                     fadeIn(Animated, fadeAnimForRemove, 300);

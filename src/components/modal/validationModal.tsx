@@ -2,15 +2,15 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PLACEHOLDER_FOR_PASSWORD, TRANSACTION_AUTH_TEXT, UNLOCK_AUTH_TEXT } from '@/constants/common';
 import { BgColor, DisableColor, Lato, PointColor, TextCatTitleColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { easeInAndOutAnim, LayoutAnim } from '@/util/animation';
+import { easeInAndOutAnim } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import { wait } from '@/util/common';
 import { ScreenHeight } from '@/util/getScreenSize';
 import { decrypt, keyEncrypt } from '@/util/keystore';
 import { getChain } from '@/util/secureKeyChain';
 import { WalletNameValidationCheck } from '@/util/validationCheck';
-import { debounce } from 'es-toolkit';
 import { getPasswordViaBioAuth, getUseBioAuth } from '@/util/wallet';
+import { debounce } from 'es-toolkit';
 import { Animated, Keyboard, KeyboardEvent, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
@@ -163,7 +163,6 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                 if (auth) {
                     passwordFromBio = await getPasswordViaBioAuth();
                 } else {
-                    LayoutAnim();
                     easeInAndOutAnim();
                     isProcessing = false;
                     setDimActive(false);

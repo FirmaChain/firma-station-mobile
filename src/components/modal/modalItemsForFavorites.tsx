@@ -18,7 +18,7 @@ import {
 import { StorageActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { IFavoriteProps } from '@/redux/types';
-import { easeInAndOutCustomAnim, fadeIn, fadeOut, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim, fadeIn, fadeOut } from '@/util/animation';
 import { filter, isEqual } from 'es-toolkit/compat';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
@@ -184,7 +184,6 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
     const [removeItem, setRemoveItem] = useState<IFavoriteProps | null>(null);
 
     const AnimationState = useMemo(() => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
         if (isEdit) {
             fadeIn(Animated, fadeAnim, 300);

@@ -12,7 +12,7 @@ import {
 } from '@/constants/theme';
 import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim } from '@/util/animation';
 import { convertAmount, convertNumber, wait } from '@/util/common';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -52,7 +52,6 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
     const [amount, setAmount] = useState(0);
 
     useEffect(() => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
         if (type === 'SEND_IBC') {
             setAccordionHeight(70);

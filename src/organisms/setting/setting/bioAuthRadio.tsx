@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { BIOAUTH_ACTIVATE, SETTING_BIO_AUTH_MODAL_TEXT } from '@/constants/common';
 import { BgColor, BoxColor, DisableColor, Lato, PointColor, TextColor, WhiteColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
-import { easeInAndOutCustomAnim, LayoutAnim } from '@/util/animation';
+import { easeInAndOutCustomAnim } from '@/util/animation';
 import { confirmViaBioAuth } from '@/util/bioAuth';
 import {
     getAutoLoginTimestamp,
-    removeDAppData,
     getUseBioAuth,
+    removeDAppData,
     removePasswordViaBioAuthByTimestamp,
     removeUseBioAuth,
     setPasswordViaBioAuth,
@@ -33,7 +33,6 @@ const BioAuthRadio = ({ walletName }: IProps) => {
     };
 
     const handleBioAuth = async (value: boolean) => {
-        LayoutAnim();
         easeInAndOutCustomAnim(150);
         if (value === false) {
             handleBioAuthState();
