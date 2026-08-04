@@ -8,7 +8,7 @@ interface IProps {
 
 const DappsSkeleton = ({ size }: IProps) => {
     return (
-        <View style={[styles.contentWrap, { width: size }]}>
+        <View style={styles.contentWrap}>
             <View style={{ paddingHorizontal: 10, height: size - 20 }}>
                 <ContentLoader speed={0.8} animate={true} foregroundColor={DividerColor} backgroundColor={BoxColor}>
                     <Rect x="0" y="0" rx="8" ry="8" width={'100%'} height={size - 20} />
@@ -21,6 +21,8 @@ const DappsSkeleton = ({ size }: IProps) => {
 
 const styles = StyleSheet.create({
     contentWrap: {
+        width: '50%',
+        flexShrink: 0,
         marginBottom: 52
     }
 });

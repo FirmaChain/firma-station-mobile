@@ -70,7 +70,7 @@ const Dapps = () => {
     const DappItem = useCallback(
         ({ item, size }: any) => {
             return (
-                <TouchableOpacity style={[styles.contentWrap, { width: size }]} onPress={() => moveToDetail(item)}>
+                <TouchableOpacity style={styles.contentWrap} onPress={() => moveToDetail(item)}>
                     <Animated.View style={{ paddingHorizontal: 10 }}>
                         <View style={[styles.contentImage, { width: '100%', height: size - 20, backgroundColor: BoxColor }]}>
                             <Animated.Image
@@ -162,6 +162,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     contentWrap: {
+        width: '50%',
+        flexShrink: 0,
         marginBottom: 20
     },
     contentImage: {
