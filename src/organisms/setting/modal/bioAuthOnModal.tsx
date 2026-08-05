@@ -112,10 +112,10 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
     return (
         <CustomModal visible={open} handleOpen={handleModal}>
             <View style={styles.modalTextContents}>
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={[styles.title, { fontWeight: 'bold' }]}>{book.title}</Text>
+                <View style={styles.inlineStyle1}>
+                    <Text style={[styles.title, styles.inlineStyle2]}>{book.title}</Text>
                 </View>
-                <View style={{ paddingBottom: 15 }}>
+                <View style={styles.inlineStyle3}>
                     <Text style={styles.desc}>{book.desc}</Text>
                     <InputSetVertical
                         title={''}
@@ -133,6 +133,9 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flexDirection: 'row' },
+    inlineStyle2: { fontWeight: 'bold' },
+    inlineStyle3: { paddingBottom: 15 },
     modalTextContents: {
         width: '100%',
         padding: 20

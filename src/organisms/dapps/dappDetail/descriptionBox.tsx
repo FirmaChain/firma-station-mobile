@@ -73,60 +73,56 @@ const DescriptionBox = ({ data }: IProps) => {
         }
     }, [openAccordion]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingHorizontal: 20, paddingTop: 10, alignItems: 'flex-start' },
+        inlineStyle2: { height: '100%', justifyContent: 'flex-start' },
+        inlineStyle3: { flex: 1 },
+        inlineStyle4: { paddingBottom: 6, display: isCWContract ? 'flex' : 'none' },
+        inlineStyle5: {
+            display: CW20Contract === '' ? 'none' : 'flex',
+            color: CW20Color,
+            backgroundColor: CW20BackgroundColor
+        },
+        inlineStyle6: {
+            display: CW721Contract === '' ? 'none' : 'flex',
+            color: CW721Color,
+            backgroundColor: CW721BackgroundColor,
+            marginLeft: CW20Contract === '' ? 0 : 8
+        },
+        inlineStyle7: { paddingBottom: 6 },
+        inlineStyle8: { paddingBottom: openAccordion ? 20 : 0 },
+        inlineStyle9: { display: showMore ? 'flex' : 'none' },
+        inlineStyle10: { paddingLeft: 30 },
+        inlineStyle11: { position: 'absolute', left: 0, top: 0 },
+        inlineStyle12: { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }
+    } as const;
+
     return (
-        <View style={[styles.boxH, { paddingHorizontal: 20, paddingTop: 10, alignItems: 'flex-start' }]}>
-            <View style={{ height: '100%', justifyContent: 'flex-start' }}>
+        <View style={[styles.boxH, inlineStyles1.inlineStyle1]}>
+            <View style={inlineStyles1.inlineStyle2}>
                 <Image style={styles.contentImage} source={{ uri: data.icon }} />
             </View>
-            <View style={[styles.boxV, { flex: 1 }]}>
-                <View style={[styles.boxH, { paddingBottom: 6, display: isCWContract ? 'flex' : 'none' }]}>
-                    <Text
-                        style={[
-                            styles.label,
-                            {
-                                display: CW20Contract === '' ? 'none' : 'flex',
-                                color: CW20Color,
-                                backgroundColor: CW20BackgroundColor
-                            }
-                        ]}
-                    >
-                        {'CW20'}
-                    </Text>
-                    <Text
-                        style={[
-                            styles.label,
-                            {
-                                display: CW721Contract === '' ? 'none' : 'flex',
-                                color: CW721Color,
-                                backgroundColor: CW721BackgroundColor,
-                                marginLeft: CW20Contract === '' ? 0 : 8
-                            }
-                        ]}
-                    >
-                        {'CW721'}
-                    </Text>
+            <View style={[styles.boxV, inlineStyles1.inlineStyle3]}>
+                <View style={[styles.boxH, inlineStyles1.inlineStyle4]}>
+                    <Text style={[styles.label, inlineStyles1.inlineStyle5]}>{'CW20'}</Text>
+                    <Text style={[styles.label, inlineStyles1.inlineStyle6]}>{'CW721'}</Text>
                 </View>
-                <View style={[styles.boxH, { paddingBottom: 6 }]}>
+                <View style={[styles.boxH, inlineStyles1.inlineStyle7]}>
                     <Text numberOfLines={2} ellipsizeMode="tail" style={styles.contentTitle}>
                         {data.name}
                     </Text>
                 </View>
-                <View style={{ paddingBottom: openAccordion ? 20 : 0 }}>
+                <View style={inlineStyles1.inlineStyle8}>
                     <Text style={styles.desc} numberOfLines={maxLines} ellipsizeMode={'tail'} onTextLayout={onTextLayout}>
                         {data.description}
                     </Text>
-                    <View style={[styles.moreButtonBox, { display: showMore ? 'flex' : 'none' }]}>
+                    <View style={[styles.moreButtonBox, inlineStyles1.inlineStyle9]}>
                         <TouchableOpacity
-                            style={[styles.moreButton, { paddingLeft: 30 }]}
+                            style={[styles.moreButton, inlineStyles1.inlineStyle10]}
                             onPress={() => handleMaxLines()}
                             onLayout={(event) => setMoreButtonWidth(event.nativeEvent.layout.width)}
                         >
-                            <Svg
-                                width={moreButtonWidth}
-                                height="100%"
-                                style={{ position: 'absolute', left: 0, top: 0 }}
-                                pointerEvents="none"
-                            >
+                            <Svg width={moreButtonWidth} height="100%" style={inlineStyles1.inlineStyle11} pointerEvents="none">
                                 <Defs>
                                     <SvgLinearGradient id="dappDetailMoreGradient" x1="0" y1="0" x2="1" y2="0">
                                         <Stop offset="0%" stopColor={BoxDarkColor} stopOpacity={0.56} />
@@ -141,9 +137,7 @@ const DescriptionBox = ({ data }: IProps) => {
                             ) : (
                                 <DownEmptyArrow size={14} color={TextGrayColor} />
                             )}
-                            <Text style={[styles.desc, { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }]}>
-                                {openAccordion ? 'Less' : 'More'}
-                            </Text>
+                            <Text style={[styles.desc, inlineStyles1.inlineStyle12]}>{openAccordion ? 'Less' : 'More'}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

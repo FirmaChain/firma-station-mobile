@@ -104,70 +104,66 @@ const TransactionConfirmModal = ({
         if (appState !== 'active' && isBioAuthInProgress === false) handleModal(false);
     }, [appState]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { display: openValidationModal ? 'none' : transactionStart ? 'none' : 'flex' },
+        inlineStyle2: { justifyContent: 'flex-start', alignItems: 'center' },
+        inlineStyle3: { borderBottomWidth: 1, borderBottomColor: BorderColor },
+        inlineStyle4: { color: WhiteColor, fontWeight: 'bold' },
+        inlineStyle5: { borderBottomWidth: memo !== '' ? 0 : 1, borderBottomColor: BorderColor },
+        inlineStyle6: { fontSize: 14, color: TextDisableColor },
+        inlineStyle7: {
+            alignItems: 'flex-end',
+            paddingBottom: 15,
+            borderBottomWidth: 1,
+            borderBottomColor: BorderColor
+        },
+        inlineStyle8: { fontSize: 14 },
+        inlineStyle9: {
+            paddingTop: 5,
+            paddingBottom: 15,
+            borderBottomWidth: 1,
+            borderBottomColor: BorderColor
+        },
+        inlineStyle10: { color: TextCatTitleColor },
+        inlineStyle11: { fontSize: 14, color: TextDisableColor }
+    } as const;
+
     return (
         <CustomModal visible={open} bgColor={BgColor} handleOpen={handleModal}>
             <>
-                <View style={[styles.modalTextContents, { display: openValidationModal ? 'none' : transactionStart ? 'none' : 'flex' }]}>
-                    <View style={[styles.boxH, { justifyContent: 'flex-start', alignItems: 'center' }]}>
+                <View style={[styles.modalTextContents, inlineStyles1.inlineStyle1]}>
+                    <View style={[styles.boxH, inlineStyles1.inlineStyle2]}>
                         <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
                     </View>
                     <View style={styles.receiptBox}>
                         {vote !== '' && (
-                            <View style={[styles.boxH, styles.receiptDesc, { borderBottomWidth: 1, borderBottomColor: BorderColor }]}>
+                            <View style={[styles.boxH, styles.receiptDesc, inlineStyles1.inlineStyle3]}>
                                 <Text style={styles.itemTitle}>Vote</Text>
-                                <Text style={[styles.itemBalance, { color: WhiteColor, fontWeight: 'bold' }]}>{vote}</Text>
+                                <Text style={[styles.itemBalance, inlineStyles1.inlineStyle4]}>{vote}</Text>
                             </View>
                         )}
                         {amount > 0 && (
-                            <View
-                                style={[
-                                    styles.boxH,
-                                    styles.receiptDesc,
-                                    { borderBottomWidth: memo !== '' ? 0 : 1, borderBottomColor: BorderColor }
-                                ]}
-                            >
+                            <View style={[styles.boxH, styles.receiptDesc, inlineStyles1.inlineStyle5]}>
                                 <Text style={styles.itemTitle}>Amount</Text>
                                 <Text style={styles.itemBalance}>
                                     {convertAmount({ value: amount, isUfct: false, point: 6 })}
-                                    <Text
-                                        style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}
-                                    >{` ${SEND_TOKEN_SYMBOL}`}</Text>
+                                    <Text style={[styles.itemTitle, inlineStyles1.inlineStyle6]}>{` ${SEND_TOKEN_SYMBOL}`}</Text>
                                 </Text>
                             </View>
                         )}
                         {memo !== '' && (
-                            <View
-                                style={[
-                                    styles.boxH,
-                                    {
-                                        alignItems: 'flex-end',
-                                        paddingBottom: 15,
-                                        borderBottomWidth: 1,
-                                        borderBottomColor: BorderColor
-                                    }
-                                ]}
-                            >
+                            <View style={[styles.boxH, inlineStyles1.inlineStyle7]}>
                                 <Text style={styles.itemTitle}>Memo</Text>
-                                <Text style={[styles.itemBalance, { fontSize: 14 }]} numberOfLines={1} ellipsizeMode="tail">
+                                <Text style={[styles.itemBalance, inlineStyles1.inlineStyle8]} numberOfLines={1} ellipsizeMode="tail">
                                     {memo}
                                 </Text>
                             </View>
                         )}
                         {extraKey.length > 0 && (
-                            <View
-                                style={[
-                                    styles.receiptDesc,
-                                    {
-                                        paddingTop: 5,
-                                        paddingBottom: 15,
-                                        borderBottomWidth: 1,
-                                        borderBottomColor: BorderColor
-                                    }
-                                ]}
-                            >
+                            <View style={[styles.receiptDesc, inlineStyles1.inlineStyle9]}>
                                 {extraKey.map((value, index) => {
                                     return (
-                                        <View key={index} style={[styles.boxH, styles.receiptDesc, { paddingTop: 10 }]}>
+                                        <View key={index} style={[styles.boxH, styles.receiptDesc, styles.inlineStyle1]}>
                                             <Text style={styles.itemTitle}>{handleCapitalize(value)}</Text>
                                             <Text style={styles.itemBalance} numberOfLines={1} ellipsizeMode="tail">
                                                 {extraData?.[value]}
@@ -179,9 +175,9 @@ const TransactionConfirmModal = ({
                         )}
                         <View style={[styles.boxH, styles.receiptDesc]}>
                             <Text style={styles.itemTitle}>Fee</Text>
-                            <Text style={[styles.itemBalance, { color: TextCatTitleColor }]}>
+                            <Text style={[styles.itemBalance, inlineStyles1.inlineStyle10]}>
                                 {convertNumber(convertAmount({ value: fee / 1000000, isUfct: false, point: 6 }))}
-                                <Text style={[styles.itemTitle, { fontSize: 14, color: TextDisableColor }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                                <Text style={[styles.itemTitle, inlineStyles1.inlineStyle11]}>{` ${_CHAIN_SYMBOL}`}</Text>
                             </Text>
                         </View>
                     </View>
@@ -201,6 +197,7 @@ const TransactionConfirmModal = ({
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingTop: 10 },
     modalTextContents: {
         width: '100%',
         padding: 20

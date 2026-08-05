@@ -84,32 +84,25 @@ interface RemoveConfirmBoxProps {
 const RemoveConfirmBox = ({ item, removeItem, onRemove }: RemoveConfirmBoxProps) => {
     const animationState = useRemoveAnimation(item, removeItem);
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            opacity: animationState.opacity,
+            height: animationState.height,
+            paddingBottom: animationState.padding,
+            paddingHorizontal: 20
+        },
+        inlineStyle2: {
+            opacity: animationState.opacity,
+            height: animationState.height,
+            paddingVertical: animationState.buttonPadding
+        }
+    } as const;
+
     return (
-        <Animated.View
-            style={[
-                styles.removeConfirmBox,
-                {
-                    opacity: animationState.opacity,
-                    height: animationState.height,
-                    paddingBottom: animationState.padding,
-                    paddingHorizontal: 20
-                }
-            ]}
-        >
+        <Animated.View style={[styles.removeConfirmBox, inlineStyles1.inlineStyle1]}>
             <Text style={styles.removeNotice}>{FAVORITE_REMOVE_WARN_TEXT}</Text>
             <TouchableOpacity onPress={() => onRemove(item)}>
-                <Animated.Text
-                    style={[
-                        styles.removeButton,
-                        {
-                            opacity: animationState.opacity,
-                            height: animationState.height,
-                            paddingVertical: animationState.buttonPadding
-                        }
-                    ]}
-                >
-                    {'Remove'}
-                </Animated.Text>
+                <Animated.Text style={[styles.removeButton, inlineStyles1.inlineStyle2]}>{'Remove'}</Animated.Text>
             </TouchableOpacity>
         </Animated.View>
     );
@@ -135,16 +128,21 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
         return <FirmaLogo color={TextColor} width={20} height={20} />;
     };
 
+    const inlineStyles2 = {
+        inlineStyle1: {
+            marginRight: animationState.iconMargin,
+            width: animationState.iconWidth,
+            opacity: isEdit ? 1 : 0
+        },
+        inlineStyle2: { justifyContent: 'center', marginRight: 7 },
+        inlineStyle3: { justifyContent: 'center', alignItems: 'center' },
+        inlineStyle4: { display: item.memo ? 'flex' : 'none' }
+    } as const;
+
     return (
         <View key={item.address + item.name} style={styles.modalContentBox}>
             <View style={styles.modalPressBox}>
-                <Animated.View
-                    style={{
-                        marginRight: animationState.iconMargin,
-                        width: animationState.iconWidth,
-                        opacity: isEdit ? 1 : 0
-                    }}
-                >
+                <Animated.View style={inlineStyles2.inlineStyle1}>
                     <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} onPress={() => isEdit && onRemove(item)}>
                         <RemoveIcon size={20} color={FailedColor} />
                     </TouchableOpacity>
@@ -152,11 +150,11 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
 
                 <TouchableOpacity style={styles.favoriteItemBox} onPress={() => onSelect(item.address, item.memo || '', isEdit)}>
                     <View style={styles.nameBox}>
-                        <View style={{ justifyContent: 'center', marginRight: 7 }}>{getLogoSVG(item.address)}</View>
+                        <View style={inlineStyles2.inlineStyle2}>{getLogoSVG(item.address)}</View>
                         <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>
                             {item.name}
                         </Text>
-                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={inlineStyles2.inlineStyle3}>
                             <View style={styles.verifiedBox}>
                                 <Text style={styles.verified}>{'VERIFIED'}</Text>
                             </View>
@@ -165,7 +163,7 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
                     <Text style={styles.address} numberOfLines={1} ellipsizeMode={'middle'}>
                         {item.address}
                     </Text>
-                    <Text style={[styles.memo, { display: item.memo ? 'flex' : 'none' }]} numberOfLines={1} ellipsizeMode={'middle'}>
+                    <Text style={[styles.memo, inlineStyles2.inlineStyle4]} numberOfLines={1} ellipsizeMode={'middle'}>
                         {item.memo}
                     </Text>
                 </TouchableOpacity>
@@ -272,10 +270,10 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
     );
 
     return (
-        <GestureHandlerRootView style={{ minHeight: 300, backgroundColor: BgColor }}>
+        <GestureHandlerRootView style={styles.inlineStyle1}>
             <DraggableFlatList
                 data={data}
-                style={{ maxHeight: 450 }}
+                style={styles.inlineStyle2}
                 renderItem={ListItem}
                 scrollEnabled={true}
                 keyExtractor={(item) => item.address + item.name} //? Both address and name are unique
@@ -286,6 +284,8 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { minHeight: 300, backgroundColor: BgColor },
+    inlineStyle2: { maxHeight: 450 },
     modalContentBox: {
         position: 'relative',
         backgroundColor: BgColor,

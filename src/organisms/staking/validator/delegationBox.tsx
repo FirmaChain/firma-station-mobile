@@ -122,23 +122,39 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
         }
     }, [stakingState, delegations]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingBottom: 24 },
+        inlineStyle2: {
+            fontSize: resizeFontSize(convertNumber(Available), 100000, 20),
+            color: StakingStateExist ? TextColor : TextDisableColor
+        },
+        inlineStyle3: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle4: {
+            fontSize: resizeFontSize(convertNumber(convertAmount({ value: Reward, isUfct: false })), 100000, 20),
+            color: StakingStateExist ? TextColor : TextDisableColor
+        },
+        inlineStyle5: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle6: { marginTop: 12, paddingTop: 22, paddingBottom: 12 },
+        inlineStyle7: {
+            fontSize: resizeFontSize(convertNumber(Delegate), 100000, 20),
+            color: StakingStateExist ? TextColor : TextDisableColor
+        },
+        inlineStyle8: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle9: { width: '100%', height: accordionHeight },
+        inlineStyle10: { justifyContent: 'center', paddingTop: 22 },
+        inlineStyle11: { width: 15 },
+        inlineStyle12: { transform: [{ rotate: degree(arrowDeg) }] }
+    } as const;
+
     return (
         <View style={styles.container}>
-            <View style={[styles.delegationBox, { paddingBottom: 24 }]}>
+            <View style={[styles.delegationBox, inlineStyles1.inlineStyle1]}>
                 <View style={styles.boxH}>
                     <View style={styles.boxV}>
                         <Text style={styles.title}>Available</Text>
-                        <Text
-                            style={[
-                                styles.balance,
-                                {
-                                    fontSize: resizeFontSize(convertNumber(Available), 100000, 20),
-                                    color: StakingStateExist ? TextColor : TextDisableColor
-                                }
-                            ]}
-                        >
+                        <Text style={[styles.balance, inlineStyles1.inlineStyle2]}>
                             {Available}
-                            <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                            <Text style={[styles.title, inlineStyles1.inlineStyle3]}>{` ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </View>
                     <SmallButton
@@ -152,40 +168,24 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
                 <View style={styles.boxH}>
                     <View style={styles.boxV}>
                         <Text style={styles.title}>Staking Reward</Text>
-                        <Text
-                            style={[
-                                styles.balance,
-                                {
-                                    fontSize: resizeFontSize(convertNumber(convertAmount({ value: Reward, isUfct: false })), 100000, 20),
-                                    color: StakingStateExist ? TextColor : TextDisableColor
-                                }
-                            ]}
-                        >
+                        <Text style={[styles.balance, inlineStyles1.inlineStyle4]}>
                             {convertAmount({ value: Reward, isUfct: false })}
-                            <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                            <Text style={[styles.title, inlineStyles1.inlineStyle5]}>{` ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </View>
                     <SmallButton title={'Withdraw'} size={122} active={rewardButtonActive} onPressEvent={() => handleWithdraw(true)} />
                 </View>
             </View>
-            <View style={[styles.delegationBox, { marginTop: 12, paddingTop: 22, paddingBottom: 12 }]}>
+            <View style={[styles.delegationBox, inlineStyles1.inlineStyle6]}>
                 <View style={styles.boxH}>
                     <Text style={styles.title}>My Delegations</Text>
-                    <Text
-                        style={[
-                            styles.balance,
-                            {
-                                fontSize: resizeFontSize(convertNumber(Delegate), 100000, 20),
-                                color: StakingStateExist ? TextColor : TextDisableColor
-                            }
-                        ]}
-                    >
+                    <Text style={[styles.balance, inlineStyles1.inlineStyle7]}>
                         {Delegate}
-                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                        <Text style={[styles.title, inlineStyles1.inlineStyle8]}>{` ${_CHAIN_SYMBOL}`}</Text>
                     </Text>
                 </View>
-                <View style={{ width: '100%', height: accordionHeight }}>
-                    <View style={[styles.boxH, { justifyContent: 'center', paddingTop: 22 }]}>
+                <View style={inlineStyles1.inlineStyle9}>
+                    <View style={[styles.boxH, inlineStyles1.inlineStyle10]}>
                         <SmallButton
                             title={'Redelegate'}
                             size={142}
@@ -193,7 +193,7 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
                             active={redelegateButtonActive}
                             onPressEvent={() => onPressEvent('Redelegate')}
                         />
-                        <View style={{ width: 15 }} />
+                        <View style={inlineStyles1.inlineStyle11} />
                         <SmallButton
                             title={'Undelegate'}
                             size={142}
@@ -204,7 +204,7 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
                     </View>
                 </View>
                 <TouchableOpacity style={styles.boxArrow} onPress={() => handleOpenAccordion()}>
-                    <Animated.View style={{ transform: [{ rotate: degree(arrowDeg) }] }}>
+                    <Animated.View style={inlineStyles1.inlineStyle12}>
                         <DownWideLine color={TextDarkGrayColor} width={18} height={18} />
                     </Animated.View>
                 </TouchableOpacity>

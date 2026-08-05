@@ -53,7 +53,7 @@ const VotingSection = ({ data, isVotingPeriod }: IProps) => {
             <Fragment>
                 {VoteData.info.map((value, index) => {
                     return (
-                        <View key={index} style={[styles.boxH, { paddingBottom: 12 }]}>
+                        <View key={index} style={[styles.boxH, styles.inlineStyle1]}>
                             <Text style={styles.title}>{value.title}</Text>
                             <Text style={styles.desc}>{value.data + ' %'}</Text>
                         </View>
@@ -64,10 +64,10 @@ const VotingSection = ({ data, isVotingPeriod }: IProps) => {
     }, [VoteData]);
 
     return (
-        <View style={[styles.container, isVotingPeriod && { marginBottom: 30 }]}>
+        <View style={[styles.container, isVotingPeriod && styles.inlineStyle3]}>
             {TotalVotingPowerExist && (
                 <View style={[styles.box, styles.boxV]}>
-                    <View style={[styles.boxH, { paddingBottom: 12 }]}>
+                    <View style={[styles.boxH, styles.inlineStyle2]}>
                         <Text style={styles.desc}>Voting</Text>
                     </View>
                     <RenderVoteData />
@@ -79,6 +79,9 @@ const VotingSection = ({ data, isVotingPeriod }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingBottom: 12 },
+    inlineStyle2: { paddingBottom: 12 },
+    inlineStyle3: { marginBottom: 30 },
     container: {
         paddingHorizontal: 20,
         marginTop: 30

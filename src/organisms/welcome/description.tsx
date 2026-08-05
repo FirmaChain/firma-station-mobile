@@ -49,8 +49,6 @@ const Description = ({ title, desc }: IProps) => {
     );
 };
 
-export default Description;
-
 const styles = StyleSheet.create({
     styledView: {
         width: '100%',
@@ -90,3 +88,5 @@ const styles = StyleSheet.create({
         height: 16
     }
 });
+
+export default Description;

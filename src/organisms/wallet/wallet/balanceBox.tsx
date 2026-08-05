@@ -92,22 +92,34 @@ const BalanceBox = ({ stakingValues, handleSend, handleSendIBC }: IProps) => {
         [priceData]
     );
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingBottom: 20 },
+        inlineStyle2: { justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 },
+        inlineStyle3: { alignItems: 'center' },
+        inlineStyle4: { alignItems: 'flex-end' },
+        inlineStyle5: { fontSize: balanceTextSize },
+        inlineStyle6: { paddingLeft: 2, fontSize: 16 },
+        inlineStyle7: { alignItems: 'center' },
+        inlineStyle8: { height: 1 },
+        inlineStyle9: { height: IBCToken.length > 0 ? 1 : 0 }
+    } as const;
+
     return (
         <View style={styles.container}>
-            <View style={[styles.box, { paddingBottom: 20 }]}>
+            <View style={[styles.box, inlineStyles1.inlineStyle1]}>
                 <Text style={styles.title}>Available</Text>
-                <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 }]}>
+                <View style={[styles.wrapperH, inlineStyles1.inlineStyle2]}>
                     <View>
-                        <View style={[styles.wrapperH, { alignItems: 'center' }]}>
+                        <View style={[styles.wrapperH, inlineStyles1.inlineStyle3]}>
                             <FirmaLogo style={styles.logo} color={GrayColor} />
-                            <View style={[styles.currency, { alignItems: 'flex-end' }]}>
-                                <Text style={[styles.balance, { fontSize: balanceTextSize }]}>{convertAmount({ value: available })}</Text>
-                                <Text style={[styles.chainName, { paddingLeft: 2, fontSize: 16 }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                            <View style={[styles.currency, inlineStyles1.inlineStyle4]}>
+                                <Text style={[styles.balance, inlineStyles1.inlineStyle5]}>{convertAmount({ value: available })}</Text>
+                                <Text style={[styles.chainName, inlineStyles1.inlineStyle6]}>{` ${_CHAIN_SYMBOL}`}</Text>
                             </View>
                         </View>
 
-                        <View style={[styles.wrapperH, { alignItems: 'center' }]}>
-                            <View style={[styles.logo, { height: 1 }]} />
+                        <View style={[styles.wrapperH, inlineStyles1.inlineStyle7]}>
+                            <View style={[styles.logo, inlineStyles1.inlineStyle8]} />
                             <Currency chainName={'firmachain'} symbol={_CHAIN_SYMBOL} />
                         </View>
                     </View>
@@ -115,27 +127,31 @@ const BalanceBox = ({ stakingValues, handleSend, handleSendIBC }: IProps) => {
                 </View>
                 {IBCToken && (
                     <View>
-                        <View style={[styles.divider, { height: IBCToken.length > 0 ? 1 : 0 }]} />
+                        <View style={[styles.divider, inlineStyles1.inlineStyle9]} />
                         <View style={styles.ibcTitleWrap}>
                             <Text style={styles.ibcTitle}>{'IBC Coin'}</Text>
                             <ConnectedSign />
                         </View>
                         {IBCToken.map((value, index) => {
+                            const inlineStyles2 = {
+                                inlineStyle1: { maxHeight: 500, overflow: 'hidden', marginBottom: 13 },
+                                inlineStyle2: { justifyContent: 'space-between', alignItems: 'center', width: '100%' },
+                                inlineStyle3: { alignItems: 'center' },
+                                inlineStyle4: { alignItems: 'flex-end' },
+                                inlineStyle5: { fontSize: ibcBalanceTextSize(value.amount, value.decimal) },
+                                inlineStyle6: { paddingLeft: 2 },
+                                inlineStyle7: { alignItems: 'center' },
+                                inlineStyle8: { height: 1 }
+                            } as const;
+
                             return (
-                                <View key={`IBC-${index}`} style={{ maxHeight: 500, overflow: 'hidden', marginBottom: 13 }}>
-                                    <View
-                                        style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', width: '100%' }]}
-                                    >
+                                <View key={`IBC-${index}`} style={inlineStyles2.inlineStyle1}>
+                                    <View style={[styles.wrapperH, inlineStyles2.inlineStyle2]}>
                                         <View>
-                                            <View style={[styles.currency, { alignItems: 'center' }]}>
+                                            <View style={[styles.currency, inlineStyles2.inlineStyle3]}>
                                                 <Image style={styles.tokenLogo} source={{ uri: value.icon }} resizeMode={'contain'} />
-                                                <View style={[styles.currency, { alignItems: 'flex-end' }]}>
-                                                    <Text
-                                                        style={[
-                                                            styles.balance,
-                                                            { fontSize: ibcBalanceTextSize(value.amount, value.decimal) }
-                                                        ]}
-                                                    >
+                                                <View style={[styles.currency, inlineStyles2.inlineStyle4]}>
+                                                    <Text style={[styles.balance, inlineStyles2.inlineStyle5]}>
                                                         {convertAmount({
                                                             value: value.amount,
                                                             isUfct: false,
@@ -143,14 +159,14 @@ const BalanceBox = ({ stakingValues, handleSend, handleSendIBC }: IProps) => {
                                                             decimal: value.decimal
                                                         })}
                                                     </Text>
-                                                    <Text style={[styles.chainName, { paddingLeft: 2 }]}>
+                                                    <Text style={[styles.chainName, inlineStyles2.inlineStyle6]}>
                                                         {value.displayName.toUpperCase()}
                                                     </Text>
                                                 </View>
                                             </View>
 
-                                            <View style={[styles.wrapperH, { alignItems: 'center' }]}>
-                                                <View style={[styles.tokenLogo, { height: 1 }]} />
+                                            <View style={[styles.wrapperH, inlineStyles2.inlineStyle7]}>
+                                                <View style={[styles.tokenLogo, inlineStyles2.inlineStyle8]} />
                                                 <Currency chainName={value.chainName} symbol={value.displayName.toUpperCase()} />
                                             </View>
                                         </View>

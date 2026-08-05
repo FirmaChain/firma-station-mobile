@@ -9,8 +9,12 @@ interface IProps {
 }
 
 const CircleSkeleton = ({ size, marginBottom, bgColor = BgColor }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { width: size, height: size, marginBottom: marginBottom }
+    } as const;
+
     return (
-        <View style={{ width: size, height: size, marginBottom: marginBottom }}>
+        <View style={inlineStyles1.inlineStyle1}>
             <ContentLoader speed={0.8} animate={true} foregroundColor={DividerColor} backgroundColor={bgColor}>
                 <Rect x="0" y="0" rx="50" ry="50" width={'100%'} height={'100%'} />
             </ContentLoader>

@@ -32,30 +32,31 @@ const ProposalListItem = ({ proposal, handleDetail }: IProps) => {
 
     const periodState = handlePeriodStatus();
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingBottom: 10 },
+        inlineStyle2: {
+            backgroundColor: STATUS_COLOR[proposal.status] + '30',
+            color: STATUS_COLOR[proposal.status]
+        },
+        inlineStyle3: { paddingBottom: 10 },
+        inlineStyle4: { color: TextDisableColor },
+        inlineStyle5: { color: TextCatTitleColor, fontWeight: '600' }
+    } as const;
+
     return (
         <TouchableOpacity style={styles.item} onPress={handleProposalDetail}>
-            <View style={[styles.wrapperH, { paddingBottom: 10 }]}>
+            <View style={[styles.wrapperH, inlineStyles1.inlineStyle1]}>
                 <Text style={styles.id}># {proposal.proposalId}</Text>
-                <Text
-                    style={[
-                        styles.status,
-                        {
-                            backgroundColor: STATUS_COLOR[proposal.status] + '30',
-                            color: STATUS_COLOR[proposal.status]
-                        }
-                    ]}
-                >
-                    {PROPOSAL_STATUS[proposal.status]}
-                </Text>
+                <Text style={[styles.status, inlineStyles1.inlineStyle2]}>{PROPOSAL_STATUS[proposal.status]}</Text>
             </View>
-            <View style={[styles.wrapperH, { paddingBottom: 10 }]}>
+            <View style={[styles.wrapperH, inlineStyles1.inlineStyle3]}>
                 <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>
                     {proposal.title}
                 </Text>
             </View>
             <View style={styles.wrapperH}>
-                <Text style={[styles.period, { color: TextDisableColor }]}>{periodState.period}</Text>
-                <Text style={[styles.period, { color: TextCatTitleColor, fontWeight: '600' }]}>{periodState.dDay}</Text>
+                <Text style={[styles.period, inlineStyles1.inlineStyle4]}>{periodState.period}</Text>
+                <Text style={[styles.period, inlineStyles1.inlineStyle5]}>{periodState.dDay}</Text>
             </View>
         </TouchableOpacity>
     );

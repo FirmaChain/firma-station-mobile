@@ -34,7 +34,7 @@ const BalanceBox = ({ stakingValues }: IProps) => {
 
     return (
         <View style={styles.container}>
-            <View style={[styles.box, { flex: 3 }]}>
+            <View style={[styles.box, styles.inlineStyle1]}>
                 {StakingValues.map((item, index) => {
                     const originSize = 18;
                     const resize = resizeFontSize(
@@ -42,21 +42,19 @@ const BalanceBox = ({ stakingValues }: IProps) => {
                         1000000,
                         originSize
                     );
+                    const inlineStyles2 = {
+                        inlineStyle1: { flex: 1 },
+                        inlineStyle2: { fontSize: resize }
+                    } as const;
+
                     return (
                         <View
                             key={index}
-                            style={[
-                                styles.box,
-                                { flex: 1 },
-                                index < StakingValues.length - 1 && {
-                                    borderRightColor: DisableColor,
-                                    borderRightWidth: 1
-                                }
-                            ]}
+                            style={[styles.box, inlineStyles2.inlineStyle1, index < StakingValues.length - 1 && styles.inlineStyle2]}
                         >
                             <View key={index} style={styles.wrapper}>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <Text style={[styles.desc, { fontSize: resize }]}>
+                                <Text style={[styles.desc, inlineStyles2.inlineStyle2]}>
                                     {convertAmount({ value: item.data, isUfct: item.ufct })}
                                 </Text>
                             </View>
@@ -69,6 +67,11 @@ const BalanceBox = ({ stakingValues }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 3 },
+    inlineStyle2: {
+        borderRightColor: DisableColor,
+        borderRightWidth: 1
+    },
     container: {
         paddingVertical: 20,
         backgroundColor: BoxColor,

@@ -144,7 +144,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
         <Container title="Send CW20" backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
-                    <View style={{ flex: 6 }}>
+                    <View style={styles.inlineStyle1}>
                         <ScrollView keyboardShouldPersistTaps={'handled'}>
                             <BalanceInfo
                                 available={tokenBalance}
@@ -162,7 +162,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
                             />
                         </ScrollView>
                     </View>
-                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                    <View style={styles.inlineStyle2}>
                         <Button title="Send" active={activeSend} onPressEvent={() => handleSend()} />
                     </View>
 
@@ -192,6 +192,8 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 6 },
+    inlineStyle2: { flex: 1, justifyContent: 'flex-end' },
     container: {
         flex: 1,
         paddingHorizontal: 20

@@ -81,26 +81,19 @@ const ValidatorList = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps
             <View style={styles.header}>
                 <Text style={styles.title}>
                     List
-                    <Text style={{ color: PointLightColor }}> {validatorList.length}</Text>
+                    <Text style={styles.inlineStyle1}> {validatorList.length}</Text>
                 </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.inlineStyle2}>
                     <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                        <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
+                        <Text style={[styles.sortItem, styles.inlineStyle3]}>{sortItems[selected]}</Text>
                         <DownArrow size={12} color={GrayColor} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ paddingLeft: 10, paddingVertical: 10 }} onPress={() => handleSort(!sortWithDesc)}>
+                    <TouchableOpacity style={styles.inlineStyle4} onPress={() => handleSort(!sortWithDesc)}>
                         {sort ? <SortDESC size={20} color={GrayColor} /> : <SortASC size={20} color={GrayColor} />}
                     </TouchableOpacity>
                 </View>
             </View>
-            <View
-                style={{
-                    backgroundColor: BgColor,
-                    flex: 1,
-                    borderBottomLeftRadius: 8,
-                    borderBottomRightRadius: 8
-                }}
-            >
+            <View style={styles.inlineStyle5}>
                 {validatorList.map((vd, index: number) => {
                     const isLastItem = index === validatorList.length - 1;
                     return <ValidatorItem key={index} data={vd} isLastItem={isLastItem} navigate={navigateValidator} />;
@@ -114,6 +107,16 @@ const ValidatorList = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: PointLightColor },
+    inlineStyle2: { flexDirection: 'row', alignItems: 'center' },
+    inlineStyle3: { paddingRight: 4 },
+    inlineStyle4: { paddingLeft: 10, paddingVertical: 10 },
+    inlineStyle5: {
+        backgroundColor: BgColor,
+        flex: 1,
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8
+    },
     container: {
         borderRadius: 4,
         overflow: 'hidden',
@@ -143,11 +146,6 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16
     }
-    // loadingContainer: {
-    //   flex: 1,
-    //   alignItems: 'center',
-    //   justifyContent: 'center',
-    // },
 });
 
 export default memo(ValidatorList);

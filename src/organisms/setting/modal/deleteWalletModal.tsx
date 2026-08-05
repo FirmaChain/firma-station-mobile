@@ -62,14 +62,21 @@ const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IPr
         }
     }, [open]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { flexDirection: 'row' },
+        inlineStyle2: { paddingBottom: 15 },
+        inlineStyle3: { opacity: active && !loading ? 1 : 0.3 },
+        inlineStyle4: { color: '#fff', fontSize: 16, fontWeight: '600' }
+    } as const;
+
     return (
         <CustomModal visible={open} handleOpen={(v) => setOpenModal(v)}>
             <View style={styles.modalTextContents}>
-                <View style={{ flexDirection: 'row' }}>
+                <View style={inlineStyles1.inlineStyle1}>
                     <Text style={styles.title}>{SETTING_DELETE_WALLET_TEXT.title}</Text>
                 </View>
                 <Text style={styles.desc}>{SETTING_DELETE_WALLET_TEXT.desc}</Text>
-                <View style={{ paddingBottom: 15 }}>
+                <View style={inlineStyles1.inlineStyle2}>
                     <InputSetVertical
                         title={'Password'}
                         value={''}
@@ -81,10 +88,10 @@ const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IPr
                 </View>
                 <TouchableOpacity
                     disabled={!active || loading}
-                    style={[styles.delButton, { opacity: active && !loading ? 1 : 0.3 }]}
+                    style={[styles.delButton, inlineStyles1.inlineStyle3]}
                     onPress={() => handleDeleteWallet()}
                 >
-                    <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>{SETTING_DELETE_WALLET_TEXT.confirmTitle}</Text>
+                    <Text style={inlineStyles1.inlineStyle4}>{SETTING_DELETE_WALLET_TEXT.confirmTitle}</Text>
                 </TouchableOpacity>
             </View>
         </CustomModal>

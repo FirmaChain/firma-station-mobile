@@ -77,9 +77,9 @@ const ProgressTransaction = () => {
     return (
         <View style={styles.container}>
             <View style={styles.background} />
-            <View style={[styles.box, { justifyContent: 'flex-start', flex: 6 }]}>
-                <View style={[styles.counterBox, { flex: 2 }]}>
-                    <View style={{ height: 280, justifyContent: 'flex-end', padding: 24 }}>
+            <View style={[styles.box, styles.inlineStyle1]}>
+                <View style={[styles.counterBox, styles.inlineStyle2]}>
+                    <View style={styles.inlineStyle3}>
                         <LogoProgress size={115} />
                     </View>
                     <Text style={styles.notice}>{TRANSACTION_PROCESS_TEXT}</Text>
@@ -97,15 +97,13 @@ const ProgressTransaction = () => {
                         />
                     </View>
                 </View>
-                <View style={[styles.counterBox, { flex: 1, width: '100%', justifyContent: 'center' }]}>
-                    <Text style={[styles.description, { paddingBottom: 20, fontSize: 16 }]}>{TRANSACTION_PROCESS_DESCRIPTION_TEXT}</Text>
+                <View style={[styles.counterBox, styles.inlineStyle4]}>
+                    <Text style={[styles.description, styles.inlineStyle5]}>{TRANSACTION_PROCESS_DESCRIPTION_TEXT}</Text>
                     <Animated.View style={[styles.descriptionWrapper, noticeAnimatedStyle]}>
-                        <View style={{ paddingTop: 3 }}>
+                        <View style={styles.inlineStyle6}>
                             <QuestionCircle size={15} color={TextWarnColor} />
                         </View>
-                        <Text style={[styles.description, { color: TextWarnColor, lineHeight: 20, paddingLeft: 5 }]}>
-                            {TRANSACTION_PROCESS_NOTICE_TEXT}
-                        </Text>
+                        <Text style={[styles.description, styles.inlineStyle7]}>{TRANSACTION_PROCESS_NOTICE_TEXT}</Text>
                     </Animated.View>
                 </View>
             </View>
@@ -114,6 +112,13 @@ const ProgressTransaction = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { justifyContent: 'flex-start', flex: 6 },
+    inlineStyle2: { flex: 2 },
+    inlineStyle3: { height: 280, justifyContent: 'flex-end', padding: 24 },
+    inlineStyle4: { flex: 1, width: '100%', justifyContent: 'center' },
+    inlineStyle5: { paddingBottom: 20, fontSize: 16 },
+    inlineStyle6: { paddingTop: 3 },
+    inlineStyle7: { color: TextWarnColor, lineHeight: 20, paddingLeft: 5 },
     container: {
         width: '100%',
         height: '100%',

@@ -20,15 +20,21 @@ const TransactionResult = ({ result, handleExplorer, handleBack }: IProps) => {
         return 'Transaction Failed';
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+        inlineStyle2: { color: result.code === -1 ? TextWarnColor : PointLightColor },
+        inlineStyle3: { color: TextGrayColor },
+        inlineStyle4: { color: result.code === 0 ? TextAddressColor : TextColor, paddingHorizontal: 5 },
+        inlineStyle5: { justifyContent: 'flex-end' }
+    } as const;
+
     return (
         <View style={styles.container}>
-            <View style={[styles.resultBox, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}>
+            <View style={[styles.resultBox, inlineStyles1.inlineStyle1]}>
                 {result.code === -1 ? <FailCircle size={45} color={TextWarnColor} /> : <SuccessCircle size={45} color={PointLightColor} />}
-                <Text style={[styles.result, { color: result.code === -1 ? TextWarnColor : PointLightColor }]}>
-                    {convertTransactionCodeToText(result.code)}
-                </Text>
+                <Text style={[styles.result, inlineStyles1.inlineStyle2]}>{convertTransactionCodeToText(result.code)}</Text>
                 <View style={styles.resultWrapper}>
-                    {result.code === 0 && <Text style={[styles.hash, { color: TextGrayColor }]}>HASH: </Text>}
+                    {result.code === 0 && <Text style={[styles.hash, inlineStyles1.inlineStyle3]}>HASH: </Text>}
                     <TouchableOpacity
                         disabled={result.code !== 0}
                         onPress={() => handleExplorer(EXPLORER_URL() + '/transactions/' + result.result)}
@@ -36,14 +42,14 @@ const TransactionResult = ({ result, handleExplorer, handleBack }: IProps) => {
                         <Text
                             numberOfLines={result.code === -1 ? 10 : 1}
                             ellipsizeMode={'middle'}
-                            style={[styles.hash, { color: result.code === 0 ? TextAddressColor : TextColor, paddingHorizontal: 5 }]}
+                            style={[styles.hash, inlineStyles1.inlineStyle4]}
                         >
                             {result.result}
                         </Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={[styles.resultBox, { justifyContent: 'flex-end' }]}>
+            <View style={[styles.resultBox, inlineStyles1.inlineStyle5]}>
                 <Button title={'OK'} active={true} onPressEvent={handleBack} />
             </View>
         </View>

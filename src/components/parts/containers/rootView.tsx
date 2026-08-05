@@ -27,28 +27,24 @@ const RootView = ({ children, bgColor = BgColor }: IProps) => {
 
     const bottomViewBg = isMainPage && !isModalOpen && !isLockStation && !isDim && !isDim2 ? BoxDarkColor : 'transparent';
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            backgroundColor: bgColor,
+            paddingLeft: insets.left,
+            paddingRight: insets.right
+        },
+        inlineStyle2: { height: insets.top },
+        inlineStyle3: {
+            height: insets.bottom,
+            backgroundColor: bottomViewBg
+        }
+    } as const;
+
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    backgroundColor: bgColor,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right
-                }
-            ]}
-        >
-            <View style={{ height: insets.top }} />
+        <View style={[styles.container, inlineStyles1.inlineStyle1]}>
+            <View style={inlineStyles1.inlineStyle2} />
             {children}
-            <View
-                style={[
-                    styles.bottomView,
-                    {
-                        height: insets.bottom,
-                        backgroundColor: bottomViewBg
-                    }
-                ]}
-            />
+            <View style={[styles.bottomView, inlineStyles1.inlineStyle3]} />
         </View>
     );
 };

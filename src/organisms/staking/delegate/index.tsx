@@ -337,8 +337,8 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         <Container title={type} handleGuide={handleMoveToWeb} backEvent={handleBack}>
             <ViewContainer>
                 <>
-                    <View style={{ flex: 1 }}>
-                        <View style={{ flex: 6 }}>
+                    <View style={styles.inlineStyle1}>
+                        <View style={styles.inlineStyle2}>
                             <ScrollView keyboardShouldPersistTaps={'handled'}>
                                 <InputBox
                                     type={type}
@@ -374,7 +374,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
                                 />
                             </ScrollView>
                         </View>
-                        <View style={[styles.buttonBox, { flex: 1 }]}>
+                        <View style={[styles.buttonBox, styles.inlineStyle3]}>
                             {type === 'Redelegate' && redelegateStep === 'restake' ? (
                                 <View style={styles.redelegateButtonRow}>
                                     <View style={styles.redelegateButtonItem}>
@@ -413,6 +413,9 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 1 },
+    inlineStyle2: { flex: 6 },
+    inlineStyle3: { flex: 1 },
     buttonBox: {
         flex: 1,
         justifyContent: 'flex-end',

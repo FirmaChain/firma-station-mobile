@@ -8,18 +8,13 @@ interface IProps {
 }
 
 const ViewContainer = ({ bgColor, children }: IProps) => {
-    return (
-        <View
-            style={[
-                styles.viewContainer,
-                {
-                    backgroundColor: bgColor
-                }
-            ]}
-        >
-            {children}
-        </View>
-    );
+    const inlineStyles1 = {
+        inlineStyle1: {
+            backgroundColor: bgColor
+        }
+    } as const;
+
+    return <View style={[styles.viewContainer, inlineStyles1.inlineStyle1]}>{children}</View>;
 };
 
 const styles = StyleSheet.create({

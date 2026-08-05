@@ -85,8 +85,8 @@ const RestakeList = ({ isRefresh, delegationState, restakeState, handleIsRefresh
             <View style={styles.header}>
                 <Text style={styles.title}>
                     List
-                    <Text style={{ color: PointLightColor }}>{' ' + listLength}</Text>
-                    <Text style={{ color: TextGrayColor, opacity: 0.6 }}>{'/' + stakingGrantList.list.length}</Text>
+                    <Text style={styles.inlineStyle1}>{' ' + listLength}</Text>
+                    <Text style={styles.inlineStyle2}>{'/' + stakingGrantList.list.length}</Text>
                 </Text>
             </View>
             <Restake stakingGrantList={stakingGrantList} restakeLatestInfo={restakeLatestInfo} navigateValidator={navigateValidator} />
@@ -104,14 +104,7 @@ const Restake = ({
     navigateValidator: (address: string) => void;
 }) => {
     return (
-        <View
-            style={{
-                backgroundColor: BgColor,
-                flex: 1,
-                borderBottomLeftRadius: 8,
-                borderBottomRightRadius: 8
-            }}
-        >
+        <View style={styles.inlineStyle3}>
             {stakingGrantList.list.length > 0 ? (
                 stakingGrantList.list.map((value, index) => {
                     const isLastItem = index === stakingGrantList.list.length - 1;
@@ -141,6 +134,14 @@ const Restake = ({
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: PointLightColor },
+    inlineStyle2: { color: TextGrayColor, opacity: 0.6 },
+    inlineStyle3: {
+        backgroundColor: BgColor,
+        flex: 1,
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8
+    },
     container: {
         overflow: 'hidden',
         justifyContent: 'center',

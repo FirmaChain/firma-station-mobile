@@ -125,6 +125,24 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
 
     const NFTTable = () => {
         const renderTable = useCallback(() => {
+            const inlineStyles1 = {
+                inlineStyle1: { opacity: isCW721 && isCW721Fetching ? 1 : 0 },
+                inlineStyle2: {
+                    flex: 1,
+                    height: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingVertical: 30
+                },
+                inlineStyle3: {
+                    flex: 1,
+                    height: '100%',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }
+            } as const;
+
             return (
                 <Fragment>
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
@@ -141,34 +159,18 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
                                             />
                                         );
                                     })}
-                                    <View style={[styles.moreWrap, { opacity: isCW721 && isCW721Fetching ? 1 : 0 }]}>
+                                    <View style={[styles.moreWrap, inlineStyles1.inlineStyle1]}>
                                         <SmallProgress />
                                         <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
                                     </View>
                                 </Fragment>
                             ) : (
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        height: '100%',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        paddingVertical: 30
-                                    }}
-                                >
+                                <View style={inlineStyles1.inlineStyle2}>
                                     <Text style={styles.notice}>{DAPP_NO_NFT}</Text>
                                 </View>
                             )
                         ) : (
-                            <View
-                                style={{
-                                    flex: 1,
-                                    height: '100%',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}
-                            >
+                            <View style={inlineStyles1.inlineStyle3}>
                                 <SmallProgress />
                                 <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
                             </View>
@@ -180,10 +182,15 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
         return renderTable();
     };
 
+    const inlineStyles2 = {
+        inlineStyle1: { display: visible ? 'flex' : 'none' },
+        inlineStyle2: { height: '100%' }
+    } as const;
+
     return (
-        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+        <View style={[styles.container, inlineStyles2.inlineStyle1]}>
             <View style={styles.box}>
-                <View style={[styles.infoBox, { height: '100%' }]}>
+                <View style={[styles.infoBox, inlineStyles2.inlineStyle2]}>
                     <NFTTable />
                 </View>
             </View>

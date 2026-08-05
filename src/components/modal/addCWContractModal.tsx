@@ -260,6 +260,39 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
         return false;
     }, [validType, cw20Info, cw721Info, cwInfo, ExistAddress, InvalidAddress]);
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            color: TextColor,
+            borderColor: ExistAddress || InvalidAddress ? FailedColor : addressFocus ? WhiteColor : 'transparent'
+        },
+        inlineStyle2: {
+            opacity: ExistAddress || InvalidAddress ? 1 : 0,
+            height: ExistAddress || InvalidAddress ? 'auto' : 0,
+            paddingBottom: ExistAddress || InvalidAddress ? 5 : 0
+        },
+        inlineStyle3: {
+            width: '100%',
+            overflow: 'hidden',
+            maxHeight: contractInfo !== null ? 300 : 0
+        },
+        inlineStyle4: { color: contractInfo?.color, backgroundColor: contractInfo?.backgroundColor },
+        inlineStyle5: {
+            alignItems: 'flex-start',
+            display: contractInfo?.label === '' ? 'none' : 'flex'
+        },
+        inlineStyle6: { paddingTop: 3 },
+        inlineStyle7: {
+            flexShrink: 1,
+            color: CWLabelColor,
+            backgroundColor: CWLabelBackgroundColor,
+            borderColor: CWLabelBorderColor,
+            borderWidth: 1
+        },
+        inlineStyle8: { flex: 1 },
+        inlineStyle9: { width: 10 },
+        inlineStyle10: { flex: 1 }
+    } as const;
+
     return (
         <CustomModal
             visible={open}
@@ -278,13 +311,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                         <TextButton title={'Paste'} onPressEvent={handlePaste} />
                     </View>
                     <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: TextColor,
-                                borderColor: ExistAddress || InvalidAddress ? FailedColor : addressFocus ? WhiteColor : 'transparent'
-                            }
-                        ]}
+                        style={[styles.input, inlineStyles1.inlineStyle1]}
                         placeholder={'Address'}
                         placeholderTextColor={InputPlaceholderColor}
                         secureTextEntry={false}
@@ -297,35 +324,16 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                         onBlur={() => setAddressFocus(false)}
                         onChangeText={(text) => handleAddressValue(text)}
                     />
-                    <Animated.View
-                        style={[
-                            styles.noticeBox,
-                            {
-                                opacity: ExistAddress || InvalidAddress ? 1 : 0,
-                                height: ExistAddress || InvalidAddress ? 'auto' : 0,
-                                paddingBottom: ExistAddress || InvalidAddress ? 5 : 0
-                            }
-                        ]}
-                    >
+                    <Animated.View style={[styles.noticeBox, inlineStyles1.inlineStyle2]}>
                         <Text style={styles.noticeText}>{ErrorMessage}</Text>
                     </Animated.View>
 
                     {contractInfo !== null && (
-                        <View
-                            style={{
-                                width: '100%',
-                                overflow: 'hidden',
-                                maxHeight: contractInfo !== null ? 300 : 0
-                            }}
-                        >
+                        <View style={inlineStyles1.inlineStyle3}>
                             <View style={styles.infoContainer}>
                                 <Text style={styles.text}>{'Name'}</Text>
                                 <View style={styles.wrap}>
-                                    <Text
-                                        style={[styles.label, { color: contractInfo.color, backgroundColor: contractInfo.backgroundColor }]}
-                                    >
-                                        {contractInfo.type}
-                                    </Text>
+                                    <Text style={[styles.label, inlineStyles1.inlineStyle4]}>{contractInfo.type}</Text>
                                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.infoValue}>
                                         {contractInfo.name}
                                     </Text>
@@ -337,39 +345,18 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                                     {contractInfo.symbol}
                                 </Text>
                             </View>
-                            <View
-                                style={[
-                                    styles.infoContainer,
-                                    {
-                                        alignItems: 'flex-start',
-                                        display: contractInfo.label === '' ? 'none' : 'flex'
-                                    }
-                                ]}
-                            >
-                                <Text style={[styles.text, { paddingTop: 3 }]}>{'Label'}</Text>
-                                <Text
-                                    style={[
-                                        styles.label,
-                                        {
-                                            flexShrink: 1,
-                                            color: CWLabelColor,
-                                            backgroundColor: CWLabelBackgroundColor,
-                                            borderColor: CWLabelBorderColor,
-                                            borderWidth: 1
-                                        }
-                                    ]}
-                                >
-                                    {contractInfo.label}
-                                </Text>
+                            <View style={[styles.infoContainer, inlineStyles1.inlineStyle5]}>
+                                <Text style={[styles.text, inlineStyles1.inlineStyle6]}>{'Label'}</Text>
+                                <Text style={[styles.label, inlineStyles1.inlineStyle7]}>{contractInfo.label}</Text>
                             </View>
                         </View>
                     )}
                     <View style={styles.buttonBox}>
-                        <View style={{ flex: 1 }}>
+                        <View style={inlineStyles1.inlineStyle8}>
                             <Button title={'Cancel'} active={true} border={true} onPressEvent={() => handleOpenModal(false)} />
                         </View>
-                        <View style={{ width: 10 }} />
-                        <View style={{ flex: 1 }}>
+                        <View style={inlineStyles1.inlineStyle9} />
+                        <View style={inlineStyles1.inlineStyle10}>
                             <Button title={'Add'} active={SaveButtonActive} onPressEvent={() => handleAddCWContract()} />
                         </View>
                     </View>

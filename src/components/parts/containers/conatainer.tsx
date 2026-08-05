@@ -31,8 +31,12 @@ const Container = ({
         backEvent();
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: bgColor /*paddingTop: insets.top*/ }
+    } as const;
+
     return (
-        <View style={[styles.container, { backgroundColor: bgColor /*paddingTop: insets.top*/ }]}>
+        <View style={[styles.container, inlineStyles1.inlineStyle1]}>
             <Header step={step} bgColor={bgColor} onPressEvent={() => handleMoveBack()} />
             {titleOn && <TitleBar title={title} subTitle={subTitle} handleGuide={handleGuide} />}
             {children}

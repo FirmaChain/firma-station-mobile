@@ -92,6 +92,13 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
         handleDelegationExist(exist);
     }, [delegationState, redelegationState, undelegationState]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' },
+        inlineStyle2: { borderBottomColor: tab === 1 ? WhiteColor : 'transparent' },
+        inlineStyle3: { borderBottomColor: tab === 2 ? WhiteColor : 'transparent' },
+        inlineStyle4: { flex: 1 }
+    } as const;
+
     return (
         <View style={styles.listContainer}>
             {dataLoading ? (
@@ -99,26 +106,17 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
             ) : (
                 <>
                     <View style={styles.tabBox}>
-                        <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' }]}
-                            onPress={() => handleTab(0)}
-                        >
+                        <TouchableOpacity style={[styles.tab, inlineStyles1.inlineStyle1]} onPress={() => handleTab(0)}>
                             <Text style={tab === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>My Stake</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: tab === 1 ? WhiteColor : 'transparent' }]}
-                            onPress={() => handleTab(1)}
-                        >
+                        <TouchableOpacity style={[styles.tab, inlineStyles1.inlineStyle2]} onPress={() => handleTab(1)}>
                             <Text style={tab === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>Restake</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: tab === 2 ? WhiteColor : 'transparent' }]}
-                            onPress={() => handleTab(2)}
-                        >
+                        <TouchableOpacity style={[styles.tab, inlineStyles1.inlineStyle3]} onPress={() => handleTab(2)}>
                             <Text style={tab === 2 ? styles.tabTitleActive : styles.tabTitleInactive}>Validator</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={{ flex: 1 }}>
+                    <View style={inlineStyles1.inlineStyle4}>
                         {tab === 0 && (
                             <DelegationList
                                 delegationState={delegationState}

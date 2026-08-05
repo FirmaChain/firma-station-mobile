@@ -220,27 +220,20 @@ const InputBox = ({
                 {type === 'Delegate' && (
                     <>
                         <View style={styles.radioBox}>
-                            <Text style={[styles.title, { paddingRight: 5 }]}>Safety</Text>
+                            <Text style={[styles.title, styles.inlineStyle1]}>Safety</Text>
                             <TouchableOpacity disabled={available <= 100000} onPress={() => setSafetyActive(!safetyActive)}>
-                                <View
-                                    style={[
-                                        styles.radioWrapper,
-                                        safetyActive
-                                            ? { backgroundColor: PointColor, alignItems: 'flex-end' }
-                                            : { backgroundColor: DisableColor }
-                                    ]}
-                                >
+                                <View style={[styles.radioWrapper, safetyActive ? styles.inlineStyle6 : styles.inlineStyle7]}>
                                     <View style={styles.radio} />
                                 </View>
                             </TouchableOpacity>
                         </View>
                         {available > 0 && available <= 20000 && (
-                            <View style={{ marginBottom: 10 }}>
+                            <View style={styles.inlineStyle2}>
                                 <WarnContainer text={FEE_INSUFFICIENT_NOTICE} />
                             </View>
                         )}
                         {safetyActive && available >= 100000 && (
-                            <View style={{ marginBottom: 10 }}>
+                            <View style={styles.inlineStyle3}>
                                 <WarnContainer text={AUTO_ENTERED_AMOUNT_TEXT} question={true} />
                             </View>
                         )}
@@ -254,12 +247,12 @@ const InputBox = ({
 
                 {type === 'Undelegate' && (
                     <View style={styles.undelegationCountBox}>
-                        <View style={{ paddingHorizontal: 5 }}>
+                        <View style={styles.inlineStyle4}>
                             <StarIcon size={8} color={TextGrayColor} />
                         </View>
                         <Text style={styles.undelegateCount}>
                             {`Current undelegations : `}
-                            <Text style={{ color: PointLightColor }}>{undelegateCount}</Text>
+                            <Text style={styles.inlineStyle5}>{undelegateCount}</Text>
                             {`/7`}
                         </Text>
                     </View>
@@ -268,7 +261,7 @@ const InputBox = ({
                 {(type === 'Undelegate' || type === 'Redelegate') &&
                     noticeText.map((value, index) => {
                         return (
-                            <View key={index} style={{ paddingVertical: 5 }}>
+                            <View key={index} style={styles.inlineStyle8}>
                                 <WarnContainer text={value} />
                             </View>
                         );
@@ -280,14 +273,14 @@ const InputBox = ({
     const redelegate = () => {
         return (
             <View>
-                <View style={[styles.conatainer, { marginBottom: 13 }]}>
+                <View style={[styles.conatainer, styles.inlineStyle9]}>
                     <View style={styles.selectBox}>
                         <Text style={styles.title}>Source Validator</Text>
                         <TouchableOpacity style={styles.select} onPress={() => handleSelectModal(true)}>
                             <Text
                                 numberOfLines={1}
                                 ellipsizeMode="middle"
-                                style={[styles.selectTitle, selectOperatorAddressSrc === '' && { color: InputPlaceholderColor }]}
+                                style={[styles.selectTitle, selectOperatorAddressSrc === '' && styles.inlineStyle10]}
                             >
                                 {selectOperatorAddressSrc === '' ? 'Select...' : (sourceValidator?.moniker ?? '')}
                             </Text>
@@ -317,7 +310,7 @@ const InputBox = ({
 
     return (
         <ScrollView>
-            <View style={{ paddingHorizontal: 20 }}>
+            <View style={styles.inlineStyle11}>
                 <BalanceInfo showSubBalance={type === 'Delegate'} available={available} subAvailable={reward} />
             </View>
             {ClassifyByType()}
@@ -334,6 +327,17 @@ const InputBox = ({
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingRight: 5 },
+    inlineStyle2: { marginBottom: 10 },
+    inlineStyle3: { marginBottom: 10 },
+    inlineStyle4: { paddingHorizontal: 5 },
+    inlineStyle5: { color: PointLightColor },
+    inlineStyle6: { backgroundColor: PointColor, alignItems: 'flex-end' },
+    inlineStyle7: { backgroundColor: DisableColor },
+    inlineStyle8: { paddingVertical: 5 },
+    inlineStyle9: { marginBottom: 13 },
+    inlineStyle10: { color: InputPlaceholderColor },
+    inlineStyle11: { paddingHorizontal: 20 },
     conatainer: {
         paddingHorizontal: 20
     },

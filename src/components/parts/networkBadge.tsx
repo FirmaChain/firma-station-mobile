@@ -7,8 +7,12 @@ interface IProps {
 }
 
 const NetworkBadge = ({ top, title }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { top: top }
+    } as const;
+
     return (
-        <View style={[styles.container, { top: top }]}>
+        <View style={[styles.container, inlineStyles1.inlineStyle1]}>
             <Text style={styles.badge}>{title}</Text>
         </View>
     );

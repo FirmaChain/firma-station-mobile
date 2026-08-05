@@ -15,21 +15,25 @@ interface IProps {
 const Header = ({ step, bgColor = BoxDarkColor, onPressEvent }: IProps) => {
     const { network } = useAppSelector((state) => state.storage);
 
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: bgColor }
+    } as const;
+
     return (
-        <Pressable style={[styles.container, { backgroundColor: bgColor }]} onPress={() => Keyboard.dismiss()}>
+        <Pressable style={[styles.container, inlineStyles1.inlineStyle1]} onPress={() => Keyboard.dismiss()}>
             <ArrowButton onPressEvent={onPressEvent} />
             {step > 0 ? (
                 <View style={styles.stepBox}>
                     <View style={step === 1 ? styles.step : styles.stepNone}>
-                        <Text style={[styles.stepText, step === 1 && { opacity: 1 }]}>{step}</Text>
+                        <Text style={[styles.stepText, step === 1 && styles.inlineStyle1]}>{step}</Text>
                     </View>
                     <View style={styles.divier} />
                     <View style={step === 2 ? styles.step : styles.stepNone}>
-                        <Text style={[styles.stepText, step === 2 && { opacity: 1 }]}>{step}</Text>
+                        <Text style={[styles.stepText, step === 2 && styles.inlineStyle2]}>{step}</Text>
                     </View>
                     <View style={styles.divier} />
                     <View style={step === 3 ? styles.step : styles.stepNone}>
-                        <Text style={[styles.stepText, step === 3 && { opacity: 1 }]}>{step}</Text>
+                        <Text style={[styles.stepText, step === 3 && styles.inlineStyle3]}>{step}</Text>
                     </View>
                 </View>
             ) : (
@@ -40,6 +44,9 @@ const Header = ({ step, bgColor = BoxDarkColor, onPressEvent }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { opacity: 1 },
+    inlineStyle2: { opacity: 1 },
+    inlineStyle3: { opacity: 1 },
     container: {
         height: 50,
         width: ScreenWidth(),

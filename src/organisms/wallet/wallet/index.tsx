@@ -150,13 +150,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: BgColor
     },
-    //   wallet: {
-    //     paddingBottom: 10,
-    //     paddingHorizontal: 20,
-    //     fontSize: 20,
-    //     fontWeight: 'bold',
-    //     color: '#aaa',
-    //   },
     content: {
         paddingTop: 32
     }

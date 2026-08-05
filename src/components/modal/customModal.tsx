@@ -171,6 +171,10 @@ const CustomModal = ({
 
     if (!mounted) return null;
 
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: bgColor }
+    } as const;
+
     return (
         <Modal
             visible={mounted}
@@ -187,7 +191,7 @@ const CustomModal = ({
 
                 {toastInModal && <CustomToast />}
 
-                <Animated.View style={[styles.sheet, sheetAnimatedStyle, { backgroundColor: bgColor }]}>
+                <Animated.View style={[styles.sheet, sheetAnimatedStyle, inlineStyles1.inlineStyle1]}>
                     <Pressable style={styles.modalBox} onPress={Keyboard.dismiss}>
                         {children}
                     </Pressable>
@@ -202,20 +206,16 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end'
     },
-
     dimmedBackground: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.7)'
     },
-
     backdrop: {
         ...StyleSheet.absoluteFillObject
     },
-
     sheet: {
         width: '100%'
     },
-
     modalBox: {
         width: '100%',
         height: 'auto',

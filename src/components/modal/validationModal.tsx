@@ -241,6 +241,19 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
         };
     }, []);
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingTop: insets.top },
+        inlineStyle2: {
+            top: insets.top + 2,
+            display: type === 'transaction' ? (backbuttonLock ? 'none' : 'flex') : 'none'
+        },
+        inlineStyle3: { paddingBottom: contentPaddingBottom },
+        inlineStyle4: { alignItems: 'center' },
+        inlineStyle5: { fontWeight: 'bold' },
+        inlineStyle6: { height: dimActive ? 0 : 'auto' },
+        inlineStyle7: { flex: 1 }
+    } as const;
+
     return (
         <CustomModal
             visible={open}
@@ -251,24 +264,16 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
             handleOpen={handleModal}
         >
             <Pressable
-                style={[styles.container, { paddingTop: insets.top }]}
+                style={[styles.container, inlineStyles1.inlineStyle1]}
                 onPress={() => {
                     Keyboard.dismiss();
                 }}
             >
-                <View
-                    style={[
-                        styles.backArrowButton,
-                        {
-                            top: insets.top + 2,
-                            display: type === 'transaction' ? (backbuttonLock ? 'none' : 'flex') : 'none'
-                        }
-                    ]}
-                >
+                <View style={[styles.backArrowButton, inlineStyles1.inlineStyle2]}>
                     <ArrowButton onPressEvent={() => handleModal(false)} />
                 </View>
                 <Animated.View
-                    style={[styles.textBox, { paddingBottom: contentPaddingBottom }]}
+                    style={[styles.textBox, inlineStyles1.inlineStyle3]}
                     onLayout={(event) => {
                         const { y, height } = event.nativeEvent.layout;
                         if (dimActive === false) {
@@ -278,13 +283,13 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                         }
                     }}
                 >
-                    <View style={{ alignItems: 'center' }}>
+                    <View style={inlineStyles1.inlineStyle4}>
                         {renderIcon()}
-                        <Text style={[styles.title, { fontWeight: 'bold' }]}>{titleText}</Text>
-                        <View style={[styles.passwordBox, { height: dimActive ? 0 : 'auto' }]}>
+                        <Text style={[styles.title, inlineStyles1.inlineStyle5]}>{titleText}</Text>
+                        <View style={[styles.passwordBox, inlineStyles1.inlineStyle6]}>
                             {dimActive === false && (
                                 <>
-                                    <View style={{ flex: 1 }}>
+                                    <View style={inlineStyles1.inlineStyle7}>
                                         <InputSetVertical
                                             title={'Password'}
                                             value={''}
@@ -324,16 +329,6 @@ const styles = StyleSheet.create({
         // paddingTop: insets. || 0,
         // position: 'relative'
     },
-    // dim: {
-    //   width: '100%',
-    //   height: '100%',
-    //   position: 'absolute',
-    //   backgroundColor: '#000000',
-    //   opacity: Platform.select({ android: 0, ios: 0.5 }),
-    //   top: 0,
-    //   left: 0,
-    //   bottom: 0,
-    // },
     textBox: {
         justifyContent: 'center',
         alignItems: 'center'

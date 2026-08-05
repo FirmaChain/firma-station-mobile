@@ -49,13 +49,14 @@ const RestakeItem = ({ data, navigate }: IProps) => {
                 <DataSection title="Reward" data={`${convertAmount({ value: data.stakingReward, point: 6 })} ${_CHAIN_SYMBOL}`} />
                 <DataSection title="Latest Restake" color={latestRestake.color} data={latestRestake.value} />
                 <DataSection title="Grant Status" data={status.title} color={status.color} label={true} />
-                <View style={{ paddingBottom: 22 }} />
+                <View style={styles.inlineStyle1} />
             </View>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingBottom: 22 },
     item: {
         paddingTop: 22,
         backgroundColor: BgColor

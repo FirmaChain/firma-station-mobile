@@ -19,17 +19,24 @@ const NFTItem = ({ item, size, disabled = false, moveToNFTDetail }: IProps) => {
             : (value as Source);
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { width: size },
+        inlineStyle2: { paddingHorizontal: 10 },
+        inlineStyle3: { width: '100%', height: size - 20 },
+        inlineStyle4: { width: '100%' }
+    } as const;
+
     return (
         <TouchableOpacity
             activeOpacity={disabled ? 1 : 0.2}
-            style={[styles.contentWrap, { width: size }]}
+            style={[styles.contentWrap, inlineStyles1.inlineStyle1]}
             onPress={() => moveToNFTDetail(item.id)}
         >
-            <View style={{ paddingHorizontal: 10 }}>
-                <View style={[styles.contentImageWrap, { width: '100%', height: size - 20 }]}>
+            <View style={inlineStyles1.inlineStyle2}>
+                <View style={[styles.contentImageWrap, inlineStyles1.inlineStyle3]}>
                     <FastImage style={styles.contentImage} resizeMode="contain" source={getImageSource(item.image)} />
                 </View>
-                <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
+                <Text style={[styles.contentTitle, inlineStyles1.inlineStyle4]} numberOfLines={1}>
                     {item.name}
                 </Text>
             </View>
@@ -44,8 +51,6 @@ const areEqual = (prevProps: IProps, nextProps: IProps) => {
         prevProps.moveToNFTDetail === nextProps.moveToNFTDetail
     );
 };
-
-export default memo(NFTItem, areEqual);
 
 const styles = StyleSheet.create({
     contentWrap: {
@@ -70,3 +75,5 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     }
 });
+
+export default memo(NFTItem, areEqual);

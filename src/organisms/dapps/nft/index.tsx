@@ -107,7 +107,7 @@ const NFT = ({ data }: IProps) => {
         <Container titleOn={false} backEvent={handleBack}>
             <ViewContainer>
                 <React.Fragment>
-                    <ScrollView contentContainerStyle={{ paddingHorizontal: 20 }}>
+                    <ScrollView contentContainerStyle={styles.inlineStyle1}>
                         {NFTInformation !== null && <DescriptionBox data={NFTInformation} isCW721={isCW721} />}
                         <View style={styles.divider} />
                         {NFTInformation !== null && <InfoBox data={NFTInformation} />}
@@ -123,6 +123,7 @@ const NFT = ({ data }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingHorizontal: 20 },
     divider: {
         width: '100%',
         height: 1,

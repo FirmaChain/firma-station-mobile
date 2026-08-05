@@ -32,18 +32,18 @@ const InputBox = ({ type, handleRecoverValue }: IProps) => {
         handleRecoverValueInput(copied);
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { flex: 2 },
+        inlineStyle2: { borderColor: focus ? WhiteColor : 'transparent' }
+    } as const;
+
     return (
-        <Pressable onPress={() => Keyboard.dismiss()} style={{ flex: 2 }}>
+        <Pressable onPress={() => Keyboard.dismiss()} style={inlineStyles1.inlineStyle1}>
             <View style={styles.wrapperH}>
                 <Text style={styles.title}>{recoverDescription}</Text>
                 <TextButton title={'Paste'} onPressEvent={pasteFromClipboard} />
             </View>
-            <View
-                style={[
-                    type === 'mnemonic' ? styles.inputWrapper : styles.inputWrapperForPrivateKey,
-                    { borderColor: focus ? WhiteColor : 'transparent' }
-                ]}
-            >
+            <View style={[type === 'mnemonic' ? styles.inputWrapper : styles.inputWrapperForPrivateKey, inlineStyles1.inlineStyle2]}>
                 <TextInput
                     multiline={true}
                     style={styles.input}

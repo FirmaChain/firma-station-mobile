@@ -71,6 +71,10 @@ const QRCodeScannerModal = () => {
         void init();
     }, []);
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingTop: safeAreaInsets.top + 20 }
+    } as const;
+
     return (
         <Modal animationType="fade" transparent visible={visible} onRequestClose={closeModal}>
             <View style={styles.container}>
@@ -86,7 +90,7 @@ const QRCodeScannerModal = () => {
                     />
                 </Svg>
 
-                <View style={[styles.header, { paddingTop: safeAreaInsets.top + 20 }]}>
+                <View style={[styles.header, inlineStyles1.inlineStyle1]}>
                     <View style={styles.closeRow}>
                         <TouchableOpacity style={styles.closeButton} onPress={closeModal} activeOpacity={0.7}>
                             <View style={styles.closeIconBackground} />
@@ -111,8 +115,6 @@ const QRCodeScannerModal = () => {
         </Modal>
     );
 };
-
-export default QRCodeScannerModal;
 
 const styles = StyleSheet.create({
     container: {
@@ -204,3 +206,5 @@ const styles = StyleSheet.create({
         borderRightWidth: cornerThickness
     }
 });
+
+export default QRCodeScannerModal;

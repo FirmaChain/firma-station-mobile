@@ -31,25 +31,25 @@ const StakingBox = ({ stakingValues, handleStaking }: IProps) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={[styles.box, { paddingHorizontal: 0 }]} onPress={() => handleStaking()}>
-                <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }]}>
+            <TouchableOpacity style={[styles.box, styles.inlineStyle1]} onPress={() => handleStaking()}>
+                <View style={[styles.wrapperH, styles.inlineStyle2]}>
                     <Text style={styles.title}>Staking</Text>
                     <ForwardArrow size={20} color={TextCatTitleColor} />
                 </View>
-                <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingTop: 18 }]}>
+                <View style={[styles.wrapperH, styles.inlineStyle3]}>
                     <View style={styles.stakingWrapper}>
-                        <Text style={[styles.chainName, { fontSize: 14 }]}>Delegated</Text>
-                        <Text style={[styles.balance, { fontSize: 18 }]}>{delegated}</Text>
+                        <Text style={[styles.chainName, styles.inlineStyle4]}>Delegated</Text>
+                        <Text style={[styles.balance, styles.inlineStyle5]}>{delegated}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
-                        <Text style={[styles.chainName, { fontSize: 14 }]}>Undelegate</Text>
-                        <Text style={[styles.balance, { fontSize: 18 }]}>{undelegate}</Text>
+                        <Text style={[styles.chainName, styles.inlineStyle6]}>Undelegate</Text>
+                        <Text style={[styles.balance, styles.inlineStyle7]}>{undelegate}</Text>
                     </View>
                     <View style={styles.dividerV} />
                     <View style={styles.stakingWrapper}>
-                        <Text style={[styles.chainName, { fontSize: 14 }]}>Reward</Text>
-                        <Text style={[styles.balance, { fontSize: 18 }]}>{reward}</Text>
+                        <Text style={[styles.chainName, styles.inlineStyle8]}>Reward</Text>
+                        <Text style={[styles.balance, styles.inlineStyle9]}>{reward}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -58,6 +58,15 @@ const StakingBox = ({ stakingValues, handleStaking }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingHorizontal: 0 },
+    inlineStyle2: { justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 },
+    inlineStyle3: { justifyContent: 'space-between', alignItems: 'center', paddingTop: 18 },
+    inlineStyle4: { fontSize: 14 },
+    inlineStyle5: { fontSize: 18 },
+    inlineStyle6: { fontSize: 14 },
+    inlineStyle7: { fontSize: 18 },
+    inlineStyle8: { fontSize: 14 },
+    inlineStyle9: { fontSize: 18 },
     container: {
         height: 'auto',
         paddingHorizontal: 20,
@@ -79,7 +88,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: TextCatTitleColor
     },
-
     balance: {
         fontFamily: Lato,
         fontSize: 28,

@@ -270,7 +270,7 @@ const DappDirectSignModal = () => {
         <CustomModal visible={isLoadedAllBalanceData} handleOpen={closeModal}>
             <React.Fragment>
                 <View style={styles.modalTextContents}>
-                    <View style={[styles.boxV, { alignItems: 'center' }]}>
+                    <View style={[styles.boxV, styles.inlineStyle1]}>
                         <DappURLBox certifiedState={isCertified} url={url} />
                         <DappTitleBox title={title} descExist={false} iconURL={iconUrl} />
                         <ProductInfoBox productName={productName} productPrice={productPrice} />
@@ -301,12 +301,12 @@ const DappDirectSignModal = () => {
                             handleConfirm={() => handleValidation(true)}
                         />
                     ) : (
-                        <View style={[styles.boxV, { paddingTop: 30 }]}>
-                            <View style={[styles.boxH, { justifyContent: 'center' }]}>
+                        <View style={[styles.boxV, styles.inlineStyle2]}>
+                            <View style={[styles.boxH, styles.inlineStyle3]}>
                                 <WarnContainer bgColor={BgColor} text={DAPP_NOT_ENOUGHT_BALANCE} />
                             </View>
-                            <View style={[styles.modalButtonBox, { paddingTop: 10 }]}>
-                                <View style={{ flex: 1 }}>
+                            <View style={[styles.modalButtonBox, styles.inlineStyle4]}>
+                                <View style={styles.inlineStyle5}>
                                     <Button title={'Close'} active={true} border={true} onPressEvent={() => handleReject()} />
                                 </View>
                             </View>
@@ -325,6 +325,11 @@ const DappDirectSignModal = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'center' },
+    inlineStyle2: { paddingTop: 30 },
+    inlineStyle3: { justifyContent: 'center' },
+    inlineStyle4: { paddingTop: 10 },
+    inlineStyle5: { flex: 1 },
     modalTextContents: {
         width: '100%',
         padding: 20
@@ -344,47 +349,6 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'flex-start'
     }
-    //   desc: {
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     color: TextDarkGrayColor,
-    //     paddingBottom: 20,
-    //   },
-
-    //   productBox: {
-    //     width: '100%',
-    //     alignItems: 'center',
-    //     backgroundColor: DisableColor,
-    //     padding: 20,
-    //     borderRadius: 8,
-    //   },
-    //   productTitle: {
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     color: TextCatTitleColor,
-    //   },
-    //   productPrice: {
-    //     fontFamily: Lato,
-    //     fontSize: 26,
-    //     fontWeight: '600',
-    //     color: TextColor,
-    //     paddingRight: 6,
-    //     paddingTop: 8,
-    //   },
-
-    //   catTitle: {
-    //     flex: 1,
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     color: TextDarkGrayColor,
-    //   },
-    //   value: {
-    //     flex: 1,
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     color: TextDarkGrayColor,
-    //     textAlign: 'right',
-    //   },
 });
 
 export default DappDirectSignModal;

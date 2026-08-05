@@ -10,8 +10,12 @@ interface IProps {
 }
 
 const SquareSkeleton = ({ size, marginBottom, bgColor = BgColor, borderRadius = 8 }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { width: size, height: size, marginBottom: marginBottom }
+    } as const;
+
     return (
-        <View style={{ width: size, height: size, marginBottom: marginBottom }}>
+        <View style={inlineStyles1.inlineStyle1}>
             <ContentLoader speed={0.8} animate={true} foregroundColor={DividerColor} backgroundColor={bgColor}>
                 <Rect x="0" y="0" rx={`${borderRadius}`} ry={`${borderRadius}`} width={'100%'} height={'100%'} />
             </ContentLoader>

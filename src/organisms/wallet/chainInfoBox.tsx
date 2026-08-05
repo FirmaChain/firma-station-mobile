@@ -25,6 +25,10 @@ const ChainInfoBox = ({ chainInfo }: IProps) => {
     }, [data]);
     const isMinus = Number(priceChangePercentage) < 0;
 
+    const inlineStyles1 = {
+        inlineStyle1: { color: isMinus ? 'tomato' : 'forestgreen' }
+    } as const;
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
@@ -40,7 +44,7 @@ const ChainInfoBox = ({ chainInfo }: IProps) => {
                 <View style={styles.box}>
                     {/* <Icon name={isMinus ? 'trending-down' : 'trending-up'} color={isMinus ? 'tomato' : 'forestgreen'} size={15} /> */}
                     {isMinus ? <TrendingDownIcon size={15} color="tomato" /> : <TrendingUpIcon size={15} color="forestgreen" />}
-                    <Text style={[styles.changePercentage, { color: isMinus ? 'tomato' : 'forestgreen' }]}>{priceChangePercentage}</Text>
+                    <Text style={[styles.changePercentage, inlineStyles1.inlineStyle1]}>{priceChangePercentage}</Text>
                 </View>
             </View>
         </View>

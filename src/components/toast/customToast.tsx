@@ -9,18 +9,36 @@ const CustomToast = () => {
     const [display, setDisplay] = useState<'none' | 'flex'>('none');
     const inset = useSafeAreaInsets();
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            zIndex: 9999,
+            borderLeftWidth: 0,
+            backgroundColor: toastSuccess,
+            display,
+            marginTop: inset.top / 2
+        },
+        inlineStyle2: {
+            zIndex: 9999,
+            borderLeftWidth: 0,
+            backgroundColor: toastInfo,
+            display,
+            marginTop: inset.top / 2
+        },
+        inlineStyle3: {
+            zIndex: 9999,
+            borderLeftWidth: 0,
+            backgroundColor: toastError,
+            display,
+            marginTop: inset.top / 2
+        }
+    } as const;
+
     const toastConfig = {
         success: (props: ToastConfigParams<unknown>) => (
             <BaseToast
                 {...props}
-                style={{
-                    zIndex: 9999,
-                    borderLeftWidth: 0,
-                    backgroundColor: toastSuccess,
-                    display: display,
-                    marginTop: inset.top / 2
-                }}
-                contentContainerStyle={{ paddingHorizontal: 15 }}
+                style={inlineStyles1.inlineStyle1}
+                contentContainerStyle={styles.inlineStyle1}
                 text1Style={styles.text1Style}
                 text1NumberOfLines={5}
                 text2Style={styles.text2Style}
@@ -29,14 +47,8 @@ const CustomToast = () => {
         info: (props: ToastConfigParams<unknown>) => (
             <BaseToast
                 {...props}
-                style={{
-                    zIndex: 9999,
-                    borderLeftWidth: 0,
-                    backgroundColor: toastInfo,
-                    display: display,
-                    marginTop: inset.top / 2
-                }}
-                contentContainerStyle={{ paddingHorizontal: 15 }}
+                style={inlineStyles1.inlineStyle2}
+                contentContainerStyle={styles.inlineStyle1}
                 text1Style={styles.text1Style}
                 text1NumberOfLines={5}
                 text2Style={styles.text2Style}
@@ -45,13 +57,7 @@ const CustomToast = () => {
         error: (props: ToastConfigParams<unknown>) => (
             <ErrorToast
                 {...props}
-                style={{
-                    zIndex: 9999,
-                    borderLeftWidth: 0,
-                    backgroundColor: toastError,
-                    display: display,
-                    marginTop: inset.top / 2
-                }}
+                style={inlineStyles1.inlineStyle3}
                 text1Style={styles.text1Style}
                 text1NumberOfLines={5}
                 text2Style={styles.text2Style}
@@ -70,6 +76,7 @@ const CustomToast = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingHorizontal: 15 },
     text1Style: {
         fontFamily: Lato,
         fontSize: 15,

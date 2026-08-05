@@ -103,22 +103,25 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
     }, [isFocused, grantStates]);
 
     const renderLabel = useCallback(() => {
-        return (
-            <Text style={[styles.label, { backgroundColor: restakeStatus.color + '30', color: restakeStatus.color }]}>
-                {restakeStatus.title}
-            </Text>
-        );
+        const inlineStyles1 = {
+            inlineStyle1: { backgroundColor: restakeStatus.color + '30', color: restakeStatus.color }
+        } as const;
+
+        return <Text style={[styles.label, inlineStyles1.inlineStyle1]}>{restakeStatus.title}</Text>;
     }, [restakeStatus]);
+
+    const inlineStyles2 = {
+        inlineStyle1: { justifyContent: 'flex-end', paddingHorizontal: delegationState !== null ? 10 : 0 },
+        inlineStyle2: { backgroundColor: defaultColor + '30', color: defaultColor, marginRight: 6 }
+    } as const;
 
     return (
         <TouchableOpacity style={styles.restakeButtonBox} disabled={!delegationState} onPress={() => moveToRestake()}>
             <View style={styles.infoBox}>
                 <Text style={styles.title}>Restake</Text>
-                <View style={[styles.infoBox, { justifyContent: 'flex-end', paddingHorizontal: delegationState !== null ? 10 : 0 }]}>
+                <View style={[styles.infoBox, inlineStyles2.inlineStyle1]}>
                     {delegationState !== null && delegationState && (
-                        <Text style={[styles.label, { backgroundColor: defaultColor + '30', color: defaultColor, marginRight: 6 }]}>
-                            {nextRoundDateTime}
-                        </Text>
+                        <Text style={[styles.label, inlineStyles2.inlineStyle2]}>{nextRoundDateTime}</Text>
                     )}
                     {renderLabel()}
                 </View>
@@ -129,11 +132,6 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
 };
 
 const styles = StyleSheet.create({
-    //   restakeEmptyButtonBox: {
-    //     padding: 0,
-    //     marginTop: 0,
-    //     maxHeight: 0,
-    //   },
     restakeButtonBox: {
         padding: 20,
         marginTop: 12,
@@ -144,12 +142,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         maxHeight: 500
     },
-    //   activeInfoBox: {
-    //     flex: 1,
-    //     alignItems: 'flex-start',
-    //     justifyContent: 'flex-start',
-    //     marginRight: 15,
-    //   },
     infoBox: {
         flex: 1,
         flexDirection: 'row',
@@ -171,21 +163,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 3
     }
-    //   background: {
-    //     flex: 100,
-    //     height: 6,
-    //     flexDirection: 'row',
-    //     justifyContent: 'flex-start',
-    //     backgroundColor: BorderColor,
-    //     borderRadius: 8,
-    //     position: 'relative',
-    //     overflow: 'hidden',
-    //   },
-    //   percentage: {
-    //     height: 6,
-    //     borderRadius: 8,
-    //     backgroundColor: PointLightColor,
-    //   },
 });
 
 export default React.memo(RestakeInfoBox);

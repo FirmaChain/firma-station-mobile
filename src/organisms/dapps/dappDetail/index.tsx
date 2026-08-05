@@ -7,7 +7,7 @@ import { getCW20TokenInfo, getCW20TokenMarketingInfo } from '@/util/firma';
 import { getDAppServiceId } from '@/util/wallet';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
 
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -189,9 +189,9 @@ const DappDetail = ({ data }: IProps) => {
         <Container titleOn={false} backEvent={handleBack}>
             <ViewContainer>
                 <RefreshScrollView refreshFunc={() => handleRefresh(true)} scrollToTop={true} scrollEndFunc={handleScroll}>
-                    <View style={{ flex: 1 }}>
+                    <View style={styles.inlineStyle1}>
                         <DescriptionBox data={data} />
-                        <View style={{ padding: 15 }} />
+                        <View style={styles.inlineStyle2} />
                         {dappData !== undefined && (
                             <React.Fragment>
                                 {isBalanceSectionOpen && (
@@ -218,5 +218,10 @@ const DappDetail = ({ data }: IProps) => {
         </Container>
     );
 };
+
+const styles = StyleSheet.create({
+    inlineStyle1: { flex: 1 },
+    inlineStyle2: { padding: 15 }
+});
 
 export default DappDetail;

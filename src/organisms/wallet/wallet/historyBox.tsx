@@ -41,87 +41,91 @@ const HistoryBox = ({ recentHistory, historyVolume, handleHistory, handleExplore
         }
     }, [recentHistory]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { justifyContent: 'space-between', alignItems: 'center' },
+        inlineStyle2: { justifyContent: 'center', alignItems: 'center', paddingTop: 18 },
+        inlineStyle3: { fontSize: 14 },
+        inlineStyle4: { opacity: fadeAnimHiostory },
+        inlineStyle5: {
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            paddingTop: 18,
+            flex: 3
+        },
+        inlineStyle6: { flex: 1 },
+        inlineStyle7: { fontSize: 14 },
+        inlineStyle8: { fontSize: 14 },
+        inlineStyle9: { flex: 1.5 },
+        inlineStyle10: { fontSize: 14 },
+        inlineStyle11: {
+            fontSize: 14,
+            paddingHorizontal: 5,
+            color: historyData.type.tagTheme,
+            backgroundColor: historyData.type.tagTheme + '26',
+            borderRadius: 6,
+            overflow: 'hidden'
+        },
+        inlineStyle12: { justifyContent: 'flex-start', alignItems: 'flex-start', flex: 3 },
+        inlineStyle13: { flex: 1 },
+        inlineStyle14: { fontSize: 14 },
+        inlineStyle15: { fontSize: 14 },
+        inlineStyle16: { flex: 1.5 },
+        inlineStyle17: { fontSize: 14 },
+        inlineStyle18: { fontSize: 14 },
+        inlineStyle19: { paddingBottom: 0 },
+        inlineStyle20: { fontSize: 14 },
+        inlineStyle21: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+        },
+        inlineStyle22: { fontSize: 14, flex: 1, color: TextAddressColor }
+    } as const;
+
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.box} onPress={() => moveToHistory()}>
-                <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center' }]}>
+                <View style={[styles.wrapperH, inlineStyles1.inlineStyle1]}>
                     <Text style={styles.title}>Recent History</Text>
                     {recentHistory !== undefined && <ForwardArrow size={20} color={TextCatTitleColor} />}
                 </View>
                 {historyVolume !== null ? (
                     historyVolume === 0 ? (
-                        <View style={[styles.wrapperH, styles.wrapper, { justifyContent: 'center', alignItems: 'center', paddingTop: 18 }]}>
-                            <Text style={[styles.contentItem, { fontSize: 14 }]}>{HISTORY_NOT_EXIST}</Text>
+                        <View style={[styles.wrapperH, styles.wrapper, inlineStyles1.inlineStyle2]}>
+                            <Text style={[styles.contentItem, inlineStyles1.inlineStyle3]}>{HISTORY_NOT_EXIST}</Text>
                         </View>
                     ) : recentHistory !== undefined ? (
-                        <Animated.View style={{ opacity: fadeAnimHiostory }}>
-                            <View
-                                style={[
-                                    styles.wrapperH,
-                                    styles.wrapper,
-                                    {
-                                        justifyContent: 'flex-start',
-                                        alignItems: 'flex-start',
-                                        paddingTop: 18,
-                                        flex: 3
-                                    }
-                                ]}
-                            >
-                                <View style={[styles.historyWrapper, { flex: 1 }]}>
-                                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>Block</Text>
-                                    <Text style={[styles.contentItem, { fontSize: 14 }]}>{historyData.block}</Text>
+                        <Animated.View style={inlineStyles1.inlineStyle4}>
+                            <View style={[styles.wrapperH, styles.wrapper, inlineStyles1.inlineStyle5]}>
+                                <View style={[styles.historyWrapper, inlineStyles1.inlineStyle6]}>
+                                    <Text style={[styles.contentTitle, inlineStyles1.inlineStyle7]}>Block</Text>
+                                    <Text style={[styles.contentItem, inlineStyles1.inlineStyle8]}>{historyData.block}</Text>
                                 </View>
-                                <View style={[styles.historyWrapper, { flex: 1.5 }]}>
-                                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>Type</Text>
-                                    <Text
-                                        style={[
-                                            styles.contentItem,
-                                            {
-                                                fontSize: 14,
-                                                paddingHorizontal: 5,
-                                                color: historyData.type.tagTheme,
-                                                backgroundColor: historyData.type.tagTheme + '26',
-                                                borderRadius: 6,
-                                                overflow: 'hidden'
-                                            }
-                                        ]}
-                                    >
-                                        {historyData.type.tagDisplay}
-                                    </Text>
+                                <View style={[styles.historyWrapper, inlineStyles1.inlineStyle9]}>
+                                    <Text style={[styles.contentTitle, inlineStyles1.inlineStyle10]}>Type</Text>
+                                    <Text style={[styles.contentItem, inlineStyles1.inlineStyle11]}>{historyData.type.tagDisplay}</Text>
                                 </View>
                             </View>
-                            <View
-                                style={[
-                                    styles.wrapperH,
-                                    styles.wrapper,
-                                    { justifyContent: 'flex-start', alignItems: 'flex-start', flex: 3 }
-                                ]}
-                            >
-                                <View style={[styles.historyWrapper, { flex: 1 }]}>
-                                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>Result</Text>
-                                    <Text style={[styles.contentItem, { fontSize: 14 }]}>{historyData.success}</Text>
+                            <View style={[styles.wrapperH, styles.wrapper, inlineStyles1.inlineStyle12]}>
+                                <View style={[styles.historyWrapper, inlineStyles1.inlineStyle13]}>
+                                    <Text style={[styles.contentTitle, inlineStyles1.inlineStyle14]}>Result</Text>
+                                    <Text style={[styles.contentItem, inlineStyles1.inlineStyle15]}>{historyData.success}</Text>
                                 </View>
-                                <View style={[styles.historyWrapper, { flex: 1.5 }]}>
-                                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>{'Time (' + getGMT() + ')'}</Text>
-                                    <Text style={[styles.contentItem, { fontSize: 14 }]}>
+                                <View style={[styles.historyWrapper, inlineStyles1.inlineStyle16]}>
+                                    <Text style={[styles.contentTitle, inlineStyles1.inlineStyle17]}>{'Time (' + getGMT() + ')'}</Text>
+                                    <Text style={[styles.contentItem, inlineStyles1.inlineStyle18]}>
                                         {convertTime(historyData.timestamp, false, true)}
                                     </Text>
                                 </View>
                             </View>
 
                             <TouchableOpacity onPress={() => handleExplorer(EXPLORER_URL() + '/transactions/' + historyData.hash)}>
-                                <View style={[styles.wrapper, { paddingBottom: 0 }]}>
+                                <View style={[styles.wrapper, inlineStyles1.inlineStyle19]}>
                                     <View style={styles.historyWrapper}>
-                                        <Text style={[styles.contentTitle, { fontSize: 14 }]}>Hash</Text>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between'
-                                            }}
-                                        >
+                                        <Text style={[styles.contentTitle, inlineStyles1.inlineStyle20]}>Hash</Text>
+                                        <View style={inlineStyles1.inlineStyle21}>
                                             <Text
-                                                style={[styles.contentItem, { fontSize: 14, flex: 1, color: TextAddressColor }]}
+                                                style={[styles.contentItem, inlineStyles1.inlineStyle22]}
                                                 numberOfLines={1}
                                                 ellipsizeMode="middle"
                                             >

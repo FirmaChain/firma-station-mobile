@@ -175,9 +175,14 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }:
         };
     }, []);
 
+    const inlineStyles1 = {
+        inlineStyle1: { opacity: useBio ? fadeIn : 1 },
+        inlineStyle2: { paddingBottom: 20 }
+    } as const;
+
     return (
-        <Animated.View style={[styles.buttonBox, { opacity: useBio ? fadeIn : 1 }]}>
-            <View style={{ paddingBottom: 20 }}>
+        <Animated.View style={[styles.buttonBox, inlineStyles1.inlineStyle1]}>
+            <View style={inlineStyles1.inlineStyle2}>
                 <WalletSelector selectedWallet={selectedWallet} handleOpenModal={handleOpenSelectModal} />
                 <InputSetVertical
                     title={passwordText.title}

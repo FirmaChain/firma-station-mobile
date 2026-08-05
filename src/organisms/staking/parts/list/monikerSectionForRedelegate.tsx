@@ -12,18 +12,18 @@ interface IProps {
 
 const MonikerSectionForRedelegate = ({ validators, navigateValidator }: IProps) => {
     return (
-        <View style={[styles.vdWrapperH, { alignItems: 'center' }]}>
+        <View style={[styles.vdWrapperH, styles.inlineStyle1]}>
             <TouchableOpacity style={styles.monikerWrapperH} onPress={() => navigateValidator(validators.srcAddress)}>
-                <ValidatorProfile uri={validators.srcAvatarURL} size={32} customStyle={{ marginRight: 10 }} />
+                <ValidatorProfile uri={validators.srcAvatarURL} size={32} customStyle={styles.inlineStyle3} />
                 <Text numberOfLines={1} ellipsizeMode="tail" style={styles.moniker}>
                     {validators.srcMoniker}
                 </Text>
             </TouchableOpacity>
-            <View style={{ paddingRight: 5 }}>
+            <View style={styles.inlineStyle2}>
                 <ForwardArrowWithTail size={20} color={TextDarkGrayColor} />
             </View>
             <TouchableOpacity style={styles.monikerWrapperH} onPress={() => navigateValidator(validators.dstAddress)}>
-                <ValidatorProfile uri={validators.dstAvatarURL} size={32} customStyle={{ marginRight: 10 }} />
+                <ValidatorProfile uri={validators.dstAvatarURL} size={32} customStyle={styles.inlineStyle3} />
                 <Text numberOfLines={1} ellipsizeMode="tail" style={styles.moniker}>
                     {validators.dstMoniker}
                 </Text>
@@ -34,6 +34,9 @@ const MonikerSectionForRedelegate = ({ validators, navigateValidator }: IProps) 
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'center' },
+    inlineStyle2: { paddingRight: 5 },
+    inlineStyle3: { marginRight: 10 },
     vdWrapperH: {
         paddingHorizontal: 20,
         flexDirection: 'row',

@@ -90,14 +90,21 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
         }
     }, [openModal]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { color: TextStakingReward, marginBottom: 6 },
+        inlineStyle2: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-end' },
+        inlineStyle3: { fontSize: rewardTextSize },
+        inlineStyle4: { fontSize: 14, fontWeight: 'normal' }
+    } as const;
+
     return (
         <View style={styles.rewardBox}>
             <View style={styles.boxV}>
-                <Text style={[styles.title, { color: TextStakingReward, marginBottom: 6 }]}>Staking Reward</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-end' }}>
-                    <Text style={[styles.desc, { fontSize: rewardTextSize }]}>
+                <Text style={[styles.title, inlineStyles1.inlineStyle1]}>Staking Reward</Text>
+                <View style={inlineStyles1.inlineStyle2}>
+                    <Text style={[styles.desc, inlineStyles1.inlineStyle3]}>
                         {stakingReward}
-                        <Text style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}>{` ${_CHAIN_SYMBOL}`}</Text>
+                        <Text style={[styles.title, inlineStyles1.inlineStyle4]}>{` ${_CHAIN_SYMBOL}`}</Text>
                     </Text>
                 </View>
             </View>

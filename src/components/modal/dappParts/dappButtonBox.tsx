@@ -13,11 +13,11 @@ interface IProps {
 const DappButtonBox = ({ active, rejectTitle, confirmTitle, handleReject, handleConfirm }: IProps) => {
     return (
         <View style={styles.modalButtonBox}>
-            <View style={{ flex: 1 }}>
+            <View style={styles.inlineStyle1}>
                 <Button title={rejectTitle} active={active} border={true} onPressEvent={() => handleReject()} />
             </View>
-            <View style={{ width: 10 }} />
-            <View style={{ flex: 1 }}>
+            <View style={styles.inlineStyle2} />
+            <View style={styles.inlineStyle3}>
                 <Button title={confirmTitle} active={active} onPressEvent={() => handleConfirm()} />
             </View>
         </View>
@@ -25,6 +25,9 @@ const DappButtonBox = ({ active, rejectTitle, confirmTitle, handleReject, handle
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 1 },
+    inlineStyle2: { width: 10 },
+    inlineStyle3: { flex: 1 },
     modalButtonBox: {
         paddingTop: 30,
         flexDirection: 'row',

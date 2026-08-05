@@ -8,14 +8,16 @@ interface IProps {
 const Disconnect = ({ handleDisconnect }: IProps) => {
     return (
         <TouchableOpacity onPress={() => handleDisconnect()}>
-            <View style={[styles.listItem, { justifyContent: 'center' }]}>
-                <Text style={[styles.itemTitle, { fontWeight: 'bold' }]}>Disconnect</Text>
+            <View style={[styles.listItem, styles.inlineStyle1]}>
+                <Text style={[styles.itemTitle, styles.inlineStyle2]}>Disconnect</Text>
             </View>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { justifyContent: 'center' },
+    inlineStyle2: { fontWeight: 'bold' },
     listItem: {
         backgroundColor: BoxColor,
         padding: 20,

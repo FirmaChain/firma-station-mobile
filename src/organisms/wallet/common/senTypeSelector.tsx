@@ -33,21 +33,16 @@ const SendTypeSelector = ({ type, handleType }: IProps) => {
         outputRange: [0, screenWidth / 2 - 25]
     });
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            backgroundColor: interpolatedBackground,
+            transform: [{ translateX: interpolatedPosition }]
+        }
+    } as const;
+
     return (
         <View style={styles.tabContainer}>
-            <Animated.View
-                style={[
-                    styles.selectTabBackground,
-                    {
-                        backgroundColor: interpolatedBackground,
-                        transform: [
-                            {
-                                translateX: interpolatedPosition
-                            }
-                        ]
-                    }
-                ]}
-            />
+            <Animated.View style={[styles.selectTabBackground, inlineStyles1.inlineStyle1]} />
             <TouchableOpacity style={[styles.tab, type === 'SEND_TOKEN' && styles.activeTab]} onPress={() => handleType('SEND_TOKEN')}>
                 <Text style={[styles.tabText, type === 'SEND_TOKEN' && styles.activeTabText]}>{'Send'}</Text>
             </TouchableOpacity>

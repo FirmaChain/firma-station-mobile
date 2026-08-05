@@ -38,15 +38,20 @@ const Progress = () => {
         }, [])
     );
 
+    const inlineStyles1 = {
+        inlineStyle1: { opacity },
+        inlineStyle2: { opacity: fadeAnim_text }
+    } as const;
+
     return (
         <View style={styles.container}>
-            <View style={[styles.background, { opacity }]} />
+            <View style={[styles.background, inlineStyles1.inlineStyle1]} />
             <View style={styles.box}>
                 <LogoProgress size={50} duration={2000} style={styles.logo} />
                 {isNetworkChanged && <Text style={styles.network}>{CHANGE_NETWORK_NOTICE + network}</Text>}
                 {connect === false && <Text style={styles.network}>{CONNECTION_NOTICE}</Text>}
                 {loadingDelayed && connect && isNetworkChanged === false && (
-                    <Animated.Text style={[styles.network, { opacity: fadeAnim_text }]}>{LOADING_DATA_NOTICE}</Animated.Text>
+                    <Animated.Text style={[styles.network, inlineStyles1.inlineStyle2]}>{LOADING_DATA_NOTICE}</Animated.Text>
                 )}
             </View>
         </View>

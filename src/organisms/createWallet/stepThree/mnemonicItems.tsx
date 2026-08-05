@@ -13,7 +13,7 @@ const MnemonicItems = ({ mnemonicItems, onPressEvent }: IProps) => {
             {mnemonicItems.map((item, index) => {
                 return (
                     <TouchableOpacity key={index} onPress={() => onPressEvent(index)}>
-                        <Text style={[styles.item, { width: ScreenWidth() / 3 - 20 }]}>{item}</Text>
+                        <Text style={[styles.item, styles.inlineStyle1]}>{item}</Text>
                     </TouchableOpacity>
                 );
             })}
@@ -21,9 +21,8 @@ const MnemonicItems = ({ mnemonicItems, onPressEvent }: IProps) => {
     );
 };
 
-export default MnemonicItems;
-
 const styles = StyleSheet.create({
+    inlineStyle1: { width: ScreenWidth() / 3 - 20 },
     conatainer: {
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -42,3 +41,5 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     }
 });
+
+export default MnemonicItems;

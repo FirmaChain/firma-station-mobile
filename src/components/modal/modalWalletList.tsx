@@ -95,11 +95,11 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
                         <Text style={styles.itemTitle}>{item.label}</Text>
                     </View>
                     {isEdit ? (
-                        <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onPressIn={drag}>
+                        <TouchableOpacity style={styles.inlineStyle1} onPressIn={drag}>
                             <MenuIcon size={20} color={WhiteColor} />
                         </TouchableOpacity>
                     ) : (
-                        <View style={{ paddingHorizontal: 20 }}>
+                        <View style={styles.inlineStyle2}>
                             <Radio size={20} color={WhiteColor} active={index === selected} />
                         </View>
                     )}
@@ -117,10 +117,10 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
                     <Text style={styles.headerEditButton}>{isEdit ? 'Done' : 'Edit'}</Text>
                 </TouchableOpacity>
             </View>
-            <GestureHandlerRootView style={{ backgroundColor: BgColor }}>
+            <GestureHandlerRootView style={styles.inlineStyle3}>
                 <DraggableFlatList
                     data={listData}
-                    style={{ maxHeight: 450 }}
+                    style={styles.inlineStyle4}
                     renderItem={RenderListItem}
                     scrollEnabled={true}
                     initialScrollIndex={canInitialScroll ? initVal : undefined}
@@ -139,6 +139,10 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingVertical: 15, paddingRight: 20, paddingLeft: 50 },
+    inlineStyle2: { paddingHorizontal: 20 },
+    inlineStyle3: { backgroundColor: BgColor },
+    inlineStyle4: { maxHeight: 450 },
     modalContainer: {
         width: '100%',
         marginBottom: Platform.select({ android: 0, ios: 25 }),

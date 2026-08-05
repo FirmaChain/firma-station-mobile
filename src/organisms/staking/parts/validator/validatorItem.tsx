@@ -28,13 +28,14 @@ const ValidatorItem = ({ data, isLastItem, navigate }: IProps) => {
                 <DataSection title="Commission" data={convertPercentage(data.commission) + '%'} />
                 <DataSection title="APR/APY" data={`${data.APR}% / ${data.APY}%`} />
                 <DataSection title="Uptime" data={uptime} />
-                <View style={{ paddingBottom: 22 }} />
+                <View style={styles.inlineStyle1} />
             </View>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingBottom: 22 },
     itemBox: {
         borderBottomColor: BorderColor,
         borderBottomWidth: 0.5

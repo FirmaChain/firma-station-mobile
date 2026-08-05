@@ -224,9 +224,9 @@ const Restake = () => {
         <Container title={'Restake'} handleGuide={handleMoveToWeb} bgColor={BgColor} backEvent={handleBack}>
             <ViewContainer>
                 <View style={styles.container}>
-                    <View style={{ flex: 1 }}>
-                        <ScrollView style={{ marginBottom: 20 }}>
-                            <View style={{ flex: 1, paddingHorizontal: 20 }}>
+                    <View style={styles.inlineStyle1}>
+                        <ScrollView style={styles.inlineStyle2}>
+                            <View style={styles.inlineStyle3}>
                                 <BalanceInfoMultiLine available={totalDelegate} reward={totalReward} />
                                 <StatusBox
                                     grantState={stakingGrantState}
@@ -241,10 +241,10 @@ const Restake = () => {
                                     handleOpenListModal={handleValidatorListModalOpen}
                                     handleRefresh={handleRefresh}
                                 />
-                                <View style={{ paddingTop: 10 }}>
+                                <View style={styles.inlineStyle4}>
                                     {RESTAKE_NOTICE_TEXT.map((value, index) => {
                                         return (
-                                            <View key={index} style={{ marginBottom: 10 }}>
+                                            <View key={index} style={styles.inlineStyle8}>
                                                 <WarnContainer text={value} question={true} />
                                             </View>
                                         );
@@ -255,7 +255,7 @@ const Restake = () => {
                         <View style={styles.boxContainer}>
                             {grantExist && (
                                 <React.Fragment>
-                                    <View style={{ flex: 1 }}>
+                                    <View style={styles.inlineStyle5}>
                                         <Button
                                             title="Disable"
                                             active={true}
@@ -265,10 +265,10 @@ const Restake = () => {
                                             onPressEvent={() => handleGrantOrRevoke(true, 'REVOKE')}
                                         />
                                     </View>
-                                    <View style={{ width: 10 }} />
+                                    <View style={styles.inlineStyle6} />
                                 </React.Fragment>
                             )}
-                            <View style={{ flex: 1 }}>
+                            <View style={styles.inlineStyle7}>
                                 <Button
                                     title={grantExist ? 'Update' : 'Enable'}
                                     active={true}
@@ -310,6 +310,14 @@ const Restake = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 1 },
+    inlineStyle2: { marginBottom: 20 },
+    inlineStyle3: { flex: 1, paddingHorizontal: 20 },
+    inlineStyle4: { paddingTop: 10 },
+    inlineStyle5: { flex: 1 },
+    inlineStyle6: { width: 10 },
+    inlineStyle7: { flex: 1 },
+    inlineStyle8: { marginBottom: 10 },
     container: {
         flex: 1,
         backgroundColor: BgColor

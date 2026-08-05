@@ -41,11 +41,17 @@ const DescriptionBox = ({ validator }: IProps) => {
         await Linking.openURL(urlValid);
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10 },
+        inlineStyle2: { flex: 1 },
+        inlineStyle3: { paddingBottom: MonikerPaddingBottom }
+    } as const;
+
     return (
-        <View style={[styles.boxH, { backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10 }]}>
-            <ValidatorProfile uri={Avatar} size={68} customStyle={{ marginRight: 10 }} />
-            <View style={[styles.boxV, { flex: 1 }]}>
-                <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.moniker, { paddingBottom: MonikerPaddingBottom }]}>
+        <View style={[styles.boxH, inlineStyles1.inlineStyle1]}>
+            <ValidatorProfile uri={Avatar} size={68} customStyle={styles.inlineStyle1} />
+            <View style={[styles.boxV, inlineStyles1.inlineStyle2]}>
+                <Text numberOfLines={2} ellipsizeMode="tail" style={[styles.moniker, inlineStyles1.inlineStyle3]}>
                     {Moniker}
                 </Text>
                 {Description !== '' && <Text style={styles.desc}>{Description}</Text>}
@@ -60,6 +66,7 @@ const DescriptionBox = ({ validator }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { marginRight: 10 },
     boxH: {
         flexDirection: 'row'
     },

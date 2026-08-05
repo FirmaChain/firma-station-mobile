@@ -92,21 +92,16 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
     }, [type]);
 
     const RenderDefaultInfo = ({ title, value, isMemo }: IRenderDefaultInfoProps) => {
+        const inlineStyles1 = {
+            inlineStyle1: { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
+            inlineStyle2: { flex: isMemo ? 1 : 0, color: AddressTextColor, fontSize: 15 }
+        } as const;
+
         return (
-            <View
-                style={[
-                    styles.boxH,
-                    { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
-                    isMemo && { alignItems: 'flex-start' }
-                ]}
-            >
-                <Text style={[styles.catTitle, isMemo && { flex: 0, width: 40 }]}>{title}</Text>
+            <View style={[styles.boxH, inlineStyles1.inlineStyle1, isMemo && styles.inlineStyle1]}>
+                <Text style={[styles.catTitle, isMemo && styles.inlineStyle2]}>{title}</Text>
                 <Text
-                    style={[
-                        styles.value,
-                        { flex: isMemo ? 1 : 0, color: AddressTextColor, fontSize: 15 },
-                        isMemo ? { maxWidth: 240 } : { maxWidth: '50%' }
-                    ]}
+                    style={[styles.value, inlineStyles1.inlineStyle2, isMemo ? styles.inlineStyle3 : styles.inlineStyle4]}
                     numberOfLines={isMemo ? 2 : 1}
                     ellipsizeMode={'middle'}
                 >
@@ -118,9 +113,9 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
 
     const RenderAmountInfo = ({ title, amount }: IRenderAmountInfoProps) => {
         return (
-            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
+            <View style={[styles.boxH, styles.inlineStyle5]}>
                 <Text style={styles.catTitle}>{title}</Text>
-                <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${convertAmount({
+                <Text style={[styles.value, styles.inlineStyle6]}>{`${convertAmount({
                     value: amount,
                     isUfct: false,
                     point: amount > 0 ? 6 : 0
@@ -131,10 +126,10 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
 
     const RenderValidatorInfo = ({ title, moniker, avatarURL }: IRenderValidatorInfoProps) => {
         return (
-            <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
+            <View style={[styles.boxH, styles.inlineStyle7]}>
                 <Text style={styles.catTitle}>{title}</Text>
-                <ValidatorProfile uri={avatarURL} size={20} customStyle={{ marginRight: 7 }} />
-                <Text style={[styles.value, { flex: 0, color: AddressTextColor, fontSize: 15 }]} numberOfLines={1} ellipsizeMode={'middle'}>
+                <ValidatorProfile uri={avatarURL} size={20} customStyle={styles.inlineStyle9} />
+                <Text style={[styles.value, styles.inlineStyle8]} numberOfLines={1} ellipsizeMode={'middle'}>
                     {moniker}
                 </Text>
             </View>
@@ -283,17 +278,19 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
         [qrData]
     );
 
+    const inlineStyles4 = {
+        inlineStyle1: {
+            width: '100%',
+            height: 1,
+            backgroundColor: WhiteColor + '10',
+            display: isEmptyInfo ? 'none' : 'flex'
+        }
+    } as const;
+
     return (
         <Fragment>
-            <View
-                style={{
-                    width: '100%',
-                    height: 1,
-                    backgroundColor: WhiteColor + '10',
-                    display: isEmptyInfo ? 'none' : 'flex'
-                }}
-            />
-            <View style={[styles.boxV, isEmptyInfo ? {} : { paddingTop: 20, paddingBottom: 17 }]}>
+            <View style={inlineStyles4.inlineStyle1} />
+            <View style={[styles.boxV, isEmptyInfo ? styles.inlineStyle10 : styles.inlineStyle11]}>
                 <RenderInfoByType type={type} />
                 <RenderAmountInfo title={'Fee'} amount={convertToFctNumber(fee)} />
                 <RenderDefaultInfo title={'Memo'} value={memo} isMemo />
@@ -303,6 +300,17 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'flex-start' },
+    inlineStyle2: { flex: 0, width: 40 },
+    inlineStyle3: { maxWidth: 240 },
+    inlineStyle4: { maxWidth: '50%' },
+    inlineStyle5: { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
+    inlineStyle6: { color: AddressTextColor, fontSize: 15 },
+    inlineStyle7: { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
+    inlineStyle8: { flex: 0, color: AddressTextColor, fontSize: 15 },
+    inlineStyle9: { marginRight: 7 },
+    inlineStyle10: {},
+    inlineStyle11: { paddingTop: 20, paddingBottom: 17 },
     boxH: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
@@ -312,7 +320,6 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'flex-start'
     },
-
     catTitle: {
         flex: 1,
         fontFamily: Lato,

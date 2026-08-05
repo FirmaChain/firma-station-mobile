@@ -143,8 +143,8 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
         if (classified.changes) {
             return (
                 <View style={styles.depositBox}>
-                    <Text style={[styles.title, styles.titleV, { color: TextColor }]}>Change Parameters</Text>
-                    <Text style={[styles.desc, { fontSize: 16 }]}>{JSON.stringify(classified.changes)}</Text>
+                    <Text style={[styles.title, styles.titleV, styles.inlineStyle1]}>Change Parameters</Text>
+                    <Text style={[styles.desc, styles.inlineStyle2]}>{JSON.stringify(classified.changes)}</Text>
                 </View>
             );
         }
@@ -152,17 +152,17 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
         if (classified.version) {
             return (
                 <View style={styles.boxV}>
-                    <View style={[styles.boxV, { paddingTop: 30 }]}>
+                    <View style={[styles.boxV, styles.inlineStyle3]}>
                         <Text style={[styles.title, styles.titleV]}>Height</Text>
-                        <Text style={[styles.desc, { fontSize: 16 }]}>{classified.height}</Text>
+                        <Text style={[styles.desc, styles.inlineStyle4]}>{classified.height}</Text>
                     </View>
-                    <View style={[styles.boxV, { paddingTop: 30 }]}>
+                    <View style={[styles.boxV, styles.inlineStyle5]}>
                         <Text style={[styles.title, styles.titleV]}>Version</Text>
-                        <Text style={[styles.desc, { fontSize: 16 }]}>{classified.version}</Text>
+                        <Text style={[styles.desc, styles.inlineStyle6]}>{classified.version}</Text>
                     </View>
-                    <View style={[styles.boxV, { paddingTop: 30 }]}>
+                    <View style={[styles.boxV, styles.inlineStyle7]}>
                         <Text style={[styles.title, styles.titleV]}>Info</Text>
-                        <Text style={[styles.desc, { fontSize: 16 }]}>{classified.info}</Text>
+                        <Text style={[styles.desc, styles.inlineStyle8]}>{classified.info}</Text>
                     </View>
                 </View>
             );
@@ -171,14 +171,14 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
         if (classified.recipient) {
             return (
                 <View style={styles.boxV}>
-                    <View style={[styles.boxV, { paddingTop: 30 }]}>
+                    <View style={[styles.boxV, styles.inlineStyle9]}>
                         <Text style={[styles.title, styles.titleV]}>Recipient</Text>
-                        <Text style={[styles.desc, { fontSize: 16 }]}>{classified.recipient}</Text>
+                        <Text style={[styles.desc, styles.inlineStyle10]}>{classified.recipient}</Text>
                     </View>
-                    <View style={[styles.boxV, { paddingTop: 30 }]}>
+                    <View style={[styles.boxV, styles.inlineStyle11]}>
                         <Text style={[styles.title, styles.titleV]}>Amount</Text>
                         <Text
-                            style={[styles.desc, { fontSize: 16 }]}
+                            style={[styles.desc, styles.inlineStyle12]}
                         >{`${convertAmount({ value: classified.amount })} ${_CHAIN_SYMBOL}`}</Text>
                     </View>
                 </View>
@@ -189,53 +189,48 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.divider} />
-            <View style={[styles.boxV, { paddingTop: 20, paddingBottom: 10 }]}>
+            <View style={[styles.boxV, styles.inlineStyle13]}>
                 {InfoSection.map((value, index) => {
                     return (
                         <View
                             key={index}
                             style={[
                                 styles.boxH,
-                                { justifyContent: 'space-between' },
-                                index <= InfoSection.length - 1 && { paddingBottom: 10 },
-                                !value.data && { display: 'none' }
+                                styles.inlineStyle20,
+                                index <= InfoSection.length - 1 && styles.inlineStyle23,
+                                !value.data && styles.inlineStyle24
                             ]}
                         >
-                            <Text style={[styles.title, { fontSize: 14 }]}>{value.title}</Text>
-                            <Text style={[styles.desc, { fontSize: 14, color: TextDarkGrayColor }]}>{value.data}</Text>
+                            <Text style={[styles.title, styles.inlineStyle21]}>{value.title}</Text>
+                            <Text style={[styles.desc, styles.inlineStyle22]}>{value.data}</Text>
                         </View>
                     );
                 })}
             </View>
-            <View style={[styles.boxH, { justifyContent: 'flex-end', paddingBottom: 30 }]}>
-                <TouchableOpacity style={[styles.boxH, { width: 'auto' }]} onPress={handleMoveToExplorer}>
-                    <Text style={[styles.desc, { fontSize: 16, color: TextAddressColor }]}>More View</Text>
+            <View style={[styles.boxH, styles.inlineStyle14]}>
+                <TouchableOpacity style={[styles.boxH, styles.inlineStyle15]} onPress={handleMoveToExplorer}>
+                    <Text style={[styles.desc, styles.inlineStyle16]}>More View</Text>
                     <LaunchIcon width={16} height={16} color={TextAddressColor} />
                 </TouchableOpacity>
             </View>
             <View style={styles.dividerDashed} />
-            <View style={[styles.boxV, { paddingVertical: 30 }]}>
+            <View style={[styles.boxV, styles.inlineStyle17]}>
                 <View style={styles.boxV}>
-                    <Text style={[styles.title, styles.titleV, { color: TextColor }]}>{Description.title}</Text>
+                    <Text style={[styles.title, styles.titleV, styles.inlineStyle18]}>{Description.title}</Text>
                     <MarkdownRender markdown={Description.data} />
                 </View>
                 {messages.length > 0 && (
                     <View style={styles.messageContainer}>
-                        <Text style={[styles.title, styles.titleV, { color: TextColor }]}>Messages</Text>
+                        <Text style={[styles.title, styles.titleV, styles.inlineStyle19]}>Messages</Text>
                         {messages.map((message, index) => {
                             const rows = parseRows(message);
                             const isOpened = Boolean(openedMessageMap[index]);
 
                             return (
                                 <View key={index} style={styles.messageCard}>
-                                    <TouchableOpacity
-                                        style={[styles.boxH, { justifyContent: 'space-between', alignItems: 'flex-start' }]}
-                                        onPress={() => toggleMessage(index)}
-                                    >
-                                        <Text style={[styles.desc, { fontSize: 14, flex: 1 }]}>{getMessageName(message, index)}</Text>
-                                        <Text style={[styles.desc, { fontSize: 14, color: TextAddressColor }]}>
-                                            {isOpened ? 'Hide' : 'Show'}
-                                        </Text>
+                                    <TouchableOpacity style={[styles.boxH, styles.inlineStyle25]} onPress={() => toggleMessage(index)}>
+                                        <Text style={[styles.desc, styles.inlineStyle26]}>{getMessageName(message, index)}</Text>
+                                        <Text style={[styles.desc, styles.inlineStyle27]}>{isOpened ? 'Hide' : 'Show'}</Text>
                                     </TouchableOpacity>
                                     {isOpened && (
                                         <View style={styles.tableWrap}>
@@ -264,6 +259,33 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: TextColor },
+    inlineStyle2: { fontSize: 16 },
+    inlineStyle3: { paddingTop: 30 },
+    inlineStyle4: { fontSize: 16 },
+    inlineStyle5: { paddingTop: 30 },
+    inlineStyle6: { fontSize: 16 },
+    inlineStyle7: { paddingTop: 30 },
+    inlineStyle8: { fontSize: 16 },
+    inlineStyle9: { paddingTop: 30 },
+    inlineStyle10: { fontSize: 16 },
+    inlineStyle11: { paddingTop: 30 },
+    inlineStyle12: { fontSize: 16 },
+    inlineStyle13: { paddingTop: 20, paddingBottom: 10 },
+    inlineStyle14: { justifyContent: 'flex-end', paddingBottom: 30 },
+    inlineStyle15: { width: 'auto' },
+    inlineStyle16: { fontSize: 16, color: TextAddressColor },
+    inlineStyle17: { paddingVertical: 30 },
+    inlineStyle18: { color: TextColor },
+    inlineStyle19: { color: TextColor },
+    inlineStyle20: { justifyContent: 'space-between' },
+    inlineStyle21: { fontSize: 14 },
+    inlineStyle22: { fontSize: 14, color: TextDarkGrayColor },
+    inlineStyle23: { paddingBottom: 10 },
+    inlineStyle24: { display: 'none' },
+    inlineStyle25: { justifyContent: 'space-between', alignItems: 'flex-start' },
+    inlineStyle26: { fontSize: 14, flex: 1 },
+    inlineStyle27: { fontSize: 14, color: TextAddressColor },
     container: {
         paddingHorizontal: 20
     },

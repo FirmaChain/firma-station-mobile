@@ -23,13 +23,14 @@ const UndelegateItem = ({ data, navigate }: IProps) => {
                 <MonikerSection validator={data} />
                 <DataSection title="Amount" data={`${convertAmount({ value: data.balance })} ${_CHAIN_SYMBOL}`} />
                 <DataSection title="Linked Until" data={convertTime(data.completionTime, true)} />
-                <View style={{ paddingBottom: 22 }} />
+                <View style={styles.inlineStyle1} />
             </View>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingBottom: 22 },
     item: {
         paddingTop: 22,
         backgroundColor: BgColor

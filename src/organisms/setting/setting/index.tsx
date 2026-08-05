@@ -80,8 +80,8 @@ const Setting = () => {
     return (
         <Container title="Setting" handleGuide={() => handleMoveToWeb('setting')} backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
-                <View style={{ flex: 1 }}>
-                    <ScrollView keyboardShouldPersistTaps={'handled'} style={{ borderTopWidth: 1, borderTopColor: BgColor }}>
+                <View style={styles.inlineStyle1}>
+                    <ScrollView keyboardShouldPersistTaps={'handled'} style={styles.inlineStyle2}>
                         <View style={styles.topButtonsBox}>
                             <TextMenuItem
                                 title="Wallet"
@@ -112,6 +112,8 @@ const Setting = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 1 },
+    inlineStyle2: { borderTopWidth: 1, borderTopColor: BgColor },
     topButtonsBox: {
         paddingBottom: 20
     },

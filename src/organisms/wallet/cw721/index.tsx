@@ -93,6 +93,26 @@ const CW721 = ({ contract }: IProps) => {
         navigation.navigate(Screens.WebScreen, { uri: uri });
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { color: CW721Color, backgroundColor: CW721BackgroundColor },
+        inlineStyle2: { backgroundColor: BoxDarkColor, height: '100%' },
+        inlineStyle3: { paddingVertical: 12 },
+        inlineStyle4: { opacity: isCW721Fetching ? 1 : 0 },
+        inlineStyle5: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 30
+        },
+        inlineStyle6: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+            paddingVertical: 30
+        }
+    } as const;
+
     return (
         <Container titleOn={false} backEvent={handleBack}>
             <ViewContainer>
@@ -101,9 +121,7 @@ const CW721 = ({ contract }: IProps) => {
                         {ContractInfo && (
                             <Fragment>
                                 <View style={styles.titleBox}>
-                                    <Text style={[styles.label, { color: CW721Color, backgroundColor: CW721BackgroundColor }]}>
-                                        {'CW721'}
-                                    </Text>
+                                    <Text style={[styles.label, inlineStyles1.inlineStyle1]}>{'CW721'}</Text>
                                     <Text numberOfLines={1} style={styles.title} ellipsizeMode={'tail'}>
                                         {ContractInfo.name}
                                     </Text>
@@ -124,8 +142,8 @@ const CW721 = ({ contract }: IProps) => {
                                 </View>
                                 <View style={styles.nftBox}>
                                     <View style={styles.box}>
-                                        <View style={[styles.infoBox, { backgroundColor: BoxDarkColor, height: '100%' }]}>
-                                            <Text style={[styles.contentTitle, { paddingVertical: 12 }]}>{'My NFTs'}</Text>
+                                        <View style={[styles.infoBox, inlineStyles1.inlineStyle2]}>
+                                            <Text style={[styles.contentTitle, inlineStyles1.inlineStyle3]}>{'My NFTs'}</Text>
                                             <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
                                                 {NFTList !== null ? (
                                                     NFTList.length > 0 ? (
@@ -141,33 +159,18 @@ const CW721 = ({ contract }: IProps) => {
                                                                     />
                                                                 );
                                                             })}
-                                                            <View style={[styles.moreWrap, { opacity: isCW721Fetching ? 1 : 0 }]}>
+                                                            <View style={[styles.moreWrap, inlineStyles1.inlineStyle4]}>
                                                                 <SmallProgress />
                                                                 <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
                                                             </View>
                                                         </Fragment>
                                                     ) : (
-                                                        <View
-                                                            style={{
-                                                                flex: 1,
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                paddingVertical: 30
-                                                            }}
-                                                        >
+                                                        <View style={inlineStyles1.inlineStyle5}>
                                                             <Text style={styles.notice}>{DAPP_NO_NFT}</Text>
                                                         </View>
                                                     )
                                                 ) : (
-                                                    <View
-                                                        style={{
-                                                            flex: 1,
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            flexDirection: 'row',
-                                                            paddingVertical: 30
-                                                        }}
-                                                    >
+                                                    <View style={inlineStyles1.inlineStyle6}>
                                                         <SmallProgress />
                                                         <Text style={styles.notice}>{DAPP_LOADING_NFT}</Text>
                                                     </View>

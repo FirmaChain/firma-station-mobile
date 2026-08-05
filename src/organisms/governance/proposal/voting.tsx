@@ -120,7 +120,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
 
     return (
         <React.Fragment>
-            <View style={{ paddingHorizontal: 20, display: 'flex' }}>
+            <View style={styles.inlineStyle1}>
                 {isVotingPeriod && <Button title="Vote" active={enableButton} onPressEvent={() => handleVoteModal(true)} />}
             </View>
 
@@ -129,30 +129,25 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
                     <Text style={styles.title}>Voting</Text>
                     <View style={styles.box}>
                         {VOTE_TYPE.map((item, index) => {
+                            const inlineStyles2 = {
+                                inlineStyle1: {
+                                    borderColor: selectedVote === item ? WhiteColor : BoxColor,
+                                    marginBottom: index < 2 ? marginVertical * 4 : 0,
+                                    marginLeft: index % 2 === 0 ? 0 : marginHorizontal * 2
+                                },
+                                inlineStyle2: {
+                                    color: selectedVote === item ? WhiteColor : TextDarkGrayColor,
+                                    fontWeight: selectedVote === item ? '600' : 'normal'
+                                }
+                            } as const;
+
                             return (
                                 <TouchableOpacity
                                     key={index}
-                                    style={[
-                                        styles.borderBox,
-                                        {
-                                            borderColor: selectedVote === item ? WhiteColor : BoxColor,
-                                            marginBottom: index < 2 ? marginVertical * 4 : 0,
-                                            marginLeft: index % 2 === 0 ? 0 : marginHorizontal * 2
-                                        }
-                                    ]}
+                                    style={[styles.borderBox, inlineStyles2.inlineStyle1]}
                                     onPress={() => setSelectedVote(item)}
                                 >
-                                    <Text
-                                        style={[
-                                            styles.vote,
-                                            {
-                                                color: selectedVote === item ? WhiteColor : TextDarkGrayColor,
-                                                fontWeight: selectedVote === item ? '600' : 'normal'
-                                            }
-                                        ]}
-                                    >
-                                        {item}
-                                    </Text>
+                                    <Text style={[styles.vote, inlineStyles2.inlineStyle2]}>{item}</Text>
                                 </TouchableOpacity>
                             );
                         })}
@@ -186,6 +181,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingHorizontal: 20, display: 'flex' },
     modalTextContents: {
         width: '100%',
         padding: 20
@@ -214,11 +210,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: BgColor
     },
-    // voteItem: {
-    //     fontFamily: Lato,
-    //     fontSize: 16,
-    //     color: TextColor,
-    // },
     vote: {
         width: 'auto',
         fontFamily: Lato,

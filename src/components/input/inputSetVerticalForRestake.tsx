@@ -32,6 +32,10 @@ const InputSetVerticalForRestake = ({ title, placeholder, onChangeEvent }: IProp
         handleInputChange('0');
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { borderColor: focus ? WhiteColor : 'transparent' }
+    } as const;
+
     return (
         <View style={styles.viewContainer}>
             <View style={styles.textContainer}>
@@ -39,7 +43,7 @@ const InputSetVerticalForRestake = ({ title, placeholder, onChangeEvent }: IProp
                 <TextButton title={'Unlimited'} active={true} onPressEvent={() => handleMaxAmount()} />
             </View>
             <TextInput
-                style={[styles.input, { borderColor: focus ? WhiteColor : 'transparent' }]}
+                style={[styles.input, inlineStyles1.inlineStyle1]}
                 placeholder={placeholder}
                 placeholderTextColor={InputPlaceholderColor}
                 keyboardType={'numeric'}
@@ -54,8 +58,6 @@ const InputSetVerticalForRestake = ({ title, placeholder, onChangeEvent }: IProp
         </View>
     );
 };
-
-export default InputSetVerticalForRestake;
 
 const styles = StyleSheet.create({
     viewContainer: {
@@ -82,3 +84,5 @@ const styles = StyleSheet.create({
         marginBottom: 5
     }
 });
+
+export default InputSetVerticalForRestake;

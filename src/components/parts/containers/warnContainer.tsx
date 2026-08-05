@@ -21,13 +21,19 @@ const WarnContainer = ({
     textColor = TextWarnColor,
     question = false
 }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: bgColor, paddingVertical, paddingHorizontal },
+        inlineStyle2: { height: 20, justifyContent: 'center' },
+        inlineStyle3: { color: textColor }
+    } as const;
+
     return (
-        <View style={[styles.wranContainer, { backgroundColor: bgColor, paddingVertical, paddingHorizontal }]}>
+        <View style={[styles.wranContainer, inlineStyles1.inlineStyle1]}>
             <View style={styles.box}>
-                <View style={{ height: 20, justifyContent: 'center' }}>
+                <View style={inlineStyles1.inlineStyle2}>
                     {question ? <QuestionCircle size={15} color={textColor} /> : <ExclamationCircle size={15} color={textColor} />}
                 </View>
-                <Text style={[styles.warnText, { color: textColor }]}>{text}</Text>
+                <Text style={[styles.warnText, inlineStyles1.inlineStyle3]}>{text}</Text>
             </View>
         </View>
     );

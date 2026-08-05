@@ -128,14 +128,23 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
         }
     }, [imageLoading]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { flex: 6 },
+        inlineStyle2: { alignItems: 'center', paddingBottom: 30 },
+        inlineStyle3: { justifyContent: 'flex-start', paddingTop: 15 },
+        inlineStyle4: { position: 'absolute', top: 0, left: 0, opacity: fadeAnimImage },
+        inlineStyle5: { paddingBottom: 5 },
+        inlineStyle6: { flex: 1, justifyContent: 'flex-end' }
+    } as const;
+
     return (
         <Container title="Send CW721" handleGuide={handleMoveToWeb} backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
-                    <View style={{ flex: 6 }}>
+                    <View style={inlineStyles1.inlineStyle1}>
                         <ScrollView keyboardShouldPersistTaps={'handled'}>
-                            <View style={{ alignItems: 'center', paddingBottom: 30 }}>
-                                <View style={{ justifyContent: 'flex-start', paddingTop: 15 }}>
+                            <View style={inlineStyles1.inlineStyle2}>
+                                <View style={inlineStyles1.inlineStyle3}>
                                     <FastImage
                                         style={styles.contentImage}
                                         source={{
@@ -144,11 +153,11 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
                                         }}
                                         onLoadEnd={() => setImageLoading(false)}
                                     />
-                                    <Animated.View style={{ position: 'absolute', top: 0, left: 0, opacity: fadeAnimImage }}>
+                                    <Animated.View style={inlineStyles1.inlineStyle4}>
                                         <SquareSkeleton size={200} marginBottom={20} />
                                     </Animated.View>
                                 </View>
-                                <View style={[styles.box, { paddingBottom: 5 }]}>
+                                <View style={[styles.box, inlineStyles1.inlineStyle5]}>
                                     <Text style={styles.label}>CW721</Text>
                                 </View>
                                 <View style={styles.box}>
@@ -160,7 +169,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
                             <SendInputBox handleSendInfo={handleSendInfo} dstAddress={walletDstAddress} reset={resetInputValues} />
                         </ScrollView>
                     </View>
-                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                    <View style={inlineStyles1.inlineStyle6}>
                         <Button
                             title="Send"
                             active={sendInfoState.address !== '' && sendInfoState.tokenId !== ''}
@@ -218,12 +227,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: TextColor
     },
-    // tokenId: {
-    //   fontSize: 18,
-    //   fontFamily: Lato,
-    //   color: TextDarkGrayColor,
-    //   paddingLeft: 10,
-    // },
     label: {
         fontFamily: Lato,
         fontSize: 12,

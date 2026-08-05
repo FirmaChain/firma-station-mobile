@@ -13,9 +13,9 @@ interface IProps {
 
 const MonikerSection = ({ validator }: IProps) => {
     return (
-        <View style={[styles.vdWrapperH, { alignItems: 'center' }]}>
+        <View style={[styles.vdWrapperH, styles.inlineStyle1]}>
             <View style={styles.monikerWrapperH}>
-                <ValidatorProfile uri={validator.avatarURL} size={32} customStyle={{ marginRight: 10 }} />
+                <ValidatorProfile uri={validator.avatarURL} size={32} customStyle={styles.inlineStyle2} />
                 <Text numberOfLines={1} ellipsizeMode="middle" style={styles.moniker}>
                     {validator.moniker}
                 </Text>
@@ -26,6 +26,8 @@ const MonikerSection = ({ validator }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'center' },
+    inlineStyle2: { marginRight: 10 },
     vdWrapperH: {
         paddingHorizontal: 20,
         paddingVertical: 6,

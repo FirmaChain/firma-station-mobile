@@ -81,7 +81,7 @@ const StepRecover = ({ type }: IProps) => {
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
                     <InputBox type={type} handleRecoverValue={handleRecoverValue} />
-                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                    <View style={styles.inlineStyle1}>
                         <Button title="Recover" active={true} onPressEvent={handleRecover} />
                     </View>
                 </View>
@@ -91,6 +91,7 @@ const StepRecover = ({ type }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 1, justifyContent: 'flex-end' },
     container: {
         flex: 3,
         padding: 20,

@@ -103,32 +103,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 3
     }
-    //   listItem: {
-    //     padding: 20,
-    //     flexDirection: 'row',
-    //     justifyContent: 'space-between',
-    //     alignItems: 'center',
-    //     borderBottomWidth: 0.5,
-    //     borderBottomColor: BgColor,
-    //   },
-    //   itemTitleBox: {
-    //     display: 'flex',
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     justifyContent: 'space-between',
-    //   },
-    //   itemTitle: {
-    //     fontFamily: Lato,
-    //     fontSize: 16,
-    //   },
-    //   contentWrapper: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //   },
-    //   content: {
-    //     fontFamily: Lato,
-    //     fontSize: 16,
-    //   },
 });
 
 export default Version;

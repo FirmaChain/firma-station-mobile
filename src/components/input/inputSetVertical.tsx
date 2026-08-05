@@ -72,17 +72,23 @@ const InputSetVertical = ({
         if (forcedValue !== '') handleInputChange(forcedValue);
     }, [forcedValue]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: bgColor },
+        inlineStyle2: { color: validation ? 'green' : TextWarnColor }
+    } as const;
+
+    const inlineStyles2 = {
+        inlineStyle1: { borderColor: PointLightColor },
+        inlineStyle2: { borderColor: focus ? WhiteColor : 'transparent' }
+    } as const;
+
     return (
         <View style={styles.viewContainer}>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>{title}</Text>
             </View>
             <TextInput
-                style={[
-                    styles.input,
-                    { backgroundColor: bgColor },
-                    accent ? { borderColor: PointLightColor } : { borderColor: focus ? WhiteColor : 'transparent' }
-                ]}
+                style={[styles.input, inlineStyles1.inlineStyle1, accent ? inlineStyles2.inlineStyle1 : inlineStyles2.inlineStyle2]}
                 placeholder={placeholder}
                 placeholderTextColor={bgColor !== InputBgColor ? '#52525c' : InputPlaceholderColor}
                 secureTextEntry={secure}
@@ -98,14 +104,12 @@ const InputSetVertical = ({
             />
             {message !== undefined && (
                 <View style={styles.messageContainer}>
-                    <Text style={[styles.message, { color: validation ? 'green' : TextWarnColor }]}>{message}</Text>
+                    <Text style={[styles.message, inlineStyles1.inlineStyle2]}>{message}</Text>
                 </View>
             )}
         </View>
     );
 };
-
-export default InputSetVertical;
 
 const styles = StyleSheet.create({
     viewContainer: {
@@ -141,3 +145,5 @@ const styles = StyleSheet.create({
         marginBottom: 5
     }
 });
+
+export default InputSetVertical;

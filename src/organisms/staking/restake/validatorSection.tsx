@@ -47,45 +47,35 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
         }
     }, [state]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { justifyContent: 'flex-end' },
+        inlineStyle2: { fontSize: 12, fontWeight: 'normal', color: RestakeNoDelegationColor },
+        inlineStyle3: {
+            backgroundColor: restakeStatus.color + '30',
+            color: restakeStatus.color,
+            marginLeft: 6
+        }
+    } as const;
+
     return (
         <Pressable style={styles.box}>
             <View style={styles.monikerWrapperH}>
-                <ValidatorProfile uri={state.avatarURL} size={20} customStyle={{ marginRight: 7 }} />
+                <ValidatorProfile uri={state.avatarURL} size={20} customStyle={styles.inlineStyle5} />
                 <Text numberOfLines={1} ellipsizeMode="middle" style={styles.moniker}>
                     {state.moniker}
                 </Text>
             </View>
-            <View style={[styles.wrapperH, { justifyContent: 'flex-end' }]}>
+            <View style={[styles.wrapperH, inlineStyles1.inlineStyle1]}>
                 {isGranted ? (
                     <Fragment>
-                        <View
-                            style={[
-                                styles.dot,
-                                isRestakeActive
-                                    ? { backgroundColor: RestakeActiveColor }
-                                    : { backgroundColor: RestakeNoDelegationColor + '80' }
-                            ]}
-                        />
-                        <Text style={[styles.value, isRestakeActive ? { color: RestakeActiveColor } : { color: RestakeNoDelegationColor }]}>
+                        <View style={[styles.dot, isRestakeActive ? styles.inlineStyle1 : styles.inlineStyle2]} />
+                        <Text style={[styles.value, isRestakeActive ? styles.inlineStyle3 : styles.inlineStyle4]}>
                             {convertAmount({ value: state.reward })}
-                            <Text
-                                style={{ fontSize: 12, fontWeight: 'normal', color: RestakeNoDelegationColor }}
-                            >{` / ${minimumRewards} ${_CHAIN_SYMBOL}`}</Text>
+                            <Text style={inlineStyles1.inlineStyle2}>{` / ${minimumRewards} ${_CHAIN_SYMBOL}`}</Text>
                         </Text>
                     </Fragment>
                 ) : (
-                    <Text
-                        style={[
-                            styles.label,
-                            {
-                                backgroundColor: restakeStatus.color + '30',
-                                color: restakeStatus.color,
-                                marginLeft: 6
-                            }
-                        ]}
-                    >
-                        {restakeStatus.title}
-                    </Text>
+                    <Text style={[styles.label, inlineStyles1.inlineStyle3]}>{restakeStatus.title}</Text>
                 )}
             </View>
         </Pressable>
@@ -93,6 +83,11 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { backgroundColor: RestakeActiveColor },
+    inlineStyle2: { backgroundColor: RestakeNoDelegationColor + '80' },
+    inlineStyle3: { color: RestakeActiveColor },
+    inlineStyle4: { color: RestakeNoDelegationColor },
+    inlineStyle5: { marginRight: 7 },
     box: {
         width: '100%',
         backgroundColor: BgColor,

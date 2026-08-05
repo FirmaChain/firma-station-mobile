@@ -3,7 +3,7 @@ import { CHAIN_SYMBOL, CW_TX_NOTICE_TEXT } from '@/constants/common';
 import { CommonActions, ModalActions, WalletActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { wait } from '@/util/common';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import InputSetVertical from '@/components/input/inputSetVertical';
 import InputSetVerticalForAddress from '@/components/input/inputSetVerticalForAddress';
@@ -99,7 +99,7 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
                 onChangeEvent={(value: string) => handleSendInfoState('memo', value)}
             />
 
-            <View style={{ paddingTop: 20 }}>
+            <View style={styles.inlineStyle1}>
                 <WarnContainer text={CW_TX_NOTICE_TEXT} question={false} />
             </View>
 
@@ -120,5 +120,9 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    inlineStyle1: { paddingTop: 20 }
+});
 
 export default SendInputBox;

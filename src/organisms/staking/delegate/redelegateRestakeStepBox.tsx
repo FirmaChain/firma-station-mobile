@@ -99,10 +99,14 @@ const RedelegateRestakeStepBox = ({
     };
 
     const renderInfoRow = (label: string, value: string, valueColor = TextColor) => {
+        const inlineStyles1 = {
+            inlineStyle1: { color: valueColor }
+        } as const;
+
         return (
             <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>{label}</Text>
-                <Text style={[styles.infoValue, { color: valueColor }]} numberOfLines={1} ellipsizeMode="tail">
+                <Text style={[styles.infoValue, inlineStyles1.inlineStyle1]} numberOfLines={1} ellipsizeMode="tail">
                     {value}
                 </Text>
             </View>
@@ -160,7 +164,7 @@ const RedelegateRestakeStepBox = ({
                 <TouchableOpacity style={styles.validatorHeader} onPress={() => setSourceRestake(!sourceRestake)}>
                     {renderCheckbox(sourceRestake, false)}
                     {renderValidator(
-                        <Text style={[styles.roleLabel, { color: NoColor }]}>Source</Text>,
+                        <Text style={[styles.roleLabel, styles.inlineStyle1]}>Source</Text>,
                         sourceDelegation
                             ? {
                                   validatorAvatar: sourceDelegation.avatarURL,
@@ -182,7 +186,7 @@ const RedelegateRestakeStepBox = ({
                 <TouchableOpacity style={styles.validatorHeader} onPress={() => setDestinationRestake(!destinationRestake)}>
                     {renderCheckbox(destinationRestake, false)}
                     {renderValidator(
-                        <Text style={[styles.roleLabel, { color: YesColor }]}>Destination</Text>,
+                        <Text style={[styles.roleLabel, styles.inlineStyle2]}>Destination</Text>,
                         destinationValidator,
                         destinationAddress,
                         <Text style={styles.hintText}>{destinationHint}</Text>
@@ -195,7 +199,7 @@ const RedelegateRestakeStepBox = ({
                 )}
             </View>
 
-            <View style={{ gap: 12 }}>
+            <View style={styles.inlineStyle3}>
                 {REDELEGATE_RESTAKE_WARN.map((text, idx) => (
                     <WarnContainer paddingVertical={12} paddingHorizontal={12} text={text} key={idx} />
                 ))}
@@ -205,6 +209,9 @@ const RedelegateRestakeStepBox = ({
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: NoColor },
+    inlineStyle2: { color: YesColor },
+    inlineStyle3: { gap: 12 },
     container: {
         paddingHorizontal: 20,
         paddingBottom: 10

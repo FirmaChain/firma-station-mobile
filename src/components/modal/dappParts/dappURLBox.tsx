@@ -12,12 +12,12 @@ const DappURLBox = ({ certifiedState, url }: IProps) => {
     return (
         <View style={styles.urlBox}>
             {certifiedState === 1 && (
-                <View style={{ paddingVertical: 3, paddingHorizontal: 5 }}>
+                <View style={styles.inlineStyle1}>
                     <URLLockIcon size={16} color={TextCatTitleColor} />
                 </View>
             )}
             {certifiedState === 2 && <VerifiedCircle size={18} color={VerifiedColor} />}
-            <Text style={[styles.url, { paddingBottom: 0, paddingHorizontal: 5 }]} numberOfLines={1} ellipsizeMode={'middle'}>
+            <Text style={[styles.url, styles.inlineStyle2]} numberOfLines={1} ellipsizeMode={'middle'}>
                 {url}
             </Text>
         </View>
@@ -25,6 +25,8 @@ const DappURLBox = ({ certifiedState, url }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingVertical: 3, paddingHorizontal: 5 },
+    inlineStyle2: { paddingBottom: 0, paddingHorizontal: 5 },
     urlBox: {
         flexDirection: 'row',
         alignItems: 'center',

@@ -80,24 +80,17 @@ const DelegationList = ({ delegationState, redelegationState, undelegationState,
             <View style={styles.header}>
                 <Text style={styles.title}>
                     List
-                    <Text style={{ color: PointLightColor }}>{' ' + listLength}</Text>
+                    <Text style={styles.inlineStyle1}>{' ' + listLength}</Text>
                 </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.inlineStyle2}>
                     <TouchableOpacity style={styles.sortButton} onPress={() => handleOpenModal(true)}>
-                        <Text style={[styles.sortItem, { paddingRight: 4 }]}>{sortItems[selected]}</Text>
+                        <Text style={[styles.sortItem, styles.inlineStyle3]}>{sortItems[selected]}</Text>
                         <DownArrow size={12} color={GrayColor} />
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <View
-                style={{
-                    backgroundColor: BgColor,
-                    flex: 1,
-                    borderBottomLeftRadius: 8,
-                    borderBottomRightRadius: 8
-                }}
-            >
+            <View style={styles.inlineStyle4}>
                 {selected === 0 && <Delegate delegationList={delegationList} navigateValidator={navigateValidator} />}
                 {selected === 1 && <ReDelegate redelegationList={redelegationList} navigateValidator={navigateValidator} />}
                 {selected === 2 && <UnDelegate undelegationList={undelegationList} navigateValidator={navigateValidator} />}
@@ -188,6 +181,15 @@ const UnDelegate = ({
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: PointLightColor },
+    inlineStyle2: { flexDirection: 'row', alignItems: 'center' },
+    inlineStyle3: { paddingRight: 4 },
+    inlineStyle4: {
+        backgroundColor: BgColor,
+        flex: 1,
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8
+    },
     container: {
         overflow: 'hidden',
         justifyContent: 'flex-start',

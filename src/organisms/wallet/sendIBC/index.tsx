@@ -180,7 +180,7 @@ const SendIBC = ({ tokenData }: IProps) => {
         <Container title="Send" backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
-                    <View style={{ flex: 6 }}>
+                    <View style={styles.inlineStyle1}>
                         <ScrollView keyboardShouldPersistTaps={'handled'}>
                             <BalanceInfo
                                 available={convertNumber(tokenData.amount)}
@@ -202,7 +202,7 @@ const SendIBC = ({ tokenData }: IProps) => {
                             />
                         </ScrollView>
                     </View>
-                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                    <View style={styles.inlineStyle2}>
                         <Button title="Send" active={activeToSend} onPressEvent={() => handleSend()} />
                     </View>
 
@@ -233,6 +233,8 @@ const SendIBC = ({ tokenData }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 6 },
+    inlineStyle2: { flex: 1, justifyContent: 'flex-end' },
     container: {
         flex: 1,
         paddingHorizontal: 20

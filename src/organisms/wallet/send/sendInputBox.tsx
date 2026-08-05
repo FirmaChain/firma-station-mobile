@@ -149,12 +149,19 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
         setIsMaxAmount(safetyActive === false && amount >= convertNumber(convertToFctNumberForInput(limitAvailable)));
     }, [amount, limitAvailable, safetyActive]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { height: accordionHeight },
+        inlineStyle2: { color: selectChain === null ? InputPlaceholderColor : TextColor },
+        inlineStyle3: { paddingRight: 5 },
+        inlineStyle4: { marginBottom: 10 }
+    } as const;
+
     return (
         <View>
-            <View style={[styles.chainContainer, { height: accordionHeight }]}>
+            <View style={[styles.chainContainer, inlineStyles1.inlineStyle1]}>
                 <Text style={styles.chainTitle}>Destination Chain</Text>
                 <TouchableOpacity style={styles.chainSelectBox} onPress={() => setOpenChainSelectModal(true)}>
-                    <Text style={[styles.chain, { color: selectChain === null ? InputPlaceholderColor : TextColor }]}>
+                    <Text style={[styles.chain, inlineStyles1.inlineStyle2]}>
                         {selectChain === null ? 'Select IBC chain' : `${selectChain.name.toUpperCase()} (${selectChain.channel})`}
                     </Text>
                     <DownArrow size={10} color={InputPlaceholderColor} />
@@ -187,20 +194,15 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
                 onChangeEvent={(value: string) => handleSendInfoState('memo', value)}
             />
             <View style={styles.radioBox}>
-                <Text style={[styles.title, { paddingRight: 5 }]}>Safety</Text>
+                <Text style={[styles.title, inlineStyles1.inlineStyle3]}>Safety</Text>
                 <TouchableOpacity disabled={available <= 100000} onPress={() => setSafetyActive(!safetyActive)}>
-                    <View
-                        style={[
-                            styles.radioWrapper,
-                            safetyActive ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor }
-                        ]}
-                    >
+                    <View style={[styles.radioWrapper, safetyActive ? styles.inlineStyle1 : styles.inlineStyle2]}>
                         <View style={styles.radio} />
                     </View>
                 </TouchableOpacity>
             </View>
             {available > 0 && available <= 20000 && (
-                <View style={{ marginBottom: 10 }}>
+                <View style={inlineStyles1.inlineStyle4}>
                     <WarnContainer text={FEE_INSUFFICIENT_NOTICE} />
                 </View>
             )}
@@ -246,6 +248,8 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { backgroundColor: PointColor, alignItems: 'flex-end' },
+    inlineStyle2: { backgroundColor: DisableColor },
     title: {
         fontFamily: Lato,
         fontSize: 16,

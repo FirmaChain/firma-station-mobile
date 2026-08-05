@@ -19,9 +19,7 @@ const WalletSelector = ({ handleOpenModal, selectedWallet }: IProps) => {
         <View style={styles.walletContainer}>
             <Text style={styles.title}>Wallet</Text>
             <TouchableOpacity style={styles.walletBox} onPress={() => handleOpenModal(true)}>
-                <Text style={[styles.wallet, selectIdle && { color: InputPlaceholderColor }]}>
-                    {selectIdle ? 'Select your wallet' : selectedWallet}
-                </Text>
+                <Text style={[styles.wallet, selectIdle && styles.inlineStyle1]}>{selectIdle ? 'Select your wallet' : selectedWallet}</Text>
                 <DownArrow size={10} color={InputPlaceholderColor} />
             </TouchableOpacity>
         </View>
@@ -29,6 +27,7 @@ const WalletSelector = ({ handleOpenModal, selectedWallet }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: InputPlaceholderColor },
     walletContainer: {
         marginBottom: 20
     },

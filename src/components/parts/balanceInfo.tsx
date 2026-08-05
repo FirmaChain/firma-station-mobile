@@ -26,6 +26,19 @@ const BalanceInfo = ({
     subDecimal = null,
     subSymbol = CHAIN_SYMBOL()
 }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { fontSize: 14 },
+        inlineStyle2: {
+            display: showSubBalance ? 'flex' : 'none',
+            justifyContent: 'flex-end',
+            paddingVertical: 0,
+            paddingBottom: 10
+        },
+        inlineStyle3: { fontSize: 14, color: TextGrayColor },
+        inlineStyle4: { fontSize: 14, color: TextGrayColor },
+        inlineStyle5: { fontSize: 12, color: TextGrayColor }
+    } as const;
+
     return (
         <View style={styles.box}>
             <View style={styles.boxH}>
@@ -37,29 +50,19 @@ const BalanceInfo = ({
                         isUfct: decimal === null,
                         decimal: decimal
                     })}
-                    <Text style={[styles.title, { fontSize: 14 }]}>{`  ${symbol.toUpperCase()}`}</Text>
+                    <Text style={[styles.title, inlineStyles1.inlineStyle1]}>{`  ${symbol.toUpperCase()}`}</Text>
                 </Text>
             </View>
-            <View
-                style={[
-                    styles.boxH,
-                    {
-                        display: showSubBalance ? 'flex' : 'none',
-                        justifyContent: 'flex-end',
-                        paddingVertical: 0,
-                        paddingBottom: 10
-                    }
-                ]}
-            >
-                <Text style={[styles.title, { fontSize: 14, color: TextGrayColor }]}>{subTitle}</Text>
-                <Text style={[styles.balance, { fontSize: 14, color: TextGrayColor }]}>
+            <View style={[styles.boxH, inlineStyles1.inlineStyle2]}>
+                <Text style={[styles.title, inlineStyles1.inlineStyle3]}>{subTitle}</Text>
+                <Text style={[styles.balance, inlineStyles1.inlineStyle4]}>
                     {convertAmount({
                         value: subAvailable,
                         point: 6,
                         isUfct: subDecimal === null,
                         decimal: subDecimal
                     })}
-                    <Text style={[styles.title, { fontSize: 12, color: TextGrayColor }]}>{`  ${subSymbol.toUpperCase()}`}</Text>
+                    <Text style={[styles.title, inlineStyles1.inlineStyle5]}>{`  ${subSymbol.toUpperCase()}`}</Text>
                 </Text>
             </View>
         </View>

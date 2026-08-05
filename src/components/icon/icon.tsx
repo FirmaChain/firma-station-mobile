@@ -39,6 +39,7 @@ import CheckCircleFillIcon from '@/assets/icons/octIcons/checkCircleFill.svg';
 import SortAscIcon from '@/assets/icons/octIcons/sortAsc.svg';
 import SortDescIcon from '@/assets/icons/octIcons/sortDesc.svg';
 import _LockIcon from '@/assets/icons/simpleLine/lock.svg';
+import { StyleSheet } from 'react-native';
 
 interface IProps {
     size: number;
@@ -86,11 +87,11 @@ export const DownArrow = ({ size, color }: IProps) => {
     return <DownFillIcon width={size} height={size} color={color} />;
 };
 export const UpArrow = ({ size, color }: IProps) => {
-    return <DownFillIcon width={size} height={size} color={color} style={{ transform: [{ rotate: '180deg' }] }} />;
+    return <DownFillIcon width={size} height={size} color={color} style={styles.inlineStyle1} />;
 };
 
 export const UpEmptyArrow = ({ size, color }: IProps) => {
-    return <DownLineIcon width={size} height={size} color={color} style={{ transform: [{ rotate: '180deg' }] }} />;
+    return <DownLineIcon width={size} height={size} color={color} style={styles.inlineStyle2} />;
 };
 
 export const DownEmptyArrow = ({ size, color }: IProps) => {
@@ -216,3 +217,7 @@ export const TrendingUpIcon = ({ size, color }: IProps) => {
 export const SquareEditLine = ({ size, color }: IProps) => {
     return <SquareEditLintIcon width={size} height={size} color={color} />;
 };
+const styles = StyleSheet.create({
+    inlineStyle1: { transform: [{ rotate: '180deg' }] },
+    inlineStyle2: { transform: [{ rotate: '180deg' }] }
+});

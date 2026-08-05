@@ -9,10 +9,18 @@ interface IProps {
 }
 
 const DataSection = ({ title, data, color = TextDisableColor, label = false }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { color: color }
+    } as const;
+
+    const inlineStyles2 = {
+        inlineStyle1: { backgroundColor: color + '30' }
+    } as const;
+
     return (
         <View style={styles.vdWrapperH}>
             <Text style={styles.descTitle}>{title}</Text>
-            <Text style={[label ? styles.descLabel : styles.descItem, { color: color }, label && { backgroundColor: color + '30' }]}>
+            <Text style={[label ? styles.descLabel : styles.descItem, inlineStyles1.inlineStyle1, label && inlineStyles2.inlineStyle1]}>
                 {data}
             </Text>
         </View>

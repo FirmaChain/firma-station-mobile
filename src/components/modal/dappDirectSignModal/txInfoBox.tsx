@@ -15,56 +15,54 @@ interface IProps {
 const TxInfoBox = ({ defaultFee, companyName, productName, productPrice, productPriceSymbol }: IProps) => {
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
 
+    const inlineStyles1 = {
+        inlineStyle1: { width: '100%', height: 1, backgroundColor: WhiteColor + '10' },
+        inlineStyle2: { paddingTop: 20, paddingBottom: 17 },
+        inlineStyle3: {
+            width: '100%',
+            justifyContent: 'space-between',
+            paddingBottom: 12,
+            display: companyName === '' ? 'none' : 'flex'
+        },
+        inlineStyle4: { color: AddressTextColor, fontSize: 15 },
+        inlineStyle5: {
+            width: '100%',
+            justifyContent: 'space-between',
+            paddingBottom: 12,
+            display: productName === '' ? 'none' : 'flex'
+        },
+        inlineStyle6: { color: AddressTextColor, fontSize: 15 },
+        inlineStyle7: { width: '100%', justifyContent: 'space-between', paddingBottom: 12 },
+        inlineStyle8: { color: AddressTextColor, fontSize: 15 },
+        inlineStyle9: {
+            width: '100%',
+            justifyContent: 'space-between',
+            paddingBottom: 12,
+            display: productName === '' ? 'flex' : 'none'
+        },
+        inlineStyle10: { color: AddressTextColor, fontSize: 15 }
+    } as const;
+
     return (
         <Fragment>
-            <View style={{ width: '100%', height: 1, backgroundColor: WhiteColor + '10' }} />
-            <View style={[styles.boxV, { paddingTop: 20, paddingBottom: 17 }]}>
-                <View
-                    style={[
-                        styles.boxH,
-                        {
-                            width: '100%',
-                            justifyContent: 'space-between',
-                            paddingBottom: 12,
-                            display: companyName === '' ? 'none' : 'flex'
-                        }
-                    ]}
-                >
+            <View style={inlineStyles1.inlineStyle1} />
+            <View style={[styles.boxV, inlineStyles1.inlineStyle2]}>
+                <View style={[styles.boxH, inlineStyles1.inlineStyle3]}>
                     <Text style={styles.catTitle}>{'Company'}</Text>
-                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{companyName}</Text>
+                    <Text style={[styles.value, inlineStyles1.inlineStyle4]}>{companyName}</Text>
                 </View>
-                <View
-                    style={[
-                        styles.boxH,
-                        {
-                            width: '100%',
-                            justifyContent: 'space-between',
-                            paddingBottom: 12,
-                            display: productName === '' ? 'none' : 'flex'
-                        }
-                    ]}
-                >
+                <View style={[styles.boxH, inlineStyles1.inlineStyle5]}>
                     <Text style={styles.catTitle}>{'Plan'}</Text>
-                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{productName}</Text>
+                    <Text style={[styles.value, inlineStyles1.inlineStyle6]}>{productName}</Text>
                 </View>
-                <View style={[styles.boxH, { width: '100%', justifyContent: 'space-between', paddingBottom: 12 }]}>
+                <View style={[styles.boxH, inlineStyles1.inlineStyle7]}>
                     <Text style={styles.catTitle}>{'Fee'}</Text>
-                    <Text style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}>{`${defaultFee} ${_CHAIN_SYMBOL}`}</Text>
+                    <Text style={[styles.value, inlineStyles1.inlineStyle8]}>{`${defaultFee} ${_CHAIN_SYMBOL}`}</Text>
                 </View>
-                <View
-                    style={[
-                        styles.boxH,
-                        {
-                            width: '100%',
-                            justifyContent: 'space-between',
-                            paddingBottom: 12,
-                            display: productName === '' ? 'flex' : 'none'
-                        }
-                    ]}
-                >
+                <View style={[styles.boxH, inlineStyles1.inlineStyle9]}>
                     <Text style={styles.catTitle}>{'Amount'}</Text>
                     <Text
-                        style={[styles.value, { color: AddressTextColor, fontSize: 15 }]}
+                        style={[styles.value, inlineStyles1.inlineStyle10]}
                     >{`${convertAmount({ value: productPrice, isUfct: false, point: productPrice > 0 ? 6 : 0 })} ${productPriceSymbol}`}</Text>
                 </View>
             </View>
@@ -82,7 +80,6 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'flex-start'
     },
-
     catTitle: {
         flex: 1,
         fontFamily: Lato,

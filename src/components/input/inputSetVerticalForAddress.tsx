@@ -145,27 +145,28 @@ const InputSetVerticalForAddress = ({
         if (resetValues) handleInputChange('');
     }, [resetValues]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { marginRight: 15, display: enableFavorite ? 'flex' : 'none' },
+        inlineStyle2: { marginRight: 15, display: enableQrScanner ? 'flex' : 'none' },
+        inlineStyle3: { borderColor: focus ? WhiteColor : 'transparent', color: TextColor },
+        inlineStyle4: { maxHeight: validAddress ? 0 : 20 }
+    } as const;
+
     return (
         <Fragment>
             <View style={styles.viewContainer}>
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>{title}</Text>
-                    <TouchableOpacity
-                        style={{ marginRight: 15, display: enableFavorite ? 'flex' : 'none' }}
-                        onPress={() => setOpenFavoritekModal(true)}
-                    >
+                    <TouchableOpacity style={inlineStyles1.inlineStyle1} onPress={() => setOpenFavoritekModal(true)}>
                         <FavoriteIcon size={28} color={WhiteColor} />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={{ marginRight: 15, display: enableQrScanner ? 'flex' : 'none' }}
-                        onPress={() => handleQRModal(true)}
-                    >
+                    <TouchableOpacity style={inlineStyles1.inlineStyle2} onPress={() => handleQRModal(true)}>
                         <QRCodeScannerIcon size={25} color={WhiteColor} />
                     </TouchableOpacity>
                     <TextButton title={'Paste'} onPressEvent={handlePaste} />
                 </View>
                 <TextInput
-                    style={[styles.input, { borderColor: focus ? WhiteColor : 'transparent', color: TextColor }]}
+                    style={[styles.input, inlineStyles1.inlineStyle3]}
                     placeholder={placeholder}
                     placeholderTextColor={InputPlaceholderColor}
                     secureTextEntry={secure}
@@ -178,13 +179,11 @@ const InputSetVerticalForAddress = ({
                     onChangeText={(text) => handleInputChange(text)}
                     editable={!isLoading} // block edit or focus when loading
                 />
-                <Text style={[styles.noticeText, { maxHeight: validAddress ? 0 : 20 }]}>{IBC_OSMO_ADDRESS_INVALID_TEXT}</Text>
+                <Text style={[styles.noticeText, inlineStyles1.inlineStyle4]}>{IBC_OSMO_ADDRESS_INVALID_TEXT}</Text>
             </View>
         </Fragment>
     );
 };
-
-export default InputSetVerticalForAddress;
 
 const styles = StyleSheet.create({
     viewContainer: {
@@ -220,3 +219,5 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     }
 });
+
+export default InputSetVerticalForAddress;

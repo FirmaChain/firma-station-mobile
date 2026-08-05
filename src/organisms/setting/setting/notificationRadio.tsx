@@ -121,7 +121,12 @@ const NotificationRadio = () => {
             {isBusy ? (
                 <ActivityIndicator size={24} color={WhiteColor} />
             ) : (
-                <TouchableOpacity activeOpacity={0.8} disabled={isBusy} onPress={handleToggle} style={isBusy ? styles.radioDisabled : {}}>
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    disabled={isBusy}
+                    onPress={handleToggle}
+                    style={isBusy ? styles.radioDisabled : styles.inlineStyle1}
+                >
                     <View style={[styles.radioWrapper, notificationEnabled ? styles.radioWrapperOn : styles.radioWrapperOff]}>
                         <View style={styles.radio} />
                     </View>
@@ -132,6 +137,7 @@ const NotificationRadio = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: {},
     listItem: {
         backgroundColor: BoxColor,
         padding: 20,

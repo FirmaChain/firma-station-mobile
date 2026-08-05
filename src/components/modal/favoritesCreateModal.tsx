@@ -241,6 +241,20 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
         }
     }, [open, address]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { marginTop: 15 },
+        inlineStyle2: { borderColor: nameFocus ? WhiteColor : 'transparent' },
+        inlineStyle3: {
+            color: isAdjust === false ? TextColor : TextDisableColor,
+            borderColor: addressFocus ? WhiteColor : 'transparent'
+        },
+        inlineStyle4: { fontSize: 12 },
+        inlineStyle5: { borderColor: memoFocus ? WhiteColor : 'transparent' },
+        inlineStyle6: { flex: 1 },
+        inlineStyle7: { width: 10 },
+        inlineStyle8: { flex: 1 }
+    } as const;
+
     return (
         <CustomModal
             visible={open}
@@ -253,12 +267,12 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                 <View style={styles.headerBox}>
                     <Text style={styles.headerTitle}>{isAdjust ? 'Edit Favorite' : 'Add Favorite'}</Text>
                 </View>
-                <View style={[styles.inputContainer, { marginTop: 15 }]}>
+                <View style={[styles.inputContainer, inlineStyles1.inlineStyle1]}>
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>{'Name'}</Text>
                     </View>
                     <TextInput
-                        style={[styles.input, { borderColor: nameFocus ? WhiteColor : 'transparent' }]}
+                        style={[styles.input, inlineStyles1.inlineStyle2]}
                         placeholder={'Name'}
                         placeholderTextColor={InputPlaceholderColor}
                         secureTextEntry={false}
@@ -276,13 +290,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         {isAdjust === false && <TextButton title={'Paste'} onPressEvent={handlePaste} />}
                     </View>
                     <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: isAdjust === false ? TextColor : TextDisableColor,
-                                borderColor: addressFocus ? WhiteColor : 'transparent'
-                            }
-                        ]}
+                        style={[styles.input, inlineStyles1.inlineStyle3]}
                         placeholder={'Address'}
                         placeholderTextColor={InputPlaceholderColor}
                         secureTextEntry={false}
@@ -298,11 +306,11 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>
                             {'Memo'}
-                            <Text style={[styles.text, { fontSize: 12 }]}>{' (Optional) '}</Text>
+                            <Text style={[styles.text, inlineStyles1.inlineStyle4]}>{' (Optional) '}</Text>
                         </Text>
                     </View>
                     <TextInput
-                        style={[styles.input, { borderColor: memoFocus ? WhiteColor : 'transparent' }]}
+                        style={[styles.input, inlineStyles1.inlineStyle5]}
                         placeholder={'Memo'}
                         placeholderTextColor={InputPlaceholderColor}
                         secureTextEntry={false}
@@ -316,11 +324,11 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                         editable={!isLoading}
                     />
                     <View style={styles.buttonBox}>
-                        <View style={{ flex: 1 }}>
+                        <View style={inlineStyles1.inlineStyle6}>
                             <Button title={'Cancel'} active={true} border={true} onPressEvent={() => handleOpenModalPrev(false)} />
                         </View>
-                        <View style={{ width: 10 }} />
-                        <View style={{ flex: 1 }}>
+                        <View style={inlineStyles1.inlineStyle7} />
+                        <View style={inlineStyles1.inlineStyle8}>
                             <Button title={isAdjust ? 'Edit' : 'Add'} active={SaveButtonActive} onPressEvent={() => handleSaveFavorite()} />
                         </View>
                     </View>

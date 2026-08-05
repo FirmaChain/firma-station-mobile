@@ -96,12 +96,7 @@ const BioAuthRadio = ({ walletName }: IProps) => {
         <View style={styles.listItem}>
             <Text style={styles.itemTitle}>Use Bio Auth</Text>
             <TouchableOpacity onPress={() => handleBioAuth(!useBio)}>
-                <View
-                    style={[
-                        styles.radioWrapper,
-                        useBio ? { backgroundColor: PointColor, alignItems: 'flex-end' } : { backgroundColor: DisableColor }
-                    ]}
-                >
+                <View style={[styles.radioWrapper, useBio ? styles.inlineStyle1 : styles.inlineStyle2]}>
                     <View style={styles.radio} />
                 </View>
             </TouchableOpacity>
@@ -117,6 +112,8 @@ const BioAuthRadio = ({ walletName }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { backgroundColor: PointColor, alignItems: 'flex-end' },
+    inlineStyle2: { backgroundColor: DisableColor },
     listItem: {
         backgroundColor: BoxColor,
         padding: 20,

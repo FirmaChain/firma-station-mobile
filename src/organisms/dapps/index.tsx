@@ -69,17 +69,21 @@ const Dapps = () => {
 
     const DappItem = useCallback(
         ({ item, size }: { item: ProjectList['projectList'][number]; size: number }) => {
+            const inlineStyles1 = {
+                inlineStyle1: { paddingHorizontal: 10 },
+                inlineStyle2: { width: '100%', height: size - 20, backgroundColor: BoxColor },
+                inlineStyle3: { width: '100%', height: size - 20, opacity: fadeAnimDapp },
+                inlineStyle4: { width: '100%', opacity: fadeAnimDapp }
+            } as const;
+
             return (
                 <TouchableOpacity style={styles.contentWrap} onPress={() => moveToDetail(item)}>
-                    <Animated.View style={{ paddingHorizontal: 10 }}>
-                        <View style={[styles.contentImage, { width: '100%', height: size - 20, backgroundColor: BoxColor }]}>
-                            <Animated.Image
-                                style={[styles.contentImage, { width: '100%', height: size - 20, opacity: fadeAnimDapp }]}
-                                source={{ uri: item.icon }}
-                            />
+                    <Animated.View style={inlineStyles1.inlineStyle1}>
+                        <View style={[styles.contentImage, inlineStyles1.inlineStyle2]}>
+                            <Animated.Image style={[styles.contentImage, inlineStyles1.inlineStyle3]} source={{ uri: item.icon }} />
                         </View>
                         {/* <Image style={[styles.contentImage, { width: '100%', height: size - 20 }]} source={item.icon} /> */}
-                        <Animated.Text style={[styles.contentTitle, { width: '100%', opacity: fadeAnimDapp }]} numberOfLines={1}>
+                        <Animated.Text style={[styles.contentTitle, inlineStyles1.inlineStyle4]} numberOfLines={1}>
                             {item.name}
                         </Animated.Text>
                     </Animated.View>
@@ -113,7 +117,7 @@ const Dapps = () => {
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <ScrollView contentContainerStyle={styles.inlineStyle1}>
                 <View style={styles.box}>
                     <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
                         {dappsVolumes != null && (
@@ -143,6 +147,7 @@ const Dapps = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flexGrow: 1 },
     container: {
         flex: 1,
         width: '100%',

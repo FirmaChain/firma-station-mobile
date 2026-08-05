@@ -44,8 +44,6 @@ const MnemonicGrid = ({ mnemonic }: IProps) => {
     );
 };
 
-export default MnemonicGrid;
-
 const styles = StyleSheet.create({
     conatainer: {
         marginHorizontal: 20
@@ -100,3 +98,5 @@ const styles = StyleSheet.create({
         left: 0
     }
 });
+
+export default MnemonicGrid;

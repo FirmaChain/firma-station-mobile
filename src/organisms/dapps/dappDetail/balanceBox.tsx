@@ -62,23 +62,30 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
         }
     }, [isFocused, tokenDenom]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingBottom: 5 },
+        inlineStyle2: { width: '100%', justifyContent: 'space-between' },
+        inlineStyle3: { fontSize: balanceTextSize },
+        inlineStyle4: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle5: { fontSize: balanceTextSize },
+        inlineStyle6: { fontSize: 14, fontWeight: 'normal' }
+    } as const;
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
                 <View>
                     {isCW20 ? (
                         <View style={styles.boxV}>
-                            <View style={[styles.cw20Titlewrap, { paddingBottom: 5 }]}>
+                            <View style={[styles.cw20Titlewrap, inlineStyles1.inlineStyle1]}>
                                 <Text style={styles.title}>My Token</Text>
                             </View>
-                            <View style={[styles.cw20Titlewrap, { width: '100%', justifyContent: 'space-between' }]}>
+                            <View style={[styles.cw20Titlewrap, inlineStyles1.inlineStyle2]}>
                                 <View style={styles.balanceWrap}>
                                     <Image style={styles.logo} source={{ uri: marketingLogo === null ? '' : marketingLogo }} />
-                                    <Text style={[styles.balance, { fontSize: balanceTextSize }]}>
+                                    <Text style={[styles.balance, inlineStyles1.inlineStyle3]}>
                                         {convertAmount({ value: balance, isUfct: false, decimal: decimal })}
-                                        <Text
-                                            style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}
-                                        >{` ${tokenSymbol.toUpperCase()}`}</Text>
+                                        <Text style={[styles.title, inlineStyles1.inlineStyle4]}>{` ${tokenSymbol.toUpperCase()}`}</Text>
                                     </Text>
                                 </View>
                                 <SmallButton title="Send" active={balance > 0 && isCW20} size={90} onPressEvent={moveToSendScreen} />
@@ -87,11 +94,9 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
                     ) : (
                         <View style={styles.boxH}>
                             <Text style={styles.title}>My Token</Text>
-                            <Text style={[styles.balance, { fontSize: balanceTextSize }]}>
+                            <Text style={[styles.balance, inlineStyles1.inlineStyle5]}>
                                 {convertAmount({ value: balance })}
-                                <Text
-                                    style={[styles.title, { fontSize: 14, fontWeight: 'normal' }]}
-                                >{` ${tokenSymbol.toUpperCase()}`}</Text>
+                                <Text style={[styles.title, inlineStyles1.inlineStyle6]}>{` ${tokenSymbol.toUpperCase()}`}</Text>
                             </Text>
                         </View>
                     )}
@@ -131,11 +136,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-    //   buttonBox: {
-    //     flex: 1,
-    //     justifyContent: 'flex-end',
-    //     paddingHorizontal: 20,
-    //   },
     title: {
         fontFamily: Lato,
         fontWeight: '600',

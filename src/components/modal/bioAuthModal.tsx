@@ -35,11 +35,11 @@ const BioAuthModal = (props: IProps) => {
             <View style={styles.modalTextContents}>
                 <View style={styles.textBox}>
                     <FingerPrint size={80} color={WhiteColor} />
-                    <Text style={[styles.title, { fontWeight: 'bold' }]}>{CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT.title}</Text>
+                    <Text style={[styles.title, styles.inlineStyle1]}>{CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT.title}</Text>
                     <Text style={styles.desc}>{CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT.desc}</Text>
                 </View>
                 <View style={styles.buttonBox}>
-                    <View style={{ marginBottom: 10 }}>
+                    <View style={styles.inlineStyle2}>
                         <Button title={CHECK_ACTIVATE_BIO_AUTH_MODAL_TEXT.confirmTitle} active={true} onPressEvent={confirmBioAuth} />
                     </View>
                     <View>
@@ -59,6 +59,8 @@ const BioAuthModal = (props: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { fontWeight: 'bold' },
+    inlineStyle2: { marginBottom: 10 },
     modalTextContents: {
         width: '100%',
         height: '100%',

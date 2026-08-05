@@ -125,7 +125,7 @@ const DappSignModal = () => {
         >
             <React.Fragment>
                 <View style={styles.modalTextContents}>
-                    <View style={[styles.boxV, { alignItems: 'center', paddingBottom: 30 }]}>
+                    <View style={[styles.boxV, styles.inlineStyle1]}>
                         <DappURLBox certifiedState={isCertified} url={url} />
                         <DappTitleBox title={DAPP_SIGNATURE_REQUEST} descExist={true} desc={description} iconURL={iconUrl} />
                     </View>
@@ -150,31 +150,15 @@ const DappSignModal = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'center', paddingBottom: 30 },
     modalTextContents: {
         width: '100%',
         padding: 20
     },
-    //   boxH: {
-    //     flexDirection: 'row',
-    //     justifyContent: 'flex-start',
-    //     alignItems: 'center',
-    //   },
     boxV: {
         width: '100%',
         alignItems: 'flex-start'
     }
-    //   desc: {
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     lineHeight: 17,
-    //     color: TextDarkGrayColor,
-    //     paddingBottom: 20,
-    //   },
-    //   balance: {
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     color: TextCatTitleColor,
-    //   },
 });
 
 export default DappSignModal;

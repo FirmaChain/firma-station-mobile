@@ -25,8 +25,17 @@ const AlertModal = ({ visible, handleOpen, title, desc, children = <Fragment />,
         }
     }, [appState]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { display: visible ? 'flex' : 'none', flex: visible ? 1 : 0 },
+        inlineStyle2: {
+            backgroundColor: type === 'ERROR' ? FailedColor : PointColor,
+            borderBottomEndRadius: 4,
+            borderBottomStartRadius: 4
+        }
+    } as const;
+
     return (
-        <View style={[styles.container, { display: visible ? 'flex' : 'none', flex: visible ? 1 : 0 }]}>
+        <View style={[styles.container, inlineStyles1.inlineStyle1]}>
             <Modal animationType="fade" transparent={true} onRequestClose={closeModal} visible={visible}>
                 <View style={styles.modalContainer}>
                     <View style={styles.deem} />
@@ -37,17 +46,7 @@ const AlertModal = ({ visible, handleOpen, title, desc, children = <Fragment />,
                             {children}
                         </View>
                         <View style={styles.buttonBox}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.button,
-                                    {
-                                        backgroundColor: type === 'ERROR' ? FailedColor : PointColor,
-                                        borderBottomEndRadius: 4,
-                                        borderBottomStartRadius: 4
-                                    }
-                                ]}
-                                onPress={() => closeModal()}
-                            >
+                            <TouchableOpacity style={[styles.button, inlineStyles1.inlineStyle2]} onPress={() => closeModal()}>
                                 <Text style={styles.buttonTitle}>{confirmTitle}</Text>
                             </TouchableOpacity>
                         </View>

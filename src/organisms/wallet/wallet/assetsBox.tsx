@@ -10,8 +10,8 @@ interface IProps {
 const AssetsBox = ({ handleAssets }: IProps) => {
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={[styles.box, { paddingHorizontal: 0 }]} onPress={handleAssets}>
-                <View style={[styles.wrapperH, { justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }]}>
+            <TouchableOpacity style={[styles.box, styles.inlineStyle1]} onPress={handleAssets}>
+                <View style={[styles.wrapperH, styles.inlineStyle2]}>
                     <Text style={styles.title}>Assets</Text>
                     <ForwardArrow size={20} color={TextCatTitleColor} />
                 </View>
@@ -21,6 +21,8 @@ const AssetsBox = ({ handleAssets }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingHorizontal: 0 },
+    inlineStyle2: { justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 },
     container: {
         height: 'auto',
         paddingHorizontal: 20,

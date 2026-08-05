@@ -99,7 +99,7 @@ const DappConnectModal = () => {
             handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}
         >
             <View style={styles.modalTextContents}>
-                <View style={[styles.boxV, { alignItems: 'center' }]}>
+                <View style={[styles.boxV, styles.inlineStyle1]}>
                     <DappURLBox certifiedState={isCertified} url={url} />
                     <DappTitleBox
                         title={DAPP_SERVICE_CONNECTION}
@@ -121,25 +121,15 @@ const DappConnectModal = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'center' },
     boxV: {
         width: '100%',
         alignItems: 'flex-start'
     },
-    //   desc: {
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     color: TextDarkGrayColor,
-    //   },
     modalTextContents: {
         width: '100%',
         padding: 20
     }
-    //   modalButtonBox: {
-    //     paddingTop: 30,
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     justifyContent: 'space-between',
-    //   },
 });
 
 export default DappConnectModal;

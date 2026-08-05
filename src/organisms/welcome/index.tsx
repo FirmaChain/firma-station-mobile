@@ -69,7 +69,7 @@ const Welcome = () => {
                 <Description title={Title} desc={Desc} />
                 <View style={styles.buttonBox}>
                     {walletExist && (
-                        <View style={{ paddingBottom: 10 }}>
+                        <View style={styles.inlineStyle1}>
                             <Button title={'Select Wallet'} active={true} onPressEvent={handleSelectWallet} />
                         </View>
                     )}
@@ -87,6 +87,7 @@ const Welcome = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingBottom: 10 },
     viewContainer: {
         flex: 1,
         display: 'flex',

@@ -9,20 +9,17 @@ interface IProps {
 }
 
 const TitleSection = ({ data }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: {
+            backgroundColor: STATUS_COLOR[data.status] + '30',
+            color: STATUS_COLOR[data.status]
+        }
+    } as const;
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
-                <Text
-                    style={[
-                        styles.status,
-                        data.status !== '' && {
-                            backgroundColor: STATUS_COLOR[data.status] + '30',
-                            color: STATUS_COLOR[data.status]
-                        }
-                    ]}
-                >
-                    {PROPOSAL_STATUS[data.status]}
-                </Text>
+                <Text style={[styles.status, data.status !== '' && inlineStyles1.inlineStyle1]}>{PROPOSAL_STATUS[data.status]}</Text>
                 <Text style={styles.title}>{data.title}</Text>
             </View>
         </View>

@@ -229,23 +229,38 @@ const CW721List = ({ data, isEdit }: IProps) => {
             navigation.navigate(Screens.CW721, { data: { cw721Contract: item.address } });
         };
 
+        const inlineStyles1 = {
+            inlineStyle1: {
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between'
+            },
+            inlineStyle2: {
+                opacity: fadeAnim,
+                marginLeft: AnimationState.iconMargin,
+                width: AnimationState.iconWidth,
+                paddingTop: 30
+            },
+            inlineStyle3: { paddingVertical: 6 },
+            inlineStyle4: { paddingTop: 5 },
+            inlineStyle5: { fontWeight: '400' },
+            inlineStyle6: { paddingBottom: 22 },
+            inlineStyle7: {
+                opacity: item.address.toLowerCase() === removeItemAddr.toLowerCase() ? 1 : 0,
+                height: AnimationStateForRemoveBox.height,
+                paddingBottom: AnimationStateForRemoveBox.padding,
+                paddingHorizontal: 20,
+                paddingTop: 3
+            },
+            inlineStyle8: {
+                paddingVertical: AnimationStateForRemoveBox.buttonPadding
+            }
+        } as const;
+
         return (
             <TouchableOpacity onPress={moveToCW721Detail} disabled={isEdit} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'flex-start',
-                        justifyContent: 'space-between'
-                    }}
-                >
-                    <Animated.View
-                        style={{
-                            opacity: fadeAnim,
-                            marginLeft: AnimationState.iconMargin,
-                            width: AnimationState.iconWidth,
-                            paddingTop: 30
-                        }}
-                    >
+                <View style={inlineStyles1.inlineStyle1}>
+                    <Animated.View style={inlineStyles1.inlineStyle2}>
                         <TouchableOpacity
                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                             onPress={() => {
@@ -256,7 +271,7 @@ const CW721List = ({ data, isEdit }: IProps) => {
                         </TouchableOpacity>
                     </Animated.View>
                     <View style={styles.item}>
-                        <View style={[styles.contentBox, { paddingVertical: 6 }]}>
+                        <View style={[styles.contentBox, inlineStyles1.inlineStyle3]}>
                             <Text numberOfLines={1} ellipsizeMode="middle" style={styles.nameText}>
                                 {item.name}
                             </Text>
@@ -272,37 +287,17 @@ const CW721List = ({ data, isEdit }: IProps) => {
                         </View>
                         <DataSection title={'Symbol'} data={item.symbol} />
                         <DataSection title={'Label'} data={item.label} label />
-                        <View style={[styles.contentBox, { paddingTop: 5 }]}>
-                            <Text style={[styles.valueText, { fontWeight: '400' }]}>{'Total Supply'}</Text>
+                        <View style={[styles.contentBox, inlineStyles1.inlineStyle4]}>
+                            <Text style={[styles.valueText, inlineStyles1.inlineStyle5]}>{'Total Supply'}</Text>
                             <DisplayNFTCount />
                         </View>
-                        <View style={{ paddingBottom: 22 }} />
+                        <View style={inlineStyles1.inlineStyle6} />
                     </View>
                 </View>
-                <Animated.View
-                    style={[
-                        styles.removeConfirmBox,
-                        {
-                            opacity: item.address.toLowerCase() === removeItemAddr.toLowerCase() ? 1 : 0,
-                            height: AnimationStateForRemoveBox.height,
-                            paddingBottom: AnimationStateForRemoveBox.padding,
-                            paddingHorizontal: 20,
-                            paddingTop: 3
-                        }
-                    ]}
-                >
+                <Animated.View style={[styles.removeConfirmBox, inlineStyles1.inlineStyle7]}>
                     <Text style={styles.removeNotice}>{CW_REMOVE_WARN_TEXT}</Text>
                     <TouchableOpacity onPress={() => removeContract(item.address)}>
-                        <Text
-                            style={[
-                                styles.removeButton,
-                                {
-                                    paddingVertical: AnimationStateForRemoveBox.buttonPadding
-                                }
-                            ]}
-                        >
-                            {'Remove'}
-                        </Text>
+                        <Text style={[styles.removeButton, inlineStyles1.inlineStyle8]}>{'Remove'}</Text>
                     </TouchableOpacity>
                 </Animated.View>
             </TouchableOpacity>
@@ -348,14 +343,14 @@ const CW721List = ({ data, isEdit }: IProps) => {
                     <View style={styles.header}>
                         <Text style={styles.title}>
                             {'List'}
-                            <Text style={{ color: PointLightColor }}> {currentNetworkContracts.length}</Text>
+                            <Text style={styles.inlineStyle1}> {currentNetworkContracts.length}</Text>
                         </Text>
                     </View>
-                    <GestureHandlerRootView style={{ backgroundColor: BgColor, paddingBottom: 80 }}>
+                    <GestureHandlerRootView style={styles.inlineStyle2}>
                         <DraggableFlatList
                             ref={flatListRef}
                             data={initialData}
-                            style={{ maxHeight: 99999 }}
+                            style={styles.inlineStyle3}
                             renderItem={(params) => <CW721Item {...params} />}
                             scrollEnabled={true}
                             keyExtractor={(_item) => _item.address.toString()}
@@ -370,6 +365,9 @@ const CW721List = ({ data, isEdit }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: PointLightColor },
+    inlineStyle2: { backgroundColor: BgColor, paddingBottom: 80 },
+    inlineStyle3: { maxHeight: 99999 },
     container: {
         flex: 1,
         justifyContent: 'flex-start',

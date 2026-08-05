@@ -51,29 +51,25 @@ const SmallButton = ({
         }
     }, [active, active, border, color]);
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            width: size,
+            height,
+            borderWidth: border && active ? 1 : 0,
+            borderColor: WhiteColor,
+            backgroundColor: buttonColor.background
+        },
+        inlineStyle2: { color: buttonColor.textColor }
+    } as const;
+
     return (
         <View>
-            <TouchableOpacity
-                disabled={!active}
-                style={[
-                    styles.button,
-                    {
-                        width: size,
-                        height,
-                        borderWidth: border && active ? 1 : 0,
-                        borderColor: WhiteColor,
-                        backgroundColor: buttonColor.background
-                    }
-                ]}
-                onPress={() => handleOnPress()}
-            >
-                <Text style={[styles.buttonText, { color: buttonColor.textColor }]}>{title}</Text>
+            <TouchableOpacity disabled={!active} style={[styles.button, inlineStyles1.inlineStyle1]} onPress={() => handleOnPress()}>
+                <Text style={[styles.buttonText, inlineStyles1.inlineStyle2]}>{title}</Text>
             </TouchableOpacity>
         </View>
     );
 };
-
-export default SmallButton;
 
 const styles = StyleSheet.create({
     button: {
@@ -90,3 +86,5 @@ const styles = StyleSheet.create({
         fontWeight: 'normal'
     }
 });
+
+export default SmallButton;

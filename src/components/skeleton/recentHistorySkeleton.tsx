@@ -7,13 +7,7 @@ import { StyleSheet, Text, View } from 'react-native';
 const RecentHistorySkeleton = () => {
     const skeleton = () => {
         return (
-            <ContentLoader
-                speed={0.8}
-                animate={true}
-                foregroundColor={DividerColor}
-                backgroundColor={BoxColor}
-                style={{ marginTop: 6, paddingVertical: 5 }}
-            >
+            <ContentLoader speed={0.8} animate={true} foregroundColor={DividerColor} backgroundColor={BoxColor} style={styles.inlineStyle1}>
                 <Rect x="0" y="0" rx="4" ry="4" width="100%" height={14} />
             </ContentLoader>
         );
@@ -21,37 +15,31 @@ const RecentHistorySkeleton = () => {
 
     return (
         <Fragment>
-            <View
-                style={[
-                    styles.wrapperH,
-                    styles.wrapper,
-                    { justifyContent: 'flex-start', alignItems: 'flex-start', paddingTop: 18, flex: 3 }
-                ]}
-            >
-                <View style={[styles.historyWrapper, { flex: 1 }]}>
-                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>Block</Text>
+            <View style={[styles.wrapperH, styles.wrapper, styles.inlineStyle2]}>
+                <View style={[styles.historyWrapper, styles.inlineStyle3]}>
+                    <Text style={[styles.contentTitle, styles.inlineStyle4]}>Block</Text>
                     {skeleton()}
                 </View>
-                <View style={[styles.historyWrapper, { flex: 1.5 }]}>
-                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>Type</Text>
+                <View style={[styles.historyWrapper, styles.inlineStyle5]}>
+                    <Text style={[styles.contentTitle, styles.inlineStyle6]}>Type</Text>
                     {skeleton()}
                 </View>
             </View>
-            <View style={[styles.wrapperH, styles.wrapper, { justifyContent: 'flex-start', alignItems: 'flex-start', flex: 3 }]}>
-                <View style={[styles.historyWrapper, { flex: 1 }]}>
-                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>Result</Text>
+            <View style={[styles.wrapperH, styles.wrapper, styles.inlineStyle7]}>
+                <View style={[styles.historyWrapper, styles.inlineStyle8]}>
+                    <Text style={[styles.contentTitle, styles.inlineStyle9]}>Result</Text>
 
                     {skeleton()}
                 </View>
-                <View style={[styles.historyWrapper, { flex: 1.5 }]}>
-                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>{'Time (' + getGMT() + ')'}</Text>
+                <View style={[styles.historyWrapper, styles.inlineStyle10]}>
+                    <Text style={[styles.contentTitle, styles.inlineStyle11]}>{'Time (' + getGMT() + ')'}</Text>
                     {skeleton()}
                 </View>
             </View>
 
-            <View style={[styles.wrapper, { paddingBottom: 0 }]}>
+            <View style={[styles.wrapper, styles.inlineStyle12]}>
                 <View style={styles.historyWrapper}>
-                    <Text style={[styles.contentTitle, { fontSize: 14 }]}>Hash</Text>
+                    <Text style={[styles.contentTitle, styles.inlineStyle13]}>Hash</Text>
                     {skeleton()}
                 </View>
             </View>
@@ -60,6 +48,19 @@ const RecentHistorySkeleton = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { marginTop: 6, paddingVertical: 5 },
+    inlineStyle2: { justifyContent: 'flex-start', alignItems: 'flex-start', paddingTop: 18, flex: 3 },
+    inlineStyle3: { flex: 1 },
+    inlineStyle4: { fontSize: 14 },
+    inlineStyle5: { flex: 1.5 },
+    inlineStyle6: { fontSize: 14 },
+    inlineStyle7: { justifyContent: 'flex-start', alignItems: 'flex-start', flex: 3 },
+    inlineStyle8: { flex: 1 },
+    inlineStyle9: { fontSize: 14 },
+    inlineStyle10: { flex: 1.5 },
+    inlineStyle11: { fontSize: 14 },
+    inlineStyle12: { paddingBottom: 0 },
+    inlineStyle13: { fontSize: 14 },
     historyWrapper: {
         flex: 1,
         justifyContent: 'space-between',

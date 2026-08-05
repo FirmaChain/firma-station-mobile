@@ -8,14 +8,19 @@ interface IProps {
 }
 
 const TextSkeleton = ({ width = '100%', height }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { width: '100%', height: height, alignItems: 'center' },
+        inlineStyle2: { width: width, height: height }
+    } as const;
+
     return (
-        <View style={{ width: '100%', height: height, alignItems: 'center' }}>
+        <View style={inlineStyles1.inlineStyle1}>
             <ContentLoader
                 speed={0.8}
                 animate={true}
                 foregroundColor={DividerColor}
                 backgroundColor={BgColor}
-                style={{ width: width, height: height }}
+                style={inlineStyles1.inlineStyle2}
             >
                 <Rect x="0" y="0" rx="4" ry="4" width={'100%'} height={height} />
             </ContentLoader>

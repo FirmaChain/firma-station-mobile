@@ -93,29 +93,36 @@ const RefreshScrollView = ({
         }, [scrollToTop])
     );
 
+    const inlineStyles1 = {
+        inlineStyle1: { flex: 1 },
+        inlineStyle2: { backgroundColor: background },
+        inlineStyle3: { flex: 1, position: 'relative', paddingBottom: toTopButton ? 40 : 0 },
+        inlineStyle4: { transform: [{ scale: fadeAnim }] }
+    } as const;
+
     return (
-        <View style={{ flex: 1 }}>
+        <View style={inlineStyles1.inlineStyle1}>
             <ScrollView
                 ref={scrollRef}
                 scrollEventThrottle={16}
                 keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ flexGrow: 1 }}
+                contentContainerStyle={styles.inlineStyle1}
                 onScroll={(event: NativeSyntheticEvent<NativeScrollEvent>) => onScrollEnd(event)}
                 // onScroll={(event:NativeSyntheticEvent<NativeScrollEvent>) => onScroll(event)}
                 refreshControl={
                     <RefreshControl
                         tintColor={WhiteColor}
-                        style={{ backgroundColor: background }}
+                        style={inlineStyles1.inlineStyle2}
                         refreshing={refreshing}
                         enabled={true}
                         onRefresh={onRefresh}
                     />
                 }
             >
-                <View style={{ flex: 1, position: 'relative', paddingBottom: toTopButton ? 40 : 0 }}>{children}</View>
+                <View style={inlineStyles1.inlineStyle3}>{children}</View>
             </ScrollView>
             {toTopButton && (
-                <Animated.View style={[styles.buttonBox, { transform: [{ scale: fadeAnim }] }]}>
+                <Animated.View style={[styles.buttonBox, inlineStyles1.inlineStyle4]}>
                     <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} onPress={() => handleScrollToTop(true)}>
                         <ScrollToTop size={40} color={TextCatTitleColor} />
                     </TouchableOpacity>
@@ -126,6 +133,7 @@ const RefreshScrollView = ({
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flexGrow: 1 },
     buttonBox: {
         alignItems: 'center',
         position: 'absolute',

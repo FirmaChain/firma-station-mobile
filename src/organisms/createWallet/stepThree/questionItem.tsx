@@ -12,17 +12,19 @@ const QuestionItem = ({ title, value, focus, onPressEvent }: IProps) => {
     const val = value;
     const bc = focus ? WhiteColor : 'transparent';
 
+    const inlineStyles1 = {
+        inlineStyle1: { borderColor: bc, color: val === 'select' ? InputPlaceholderColor : TextColor }
+    } as const;
+
     return (
         <View style={styles.viewContainer}>
             <Text style={styles.text}>{title}</Text>
             <TouchableOpacity onPress={() => onPressEvent()}>
-                <Text style={[styles.quiz, { borderColor: bc, color: val === 'select' ? InputPlaceholderColor : TextColor }]}>{val}</Text>
+                <Text style={[styles.quiz, inlineStyles1.inlineStyle1]}>{val}</Text>
             </TouchableOpacity>
         </View>
     );
 };
-
-export default QuestionItem;
 
 const styles = StyleSheet.create({
     viewContainer: {
@@ -48,3 +50,5 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     }
 });
+
+export default QuestionItem;

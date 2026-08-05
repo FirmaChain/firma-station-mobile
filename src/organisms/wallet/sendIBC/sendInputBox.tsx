@@ -116,12 +116,18 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
         setIsMaxAmount(amount >= convertNumber(convertAmount({ value: available, isUfct: false, point: 6, decimal: decimal })));
     }, [amount, available]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { height: accordionHeight },
+        inlineStyle2: { color: selectChain === null ? InputPlaceholderColor : TextColor },
+        inlineStyle3: { paddingTop: 20 }
+    } as const;
+
     return (
         <View>
-            <View style={[styles.chainContainer, { height: accordionHeight }]}>
+            <View style={[styles.chainContainer, inlineStyles1.inlineStyle1]}>
                 <Text style={styles.chainTitle}>Destination Chain</Text>
                 <TouchableOpacity style={styles.chainSelectBox} onPress={() => setOpenChainSelectModal(true)}>
-                    <Text style={[styles.chain, { color: selectChain === null ? InputPlaceholderColor : TextColor }]}>
+                    <Text style={[styles.chain, inlineStyles1.inlineStyle2]}>
                         {selectChain === null ? 'Select IBC chain' : `${selectChain.name.toUpperCase()} (${selectChain.channel})`}
                     </Text>
                     <DownArrow size={10} color={InputPlaceholderColor} />
@@ -154,7 +160,7 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
                 onChangeEvent={(value: string) => handleSendInfoState('memo', value)}
             />
 
-            <View style={{ paddingTop: 20 }}>
+            <View style={inlineStyles1.inlineStyle3}>
                 <WarnContainer text={CW_TX_NOTICE_TEXT} question={false} />
             </View>
 
@@ -189,30 +195,6 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
 };
 
 const styles = StyleSheet.create({
-    //   title: {
-    //     fontFamily: Lato,
-    //     fontSize: 16,
-    //     color: TextCatTitleColor,
-    //     marginBottom: 5,
-    //   },
-    //   radioBox: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     justifyContent: 'flex-start',
-    //     marginBottom: 10,
-    //   },
-    //   radioWrapper: {
-    //     width: 45,
-    //     borderRadius: 20,
-    //     justifyContent: 'center',
-    //     padding: 3,
-    //   },
-    //   radio: {
-    //     width: 18,
-    //     height: 18,
-    //     borderRadius: 50,
-    //     backgroundColor: WhiteColor,
-    //   },
     chainContainer: {
         marginBottom: 20,
         overflow: 'hidden'

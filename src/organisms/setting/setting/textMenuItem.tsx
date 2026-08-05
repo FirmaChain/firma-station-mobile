@@ -21,18 +21,26 @@ const TextMenuItem = ({
     icon,
     onPressEvent
 }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: bgColor },
+        inlineStyle2: { color: titleColor },
+        inlineStyle3: { color: contentColor, paddingRight: 0 },
+        inlineStyle4: { marginLeft: 8 },
+        inlineStyle5: { paddingTop: 1 }
+    } as const;
+
     return (
-        <View style={[styles.listItem, { backgroundColor: bgColor }]}>
-            <Text style={[styles.itemTitle, { color: titleColor }]}>{title}</Text>
+        <View style={[styles.listItem, inlineStyles1.inlineStyle1]}>
+            <Text style={[styles.itemTitle, inlineStyles1.inlineStyle2]}>{title}</Text>
             <View style={styles.contentWrapper}>
-                <Text style={[styles.content, { color: contentColor, paddingRight: 0 }]}>{content}</Text>
+                <Text style={[styles.content, inlineStyles1.inlineStyle3]}>{content}</Text>
                 {icon && (
                     <TouchableOpacity
                         hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                         onPress={() => onPressEvent?.()}
-                        style={{ marginLeft: 8 }}
+                        style={inlineStyles1.inlineStyle4}
                     >
-                        <View style={{ paddingTop: 1 }}>{icon}</View>
+                        <View style={inlineStyles1.inlineStyle5}>{icon}</View>
                     </TouchableOpacity>
                 )}
             </View>

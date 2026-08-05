@@ -46,8 +46,12 @@ const PropertiesBox = ({ data }: IProps) => {
     // FIXME: NFT property items are supplied by external contracts without a stable schema.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const PropertiesItem = ({ item, size }: any) => {
+        const inlineStyles1 = {
+            inlineStyle1: { width: size }
+        } as const;
+
         return (
-            <View style={[styles.itemBox, { width: size }]}>
+            <View style={[styles.itemBox, inlineStyles1.inlineStyle1]}>
                 <View style={styles.itemWrapper}>
                     <Text style={styles.key}>{handleCapitalize(item.key)}</Text>
                     <View style={styles.divider} />
@@ -60,8 +64,12 @@ const PropertiesBox = ({ data }: IProps) => {
         );
     };
 
+    const inlineStyles2 = {
+        inlineStyle1: { display: dataKeys.length > 0 ? 'flex' : 'none' }
+    } as const;
+
     return (
-        <View style={[styles.container, { display: dataKeys.length > 0 ? 'flex' : 'none' }]}>
+        <View style={[styles.container, inlineStyles2.inlineStyle1]}>
             <Text style={styles.title}>Properties</Text>
             <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
                 {dataKeys.map((value, index) => {

@@ -82,6 +82,11 @@ const InputSetVerticalForAmount = ({
         }
     }, [val, limitValue]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { borderColor: PointLightColor },
+        inlineStyle2: { borderColor: focus ? WhiteColor : 'transparent' }
+    } as const;
+
     return (
         <View style={styles.viewContainer}>
             <View style={styles.textContainer}>
@@ -89,7 +94,7 @@ const InputSetVerticalForAmount = ({
                 {enableMaxAmount && <TextButton title={'Max'} active={limitValue > 0} onPressEvent={() => handleMaxAmount()} />}
             </View>
             <TextInput
-                style={[styles.input, accent ? { borderColor: PointLightColor } : { borderColor: focus ? WhiteColor : 'transparent' }]}
+                style={[styles.input, accent ? inlineStyles1.inlineStyle1 : inlineStyles1.inlineStyle2]}
                 placeholder={placeholder}
                 placeholderTextColor={InputPlaceholderColor}
                 keyboardType={'numeric'}
@@ -104,8 +109,6 @@ const InputSetVerticalForAmount = ({
         </View>
     );
 };
-
-export default InputSetVerticalForAmount;
 
 const styles = StyleSheet.create({
     viewContainer: {
@@ -132,3 +135,5 @@ const styles = StyleSheet.create({
         marginBottom: 5
     }
 });
+
+export default InputSetVerticalForAmount;

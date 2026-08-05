@@ -28,8 +28,15 @@ const TabBox = ({ data, serviceOnly, isRefresh, isScrollEnd, handleRefresh }: IP
         }
     }, [serviceOnly, isFocused]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { flex: 1 },
+        inlineStyle2: { borderBottomColor: selectedTabIndex === 0 ? WhiteColor : 'transparent' },
+        inlineStyle3: { borderBottomColor: selectedTabIndex === 1 ? WhiteColor : 'transparent' },
+        inlineStyle4: { flex: 1, paddingHorizontal: 20 }
+    } as const;
+
     return (
-        <View style={{ flex: 1 }}>
+        <View style={inlineStyles1.inlineStyle1}>
             <View style={styles.tabBox}>
                 {serviceOnly ? (
                     <View style={styles.serviceTab}>
@@ -37,23 +44,17 @@ const TabBox = ({ data, serviceOnly, isRefresh, isScrollEnd, handleRefresh }: IP
                     </View>
                 ) : (
                     <React.Fragment>
-                        <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: selectedTabIndex === 0 ? WhiteColor : 'transparent' }]}
-                            onPress={() => setSelectedTabIndex(0)}
-                        >
+                        <TouchableOpacity style={[styles.tab, inlineStyles1.inlineStyle2]} onPress={() => setSelectedTabIndex(0)}>
                             <Text style={selectedTabIndex === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>Services</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: selectedTabIndex === 1 ? WhiteColor : 'transparent' }]}
-                            onPress={() => setSelectedTabIndex(1)}
-                        >
+                        <TouchableOpacity style={[styles.tab, inlineStyles1.inlineStyle3]} onPress={() => setSelectedTabIndex(1)}>
                             <Text style={selectedTabIndex === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>{'NFTs'}</Text>
                         </TouchableOpacity>
                     </React.Fragment>
                 )}
             </View>
-            <View style={{ flex: 1, paddingHorizontal: 20 }}>
+            <View style={inlineStyles1.inlineStyle4}>
                 <ServicesBox visible={selectedTabIndex === 0} identity={data.identity} data={data.serviceList} />
                 <NFTsBox
                     visible={selectedTabIndex === 1}

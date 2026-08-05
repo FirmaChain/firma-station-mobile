@@ -95,9 +95,15 @@ const History = () => {
         refreshStates();
     }, []);
 
+    const inlineStyles1 = {
+        inlineStyle1: { justifyContent: historyList.list.length > 0 ? 'space-between' : 'center' },
+        inlineStyle2: { flex: 1, justifyContent: 'center' },
+        inlineStyle3: { display: isLoading ? 'none' : 'flex' }
+    } as const;
+
     return (
         <Container title="History" handleGuide={() => handleMoveToWeb('history')} backEvent={handleBack}>
-            <View style={[styles.listBox, { justifyContent: historyList.list.length > 0 ? 'space-between' : 'center' }]}>
+            <View style={[styles.listBox, inlineStyles1.inlineStyle1]}>
                 <View style={styles.container}>
                     {itemsSkeleton && (
                         <React.Fragment>
@@ -120,8 +126,8 @@ const History = () => {
                                     }}
                                 />
                             ) : (
-                                <View style={{ flex: 1, justifyContent: 'center' }}>
-                                    <Text style={[styles.notice, { display: isLoading ? 'none' : 'flex' }]}>{HISTORY_NOT_EXIST}</Text>
+                                <View style={inlineStyles1.inlineStyle2}>
+                                    <Text style={[styles.notice, inlineStyles1.inlineStyle3]}>{HISTORY_NOT_EXIST}</Text>
                                 </View>
                             )}
                         </React.Fragment>

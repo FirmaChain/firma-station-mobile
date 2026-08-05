@@ -111,22 +111,18 @@ const VotingPercentage = ({ data }: IProps) => {
                     if (item.title !== 'Abstain') {
                         const ratio = calculateRatio(item.vote, data.totalVotingPower);
 
-                        return (
-                            <View
-                                key={index}
-                                style={[
-                                    styles.percentage,
-                                    {
-                                        backgroundColor: votingColor(item.title),
-                                        display: ratio > 0 ? 'flex' : 'none',
-                                        flex: ratio,
-                                        marginLeft: -10,
-                                        paddingLeft: 10,
-                                        zIndex: 5 - index
-                                    }
-                                ]}
-                            />
-                        );
+                        const inlineStyles1 = {
+                            inlineStyle1: {
+                                backgroundColor: votingColor(item.title),
+                                display: ratio > 0 ? 'flex' : 'none',
+                                flex: ratio,
+                                marginLeft: -10,
+                                paddingLeft: 10,
+                                zIndex: 5 - index
+                            }
+                        } as const;
+
+                        return <View key={index} style={[styles.percentage, inlineStyles1.inlineStyle1]} />;
                     }
                 })}
             </View>
@@ -135,32 +131,40 @@ const VotingPercentage = ({ data }: IProps) => {
 
     const quorumPosition: `${number}%` = `${convertNumber(data.quorum)}%`;
 
+    const inlineStyles2 = {
+        inlineStyle1: { left: quorumPosition },
+        inlineStyle2: { left: quorumPosition, marginLeft: -9 }
+    } as const;
+
     return (
         <View style={styles.wrapper}>
             <RenderTally />
             <View style={styles.quorumWrapper}>
-                <View style={[styles.quorumLine, { left: quorumPosition }]} />
-                <View style={[styles.quorum, { left: quorumPosition, marginLeft: -9 }]}>
+                <View style={[styles.quorumLine, inlineStyles2.inlineStyle1]} />
+                <View style={[styles.quorum, inlineStyles2.inlineStyle2]}>
                     <UpArrow size={20} color={WhiteColor} />
                 </View>
             </View>
             <View style={styles.box}>
                 {tally.map((item, index) => {
                     const odd = (index + 1) % 2;
+                    const inlineStyles3 = {
+                        inlineStyle1: {
+                            marginRight: ScreenWidth() > 153 * 4 ? 11 : odd === 1 ? 11 : 0,
+                            marginBottom: 20
+                        },
+                        inlineStyle2: { paddingBottom: 8 },
+                        inlineStyle3: { backgroundColor: votingColor(item.title) },
+                        inlineStyle4: { color: votingColor(item.title) },
+                        inlineStyle5: { textAlign: 'right' },
+                        inlineStyle6: { display: myVote[index] ? 'flex' : 'none' }
+                    } as const;
+
                     return (
-                        <View
-                            key={index}
-                            style={[
-                                styles.voteBox,
-                                {
-                                    marginRight: ScreenWidth() > 153 * 4 ? 11 : odd === 1 ? 11 : 0,
-                                    marginBottom: 20
-                                }
-                            ]}
-                        >
-                            <View style={[styles.boxH, { paddingBottom: 8 }]}>
-                                <View style={[styles.voteDot, { backgroundColor: votingColor(item.title) }]} />
-                                <Text style={[styles.vote, { color: votingColor(item.title) }]}>{item.title}</Text>
+                        <View key={index} style={[styles.voteBox, inlineStyles3.inlineStyle1]}>
+                            <View style={[styles.boxH, inlineStyles3.inlineStyle2]}>
+                                <View style={[styles.voteDot, inlineStyles3.inlineStyle3]} />
+                                <Text style={[styles.vote, inlineStyles3.inlineStyle4]}>{item.title}</Text>
                             </View>
                             <View style={styles.dataBox}>
                                 {item.title !== 'Abstain' && (
@@ -168,9 +172,9 @@ const VotingPercentage = ({ data }: IProps) => {
                                         {makeDecimalPoint(calculateRatio(item.vote, totalVote()) * 100) + ' %'}
                                     </Text>
                                 )}
-                                <Text style={[styles.amount, { textAlign: 'right' }]}>{convertAmount({ value: item.vote })}</Text>
+                                <Text style={[styles.amount, inlineStyles3.inlineStyle5]}>{convertAmount({ value: item.vote })}</Text>
                             </View>
-                            <View style={[styles.stampWrapper, { display: myVote[index] ? 'flex' : 'none' }]}>
+                            <View style={[styles.stampWrapper, inlineStyles3.inlineStyle6]}>
                                 <VoteCircle size={32} color={BgColor} />
                             </View>
                         </View>

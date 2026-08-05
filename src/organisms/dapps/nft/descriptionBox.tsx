@@ -73,10 +73,22 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
         }
     }, [imageLoading]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { alignItems: 'center' },
+        inlineStyle2: { justifyContent: 'flex-start' },
+        inlineStyle3: { position: 'absolute', top: 0, left: 0, opacity: fadeAnimImage },
+        inlineStyle4: { display: isCW721 ? 'flex' : 'none', paddingBottom: 5 },
+        inlineStyle5: { paddingBottom: 5 },
+        inlineStyle6: { paddingBottom: openAccordion ? 20 : 0 },
+        inlineStyle7: { width: '100%', display: showMore ? 'flex' : 'none' },
+        inlineStyle8: { position: 'absolute', left: 0, top: 0 },
+        inlineStyle9: { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }
+    } as const;
+
     return (
         <React.Fragment>
-            <View style={{ alignItems: 'center' }}>
-                <View style={{ justifyContent: 'flex-start' }}>
+            <View style={inlineStyles1.inlineStyle1}>
+                <View style={inlineStyles1.inlineStyle2}>
                     <FastImage
                         style={styles.contentImage}
                         source={{
@@ -85,14 +97,14 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
                         }}
                         onLoadEnd={() => setImageLoading(false)}
                     />
-                    <Animated.View style={{ position: 'absolute', top: 0, left: 0, opacity: fadeAnimImage }}>
+                    <Animated.View style={inlineStyles1.inlineStyle3}>
                         <SquareSkeleton size={200} marginBottom={20} />
                     </Animated.View>
                 </View>
-                <View style={[styles.box, { display: isCW721 ? 'flex' : 'none', paddingBottom: 5 }]}>
+                <View style={[styles.box, inlineStyles1.inlineStyle4]}>
                     <Text style={styles.label}>CW721</Text>
                 </View>
-                <View style={[styles.box, { paddingBottom: 5 }]}>
+                <View style={[styles.box, inlineStyles1.inlineStyle5]}>
                     <Text numberOfLines={2} ellipsizeMode="tail" style={styles.contentTitle}>
                         {data.name}
                     </Text>
@@ -101,15 +113,15 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
                     <Text style={styles.tokenIdTitle}>{`#${data.tokenId}`}</Text>
                 </View>
             </View>
-            <View style={[styles.descBox, { paddingBottom: openAccordion ? 20 : 0 }]}>
+            <View style={[styles.descBox, inlineStyles1.inlineStyle6]}>
                 {data.description !== '' && (
                     <Text style={styles.desc} numberOfLines={maxLines} ellipsizeMode={'tail'} onTextLayout={onTextLayout}>
                         {data.description}
                     </Text>
                 )}
-                <View style={[styles.moreButtonBox, { width: '100%', display: showMore ? 'flex' : 'none' }]}>
+                <View style={[styles.moreButtonBox, inlineStyles1.inlineStyle7]}>
                     <TouchableOpacity style={styles.moreButton} onPress={() => handleMaxLines()}>
-                        <Svg width="100%" height="100%" style={{ position: 'absolute', left: 0, top: 0 }} pointerEvents="none">
+                        <Svg width="100%" height="100%" style={inlineStyles1.inlineStyle8} pointerEvents="none">
                             <Defs>
                                 <SvgLinearGradient id="nftDescriptionMoreGradient" x1="0" y1="0" x2="1" y2="0">
                                     <Stop offset="0%" stopColor={BoxDarkColor} stopOpacity={0.56} />
@@ -124,9 +136,7 @@ const DescriptionBox = ({ data, isCW721 }: IProps) => {
                         ) : (
                             <DownEmptyArrow size={14} color={TextGrayColor} />
                         )}
-                        <Text style={[styles.desc, { color: TextGrayColor, textAlign: 'right', paddingLeft: 5, paddingBottom: 3 }]}>
-                            {openAccordion ? 'Less' : 'More'}
-                        </Text>
+                        <Text style={[styles.desc, inlineStyles1.inlineStyle9]}>{openAccordion ? 'Less' : 'More'}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

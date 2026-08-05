@@ -14,22 +14,27 @@ const TextButton = ({ title, bgColor = TextButtonColor, active = true, opacity =
 
     const handleOnPress = () => onPressEvent();
 
+    const inlineStyles1 = {
+        inlineStyle1: { flexDirection: 'row' },
+        inlineStyle2: { backgroundColor: backgroundColor },
+        inlineStyle3: { flexDirection: 'row' },
+        inlineStyle4: { backgroundColor: backgroundColor }
+    } as const;
+
     return (
         <>
             {opacity ? (
-                <TouchableOpacity disabled={!active} style={{ flexDirection: 'row' }} onPress={() => handleOnPress()}>
-                    <Text style={[styles.title, styles.button, { backgroundColor: backgroundColor }]}>{title}</Text>
+                <TouchableOpacity disabled={!active} style={inlineStyles1.inlineStyle1} onPress={() => handleOnPress()}>
+                    <Text style={[styles.title, styles.button, inlineStyles1.inlineStyle2]}>{title}</Text>
                 </TouchableOpacity>
             ) : (
-                <Pressable disabled={!active} style={{ flexDirection: 'row' }} onPress={() => handleOnPress()}>
-                    <Text style={[styles.title, styles.button, { backgroundColor: backgroundColor }]}>{title}</Text>
+                <Pressable disabled={!active} style={inlineStyles1.inlineStyle3} onPress={() => handleOnPress()}>
+                    <Text style={[styles.title, styles.button, inlineStyles1.inlineStyle4]}>{title}</Text>
                 </Pressable>
             )}
         </>
     );
 };
-
-export default TextButton;
 
 const styles = StyleSheet.create({
     title: {
@@ -44,3 +49,5 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     }
 });
+
+export default TextButton;

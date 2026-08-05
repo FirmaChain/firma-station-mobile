@@ -7,9 +7,13 @@ interface IProps {
 }
 
 const DappsSkeleton = ({ size }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { paddingHorizontal: 10, height: size - 20 }
+    } as const;
+
     return (
         <View style={styles.contentWrap}>
-            <View style={{ paddingHorizontal: 10, height: size - 20 }}>
+            <View style={inlineStyles1.inlineStyle1}>
                 <ContentLoader speed={0.8} animate={true} foregroundColor={DividerColor} backgroundColor={BoxColor}>
                     <Rect x="0" y="0" rx="8" ry="8" width={'100%'} height={size - 20} />
                     {/* <Rect x="0" y={size - 10} rx="4" ry="4" width={'100%'} height={15} /> */}

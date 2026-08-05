@@ -27,18 +27,20 @@ const ConnectedSign = () => {
         height: sizeAnim
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { width: animatedStyle.width, height: animatedStyle.height }
+    } as const;
+
     return (
         <View style={styles.connectedWrap}>
             <View style={styles.dotWrap}>
-                <Animated.View style={[styles.dotShadow, { width: animatedStyle.width, height: animatedStyle.height }]} />
+                <Animated.View style={[styles.dotShadow, inlineStyles1.inlineStyle1]} />
                 <View style={styles.dot} />
             </View>
             <Text style={styles.connectedTitle}>{'LIVE'}</Text>
         </View>
     );
 };
-
-export default ConnectedSign;
 
 const styles = StyleSheet.create({
     connectedWrap: {
@@ -70,3 +72,5 @@ const styles = StyleSheet.create({
         borderRadius: 100
     }
 });
+
+export default ConnectedSign;

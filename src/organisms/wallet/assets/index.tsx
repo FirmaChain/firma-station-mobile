@@ -84,9 +84,15 @@ const Assets = () => {
         setOpenAddCWContractModal(_isAdded);
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { justifyContent: 'space-between' },
+        inlineStyle2: { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' },
+        inlineStyle3: { borderBottomColor: tab === 1 ? WhiteColor : 'transparent' }
+    } as const;
+
     return (
         <Container backEvent={handleBack} titleOn={false}>
-            <View style={[styles.listBox, { justifyContent: 'space-between' }]}>
+            <View style={[styles.listBox, inlineStyles1.inlineStyle1]}>
                 <View style={styles.titleBox}>
                     <Text style={styles.title}>{'Assets'}</Text>
                     <View style={styles.titleButtonBox}>
@@ -102,16 +108,10 @@ const Assets = () => {
                 </View>
                 <View style={styles.listContainer}>
                     <View style={styles.tabBox}>
-                        <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: tab === 0 ? WhiteColor : 'transparent' }]}
-                            onPress={() => handleTab(0)}
-                        >
+                        <TouchableOpacity style={[styles.tab, inlineStyles1.inlineStyle2]} onPress={() => handleTab(0)}>
                             <Text style={tab === 0 ? styles.tabTitleActive : styles.tabTitleInactive}>{'CW 20'}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.tab, { borderBottomColor: tab === 1 ? WhiteColor : 'transparent' }]}
-                            onPress={() => handleTab(1)}
-                        >
+                        <TouchableOpacity style={[styles.tab, inlineStyles1.inlineStyle3]} onPress={() => handleTab(1)}>
                             <Text style={tab === 1 ? styles.tabTitleActive : styles.tabTitleInactive}>{'CW 721'}</Text>
                         </TouchableOpacity>
                     </View>

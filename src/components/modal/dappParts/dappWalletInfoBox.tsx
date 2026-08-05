@@ -9,16 +9,16 @@ interface IProps {
 const DappWalletInfoBox = ({ name, address }: IProps) => {
     return (
         <View style={styles.infoBox}>
-            <View style={[styles.boxV, { alignItems: 'flex-start' }]}>
-                <View style={{ flexDirection: 'row', paddingBottom: 8 }}>
-                    <Text style={[styles.address, { flex: 1 }]}>{'Wallet : '}</Text>
-                    <Text style={[styles.address, { flex: 3 }]} numberOfLines={1} ellipsizeMode="middle">
+            <View style={[styles.boxV, styles.inlineStyle1]}>
+                <View style={styles.inlineStyle2}>
+                    <Text style={[styles.address, styles.inlineStyle3]}>{'Wallet : '}</Text>
+                    <Text style={[styles.address, styles.inlineStyle4]} numberOfLines={1} ellipsizeMode="middle">
                         {name}
                     </Text>
                 </View>
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={[styles.address, { flex: 1 }]}>{'Address : '}</Text>
-                    <Text style={[styles.address, { flex: 3 }]} numberOfLines={1} ellipsizeMode="middle">
+                <View style={styles.inlineStyle5}>
+                    <Text style={[styles.address, styles.inlineStyle6]}>{'Address : '}</Text>
+                    <Text style={[styles.address, styles.inlineStyle7]} numberOfLines={1} ellipsizeMode="middle">
                         {address}
                     </Text>
                 </View>
@@ -28,6 +28,13 @@ const DappWalletInfoBox = ({ name, address }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'flex-start' },
+    inlineStyle2: { flexDirection: 'row', paddingBottom: 8 },
+    inlineStyle3: { flex: 1 },
+    inlineStyle4: { flex: 3 },
+    inlineStyle5: { flexDirection: 'row' },
+    inlineStyle6: { flex: 1 },
+    inlineStyle7: { flex: 3 },
     infoBox: {
         paddingHorizontal: 30,
         paddingVertical: 15,

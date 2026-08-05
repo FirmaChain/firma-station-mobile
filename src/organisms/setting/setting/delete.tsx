@@ -53,8 +53,8 @@ const Delete = ({ walletName, walletAddress, handleDisconnect }: IProps) => {
     return (
         <View>
             <TouchableOpacity onPress={() => handleDelModal(true)}>
-                <View style={[styles.listItem, { justifyContent: 'center' }]}>
-                    <Text style={[styles.itemTitle, { color: 'tomato', fontWeight: 'bold' }]}>Delete Wallet</Text>
+                <View style={[styles.listItem, styles.inlineStyle1]}>
+                    <Text style={[styles.itemTitle, styles.inlineStyle2]}>Delete Wallet</Text>
                 </View>
             </TouchableOpacity>
 
@@ -69,6 +69,8 @@ const Delete = ({ walletName, walletAddress, handleDisconnect }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { justifyContent: 'center' },
+    inlineStyle2: { color: 'tomato', fontWeight: 'bold' },
     listItem: {
         backgroundColor: BoxColor,
         padding: 20,

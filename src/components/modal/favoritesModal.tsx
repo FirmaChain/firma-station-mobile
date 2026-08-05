@@ -92,6 +92,26 @@ const FavoritesModal = ({ open, address, memo, setOpenModal, setValue, handleCre
         }
     }, [open, address, memo]);
 
+    const inlineStyles1 = {
+        inlineStyle1: { marginBottom: FavoriteExist ? 20 : 10 },
+        inlineStyle2: { flexDirection: 'row', alignItems: 'center' },
+        inlineStyle3: {
+            marginRight: FavoriteExist ? 5 : 16,
+            paddingLeft: 10,
+            paddingRight: 5
+        },
+        inlineStyle4: {
+            opacity: AnimationState.addOpacity
+        },
+        inlineStyle5: { display: FavoriteExist ? 'flex' : 'none', paddingRight: FavoriteExist ? 10 : 0 },
+        inlineStyle6: {
+            height: 300,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: BgColor
+        }
+    } as const;
+
     return (
         <CustomModal
             visible={open}
@@ -100,35 +120,22 @@ const FavoritesModal = ({ open, address, memo, setOpenModal, setValue, handleCre
             forceActive={true}
             handleOpen={open === false ? () => null : handleOpenModal}
         >
-            <View style={[styles.modalContainer, { marginBottom: FavoriteExist ? 20 : 10 }]}>
+            <View style={[styles.modalContainer, inlineStyles1.inlineStyle1]}>
                 <View style={styles.headerBox}>
                     <Text style={styles.headerTitle}>{'Favorites'}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={inlineStyles1.inlineStyle2}>
                         <TouchableOpacity
                             hitSlop={{ top: 5, bottom: 5, left: 0, right: 0 }}
-                            style={{
-                                marginRight: FavoriteExist ? 5 : 16,
-                                paddingLeft: 10,
-                                paddingRight: 5
-                            }}
+                            style={inlineStyles1.inlineStyle3}
                             onPress={() => {
                                 if (isEdit === false) handleCreateFavorite(true);
                             }}
                         >
-                            <Text
-                                style={[
-                                    styles.headerEditButton,
-                                    {
-                                        opacity: AnimationState.addOpacity
-                                    }
-                                ]}
-                            >
-                                {'Add'}
-                            </Text>
+                            <Text style={[styles.headerEditButton, inlineStyles1.inlineStyle4]}>{'Add'}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             hitSlop={{ top: 5, bottom: 5, left: 0, right: 0 }}
-                            style={[styles.editButton, { display: FavoriteExist ? 'flex' : 'none', paddingRight: FavoriteExist ? 10 : 0 }]}
+                            style={[styles.editButton, inlineStyles1.inlineStyle5]}
                             onPress={() => setIsEdit(!isEdit)}
                         >
                             <Text style={styles.headerEditButton}>{isEdit ? 'Done' : 'Edit'}</Text>
@@ -144,14 +151,7 @@ const FavoritesModal = ({ open, address, memo, setOpenModal, setValue, handleCre
                         onPressEventForEdit={handleSelectWalletForEdit}
                     />
                 ) : (
-                    <View
-                        style={{
-                            height: 300,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: BgColor
-                        }}
-                    >
+                    <View style={inlineStyles1.inlineStyle6}>
                         <Text style={styles.notice}>{NO_FAVORITE}</Text>
                     </View>
                 )}
@@ -180,28 +180,6 @@ const styles = StyleSheet.create({
         color: TextCatTitleColor,
         paddingHorizontal: 10
     },
-    //   inputContainer: {
-    //     paddingHorizontal: 20,
-    //   },
-    //   textContainer: {
-    //     display: 'flex',
-    //     alignItems: 'center',
-    //     justifyContent: 'space-between',
-    //     flexDirection: 'row',
-    //   },
-    //   text: {
-    //     flex: 1,
-    //     fontFamily: Lato,
-    //     fontSize: 14,
-    //     color: TextCatTitleColor,
-    //   },
-    //   input: {
-    //     color: TextColor,
-    //     padding: 12,
-    //     borderWidth: 1,
-    //     backgroundColor: InputBgColor,
-    //     marginBottom: 5,
-    //   },
     editButton: {
         paddingRight: 10
     },

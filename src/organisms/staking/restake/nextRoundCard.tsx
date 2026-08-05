@@ -91,26 +91,38 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
         Linking.openURL(CHAIN_NETWORK[network].RESTAKE_URL);
     };
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingBottom: 20 },
+        inlineStyle2: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' },
+        inlineStyle3: { fontSize: 16, color: TextCatTitleColor },
+        inlineStyle4: { flexDirection: 'row', alignItems: 'flex-start' },
+        inlineStyle5: { fontSize: 13, opacity: 0.7 },
+        inlineStyle6: { fontSize: 10, opacity: 0.7 },
+        inlineStyle7: { fontSize: 13, opacity: 0.7 },
+        inlineStyle8: { backgroundColor: defaultColor + '30', color: defaultColor, marginLeft: 6 },
+        inlineStyle9: { paddingRight: 6 },
+        inlineStyle10: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' },
+        inlineStyle11: { fontSize: 16, color: TextCatTitleColor }
+    } as const;
+
     return (
         <React.Fragment>
             {grantExist ? (
                 <View style={styles.infoBox}>
-                    <TouchableOpacity style={[styles.wrapper, { paddingBottom: 20 }]} onPress={handleMoveToWeb}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                            <Text style={[styles.text, { fontSize: 16, color: TextCatTitleColor }]}>{'Next Round'}</Text>
-                            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-                                <Text style={[styles.text, { fontSize: 13, opacity: 0.7 }]}>{`  (${nextRound}`}</Text>
-                                <Text style={[styles.text, { fontSize: 10, opacity: 0.7 }]}>{`${createOrdinal(nextRound)}`}</Text>
-                                <Text style={[styles.text, { fontSize: 13, opacity: 0.7 }]}>{')'}</Text>
+                    <TouchableOpacity style={[styles.wrapper, inlineStyles1.inlineStyle1]} onPress={handleMoveToWeb}>
+                        <View style={inlineStyles1.inlineStyle2}>
+                            <Text style={[styles.text, inlineStyles1.inlineStyle3]}>{'Next Round'}</Text>
+                            <View style={inlineStyles1.inlineStyle4}>
+                                <Text style={[styles.text, inlineStyles1.inlineStyle5]}>{`  (${nextRound}`}</Text>
+                                <Text style={[styles.text, inlineStyles1.inlineStyle6]}>{`${createOrdinal(nextRound)}`}</Text>
+                                <Text style={[styles.text, inlineStyles1.inlineStyle7]}>{')'}</Text>
                             </View>
                         </View>
                         <ForwardArrow size={16} color={TextCatTitleColor} />
                     </TouchableOpacity>
                     <View style={styles.wrapper}>
                         <Text style={styles.text}>{'Remaining Time'}</Text>
-                        <Text style={[styles.label, { backgroundColor: defaultColor + '30', color: defaultColor, marginLeft: 6 }]}>
-                            {nextRoundDateTime}
-                        </Text>
+                        <Text style={[styles.label, inlineStyles1.inlineStyle8]}>{nextRoundDateTime}</Text>
                     </View>
                     <View style={styles.wrapper}>
                         <Text style={styles.text}>{'Restake Amount'}</Text>
@@ -119,8 +131,10 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
                     <View style={styles.wrapper}>
                         <Text style={styles.text}>{'Restake Validators'}</Text>
                         <TouchableOpacity style={styles.textButton} onPress={() => handleOpenListModal(true)}>
-                            <Text style={[styles.text, expectationCount > 0 ? { color: RestakeActiveColor } : {}]}>{expectationCount}</Text>
-                            <Text style={[styles.text, { paddingRight: 6 }]}>{'/' + totalCount}</Text>
+                            <Text style={[styles.text, expectationCount > 0 ? styles.inlineStyle1 : styles.inlineStyle2]}>
+                                {expectationCount}
+                            </Text>
+                            <Text style={[styles.text, inlineStyles1.inlineStyle9]}>{'/' + totalCount}</Text>
                             <DownArrow size={12} color={GrayColor} />
                         </TouchableOpacity>
                     </View>
@@ -128,8 +142,8 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
             ) : (
                 <View style={styles.infoBox}>
                     <TouchableOpacity style={styles.wrapper} onPress={handleMoveToWeb}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                            <Text style={[styles.text, { fontSize: 16, color: TextCatTitleColor }]}>{'More Information'}</Text>
+                        <View style={inlineStyles1.inlineStyle10}>
+                            <Text style={[styles.text, inlineStyles1.inlineStyle11]}>{'More Information'}</Text>
                         </View>
                         <ForwardArrow size={16} color={TextCatTitleColor} />
                     </TouchableOpacity>
@@ -140,6 +154,8 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { color: RestakeActiveColor },
+    inlineStyle2: {},
     infoBox: {
         marginVertical: 10,
         paddingHorizontal: 20,
@@ -173,18 +189,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     }
-    //   boxH: {
-    //     width: '100%',
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //   },
-    //   arrowIcon: {
-    //     width: 16,
-    //     maxWidth: 16,
-    //     height: 16,
-    //     overflow: 'hidden',
-    //     marginLeft: 2,
-    //   },
 });
 
 export default NextRoundCard;

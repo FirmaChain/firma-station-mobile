@@ -262,20 +262,20 @@ const LoginCheck = () => {
         };
     }, [maintenanceState]);
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            justifyContent: dimActive ? 'center' : 'space-between',
+            paddingBottom: isKeyboardShown ? 20 : 0
+        },
+        inlineStyle2: { opacity: fadeAnimEnterButton }
+    } as const;
+
     return (
         <ViewContainer bgColor={BgColor}>
             <KeyboardAvoidingView enabled={true} behavior={Platform.select({ android: undefined, ios: 'padding' })}>
                 {walletName !== '' && (
                     <Pressable onPress={() => Keyboard.dismiss()}>
-                        <Animated.View
-                            style={[
-                                styles.viewContainer,
-                                {
-                                    justifyContent: dimActive ? 'center' : 'space-between',
-                                    paddingBottom: isKeyboardShown ? 20 : 0
-                                }
-                            ]}
-                        >
+                        <Animated.View style={[styles.viewContainer, inlineStyles1.inlineStyle1]}>
                             {dimActive === false && (
                                 <TouchableOpacity style={styles.disconnect} onPress={() => handleDisconnect()}>
                                     <Text style={styles.disconnectText}>Disconnect</Text>
@@ -283,7 +283,7 @@ const LoginCheck = () => {
                             )}
                             <Description title={Title} desc={Desc} />
                             {dimActive && (
-                                <Animated.View style={[styles.enterButtonBox, { opacity: fadeAnimEnterButton }]}>
+                                <Animated.View style={[styles.enterButtonBox, inlineStyles1.inlineStyle2]}>
                                     <Button title="Enter" active={true} onPressEvent={() => openSelectWallet()} />
                                 </Animated.View>
                             )}

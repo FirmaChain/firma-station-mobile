@@ -147,16 +147,6 @@ const styles = StyleSheet.create({
         flex: 3,
         paddingHorizontal: 20
     },
-    // contents: {
-    //     flex: 2,
-    //     paddingVertical: 20
-    // },
-    // wallet: {
-    //     paddingVertical: 10,
-    //     fontSize: 20,
-    //     fontWeight: 'bold',
-    //     color: '#aaa'
-    // },
     buttonBox: {
         flex: 1,
         justifyContent: 'flex-end'

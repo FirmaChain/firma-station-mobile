@@ -15,7 +15,7 @@ const TitleBar = ({ title, subTitle = '', handleGuide }: IProps) => {
         <Pressable style={styles.container} onPress={() => Keyboard.dismiss()}>
             <Text style={styles.title}>
                 {title}
-                {subTitle !== '' && <Text style={[styles.title, { fontSize: 14, color: InputPlaceholderColor }]}>{` ${subTitle}`}</Text>}
+                {subTitle !== '' && <Text style={[styles.title, styles.inlineStyle1]}>{` ${subTitle}`}</Text>}
             </Text>
             {handleGuide && (
                 <TouchableOpacity style={styles.guide} onPress={() => handleGuide()}>
@@ -27,6 +27,7 @@ const TitleBar = ({ title, subTitle = '', handleGuide }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { fontSize: 14, color: InputPlaceholderColor },
     container: {
         height: 50,
         width: ScreenWidth(),

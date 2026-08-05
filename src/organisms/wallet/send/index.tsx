@@ -167,7 +167,7 @@ const Send = () => {
         <Container title="Send" handleGuide={handleMoveToWeb} backEvent={handleBack}>
             <ViewContainer bgColor={BgColor}>
                 <View style={styles.container}>
-                    <View style={{ flex: 6 }}>
+                    <View style={styles.inlineStyle1}>
                         <ScrollView keyboardShouldPersistTaps={'handled'}>
                             <BalanceInfo available={balance} />
                             <SendTypeSelector type={activeType} handleType={setActiveType} />
@@ -180,7 +180,7 @@ const Send = () => {
                             />
                         </ScrollView>
                     </View>
-                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                    <View style={styles.inlineStyle2}>
                         <Button title="Send" active={activeToSend} onPressEvent={() => handleSend()} />
                     </View>
                     <TransactionConfirmModal
@@ -209,6 +209,8 @@ const Send = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { flex: 6 },
+    inlineStyle2: { flex: 1, justifyContent: 'flex-end' },
     container: {
         flex: 1,
         paddingHorizontal: 20

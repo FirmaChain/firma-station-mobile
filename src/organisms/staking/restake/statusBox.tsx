@@ -43,32 +43,32 @@ const StatusBox = ({ grantState, delegationState, minimumRewards }: IProps) => {
         return `${minimumRewards} ${_CHAIN_SYMBOL} (per validator)`;
     }, [minimumRewards]);
 
+    const inlineStyles1 = {
+        inlineStyle1: {
+            backgroundColor: restakeStatus.color + '30',
+            color: restakeStatus.color,
+            opacity: delegationExist === null ? 0 : 1
+        },
+        inlineStyle2: { paddingBottom: 10 },
+        inlineStyle3: { flexDirection: 'row', alignItems: 'center' },
+        inlineStyle4: { paddingBottom: 10 }
+    } as const;
+
     return (
         <View>
             <View style={styles.wrapper}>
                 <Text style={styles.text}>Restake Status</Text>
-                <Text
-                    style={[
-                        styles.label,
-                        {
-                            backgroundColor: restakeStatus.color + '30',
-                            color: restakeStatus.color,
-                            opacity: delegationExist === null ? 0 : 1
-                        }
-                    ]}
-                >
-                    {restakeStatus.title}
-                </Text>
+                <Text style={[styles.label, inlineStyles1.inlineStyle1]}>{restakeStatus.title}</Text>
             </View>
             {grantExist && (
                 <React.Fragment>
-                    <View style={[styles.wrapper, { paddingBottom: 10 }]}>
+                    <View style={[styles.wrapper, inlineStyles1.inlineStyle2]}>
                         <Text style={styles.text}>{'Expiry Date '}</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={inlineStyles1.inlineStyle3}>
                             <Text style={styles.text}>{convertTime(grantState.expire, false, false)}</Text>
                         </View>
                     </View>
-                    <View style={[styles.wrapper, { paddingBottom: 10 }]}>
+                    <View style={[styles.wrapper, inlineStyles1.inlineStyle4]}>
                         <Text style={styles.text}>{'Minimum Rewards'}</Text>
                         <Text style={styles.text}>{conditions}</Text>
                     </View>

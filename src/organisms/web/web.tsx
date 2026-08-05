@@ -63,7 +63,7 @@ const Web = ({ uri }: IProps) => {
     const CloseButton = () => {
         return (
             <React.Fragment>
-                <Pressable style={{ paddingHorizontal: 20 }} onPress={handleBack}>
+                <Pressable style={styles.inlineStyle1} onPress={handleBack}>
                     <Close size={30} color={WhiteColor} />
                 </Pressable>
             </React.Fragment>
@@ -71,15 +71,15 @@ const Web = ({ uri }: IProps) => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: BoxDarkColor }]}>
+        <View style={[styles.container, styles.inlineStyle2]}>
             <View style={styles.box}>
                 <CloseButton />
-                <View style={[styles.box, { justifyContent: 'flex-end', paddingHorizontal: 20 }]}>
+                <View style={[styles.box, styles.inlineStyle3]}>
                     <TouchableOpacity
                         disabled={backArrowActive === false}
                         onPress={() => onPressTools('back')}
                         hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-                        style={{ marginRight: 20 }}
+                        style={styles.inlineStyle4}
                     >
                         <BackArrow size={25} color={backArrowActive ? WhiteColor : DisableButtonColor} />
                     </TouchableOpacity>
@@ -87,7 +87,7 @@ const Web = ({ uri }: IProps) => {
                         disabled={forwardArrowActive === false}
                         onPress={() => onPressTools('forward')}
                         hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-                        style={{ marginRight: 20 }}
+                        style={styles.inlineStyle5}
                     >
                         <ForwardArrow size={25} color={forwardArrowActive ? WhiteColor : DisableButtonColor} />
                     </TouchableOpacity>
@@ -109,6 +109,11 @@ const Web = ({ uri }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingHorizontal: 20 },
+    inlineStyle2: { backgroundColor: BoxDarkColor },
+    inlineStyle3: { justifyContent: 'flex-end', paddingHorizontal: 20 },
+    inlineStyle4: { marginRight: 20 },
+    inlineStyle5: { marginRight: 20 },
     container: {
         flex: 1
     },

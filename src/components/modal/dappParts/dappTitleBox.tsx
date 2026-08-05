@@ -10,6 +10,10 @@ interface IProps {
 }
 
 const DappTitleBox = ({ title, descExist, desc = '', iconURL }: IProps) => {
+    const inlineStyles1 = {
+        inlineStyle1: { display: descExist ? 'flex' : 'none' }
+    } as const;
+
     return (
         <Fragment>
             {iconURL !== '' && (
@@ -18,7 +22,7 @@ const DappTitleBox = ({ title, descExist, desc = '', iconURL }: IProps) => {
                 </View>
             )}
             <Text style={styles.title}>{title}</Text>
-            <Text style={[styles.desc, { display: descExist ? 'flex' : 'none' }]}>{desc}</Text>
+            <Text style={[styles.desc, inlineStyles1.inlineStyle1]}>{desc}</Text>
         </Fragment>
     );
 };

@@ -109,8 +109,6 @@ const MnemonicQuiz = ({ mnemonic, handleConfirm }: IProps) => {
     );
 };
 
-export default MnemonicQuiz;
-
 const styles = StyleSheet.create({
     conatainer: {},
     quizContainer: {
@@ -121,3 +119,5 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20
     }
 });
+
+export default MnemonicQuiz;

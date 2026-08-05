@@ -80,27 +80,30 @@ const InfoBox = ({ data }: IProps) => {
         }, [loading]);
 
         const renderItem = useCallback(() => {
+            const inlineStyles1 = {
+                inlineStyle1: { opacity: fadeAnimText },
+                inlineStyle2: { color: color, opacity: fadeAnimText, flex: 0, paddingLeft: 5, lineHeight: 17 },
+                inlineStyle3: { width: 15, height: 15 },
+                inlineStyle4: { width: '90%', height: 16, marginLeft: 10 }
+            } as const;
+
             return (
                 <Fragment>
                     {loaded ? (
                         <View style={styles.wrap}>
-                            <Animated.View style={{ opacity: fadeAnimText }}>
+                            <Animated.View style={inlineStyles1.inlineStyle1}>
                                 <ValidatorProfile uri={imageURI ?? ''} size={15} />
                             </Animated.View>
-                            <Animated.Text
-                                style={[styles.value, { color: color, opacity: fadeAnimText, flex: 0, paddingLeft: 5, lineHeight: 17 }]}
-                                numberOfLines={1}
-                                ellipsizeMode={'middle'}
-                            >
+                            <Animated.Text style={[styles.value, inlineStyles1.inlineStyle2]} numberOfLines={1} ellipsizeMode={'middle'}>
                                 {title}
                             </Animated.Text>
                         </View>
                     ) : (
                         <View style={styles.wrap}>
-                            <View style={{ width: 15, height: 15 }}>
+                            <View style={inlineStyles1.inlineStyle3}>
                                 <CircleSkeleton size={15} marginBottom={0} />
                             </View>
-                            <View style={{ width: '90%', height: 16, marginLeft: 10 }}>
+                            <View style={inlineStyles1.inlineStyle4}>
                                 <TextSkeleton height={16} />
                             </View>
                         </View>
@@ -112,27 +115,34 @@ const InfoBox = ({ data }: IProps) => {
         return renderItem();
     };
 
+    const inlineStyles2 = {
+        inlineStyle1: { paddingBottom: 10 },
+        inlineStyle2: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            flex: 4,
+            paddingLeft: 2
+        },
+        inlineStyle3: { marginRight: 3 },
+        inlineStyle4: { flex: 0 },
+        inlineStyle5: { flex: 0, fontSize: 14, color: TextDarkGrayColor },
+        inlineStyle6: { maxHeight: collection.name === '' ? 0 : 100 }
+    } as const;
+
     return (
-        <View style={{ paddingBottom: 10 }}>
+        <View style={inlineStyles2.inlineStyle1}>
             <View style={styles.box}>
                 <Text style={styles.title}>Blockchain</Text>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        flex: 4,
-                        paddingLeft: 2
-                    }}
-                >
-                    <FirmaLogo width={15} height={15} color={TextGrayColor} style={{ marginRight: 3 }} />
-                    <Text style={[styles.value, { flex: 0 }]}>
+                <View style={inlineStyles2.inlineStyle2}>
+                    <FirmaLogo width={15} height={15} color={TextGrayColor} style={inlineStyles2.inlineStyle3} />
+                    <Text style={[styles.value, inlineStyles2.inlineStyle4]}>
                         {'FIRMACHAIN '}
-                        <Text style={[styles.value, { flex: 0, fontSize: 14, color: TextDarkGrayColor }]}>{chainID}</Text>
+                        <Text style={[styles.value, inlineStyles2.inlineStyle5]}>{chainID}</Text>
                     </Text>
                 </View>
             </View>
-            <View style={[styles.box, { maxHeight: collection.name === '' ? 0 : 100 }]}>
+            <View style={[styles.box, inlineStyles2.inlineStyle6]}>
                 <Text style={styles.title}>Collection</Text>
                 <InfoDataRender
                     title={collection.name === null ? '' : collection.name}
@@ -190,12 +200,6 @@ const styles = StyleSheet.create({
         color: TextColor,
         textAlign: 'right'
     }
-    //   linkWrapper: {
-    //     backgroundColor: TextAddressColor + '20',
-    //     paddingVertical: 5,
-    //     paddingHorizontal: 10,
-    //     borderRadius: 4,
-    //   },
 });
 
 export default memo(InfoBox);

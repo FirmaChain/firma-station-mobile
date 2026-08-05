@@ -92,51 +92,60 @@ const PercentageBox = ({ data }: IProps) => {
         [PercentageData]
     );
 
+    const inlineStyles1 = {
+        inlineStyle1: { paddingHorizontal: 20, paddingVertical: 18, marginBottom: 16 },
+        inlineStyle2: { flex: 1, justifyContent: 'space-around' },
+        inlineStyle3: { color: DataExist ? TextColor : TextDisableColor },
+        inlineStyle4: { flex: 1, justifyContent: 'space-around' },
+        inlineStyle5: { color: DataExist ? TextColor : TextDisableColor },
+        inlineStyle6: { paddingVertical: 24 }
+    } as const;
+
     return (
         <View style={styles.container}>
-            <View style={[styles.box, { paddingHorizontal: 20, paddingVertical: 18, marginBottom: 16 }]}>
-                <View style={[styles.wrapperH, { flex: 1, justifyContent: 'space-around' }]}>
+            <View style={[styles.box, inlineStyles1.inlineStyle1]}>
+                <View style={[styles.wrapperH, inlineStyles1.inlineStyle2]}>
                     <Text style={styles.title}>APR</Text>
-                    <Text style={[styles.data, { color: DataExist ? TextColor : TextDisableColor }]}>{APR} %</Text>
+                    <Text style={[styles.data, inlineStyles1.inlineStyle3]}>{APR} %</Text>
                 </View>
                 <View style={styles.divider} />
-                <View style={[styles.wrapperH, { flex: 1, justifyContent: 'space-around' }]}>
+                <View style={[styles.wrapperH, inlineStyles1.inlineStyle4]}>
                     <Text style={styles.title}>APY</Text>
-                    <Text style={[styles.data, { color: DataExist ? TextColor : TextDisableColor }]}>{APY} %</Text>
+                    <Text style={[styles.data, inlineStyles1.inlineStyle5]}>{APY} %</Text>
                 </View>
             </View>
 
-            <View style={[styles.box, { paddingVertical: 24 }]}>
+            <View style={[styles.box, inlineStyles1.inlineStyle6]}>
                 <View style={styles.wrapBox}>
                     {PercentageData.map((grid, index) => {
                         return (
-                            <View key={index} style={[styles.wrapperH, index < PercentageData.length - 1 && { paddingBottom: 34 }]}>
+                            <View key={index} style={[styles.wrapperH, index < PercentageData.length - 1 && styles.inlineStyle1]}>
                                 {grid.row.map((item, index: number) => {
+                                    const inlineStyles2 = {
+                                        inlineStyle1: { flex: 1, alignItems: 'center' },
+                                        inlineStyle2: { alignItems: 'center', flex: 1 },
+                                        inlineStyle3: { fontSize: 14, paddingBottom: 10, color: TextDarkGrayColor },
+                                        inlineStyle4: {
+                                            fontSize: 22,
+                                            paddingBottom: 6,
+                                            color: DataExist ? TextColor : TextDisableColor
+                                        },
+                                        inlineStyle5: { color: DataExist ? TextGrayColor : TextDisableColor },
+                                        inlineStyle6: { height: 54 }
+                                    } as const;
+
                                     return (
-                                        <View key={index} style={[styles.wrapperH, { flex: 1, alignItems: 'center' }]}>
-                                            <View style={[styles.wrapperV, { alignItems: 'center', flex: 1 }]}>
-                                                <Text style={[styles.title, { fontSize: 14, paddingBottom: 10, color: TextDarkGrayColor }]}>
-                                                    {item.title}
-                                                </Text>
-                                                <Text
-                                                    style={[
-                                                        styles.data,
-                                                        {
-                                                            fontSize: 22,
-                                                            paddingBottom: 6,
-                                                            color: DataExist ? TextColor : TextDisableColor
-                                                        }
-                                                    ]}
-                                                >
-                                                    {handlePercentage(item.data)}
-                                                </Text>
+                                        <View key={index} style={[styles.wrapperH, inlineStyles2.inlineStyle1]}>
+                                            <View style={[styles.wrapperV, inlineStyles2.inlineStyle2]}>
+                                                <Text style={[styles.title, inlineStyles2.inlineStyle3]}>{item.title}</Text>
+                                                <Text style={[styles.data, inlineStyles2.inlineStyle4]}>{handlePercentage(item.data)}</Text>
                                                 {item.amount === undefined ? null : (
-                                                    <Text style={[styles.desc, { color: DataExist ? TextGrayColor : TextDisableColor }]}>
+                                                    <Text style={[styles.desc, inlineStyles2.inlineStyle5]}>
                                                         {handleAmount(item.amount)}
                                                     </Text>
                                                 )}
                                             </View>
-                                            {index < grid.row.length - 1 && <View style={[styles.divider, { height: 54 }]} />}
+                                            {index < grid.row.length - 1 && <View style={[styles.divider, inlineStyles2.inlineStyle6]} />}
                                         </View>
                                     );
                                 })}
@@ -150,6 +159,7 @@ const PercentageBox = ({ data }: IProps) => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingBottom: 34 },
     container: {
         paddingHorizontal: 20,
         marginBottom: 16
@@ -195,14 +205,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: TextGrayColor
     }
-    // borderBox: {
-    //     width: width,
-    //     marginTop: marginVertical,
-    //     marginBottom: marginVertical,
-    //     marginLeft: marginHorizontal,
-    //     marginRight: marginHorizontal,
-    //     alignItems: 'center'
-    // }
 });
 
 export default PercentageBox;

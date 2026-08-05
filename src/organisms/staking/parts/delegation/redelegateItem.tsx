@@ -16,17 +16,19 @@ interface IProps {
 
 const RedelegateItem = ({ data, navigate }: IProps) => {
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
+
     return (
         <View style={styles.item}>
             <MonikerSectionForRedelegate validators={data} navigateValidator={navigate} />
             <DataSection title="Amount" data={`${convertAmount({ value: data.balance })} ${_CHAIN_SYMBOL}`} />
             <DataSection title="Linked Until" data={convertTime(data.completionTime, true)} />
-            <View style={{ paddingBottom: 22 }} />
+            <View style={styles.inlineStyle1} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { paddingBottom: 22 },
     item: {
         paddingTop: 22,
         backgroundColor: BgColor

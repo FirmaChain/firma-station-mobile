@@ -122,27 +122,21 @@ const DappServiceRegistModal = () => {
             toastInModal={false}
         >
             <View style={styles.modalTextContents}>
-                <View style={[styles.boxV, { alignItems: 'center' }]}>
+                <View style={[styles.boxV, styles.inlineStyle1]}>
                     {project !== undefined && (
                         <View style={styles.projectBox}>
-                            <Image
-                                style={{ width: 14, height: 14, resizeMode: 'contain', borderRadius: 10 }}
-                                source={{ uri: project.icon }}
-                            />
-                            <Text style={[styles.url, { paddingBottom: 0, paddingHorizontal: 10 }]}>{project.name}</Text>
+                            <Image style={styles.inlineStyle2} source={{ uri: project.icon }} />
+                            <Text style={[styles.url, styles.inlineStyle3]}>{project.name}</Text>
                         </View>
                     )}
                     {service !== undefined && (
                         <React.Fragment>
                             <View style={styles.logoBox}>
-                                <Image
-                                    style={{ width: 85, height: 85, resizeMode: 'contain', borderRadius: 10 }}
-                                    source={{ uri: service.icon }}
-                                />
+                                <Image style={styles.inlineStyle4} source={{ uri: service.icon }} />
                             </View>
                             <Text style={styles.desc}>{service.name}</Text>
                             {serviceRegistered ? (
-                                <Text style={[styles.title, { color: TextWarnColor }]}>{DAPP_SERVICE_EXIST_NOTICE}</Text>
+                                <Text style={[styles.title, styles.inlineStyle5]}>{DAPP_SERVICE_EXIST_NOTICE}</Text>
                             ) : (
                                 <Text style={styles.title}>{DAPP_SERVICE_REGIST}</Text>
                             )}
@@ -150,7 +144,7 @@ const DappServiceRegistModal = () => {
                     )}
                 </View>
                 <View style={styles.modalButtonBox}>
-                    <View style={{ flex: 1 }}>
+                    <View style={styles.inlineStyle6}>
                         <Button
                             title={serviceRegistered ? 'Close' : 'Cancel'}
                             active={true}
@@ -160,8 +154,8 @@ const DappServiceRegistModal = () => {
                     </View>
                     {serviceRegistered === false && (
                         <React.Fragment>
-                            <View style={{ width: 10 }} />
-                            <View style={{ flex: 1 }}>
+                            <View style={styles.inlineStyle7} />
+                            <View style={styles.inlineStyle8}>
                                 <Button title={'Add'} active={true} onPressEvent={() => handleRegistService()} />
                             </View>
                         </React.Fragment>
@@ -173,6 +167,14 @@ const DappServiceRegistModal = () => {
 };
 
 const styles = StyleSheet.create({
+    inlineStyle1: { alignItems: 'center' },
+    inlineStyle2: { width: 14, height: 14, resizeMode: 'contain', borderRadius: 10 },
+    inlineStyle3: { paddingBottom: 0, paddingHorizontal: 10 },
+    inlineStyle4: { width: 85, height: 85, resizeMode: 'contain', borderRadius: 10 },
+    inlineStyle5: { color: TextWarnColor },
+    inlineStyle6: { flex: 1 },
+    inlineStyle7: { width: 10 },
+    inlineStyle8: { flex: 1 },
     boxV: {
         width: '100%',
         alignItems: 'flex-start'
@@ -208,7 +210,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: TextDarkGrayColor
     },
-
     modalTextContents: {
         width: '100%',
         padding: 20

@@ -179,22 +179,20 @@ const Validator = ({ validatorAddress }: IProps) => {
         }, [])
     );
 
+    const inlineStyles1 = {
+        inlineStyle1: { backgroundColor: BoxColor },
+        inlineStyle2: { display: AlertText !== '' ? 'flex' : 'none', backgroundColor: AlertColor }
+    } as const;
+
     return (
         <Fragment>
             <Container titleOn={false} bgColor={BoxColor} backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
                     <RefreshScrollView refreshFunc={refreshStates} background={BoxColor}>
-                        <View style={{ backgroundColor: BoxColor }}>
+                        <View style={inlineStyles1.inlineStyle1}>
                             <Fragment>
                                 <View style={styles.jailedBox}>
-                                    <Text
-                                        style={[
-                                            styles.jailedText,
-                                            { display: AlertText !== '' ? 'flex' : 'none', backgroundColor: AlertColor }
-                                        ]}
-                                    >
-                                        {AlertText}
-                                    </Text>
+                                    <Text style={[styles.jailedText, inlineStyles1.inlineStyle2]}>{AlertText}</Text>
                                 </View>
                                 <DescriptionBox validator={ValidatorDescription} />
                                 <DelegationBox
