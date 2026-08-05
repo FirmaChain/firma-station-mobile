@@ -25,12 +25,15 @@ const logNotification = (message: string, ...detail: unknown[]) => {
     console.info('[FCM]', message, ...detail);
 };
 
-const resolveTitle = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-    return remoteMessage.notification?.title ?? remoteMessage.data?.title ?? 'Notification';
+const resolveTitle = (remoteMessage: FirebaseMessagingTypes.RemoteMessage): string => {
+    const dataTitle = remoteMessage.data?.title;
+    return remoteMessage.notification?.title ?? (typeof dataTitle === 'string' ? dataTitle : 'Notification');
 };
 
-const resolveBody = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-    return remoteMessage.notification?.body ?? remoteMessage.data?.body ?? remoteMessage.data?.message ?? '';
+const resolveBody = (remoteMessage: FirebaseMessagingTypes.RemoteMessage): string => {
+    const dataBody = remoteMessage.data?.body;
+    const dataMessage = remoteMessage.data?.message;
+    return remoteMessage.notification?.body ?? (typeof dataBody === 'string' ? dataBody : typeof dataMessage === 'string' ? dataMessage : '');
 };
 
 const normalizeData = (data: FirebaseMessagingTypes.RemoteMessage['data']): Record<string, string> => {

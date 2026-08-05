@@ -127,12 +127,14 @@ const VotingPercentage = ({ data }: IProps) => {
         );
     }, [tally]);
 
+    const quorumPosition: `${number}%` = `${convertNumber(data.quorum)}%`;
+
     return (
         <View style={styles.wrapper}>
             <RenderTally />
             <View style={styles.quorumWrapper}>
-                <View style={[styles.quorumLine, { left: convertNumber(data.quorum) + '%' }]} />
-                <View style={[styles.quorum, { left: convertNumber(data.quorum) + '%', marginLeft: -9 }]}>
+                <View style={[styles.quorumLine, { left: quorumPosition }]} />
+                <View style={[styles.quorum, { left: quorumPosition, marginLeft: -9 }]}>
                     <UpArrow size={20} color={WhiteColor} />
                 </View>
             </View>

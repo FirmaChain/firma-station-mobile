@@ -36,7 +36,12 @@ interface IProps {
 }
 
 // Custom hook: manange remove animation
-const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | null) => {
+const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | null): {
+    opacity: Animated.Value;
+    height: number | 'auto';
+    padding: number;
+    buttonPadding: number;
+} => {
     const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
 
     return useMemo(() => {

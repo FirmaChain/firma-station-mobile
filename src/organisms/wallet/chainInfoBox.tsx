@@ -21,7 +21,7 @@ const ChainInfoBox = ({ chainInfo }: IProps) => {
         if (data?.market_data === undefined) return 0;
         return makeDecimalPoint(data.market_data.price_change_percentage_24h, 2);
     }, [data]);
-    const isMinus = priceChangePercentage < 0;
+    const isMinus = Number(priceChangePercentage) < 0;
 
     return (
         <View style={styles.container}>

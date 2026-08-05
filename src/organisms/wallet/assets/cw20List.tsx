@@ -109,11 +109,12 @@ const CW20List = ({ isEdit, data }: IProps) => {
     };
 
     const CW20Item = useCallback(
-        ({ item, index = 0, drag }: RenderItemParams<ICW20ContractState>) => {
+        ({ item, getIndex, drag }: RenderItemParams<ICW20ContractState>) => {
+            const index = getIndex() ?? 0;
             const isLastItem = index >= initialData.length - 1;
             const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
 
-            const AnimationStateForRemoveBox = useMemo(() => {
+            const AnimationStateForRemoveBox = useMemo((): { height: number | 'auto'; padding: number; buttonPadding: number } => {
                 easeInAndOutCustomAnim(150);
                 if (item.address.toLowerCase() === removeItemAddr.toLowerCase()) {
                     fadeIn(Animated, fadeAnimForRemove, 300);

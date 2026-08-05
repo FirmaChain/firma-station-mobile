@@ -121,8 +121,8 @@ export const useServerMessage = () => {
     };
 };
 
-export const usePrevious = (value: any) => {
-    const ref = useRef();
+export const usePrevious = <T,>(value: T) => {
+    const ref = useRef<T | undefined>(undefined);
     useEffect(() => {
         ref.current = value;
     });
@@ -130,7 +130,7 @@ export const usePrevious = (value: any) => {
 };
 
 export const useInterval = (callback: () => void, delay: number | null, startAfterDelayed: boolean = false) => {
-    const savedCallback = useRef<() => void>();
+    const savedCallback = useRef<(() => void) | undefined>(undefined);
 
     useEffect(() => {
         savedCallback.current = callback;

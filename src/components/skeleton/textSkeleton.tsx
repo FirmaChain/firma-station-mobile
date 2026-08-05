@@ -1,9 +1,9 @@
 import { BgColor, DividerColor } from '@/constants/theme';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import { View } from 'react-native';
+import { type DimensionValue, View } from 'react-native';
 
 interface IProps {
-    width?: number | string;
+    width?: DimensionValue;
     height: number;
 }
 
