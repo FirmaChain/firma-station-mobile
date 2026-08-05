@@ -281,10 +281,6 @@ const styles = StyleSheet.create({
         backgroundColor: DividerColor,
         marginVertical: 20
     },
-    icon_arrow: {
-        width: 24,
-        height: 24
-    }
 });
 
 export default DelegationBox;

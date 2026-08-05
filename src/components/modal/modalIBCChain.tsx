@@ -64,15 +64,6 @@ const styles = StyleSheet.create({
         fontWeight: 'normal',
         color: TextColor
     },
-    itemSubTitle: {
-        fontFamily: Lato,
-        fontSize: 11,
-        fontWeight: 'normal',
-        color: TextColor,
-        opacity: 0.5,
-        paddingLeft: 5,
-        paddingBottom: 1
-    }
 });
 
 export default ModalIBCChain;

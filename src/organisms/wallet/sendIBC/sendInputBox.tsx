@@ -103,7 +103,7 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
         });
     };
 
-    const handleCreatedFavoriteModal = (_isAdded: boolean) => {
+    const handleCreatedFavoriteModal = () => {
         setOpenFavoriteCreateModal(false);
         const loadingRequestId = CommonActions.beginLoadingProgress();
         wait(600).then(() => {

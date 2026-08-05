@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { IBCConnectedColor } from '@/constants/theme';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 

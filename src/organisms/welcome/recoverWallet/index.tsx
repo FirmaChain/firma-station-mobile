@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { GUIDE_URI } from '@/../config';
-import { CHECK_RECOVER_VALUE, RECOVER_INFO_MESSAGE } from '@/constants/common';
+import { RECOVER_INFO_MESSAGE } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions, ModalActions } from '@/redux/actions';

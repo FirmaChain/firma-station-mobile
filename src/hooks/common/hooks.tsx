@@ -15,12 +15,6 @@ interface IWalletJSONProps {
     timestamp: string;
 }
 
-interface IProposalJSONProps {
-    ignoreProposalAddressList: string[];
-    ignoreProposalIdList: number[];
-    timestamp: string;
-}
-
 export const useWalletJSON = () => {
     const { network } = useAppSelector((state) => state.storage);
 
@@ -101,7 +95,7 @@ export const useServerMessage = () => {
             setMinAppVer(data.minAppVer);
             setCurrentAppVer(data.currentAppVer);
             setMaintenanceState(data.maintenance);
-        } catch (e) {
+        } catch {
             setMinAppVer(undefined);
             setCurrentAppVer(undefined);
             setMaintenanceState(undefined);

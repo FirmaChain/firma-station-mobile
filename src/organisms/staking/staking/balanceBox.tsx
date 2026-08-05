@@ -85,11 +85,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center'
     },
-    dividerV: {
-        width: 1,
-        height: 50,
-        backgroundColor: DisableColor
-    },
     title: {
         fontFamily: Lato,
         fontSize: 14,

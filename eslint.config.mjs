@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint';
 
 export default [
     {
-        ignores: ['node_modules/**', 'android/**', 'ios/**', 'build/**', 'dist/**']
+        ignores: ['node_modules/**', 'android/**', 'ios/**', 'build/**', 'dist/**', 'src/vendor/**']
     },
     js.configs.recommended,
     ...tseslint.configs.recommended,

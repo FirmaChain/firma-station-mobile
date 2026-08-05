@@ -59,7 +59,7 @@ const SendInputBox = ({ handleSendInfo, reset, dstAddress }: IProps) => {
         });
     };
 
-    const handleCreatedFavoriteModal = (_isAdded: boolean) => {
+    const handleCreatedFavoriteModal = () => {
         setOpenFavoriteCreateModal(false);
         const loadingRequestId = CommonActions.beginLoadingProgress();
         wait(600).then(() => {

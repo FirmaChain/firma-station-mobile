@@ -1,11 +1,9 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo } from 'react';
 import { BoxColor, Lato, TextCatTitleColor } from '@/constants/theme';
-import { fadeIn, fadeOut } from '@/util/animation';
 import FastImage, { Source } from '@d11/react-native-fast-image';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { INFTProps } from '@/hooks/dapps/hooks';
-import SquareSkeleton from '@/components/skeleton/squareSkeleton';
 
 interface IProps {
     item: INFTProps;

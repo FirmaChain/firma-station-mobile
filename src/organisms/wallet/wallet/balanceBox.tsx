@@ -223,52 +223,15 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: TextDarkGrayColor
     },
-    stakingWrapper: {
-        flex: 1,
-        height: 51,
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
     divider: {
         height: 1,
         backgroundColor: DisableColor,
         marginVertical: 20
     },
-    dividerV: {
-        width: 0.5,
-        height: 50,
-        backgroundColor: DisableColor
-    },
-    headerBox: {
-        width: '100%',
-        paddingHorizontal: 10,
-        paddingVertical: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: BoxColor
-    },
-    headerTitle: {
-        fontFamily: Lato,
-        fontSize: 18,
-        color: TextCatTitleColor,
-        paddingHorizontal: 10
-    },
     tokenLogo: {
         width: 22.5,
         height: 22.5,
         marginRight: 6
-    },
-    headerAvailableTitle: {
-        fontFamily: Lato,
-        fontSize: 18,
-        color: TextColor,
-        paddingHorizontal: 10
-    },
-    currencyWrapper: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end'
     },
     currency: {
         flexDirection: 'row',

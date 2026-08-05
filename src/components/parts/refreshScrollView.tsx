@@ -38,7 +38,7 @@ const RefreshScrollView = ({
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
 
-    const [activeButton, setActiveButton] = useState(false);
+    const [activeButton] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     const onRefresh = async () => {

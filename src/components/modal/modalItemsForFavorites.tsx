@@ -333,14 +333,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         paddingVertical: 3
     },
-    logo: {
-        width: 20,
-        maxWidth: 20,
-        height: 20,
-        borderRadius: 50,
-        overflow: 'hidden',
-        marginRight: 7
-    },
     address: {
         flex: 1,
         fontFamily: Lato,

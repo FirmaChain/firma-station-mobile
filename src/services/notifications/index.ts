@@ -6,7 +6,6 @@ import { getApp, getApps } from '@react-native-firebase/app';
 import {
     FirebaseMessagingTypes,
     getMessaging,
-    getToken,
     onMessage,
     onTokenRefresh,
     registerDeviceForRemoteMessages,

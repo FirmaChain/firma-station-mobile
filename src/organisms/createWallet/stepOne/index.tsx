@@ -78,7 +78,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
                 mnemonic: result.mnemonic
             };
             navigation.navigate(Screens.CreateStepTwo, { wallet: newWallet, loadingRequestId });
-        } catch (error) {
+        } catch {
             CommonActions.endLoadingProgress(loadingRequestId);
             Toast.show({
                 type: 'error',
@@ -102,7 +102,7 @@ const StepOne = ({ recoverValue = null }: IProps) => {
             } else {
                 navigation.reset({ routes: [{ name: Screens.Home }] });
             }
-        } catch (error) {
+        } catch {
             Toast.show({
                 type: 'error',
                 text1: CREATE_WALLET_FAILED

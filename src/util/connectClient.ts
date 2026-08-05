@@ -138,7 +138,7 @@ class ConnectClient {
             return {
                 projectList: response.projectList
             };
-        } catch (e) {
+        } catch {
             throw new Error('Failed Request');
         }
     }
@@ -152,7 +152,7 @@ class ConnectClient {
             return {
                 service: response.service
             };
-        } catch (e) {
+        } catch {
             throw new Error('Failed Request');
         }
     }
@@ -164,7 +164,7 @@ class ConnectClient {
             return {
                 userkey: response.userkey
             };
-        } catch (e) {
+        } catch {
             throw new Error('Failed Request');
         }
     }
@@ -181,7 +181,7 @@ class ConnectClient {
             setDAppConnectSession(walletKey, JSON.stringify(newKey));
 
             return newKey;
-        } catch (error) {
+        } catch {
             throw new Error('Failed Request');
         }
     }
@@ -195,7 +195,7 @@ class ConnectClient {
             return {
                 userkey: response.userkey
             };
-        } catch (e) {
+        } catch {
             throw new Error('Failed Request');
         }
     }
@@ -344,7 +344,7 @@ class ConnectClient {
     public async approve(session: UserSession, QRData: QRData, approveParam: ApproveParam): Promise<any> {
         try {
             if (QRData.apiCode === 'sign') {
-                const response = await this.requestService.requestPut<any>(
+                await this.requestService.requestPut<any>(
                     `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/approve`,
                     approveParam,
                     {
@@ -364,7 +364,7 @@ class ConnectClient {
     public async reject(session: UserSession, QRData: QRData): Promise<any> {
         try {
             if (QRData.apiCode === 'sign') {
-                const response = await this.requestService.requestPut<any>(
+                await this.requestService.requestPut<any>(
                     `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/reject`,
                     {},
                     {

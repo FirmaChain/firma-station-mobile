@@ -81,12 +81,6 @@ const styles = StyleSheet.create({
     containerExpanded: {
         alignItems: 'flex-start'
     },
-    addressWrapper: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        minWidth: 0
-    },
     addressPressArea: {
         flex: 1,
         minWidth: 0

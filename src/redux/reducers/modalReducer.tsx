@@ -79,8 +79,9 @@ export const ACTIONS = {
 };
 
 const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(ACTION_CREATORS.HANDLE_RESET_MODAL, (state, { payload }) => {
-        ((state.modalData = null), (state.dappData = null));
+    builder.addCase(ACTION_CREATORS.HANDLE_RESET_MODAL, (state) => {
+        state.modalData = null;
+        state.dappData = null;
     });
     builder.addCase(ACTION_CREATORS.HANDLE_MODAL_DATA, (state, { payload }) => {
         state.modalData = payload;

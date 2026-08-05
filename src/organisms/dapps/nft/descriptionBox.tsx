@@ -192,10 +192,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end'
     },
-    icon_arrow: {
-        width: 18,
-        height: 18
-    }
 });
 
 export default DescriptionBox;

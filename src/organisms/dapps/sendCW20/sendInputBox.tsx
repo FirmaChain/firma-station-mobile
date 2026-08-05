@@ -64,7 +64,7 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
         });
     };
 
-    const handleCreatedFavoriteModal = (_isAdded: boolean) => {
+    const handleCreatedFavoriteModal = () => {
         setOpenFavoriteCreateModal(false);
         const loadingRequestId = CommonActions.beginLoadingProgress();
         wait(600).then(() => {

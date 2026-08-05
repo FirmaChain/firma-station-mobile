@@ -169,12 +169,6 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         backgroundColor: WhiteColor
     },
-    radioSpinner: {
-        width: 18,
-        height: 18,
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
 });
 
 export default NotificationRadio;

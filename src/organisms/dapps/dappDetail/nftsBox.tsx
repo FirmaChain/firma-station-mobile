@@ -203,19 +203,7 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingVertical: 20
     },
-    header: {
-        height: 48,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
     notice: {
-        fontFamily: Lato,
-        fontSize: 16,
-        color: TextGrayColor
-    },
-    title: {
         fontFamily: Lato,
         fontSize: 16,
         color: TextGrayColor

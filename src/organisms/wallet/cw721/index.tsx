@@ -5,13 +5,12 @@ import { useCWContext } from '@/context/cwContext';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import NftItem from '@/organisms/dapps/dappDetail/nftItem';
 import AddressBox from '@/organisms/staking/validator/addressBox';
-import { ValidCWType } from '@/util/firma';
 import { ScreenWidth } from '@/util/getScreenSize';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
 
-import { INFTProps, useCW721NFT, useNFT } from '@/hooks/dapps/hooks';
+import { INFTProps, useCW721NFT } from '@/hooks/dapps/hooks';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
 import RefreshScrollView from '@/components/parts/refreshScrollView';

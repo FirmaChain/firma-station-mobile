@@ -41,7 +41,7 @@ const FavoritesModal = ({ open, address, memo, setOpenModal, setValue, handleCre
             const list = favorite.find((value) => value.ownerAddress === walletAddress);
             if (list === undefined) return [];
             return list.favorite;
-        } catch (error) {
+        } catch {
             return [];
         }
     }, [favorite]);

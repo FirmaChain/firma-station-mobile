@@ -39,7 +39,6 @@ const TabNavigators = () => {
         >
             <Tab.Screen
                 name={'Wallet'}
-                children={() => <WalletScreen />}
                 listeners={() => ({
                     tabPress: () => {
                         CommonActions.handleScrollToTop(true);
@@ -50,10 +49,11 @@ const TabNavigators = () => {
                         return <WalletIcon size={24} color={focused ? WhiteColor : GrayColor} />;
                     }
                 }}
-            />
+            >
+                {() => <WalletScreen />}
+            </Tab.Screen>
             <Tab.Screen
                 name={'Staking'}
-                children={() => <StakingScreen />}
                 listeners={() => ({
                     tabPress: () => {
                         CommonActions.handleScrollToTop(true);
@@ -64,10 +64,11 @@ const TabNavigators = () => {
                         return <InboxIcon size={24} color={focused ? WhiteColor : GrayColor} />;
                     }
                 }}
-            />
+            >
+                {() => <StakingScreen />}
+            </Tab.Screen>
             <Tab.Screen
                 name={'Governance'}
-                children={() => <GovernanceScreen />}
                 listeners={() => ({
                     tabPress: () => {
                         CommonActions.handleScrollToTop(true);
@@ -79,10 +80,11 @@ const TabNavigators = () => {
                         // return <Image style={{ width: 24, height: 24, opacity: focused ? 1 : 0.6 }} source={ICON_DOCUMENT} />;
                     }
                 }}
-            />
+            >
+                {() => <GovernanceScreen />}
+            </Tab.Screen>
             <Tab.Screen
                 name={'Dapps'}
-                children={() => <DappsScreen />}
                 listeners={() => ({
                     tabPress: () => {
                         CommonActions.handleScrollToTop(true);
@@ -93,7 +95,9 @@ const TabNavigators = () => {
                         return <AppstoreIcon size={20} color={focused ? WhiteColor : GrayColor} />;
                     }
                 }}
-            />
+            >
+                {() => <DappsScreen />}
+            </Tab.Screen>
         </Tab.Navigator>
     );
 };

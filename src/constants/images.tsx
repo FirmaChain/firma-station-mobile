@@ -1,1 +1,3 @@
-export const ICON_CW_NFT_THUMBNAIL = require('@/assets/images/img_nft_thumbnail.png');
+import ICON_CW_NFT_THUMBNAIL from '@/assets/images/img_nft_thumbnail.png';
+
+export { ICON_CW_NFT_THUMBNAIL };

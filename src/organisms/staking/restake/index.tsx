@@ -87,7 +87,7 @@ const Restake = () => {
     const restakeUpdateInfo = useMemo(() => {
         let json = restakeInfo;
         if (json) {
-            const { nextRoundDateTime, round, ...other } = restakeInfo;
+            const { ...other } = restakeInfo;
             json = {
                 ...other,
                 minimum_Rewards: `${convertAmount({ value: restakeInfo.minimum_Rewards, isUfct: false })} ${_CHAIN_SYMBOL}`
@@ -134,10 +134,10 @@ const Restake = () => {
 
     const handleGrantOrRevoke = async (open: boolean, type: string) => {
         restakeType = type;
-        handleGrantOrRevokeConfirm(open, type);
+        handleGrantOrRevokeConfirm(open);
     };
 
-    const handleGrantOrRevokeConfirm = async (open: boolean, type: string = '') => {
+    const handleGrantOrRevokeConfirm = async (open: boolean) => {
         try {
             if (open) {
                 await getEstimateGasGrantOrRevoke();

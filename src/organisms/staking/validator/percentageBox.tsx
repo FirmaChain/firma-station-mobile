@@ -12,7 +12,7 @@ import {
 } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { convertAmount } from '@/util/common';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { IValidatorData } from '@/hooks/staking/hooks';
 

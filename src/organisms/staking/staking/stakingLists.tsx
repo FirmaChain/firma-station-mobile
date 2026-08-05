@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { BgColor, BoxColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
+import React, { useCallback, useEffect, useState } from 'react';
+import { BgColor, DisableColor, InputPlaceholderColor, Lato, TextColor, WhiteColor } from '@/constants/theme';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { wait } from '@/util/common';

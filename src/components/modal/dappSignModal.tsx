@@ -107,7 +107,7 @@ const DappSignModal = () => {
                 if (QRData.signParams.info !== '') {
                     setDescription(QRData.signParams.info);
                 }
-            } catch (error) {
+            } catch {
                 handleModal(false);
             }
         }

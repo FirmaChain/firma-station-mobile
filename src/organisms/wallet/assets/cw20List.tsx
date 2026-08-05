@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useMemo, useRef, useState } from 'react';
 import { CW_REMOVE_WARN_TEXT, CW20_NOT_EXIST, CW20_REMOVE_SUCCESS, EXPLORER_URL } from '@/constants/common';
 import {
     BgColor,
@@ -108,8 +108,7 @@ const CW20List = ({ isEdit, data }: IProps) => {
         setRemoveItemAddr(contractAddress.toLowerCase() === removeItemAddr.toLowerCase() ? '' : contractAddress);
     };
 
-    const CW20Item = useCallback(
-        ({ item, getIndex, drag }: RenderItemParams<ICW20ContractState>) => {
+    const CW20Item = ({ item, getIndex, drag }: RenderItemParams<ICW20ContractState>) => {
             const index = getIndex() ?? 0;
             const isLastItem = index >= initialData.length - 1;
             const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
@@ -157,7 +156,7 @@ const CW20List = ({ isEdit, data }: IProps) => {
                             <TouchableOpacity
                                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 onPress={() => {
-                                    isEdit && handleRemoveItemSelect(item.address);
+                                    if (isEdit) handleRemoveItemSelect(item.address);
                                 }}
                             >
                                 <RemoveIcon size={20} color={FailedColor} />
@@ -246,9 +245,7 @@ const CW20List = ({ isEdit, data }: IProps) => {
                     </Animated.View>
                 </TouchableOpacity>
             );
-        },
-        [isEdit, removeItemAddr, initialData, AnimationState]
-    );
+    };
 
     const recreateList = (data: ICW20ContractState[]) => {
         const newCWData = data.map((item) => ({ ...item }));
@@ -295,9 +292,9 @@ const CW20List = ({ isEdit, data }: IProps) => {
                             ref={flatListRef}
                             data={initialData}
                             style={{ maxHeight: 99999 }}
-                            renderItem={CW20Item}
+                            renderItem={(params) => <CW20Item {...params} />}
                             scrollEnabled={true}
-                            keyExtractor={(_item, index) => _item.address.toString()}
+                            keyExtractor={(_item) => _item.address.toString()}
                             onScrollToIndexFailed={() => {}}
                             onDragEnd={({ data }) => recreateList(data)}
                         />
@@ -353,18 +350,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
         color: TextColor
-    },
-    nftsCountBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        height: 30
-    },
-    thumbnailWrap: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingHorizontal: 4
     },
     thumbnail: {
         width: 30,

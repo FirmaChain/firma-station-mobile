@@ -150,8 +150,7 @@ const CW721List = ({ data, isEdit }: IProps) => {
         }
     };
 
-    const CW721Item = useCallback(
-        ({ item, getIndex, drag }: RenderItemParams<ICW721ContractState>) => {
+    const CW721Item = ({ item, getIndex, drag }: RenderItemParams<ICW721ContractState>) => {
             const index = getIndex() ?? 0;
             const isLastItem = index >= initialData.length - 1;
             const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
@@ -248,7 +247,7 @@ const CW721List = ({ data, isEdit }: IProps) => {
                             <TouchableOpacity
                                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 onPress={() => {
-                                    isEdit && handleRemoveItemSelect(item.address);
+                                    if (isEdit) handleRemoveItemSelect(item.address);
                                 }}
                             >
                                 <RemoveIcon size={20} color={FailedColor} />
@@ -306,9 +305,7 @@ const CW721List = ({ data, isEdit }: IProps) => {
                     </Animated.View>
                 </TouchableOpacity>
             );
-        },
-        [isEdit, removeItemAddr, initialData, AnimationState, cw721Thumbnail]
-    );
+    };
 
     const recreateList = (data: ICW721ContractState[]) => {
         const newCWData = data.map((item) => ({ ...item }));
@@ -357,9 +354,9 @@ const CW721List = ({ data, isEdit }: IProps) => {
                             ref={flatListRef}
                             data={initialData}
                             style={{ maxHeight: 99999 }}
-                            renderItem={CW721Item}
+                            renderItem={(params) => <CW721Item {...params} />}
                             scrollEnabled={true}
-                            keyExtractor={(_item, index) => _item.address.toString()}
+                            keyExtractor={(_item) => _item.address.toString()}
                             onScrollToIndexFailed={() => {}}
                             onDragEnd={({ data }) => recreateList(data)}
                         />

@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CHAIN_SYMBOL } from '@/constants/common';
 import {
     ButtonPointLightColor,
     DiableButtonPointcolor,
-    DisableColor,
     Lato,
     PointColor,
     TextColor,
@@ -13,7 +12,7 @@ import {
 } from '@/constants/theme';
 import { Screens } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
-import { convertAmount, convertNumber, resizeFontSize } from '@/util/common';
+import { convertAmount, resizeFontSize } from '@/util/common';
 import { getEstimateGasFromAllDelegations, getFeesFromGas, getFirmaConfig } from '@/util/firma';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -42,17 +41,6 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
         if (alertDescription !== '') return handleModalOpen(true);
         transactionHandler(password, withdrawAllGas);
     };
-
-    const rewardInteger = useMemo(() => {
-        return convertNumber(stakingReward.split('.')[0]);
-    }, [stakingReward]);
-
-    const rewardDecimal = useMemo(() => {
-        if (stakingReward.split('.').length > 1) {
-            return convertNumber(stakingReward.split('.')[1]);
-        }
-        return 0;
-    }, [stakingReward]);
 
     const handleModalOpen = (open: boolean) => {
         setIsAlertModalOpen(open);
@@ -153,19 +141,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: PointColor
     },
-    divider: {
-        width: '100%',
-        height: 1,
-        marginBottom: 20,
-        backgroundColor: DisableColor
-    },
     boxV: {},
-    boxH: {
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingBottom: 10
-    },
     title: {
         fontFamily: Lato,
         fontSize: 20,

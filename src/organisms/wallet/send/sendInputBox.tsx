@@ -113,7 +113,7 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
         });
     };
 
-    const handleCreatedFavoriteModal = (_isAdded: boolean) => {
+    const handleCreatedFavoriteModal = () => {
         setOpenFavoriteCreateModal(false);
         const loadingRequestId = CommonActions.beginLoadingProgress();
         wait(600).then(() => {
