@@ -18,7 +18,7 @@ export const keyEncrypt = (name: string, password: string): string => {
 
         return encObj.toString();
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return '';
     }
 };
@@ -51,7 +51,7 @@ export const decryptLegacy = (encryptedMessage: string, pass: string): string =>
 
         return decrypted;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return '';
     }
 };
@@ -75,7 +75,7 @@ export const encryptLegacy = (originalMessage: string, pass: string): string => 
 
         return salt.toString() + iv.toString() + encrypted.toString();
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return '';
     }
 };

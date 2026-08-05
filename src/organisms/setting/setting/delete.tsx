@@ -42,7 +42,7 @@ const Delete = ({ walletName, walletAddress, handleDisconnect }: IProps) => {
             handleDelModal(false);
             handleDisconnect();
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Toast.show({
                 type: 'error',
                 text1: String(error)

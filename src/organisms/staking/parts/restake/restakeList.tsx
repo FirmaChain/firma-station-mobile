@@ -60,7 +60,7 @@ const RestakeList = ({ isRefresh, delegationState, restakeState, handleIsRefresh
             const json = await result.json();
             setRestakeLatestInfo(json);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -70,7 +70,7 @@ const RestakeList = ({ isRefresh, delegationState, restakeState, handleIsRefresh
             handleIsRefresh(false);
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
-            console.log(error);
+            console.error(error);
         }
     }, []);
 

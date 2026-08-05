@@ -38,7 +38,7 @@ const InfoBox = ({ data }: IProps) => {
             const _owner = nftInfo === null ? '' : nftInfo.access.owner;
             setOwner(_owner);
         } catch (error) {
-            console.log('getNFTOwner : ', error);
+            console.error('getNFTOwner : ', error);
         }
     }, [data, isCW721]);
 

@@ -146,7 +146,7 @@ const ChangeWalletName = () => {
                     await setWalletList('');
                 }
             } catch (rollbackError) {
-                console.log(rollbackError);
+                console.error(rollbackError);
             }
 
             throw error;

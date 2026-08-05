@@ -77,7 +77,7 @@ const Proposal = ({ proposalId }: IProps) => {
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
-            console.log(error);
+            console.error(error);
         }
     };
 

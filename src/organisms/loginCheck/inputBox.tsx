@@ -82,7 +82,7 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }:
             const result = await getWalletList();
             setItems(result);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     };

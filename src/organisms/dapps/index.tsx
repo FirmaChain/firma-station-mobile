@@ -58,7 +58,7 @@ const Dapps = () => {
                 setProjectList(list.projectList);
             });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

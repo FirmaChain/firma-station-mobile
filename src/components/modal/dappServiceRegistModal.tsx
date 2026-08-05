@@ -68,7 +68,7 @@ const DappServiceRegistModal = () => {
                     const exist = isStoragedServiceId(service);
                     setServiceRegistered(exist);
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                     handleModal(false);
                 }
             }
@@ -106,7 +106,7 @@ const DappServiceRegistModal = () => {
             });
             handleCloseModal();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

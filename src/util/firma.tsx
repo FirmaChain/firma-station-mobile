@@ -65,14 +65,9 @@ export const getChainInfo = async () => {
 
 // Wallet
 export const createNewWallet = async () => {
-    try {
-        const wallet = await getFirmaSDK().Wallet.newWallet();
+    const wallet = await getFirmaSDK().Wallet.newWallet();
 
-        return organizeWallet(wallet);
-    } catch (error) {
-        console.log('createNewWallet error : ' + error);
-        throw error;
-    }
+    return organizeWallet(wallet);
 };
 
 export const mnemonicCheck = async (mnemonic: string) => {
@@ -80,7 +75,7 @@ export const mnemonicCheck = async (mnemonic: string) => {
         await getFirmaSDK().Wallet.fromMnemonic(mnemonic);
         return true;
     } catch (error) {
-        console.log('error : ' + error);
+        console.error('error : ' + error);
         return false;
     }
 };
@@ -90,7 +85,7 @@ export const privateKeyCheck = async (privateKey: string) => {
         await getFirmaSDK().Wallet.fromPrivateKey(privateKey);
         return true;
     } catch (error) {
-        console.log('error : ' + error);
+        console.error('error : ' + error);
         return false;
     }
 };
@@ -122,84 +117,54 @@ export const recoverWallet = async (recoverValue: string) => {
 };
 
 export const getPrivateKeyFromMnemonic = async (mnemonic: string) => {
-    try {
-        const wallet = await recoverWallet(mnemonic);
-        const privateKey = wallet.getPrivateKey();
-        return privateKey;
-    } catch (error) {
-        console.log('getPrivateKeyFromMnemonic error : ' + error);
-        throw error;
-    }
+    const wallet = await recoverWallet(mnemonic);
+    const privateKey = wallet.getPrivateKey();
+    return privateKey;
 };
 
 export const getAddressFromRecoverValue = async (recoverValue: string) => {
-    try {
-        const wallet = await recoverWallet(recoverValue);
-        const address = wallet.getAddress();
-        return address;
-    } catch (error) {
-        console.log('getAddressFromRecoverValue error : ' + error);
-        throw error;
-    }
+    const wallet = await recoverWallet(recoverValue);
+    const address = wallet.getAddress();
+    return address;
 };
 
 export const getBalanceFromAdr = async (address: string) => {
-    try {
-        const balance = await getFirmaSDK().Bank.getBalance(address);
-        return balance;
-    } catch (error) {
-        console.log('getBalanceFromAdr error : ' + error);
-        throw error;
-    }
+    const balance = await getFirmaSDK().Bank.getBalance(address);
+    return balance;
 };
 
 export const getTokenList = async (address: string) => {
-    try {
-        const list = await getFirmaSDK().Bank.getTokenBalanceList(address);
+    const list = await getFirmaSDK().Bank.getTokenBalanceList(address);
 
-        return list;
-    } catch (error) {
-        console.log('getTokenList error : ', error);
-        throw error;
-    }
+    return list;
 };
 
 export const getTokenBalance = async (address: string, denom: string) => {
-    try {
-        let balance = 0;
-        const allList = await getFirmaSDK().Bank.getTokenBalanceList(address);
-        allList
-            .filter((token) => token.denom === denom)
-            .map((value) => {
-                return (balance += Number(value.amount));
-            });
+    let balance = 0;
+    const allList = await getFirmaSDK().Bank.getTokenBalanceList(address);
+    allList
+        .filter((token) => token.denom === denom)
+        .map((value) => {
+            return (balance += Number(value.amount));
+        });
 
-        return balance;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    return balance;
 };
 
 const organizeWallet = async (wallet: FirmaWalletService) => {
-    try {
-        const _mnemonic = wallet.getMnemonic();
-        const _privateKey = wallet.getPrivateKey();
-        const _address = await wallet.getAddress();
+    const _mnemonic = wallet.getMnemonic();
+    const _privateKey = wallet.getPrivateKey();
+    const _address = await wallet.getAddress();
 
-        const _balance = await getBalanceFromAdr(_address);
+    const _balance = await getBalanceFromAdr(_address);
 
-        const result = {
-            mnemonic: _mnemonic,
-            privateKey: _privateKey,
-            address: _address,
-            balance: _balance
-        };
-        return result;
-    } catch (error) {
-        console.log('organizeWallet error : ' + error);
-        throw error;
-    }
+    const result = {
+        mnemonic: _mnemonic,
+        privateKey: _privateKey,
+        address: _address,
+        balance: _balance
+    };
+    return result;
 };
 
 export const getDecryptWalletInfo = async (walletName: string) => {
@@ -502,7 +467,7 @@ export const getDelegateList = async (address: string) => {
     try {
         return (await getFirmaSDK().Staking.getTotalDelegationInfo(address)).dataList;
     } catch (error) {
-        console.log('getDelegateList : ', error);
+        console.error('getDelegateList : ', error);
         return [];
     }
 };
@@ -511,7 +476,7 @@ export const getRedelegationList = async (address: string) => {
     try {
         return await getFirmaSDK().Staking.getTotalRedelegationInfo(address);
     } catch (error) {
-        console.log('getRedelegationList : ', error);
+        console.error('getRedelegationList : ', error);
         return [];
     }
 };
@@ -520,7 +485,7 @@ export const getUndelegateList = async (address: string) => {
     try {
         return await getFirmaSDK().Staking.getTotalUndelegateInfo(address);
     } catch (error) {
-        console.log('getUndelegateList : ', error);
+        console.error('getUndelegateList : ', error);
         return [];
     }
 };
@@ -710,86 +675,69 @@ export const voting = async (recoverValue: string, proposalId: number, votingOpt
 
 //Todo: Need to consider using bigint for amount and reward
 export const getDelegations = async (address: string) => {
-    try {
-        const totalReward = await getTotalReward(address);
-        const delegateListOrigin = await getDelegateList(address);
-        const delegateListSort = [...delegateListOrigin].sort((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
+    const totalReward = await getTotalReward(address);
+    const delegateListOrigin = await getDelegateList(address);
+    const delegateListSort = [...delegateListOrigin].sort((a, b) => compareBigIntDesc(a.balance.amount, b.balance.amount));
 
-        return delegateListSort.map((value) => {
-            return {
-                validatorAddress: value.delegation.validator_address,
-                delegatorAddress: value.delegation.delegator_address,
-                amount: convertNumber(value.balance.amount),
-                reward: convertNumber(
-                    totalReward.rewards.find((adr) => adr.validator_address === value.delegation.validator_address)?.amount
-                ),
-                moniker: value.delegation.validator_address,
-                avatarURL: ''
-            };
-        });
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    return delegateListSort.map((value) => {
+        return {
+            validatorAddress: value.delegation.validator_address,
+            delegatorAddress: value.delegation.delegator_address,
+            amount: convertNumber(value.balance.amount),
+            reward: convertNumber(totalReward.rewards.find((adr) => adr.validator_address === value.delegation.validator_address)?.amount),
+            moniker: value.delegation.validator_address,
+            avatarURL: ''
+        };
+    });
 };
 
 export const getRedelegations = async (address: string) => {
-    try {
-        const redelegationListOrigin = await getRedelegationList(address);
+    const redelegationListOrigin = await getRedelegationList(address);
 
-        const redelegationList: IRedelegationInfo[] = [];
-        redelegationListOrigin.map((redelegation) => {
-            redelegation.entries.map((entry) => {
-                redelegationList.push({
-                    srcAddress: redelegation.redelegation.validator_src_address,
-                    srcMoniker: '',
-                    srcAvatarURL: '',
-                    dstAddress: redelegation.redelegation.validator_dst_address,
-                    dstMoniker: '',
-                    dstAvatarURL: '',
-                    balance: convertNumber(entry.redelegation_entry.shares_dst),
-                    completionTime: entry.redelegation_entry.completion_time
-                });
+    const redelegationList: IRedelegationInfo[] = [];
+    redelegationListOrigin.map((redelegation) => {
+        redelegation.entries.map((entry) => {
+            redelegationList.push({
+                srcAddress: redelegation.redelegation.validator_src_address,
+                srcMoniker: '',
+                srcAvatarURL: '',
+                dstAddress: redelegation.redelegation.validator_dst_address,
+                dstMoniker: '',
+                dstAvatarURL: '',
+                balance: convertNumber(entry.redelegation_entry.shares_dst),
+                completionTime: entry.redelegation_entry.completion_time
             });
         });
+    });
 
-        const redelegationListSort = [...redelegationList].sort((a, b) => {
-            return Date.parse(a.completionTime) - Date.parse(b.completionTime);
-        });
+    const redelegationListSort = [...redelegationList].sort((a, b) => {
+        return Date.parse(a.completionTime) - Date.parse(b.completionTime);
+    });
 
-        return redelegationListSort;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    return redelegationListSort;
 };
 
 export const getUndelegations = async (address: string) => {
-    try {
-        const undelegationListOrigin = await getUndelegateList(address);
+    const undelegationListOrigin = await getUndelegateList(address);
 
-        const undelegationList: IUndelegationInfo[] = [];
-        undelegationListOrigin.map((undelegation) => {
-            undelegation.entries.map((entry) => {
-                undelegationList.push({
-                    validatorAddress: undelegation.validator_address,
-                    moniker: '',
-                    avatarURL: '',
-                    balance: convertNumber(entry.balance),
-                    completionTime: entry.completion_time
-                });
+    const undelegationList: IUndelegationInfo[] = [];
+    undelegationListOrigin.map((undelegation) => {
+        undelegation.entries.map((entry) => {
+            undelegationList.push({
+                validatorAddress: undelegation.validator_address,
+                moniker: '',
+                avatarURL: '',
+                balance: convertNumber(entry.balance),
+                completionTime: entry.completion_time
             });
         });
+    });
 
-        const redelegationListSort = [...undelegationList].sort((a, b) => {
-            return Date.parse(a.completionTime) - Date.parse(b.completionTime);
-        });
+    const redelegationListSort = [...undelegationList].sort((a, b) => {
+        return Date.parse(a.completionTime) - Date.parse(b.completionTime);
+    });
 
-        return redelegationListSort;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    return redelegationListSort;
 };
 
 export const getStakingGrant = async (address: string) => {
@@ -849,13 +797,8 @@ export const getStaking = async (address: string) => {
 };
 
 export const getNFTIdListOfOwner = async (address: string) => {
-    try {
-        const result = await getFirmaSDK().Nft.getNftIdListOfOwner(address);
-        return result;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const result = await getFirmaSDK().Nft.getNftIdListOfOwner(address);
+    return result;
 };
 
 export const getNFTItemFromId = async (id: string) => {
@@ -863,7 +806,7 @@ export const getNFTItemFromId = async (id: string) => {
         const nft = await getFirmaSDK().Nft.getNftItem(id);
         return nft;
     } catch {
-        console.log('error');
+        console.error('error');
         return null;
     }
 };
@@ -896,43 +839,23 @@ export const getProposalTally = async (proposalId: string) => {
 
 // CW
 export const getCW20Balance = async (contract: string, address: string) => {
-    try {
-        const balance = await getFirmaSDK().Cw20.getBalance(contract, address);
-        return convertNumber(balance);
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const balance = await getFirmaSDK().Cw20.getBalance(contract, address);
+    return convertNumber(balance);
 };
 
 export const getCW20TokenInfo = async (contract: string) => {
-    try {
-        const info = await getFirmaSDK().Cw20.getTokenInfo(contract);
-        return info;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const info = await getFirmaSDK().Cw20.getTokenInfo(contract);
+    return info;
 };
 
 export const getCW20TokenMarketingInfo = async (contract: string) => {
-    try {
-        const info = await getFirmaSDK().Cw20.getMarketingInfo(contract);
-        return info;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const info = await getFirmaSDK().Cw20.getMarketingInfo(contract);
+    return info;
 };
 
 export const getCW721NftIdList = async (contract: string, address: string, startId: string) => {
-    try {
-        const nftList = await getFirmaSDK().Cw721.getNFTIdListOfOwner(contract, address, 30, startId);
-        return nftList;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const nftList = await getFirmaSDK().Cw721.getNFTIdListOfOwner(contract, address, 30, startId);
+    return nftList;
 };
 
 export const getCW721NFTItemFromId = async (contract: string, id: string) => {
@@ -940,7 +863,7 @@ export const getCW721NFTItemFromId = async (contract: string, id: string) => {
         const nft = await getFirmaSDK().Cw721.getNftData(contract, id);
         return nft;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return null;
     }
 };
@@ -998,74 +921,49 @@ export const verifyCWContract = async (contract: string): Promise<ValidCWType> =
         await getCW20ContractInfo(contract);
         return 'CW20';
     } catch (error) {
-        console.log('Error in CW20 check:', error);
+        console.error('Error in CW20 check:', error);
     }
 
     try {
         await getCW721ContractInfo(contract);
         return 'CW721';
     } catch (error) {
-        console.log('Error in Cw721 check:', error);
+        console.error('Error in Cw721 check:', error);
         return 'ERROR';
     }
 };
 
 export const getCWContractInfo = async (contract: string) => {
-    try {
-        const result = await getFirmaSDK().CosmWasm.getContractInfo(contract);
-        return result;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const result = await getFirmaSDK().CosmWasm.getContractInfo(contract);
+    return result;
 };
 
 export const getCW20ContractInfo = async (contract: string) => {
-    try {
-        const result = await getFirmaSDK().Cw20.getTokenInfo(contract);
-        return result;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const result = await getFirmaSDK().Cw20.getTokenInfo(contract);
+    return result;
 };
 
 export const getCW20ExtraInfo = async (contract: string) => {
-    try {
-        const marketing = await getFirmaSDK().Cw20.getMarketingInfo(contract);
+    const marketing = await getFirmaSDK().Cw20.getMarketingInfo(contract);
 
-        return {
-            marketing
-        };
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    return {
+        marketing
+    };
 };
 
 export const getCW721ContractInfo = async (contract: string) => {
-    try {
-        const result = await getFirmaSDK().Cw721.getContractInfo(contract);
-        return result;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    const result = await getFirmaSDK().Cw721.getContractInfo(contract);
+    return result;
 };
 
 export const getCW721TotalNFTs = async (contract: string) => {
-    try {
-        const totalSupply = await getFirmaSDK().Cw721.getTotalNfts(contract);
-        const totalNFTIds = await getFirmaSDK().Cw721.getAllNftIdList(contract);
+    const totalSupply = await getFirmaSDK().Cw721.getTotalNfts(contract);
+    const totalNFTIds = await getFirmaSDK().Cw721.getAllNftIdList(contract);
 
-        return {
-            totalSupply,
-            totalNFTIds
-        };
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    return {
+        totalSupply,
+        totalNFTIds
+    };
 };
 
 export const getCW721NFTImage = async ({ contractAddress, tokenId }: { contractAddress: string; tokenId: string }) => {
@@ -1077,7 +975,7 @@ export const getCW721NFTImage = async ({ contractAddress, tokenId }: { contractA
 
         return imageURI;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return '';
     }
 };

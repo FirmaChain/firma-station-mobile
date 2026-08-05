@@ -130,7 +130,7 @@ const SelectWallet = () => {
             const result = await getWalletList();
             setItems(result);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     };
@@ -179,13 +179,13 @@ const SelectWallet = () => {
                 try {
                     await migrateRecoverValueToV2(selectedWallet, password, recoverValue);
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                     Alert.alert(CRYPTO_MIGRATION_TITLE, CRYPTO_MIGRATION_DESCRIPTION);
                 }
             }
             navigation.reset({ routes: [{ name: Screens.Home, params: { loadingRequestId } }] });
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Toast.show({
                 type: 'error',
                 text1: String(error)

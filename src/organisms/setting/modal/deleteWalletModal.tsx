@@ -49,7 +49,7 @@ const DeleteWalletModal = ({ walletName, open, setOpenModal, deleteWallet }: IPr
                 await deleteWallet();
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             setLoading(false);
         }

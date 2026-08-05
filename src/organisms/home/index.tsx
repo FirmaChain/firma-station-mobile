@@ -55,7 +55,7 @@ const Home = ({ title, loadingRequestId }: IProps) => {
                 navigation.reset({ routes: [{ name: Screens.Welcome }] });
             });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

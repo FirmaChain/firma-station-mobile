@@ -114,7 +114,7 @@ const DappDirectSignModal = () => {
             setBalance(convertNumber(makeDecimalPoint(convertToFctNumber(balanceResult), 2)));
             setIsGetBalanceData(true);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -130,7 +130,7 @@ const DappDirectSignModal = () => {
             setTokenBalance(token);
             setIsGetTokenBalanceData(true);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -197,7 +197,7 @@ const DappDirectSignModal = () => {
             }
             closeModal();
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -232,7 +232,7 @@ const DappDirectSignModal = () => {
                 const session = await getDAppConnectSession(walletName + network);
                 setUserSession(session);
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
 

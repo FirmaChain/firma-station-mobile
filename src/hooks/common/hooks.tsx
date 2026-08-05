@@ -36,7 +36,7 @@ export const useWalletJSON = () => {
             const data: IWalletJSONProps = await response.json();
             setWalletJson(data);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, []);
 

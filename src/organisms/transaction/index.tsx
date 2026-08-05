@@ -304,7 +304,7 @@ const Transaction = ({ state }: IProps) => {
                     break;
             }
         } catch (error) {
-            console.log('ERROR : ', error);
+            console.error('ERROR : ', error);
             setTransactionResult({ ...transactionResult, code: -1, result: String(error) });
         }
     }, [recoverValueType, mnemonic, privateKey]);

@@ -100,7 +100,7 @@ const LoginCheck = () => {
                     try {
                         await migrateRecoverValueToV2(name, password, resolvedRecoverValue);
                     } catch (error) {
-                        console.log(error);
+                        console.error(error);
                         Alert.alert(CRYPTO_MIGRATION_TITLE, CRYPTO_MIGRATION_DESCRIPTION);
                     }
                 }
@@ -108,7 +108,7 @@ const LoginCheck = () => {
                 finishLogin();
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -151,7 +151,7 @@ const LoginCheck = () => {
                     try {
                         await migrateRecoverValueToV2(walletName, result, recoverValue);
                     } catch (error) {
-                        console.log(error);
+                        console.error(error);
                         Alert.alert(CRYPTO_MIGRATION_TITLE, CRYPTO_MIGRATION_DESCRIPTION);
                     }
                 }
@@ -239,7 +239,7 @@ const LoginCheck = () => {
                         handleDisconnect();
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 } finally {
                     setLoading(false);
                 }

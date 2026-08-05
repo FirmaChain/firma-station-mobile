@@ -19,11 +19,6 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
     if (type === EventType.PRESS) {
         const deepLink = detail.notification?.data?.deeplink;
 
-        console.info('[FCM] background notification pressed:', {
-            hasDeepLink: typeof deepLink === 'string' && deepLink !== '',
-            deepLinkLength: typeof deepLink === 'string' ? deepLink.length : 0
-        });
-
         if (typeof deepLink === 'string' && deepLink !== '') {
             await savePendingNotificationDeepLink(deepLink);
         }

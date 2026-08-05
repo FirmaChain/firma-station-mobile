@@ -58,7 +58,7 @@ const StepRecover = ({ type }: IProps) => {
             }
             navigation.navigate(Screens.CreateStepOne, { recoverValue: recoverValue });
         } catch (error) {
-            console.log('[StepRecover] error : ', error);
+            console.error('[StepRecover] error : ', error);
             Toast.show({
                 type: 'error',
                 text1: RECOVER_WALLET_FAILED

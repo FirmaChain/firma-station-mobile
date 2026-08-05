@@ -86,7 +86,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
                 setProgress(false);
             });
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setProgress(true);
             CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));

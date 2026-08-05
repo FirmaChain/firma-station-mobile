@@ -69,7 +69,7 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
             }
             setOpenModal(open);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

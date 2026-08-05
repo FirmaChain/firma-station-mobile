@@ -124,7 +124,7 @@ const ChangePassword = () => {
                     }
                 }
             } catch (rollbackError) {
-                console.log(rollbackError);
+                console.error(rollbackError);
             }
 
             throw error;

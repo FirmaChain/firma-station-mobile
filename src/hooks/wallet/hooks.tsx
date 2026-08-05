@@ -55,7 +55,7 @@ export const useBalanceData = () => {
             const result = await getBalanceFromAdr(walletAddress);
             setBalance(convertNumber(result));
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     }
@@ -151,7 +151,7 @@ export const useHistoryData = () => {
                     }));
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                     throw error;
                 });
         },
@@ -169,7 +169,7 @@ export const useHistoryData = () => {
                 setRecentHistory(undefined);
                 await handleHisotyPolling();
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 throw error;
             }
         };

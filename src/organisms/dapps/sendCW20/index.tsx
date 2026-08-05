@@ -59,7 +59,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
             setTokenBalance(_tokenBalance);
             getBalance();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -111,7 +111,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
                 return;
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             setOpenAlertModal(true);

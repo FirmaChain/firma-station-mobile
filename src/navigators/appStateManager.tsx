@@ -83,7 +83,7 @@ const AppStateManager = () => {
                 StorageActions.handleValidatorsProfile(result);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, []);
 
@@ -107,7 +107,7 @@ const AppStateManager = () => {
         try {
             await getMaintenanceData();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, []);
 
@@ -196,11 +196,6 @@ const AppStateManager = () => {
 
             lastHandledDeepLinkRef.current = targetKey;
             CommonActions.handlePendingNotificationDeepLink({ target: null, resetOnConsume: false });
-            console.info('[NotificationDeepLink] handling:', {
-                kind: target.kind,
-                proposalId: target.proposalId,
-                shouldResetStack
-            });
 
             if (shouldResetStack) {
                 navigation.reset({
@@ -229,11 +224,6 @@ const AppStateManager = () => {
             }
 
             CommonActions.handlePendingNotificationDeepLink({ target, resetOnConsume: shouldResetStack });
-            console.info('[NotificationDeepLink] queued:', {
-                kind: target.kind,
-                proposalId: target.proposalId,
-                shouldResetStack
-            });
         },
         [appState, loggedIn, lockStation, routeNotificationDeepLink, walletName]
     );
@@ -241,18 +231,9 @@ const AppStateManager = () => {
     const handleNotificationDeepLink = useCallback(
         (deepLink: string) => {
             const target = parseNotificationDeepLink(deepLink);
-            console.info('[NotificationDeepLink] candidate received:', {
-                supported: target !== null,
-                kind: target?.kind,
-                proposalId: target?.proposalId,
-                appState,
-                loggedIn,
-                lockStation,
-                walletName
-            });
 
             if (!target) {
-                console.info('[NotificationDeepLink] unsupported deep link:', { length: deepLink.length });
+                console.warn('[NotificationDeepLink] unsupported deep link:', { length: deepLink.length });
                 return;
             }
 
@@ -364,10 +345,6 @@ const AppStateManager = () => {
             }
 
             const deepLink = detail.notification?.data?.deeplink;
-            console.info('[NotificationDeepLink] foreground press deeplink:', {
-                hasDeepLink: typeof deepLink === 'string' && deepLink !== '',
-                length: typeof deepLink === 'string' ? deepLink.length : 0
-            });
             if (typeof deepLink === 'string' && deepLink !== '') {
                 handleNotificationDeepLink(deepLink);
             }
@@ -386,10 +363,6 @@ const AppStateManager = () => {
         const fcm = getMessaging(getApp());
         const unsubscribeOpenedApp = onNotificationOpenedApp(fcm, (message) => {
             const deepLink = message.data?.deeplink;
-            console.info('[NotificationDeepLink] opened-app deeplink:', {
-                hasDeepLink: typeof deepLink === 'string' && deepLink !== '',
-                length: typeof deepLink === 'string' ? deepLink.length : 0
-            });
             if (typeof deepLink === 'string' && deepLink !== '') {
                 handleNotificationDeepLink(deepLink);
             }
@@ -410,10 +383,6 @@ const AppStateManager = () => {
 
             const initialNotification = await getInitialNotification(getMessaging(getApp()));
             const deepLink = initialNotification?.data?.deeplink;
-            console.info('[NotificationDeepLink] initial notification deeplink:', {
-                hasDeepLink: typeof deepLink === 'string' && deepLink !== '',
-                length: typeof deepLink === 'string' ? deepLink.length : 0
-            });
 
             if (!isMounted || typeof deepLink !== 'string' || deepLink === '') {
                 return;
@@ -436,11 +405,6 @@ const AppStateManager = () => {
             }
 
             const storedTarget = await getPendingNotificationDeepLink();
-            console.info('[NotificationDeepLink] stored target snapshot:', {
-                hasTarget: storedTarget !== null,
-                kind: storedTarget?.kind,
-                proposalId: storedTarget?.proposalId
-            });
 
             if (!isMounted || storedTarget === null) {
                 return;
@@ -448,7 +412,6 @@ const AppStateManager = () => {
 
             CommonActions.handlePendingNotificationDeepLink({ target: storedTarget, resetOnConsume: true });
             await clearPendingNotificationDeepLink();
-            console.info('[NotificationDeepLink] stored target restored into redux');
         })();
 
         return () => {
@@ -459,31 +422,12 @@ const AppStateManager = () => {
     useEffect(() => {
         clearNavigationTimer();
 
-        console.info('[NotificationDeepLink] pending effect snapshot:', {
-            loggedIn,
-            lockStation,
-            hasPendingTarget: pendingNotificationDeepLink.target !== null,
-            kind: pendingNotificationDeepLink.target?.kind,
-            proposalId: pendingNotificationDeepLink.target?.proposalId,
-            resetOnConsume: pendingNotificationDeepLink.resetOnConsume
-        });
-
         if (!loggedIn || lockStation || pendingNotificationDeepLink.target === null) {
-            console.info('[NotificationDeepLink] pending effect skipped:', {
-                loggedIn,
-                lockStation,
-                hasPendingTarget: pendingNotificationDeepLink.target !== null
-            });
             return;
         }
 
         const targetToHandle = pendingNotificationDeepLink.target;
         const shouldResetStack = pendingNotificationDeepLink.resetOnConsume;
-        console.info('[NotificationDeepLink] waiting before routing pending deep link:', {
-            kind: targetToHandle.kind,
-            proposalId: targetToHandle.proposalId,
-            shouldResetStack
-        });
 
         navigationTimerRef.current = setTimeout(() => {
             navigationTimerRef.current = null;

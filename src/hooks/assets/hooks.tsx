@@ -52,7 +52,7 @@ export const useCW721 = () => {
 
             handleUpdateCW721WholeData(list);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [cw721Contracts, nonExistStoreValue, handleUpdateCW721WholeData, network]);
 
@@ -130,7 +130,7 @@ export const useCW20 = () => {
 
             handleUpdateCW20WholeData(list);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [cw20Contracts, nonExist20StoreValue, handleUpdateCW20WholeData, network]);
 

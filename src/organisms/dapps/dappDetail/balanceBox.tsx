@@ -46,7 +46,7 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
             setBalanceTextSize(resizeFontSize(result, 100000000000, 20));
             setBalance(result);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

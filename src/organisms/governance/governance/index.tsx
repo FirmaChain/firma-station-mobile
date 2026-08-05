@@ -43,7 +43,7 @@ const Governance = () => {
             await handleGovernanceListPolling();
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
-            console.log(error);
+            console.error(error);
         }
     }, [dataLoadStatus, handleGovernanceListPolling]);
 

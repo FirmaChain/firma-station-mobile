@@ -46,7 +46,7 @@ const Welcome = () => {
             const result = await getChain(WALLET_LIST);
             return setWalletExist(Boolean(result));
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

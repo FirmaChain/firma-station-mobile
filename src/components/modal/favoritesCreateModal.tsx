@@ -132,7 +132,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
 
             handleOpenModalPrev(true);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -190,7 +190,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
             const result = addressCheck(addressValue);
             if (result === false) throw WRONG_TARGET_ADDRESS_WARN_TEXT;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     }, [addressValue, walletAddress]);
@@ -208,7 +208,7 @@ const FavoritesCreateModal = ({ open, address, setOpenModal, handleOpenFavoriteM
                 if (result.favorite.find((value) => value.name === nameValue) !== undefined) throw EXIST_NAME_IN_FAVORITE_WARN_TEXT;
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     }, [isAdjust, addressValue, nameValue, walletAddress]);

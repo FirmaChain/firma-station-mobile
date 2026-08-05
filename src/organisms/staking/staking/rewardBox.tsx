@@ -55,7 +55,7 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
             }
             setOpenModal(open);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -66,7 +66,7 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
             setWithdrawAllGas(result);
             setAlertDescription('');
         } catch (error) {
-            console.log(error);
+            console.error(error);
             CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             handleModalOpen(true);

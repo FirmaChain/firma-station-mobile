@@ -103,7 +103,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
                 return;
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             CommonActions.endLoadingProgress(loadingRequestId);
             setAlertDescription(String(error));
             setOpenAlertModal(true);

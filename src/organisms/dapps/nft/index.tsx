@@ -79,7 +79,7 @@ const NFT = ({ data }: IProps) => {
 
             setMetaData({ ...metaData });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [NFTData, metaData]);
 

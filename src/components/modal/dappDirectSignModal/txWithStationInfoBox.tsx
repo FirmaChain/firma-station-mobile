@@ -241,7 +241,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                     setDstAvatarURL(avatarURL);
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         },
         [qrData]
@@ -253,7 +253,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
                 const withdraw = await getStakingFromvalidator(walletAddress, validatorAddress);
                 setWithdrawAmount(withdraw.stakingReward);
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         },
         [qrData]
@@ -263,7 +263,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
         try {
             await getStakingState();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [qrData, stakingState]);
 
@@ -272,7 +272,7 @@ const TxWithStationInfoBox = ({ type, qrData }: IProps) => {
             try {
                 await handleProposalPolling(proposalId);
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         },
         [qrData]

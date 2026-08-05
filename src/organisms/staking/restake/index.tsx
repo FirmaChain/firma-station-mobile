@@ -126,7 +126,7 @@ const Restake = () => {
             await handleStakingGrantState();
             await handleRestakeInfo();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             CommonActions.endLoadingProgress(loadingRequestId);
         }
@@ -166,7 +166,7 @@ const Restake = () => {
             }
             setAlertDescription('');
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setAlertDescription(String(error));
             handleAlertModalOpen(true);
             throw error;

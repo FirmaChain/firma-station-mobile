@@ -20,10 +20,6 @@ const CHANNEL_NAME = 'Firma Station';
 
 const NOTIFICATION_CHANNELS = [{ label: 'Proposal', topic: 'proposal' }] as const;
 
-const logNotification = (message: string, ...detail: unknown[]) => {
-    console.info('[FCM]', message, ...detail);
-};
-
 const resolveTitle = (remoteMessage: FirebaseMessagingTypes.RemoteMessage): string => {
     const dataTitle = remoteMessage.data?.title;
     return remoteMessage.notification?.title ?? (typeof dataTitle === 'string' ? dataTitle : 'Notification');
@@ -61,7 +57,6 @@ const ensureChannel = async () => {
         name: CHANNEL_NAME,
         importance: AndroidImportance.HIGH
     });
-    logNotification(`notification channel ready (${CHANNEL_ID})`);
 };
 
 export const getNotificationEnabled = async () => {
@@ -92,17 +87,13 @@ const clearNotificationTopics = async () => {
         return;
     }
 
-    logNotification('unsubscribing from topics', topics);
     await Promise.all(topics.map((topic) => unsubscribeFromTopic(fcm, topic)));
-    logNotification('topic unsubscribe complete', topics);
 };
 
 const subscribeNotificationTopics = async (network: string) => {
     const fcm = getFirebaseMessaging();
     const topics = getNotificationTopics(network);
-    logNotification(`subscribing to topics for ${normalizeNetwork(network)}`, topics);
     await Promise.all(topics.map((topic) => subscribeToTopic(fcm, topic)));
-    logNotification('topic subscribe complete', topics);
 };
 
 const hasNotificationPermission = async (requestPermission = false) => {
@@ -115,10 +106,8 @@ const hasNotificationPermission = async (requestPermission = false) => {
         return false;
     }
 
-    logNotification('requesting notification permission');
     const { status: requestedStatus } = await requestNotifications(['alert', 'badge', 'sound']);
     const granted = requestedStatus === RESULTS.GRANTED || requestedStatus === RESULTS.LIMITED;
-    logNotification(`notification permission ${granted ? 'granted' : 'denied'}`);
     return granted;
 };
 
@@ -147,42 +136,30 @@ export const syncNotificationTopics = async ({
     requestPermission?: boolean;
 }) => {
     if (!hasFirebaseApp()) {
-        logNotification('skip topic sync because firebase app is missing');
         return false;
     }
 
     const isEnabled = enabled ?? (await getNotificationEnabled());
-    logNotification(`sync start for ${normalizeNetwork(network)}`, { enabled: isEnabled, requestPermission });
     await clearNotificationTopics();
 
     if (!isEnabled) {
-        logNotification('topic sync stopped because notifications are off');
         return false;
     }
 
     const hasPermission = await hasNotificationPermission(requestPermission);
     if (!hasPermission) {
-        logNotification('topic sync stopped because notification permission is missing');
         return false;
     }
 
     await subscribeNotificationTopics(network);
-    logNotification(`sync complete for ${normalizeNetwork(network)}`);
     return true;
 };
 
 const displayRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const enabled = await getNotificationEnabled();
     const hasPermission = await hasNotificationPermission(false);
-    logNotification('message received', {
-        enabled,
-        hasPermission,
-        messageId: remoteMessage.messageId,
-        title: resolveTitle(remoteMessage)
-    });
 
     if (!enabled || !hasPermission) {
-        logNotification('message skipped because notifications are disabled or permission is missing');
         return false;
     }
 
@@ -208,7 +185,6 @@ const displayRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.Remote
             }
         }
     });
-    logNotification('notification displayed', { messageId: remoteMessage.messageId, title });
     return true;
 };
 
@@ -218,17 +194,14 @@ export const showRemoteMessage = async (remoteMessage: FirebaseMessagingTypes.Re
 
 export const registerBackgroundNotificationHandler = () => {
     if (!hasFirebaseApp()) {
-        logNotification('skip background handler registration because firebase app is missing');
         return;
     }
 
     setBackgroundMessageHandler(getFirebaseMessaging(), showRemoteMessage);
-    logNotification('background message handler registered');
 };
 
 export const initializeForegroundNotifications = async (network: string) => {
     if (!hasFirebaseApp()) {
-        logNotification('skip foreground init because firebase app is missing');
         return () => {};
     }
 
@@ -242,26 +215,20 @@ export const initializeForegroundNotifications = async (network: string) => {
     }
 
     const fcm = getFirebaseMessaging();
-    logNotification(`foreground init start for ${normalizeNetwork(network)}`);
     await registerDeviceForRemoteMessages(fcm);
     await ensureChannel();
-
-    logNotification('FCM token ready');
 
     const unsubscribeOnMessage = onMessage(fcm, async (remoteMessage) => {
         await showRemoteMessage(remoteMessage);
     });
 
-    const unsubscribeOnTokenRefresh = onTokenRefresh(fcm, (nextToken) => {
-        logNotification('FCM token refreshed', nextToken);
+    const unsubscribeOnTokenRefresh = onTokenRefresh(fcm, () => {
         void syncNotificationTopics({ network, requestPermission: false });
     });
 
-    const synced = await syncNotificationTopics({ network, requestPermission: false });
-    logNotification(`foreground init complete for ${normalizeNetwork(network)}`, { synced });
+    await syncNotificationTopics({ network, requestPermission: false });
 
     return () => {
-        logNotification(`foreground init cleanup for ${normalizeNetwork(network)}`);
         unsubscribeOnMessage();
         unsubscribeOnTokenRefresh();
     };

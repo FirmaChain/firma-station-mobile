@@ -25,7 +25,7 @@ export const removeAllData = async () => {
 
         await removeChain(WALLET_LIST);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         throw error;
     }
 };

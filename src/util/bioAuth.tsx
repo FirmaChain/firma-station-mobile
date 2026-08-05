@@ -15,7 +15,7 @@ export const confirmViaBioAuth = async () => {
         wait(Platform.OS === 'ios' ? 2300 : 800).then(() => CommonActions.handleBioAuthInProgress(false));
         authResult = result.success;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         wait(Platform.OS === 'ios' ? 2300 : 800).then(() => CommonActions.handleBioAuthInProgress(false));
         if (available === false) {
             Alert.alert(BIOMETRICS_PERMISSION_ALERT.title, BIOMETRICS_PERMISSION_ALERT.desc, [

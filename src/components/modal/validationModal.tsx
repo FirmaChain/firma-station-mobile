@@ -123,7 +123,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                             return;
                         }
 
-                        console.log(error);
+                        console.error(error);
                         setActive(false);
                     }
                 } catch (error) {
@@ -131,7 +131,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
                         return;
                     }
 
-                    console.log(error);
+                    console.error(error);
                     setActive(false);
                 }
             }, 250),

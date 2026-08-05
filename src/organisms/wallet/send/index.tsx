@@ -131,7 +131,7 @@ const Send = () => {
                 return;
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setAlertDescription(String(error));
             setOpenAlertModal(true);
             return;

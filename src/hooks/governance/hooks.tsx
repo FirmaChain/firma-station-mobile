@@ -100,7 +100,7 @@ export const useGovernanceList = () => {
             const data: IProposalJSONProps = await response.json();
             return data;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     }, [network]);
@@ -215,7 +215,7 @@ export const useProposalData = () => {
                         }
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 }
 
                 // FIXME: The SDK proposal model exposes version-dependent fields outside its public type.
@@ -285,7 +285,7 @@ export const useProposalData = () => {
                     voteState
                 });
             } catch (e) {
-                console.log(e);
+                console.error(e);
                 // Fix: if failed to fetch proposal data, show error toast and return to previous screen (governance)
                 Toast.show({
                     type: 'error',
@@ -345,7 +345,7 @@ export const useProposalData = () => {
         try {
             await handleProposal(id);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

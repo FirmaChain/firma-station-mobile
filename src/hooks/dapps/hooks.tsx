@@ -39,7 +39,7 @@ export const useNFT = () => {
             const list = await getNFTIdListOfOwner(walletAddress);
             setNFTIdLIst(list.nftIdList);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     }, [walletAddress, NFTIdList]);
@@ -50,7 +50,7 @@ export const useNFT = () => {
             const json = await res.json();
             return json;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     };
@@ -61,7 +61,7 @@ export const useNFT = () => {
             const nftList = await getNFTSList(NFTIdList);
             setNFTS(nftList);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [NFTIdList]);
 
@@ -78,7 +78,7 @@ export const useNFT = () => {
                 setMyNFTS(myNftList);
                 setIsFetching(false);
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 setIsFetching(false);
             }
         };
@@ -124,7 +124,7 @@ export const useCW721NFT = ({ contractAddress }: { contractAddress: string | nul
             setCW721NFTS(nftList);
         } catch (error) {
             setIsFetching(false);
-            console.log(error);
+            console.error(error);
         }
     }, [CW721NFTIdList, contractAddress]);
 
@@ -140,7 +140,7 @@ export const useCW721NFT = ({ contractAddress }: { contractAddress: string | nul
                 setMyCW721NFTS(myNftList);
                 setIsFetching(false);
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 setIsFetching(false);
             }
         };
@@ -165,7 +165,7 @@ const getNFTSList = async (idList: Array<string>) => {
             return [];
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return [];
     }
 };
@@ -189,7 +189,7 @@ const getCW721NFTSList = async (contract: string, idList: Array<string>) => {
             return [];
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return [];
     }
 };
@@ -222,7 +222,7 @@ const getMyNFTList = async (nfts: Array<INftItemType>, identity: string) => {
             return [];
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return [];
     }
 };
@@ -252,7 +252,7 @@ const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
                         metaURI: metaURI
                     });
                 } catch (error) {
-                    console.log(`Error fetching data for NFT with id ${NFT.id}:`, error);
+                    console.error(`Error fetching data for NFT with id ${NFT.id}:`, error);
 
                     list = list.concat({
                         id: NFT.id,
@@ -270,7 +270,7 @@ const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
             return [];
         }
     } catch (error) {
-        console.log('getMyCW721NFTList', error);
+        console.error('getMyCW721NFTList', error);
         return [];
     }
 };

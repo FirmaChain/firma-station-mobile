@@ -114,7 +114,7 @@ const DappDetail = ({ data }: IProps) => {
                 decimal: decimal
             });
         } catch (error) {
-            console.log('handleDappData : ', error);
+            console.error('handleDappData : ', error);
         }
     };
 
@@ -128,7 +128,7 @@ const DappDetail = ({ data }: IProps) => {
             if (dappService === null || dappService === undefined) return;
             getUserDappServiceFromId(dappService);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -151,7 +151,7 @@ const DappDetail = ({ data }: IProps) => {
                 setIsLoadedDappService(true);
                 setDappData({ ...dappData });
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         },
         [dappData]

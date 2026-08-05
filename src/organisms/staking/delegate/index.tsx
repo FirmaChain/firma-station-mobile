@@ -238,7 +238,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
             setAlertState(null);
             setStatus(1);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             CommonActions.endLoadingProgress(loadingRequestId);
             setAlertState({
                 title: 'Failed',
@@ -278,7 +278,7 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
-            console.log(error);
+            console.error(error);
         }
     };
 

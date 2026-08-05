@@ -136,7 +136,7 @@ const Validator = ({ validatorAddress }: IProps) => {
             await Promise.all([handleDelegateState(), handleTotalDelegationPolling(), handleValidatorPolling()]);
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
-            console.log(error);
+            console.error(error);
         }
     };
 

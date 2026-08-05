@@ -81,7 +81,7 @@ const Wallet = () => {
             const list = await getTokenList(walletAddress);
             setTokenList(list);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Toast.show({
                 type: 'error',
                 text1: String(error)
@@ -96,7 +96,7 @@ const Wallet = () => {
             CommonActions.handleDataLoadStatus(0);
         } catch (error) {
             CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
-            console.log(error);
+            console.error(error);
             throw error;
         }
     };

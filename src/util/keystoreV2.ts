@@ -41,7 +41,7 @@ export const encryptV2 = (originalMessage: string, pass: string): string => {
 
         return JSON.stringify(payload);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return '';
     }
 };
@@ -70,7 +70,7 @@ export const decryptV2 = (encryptedMessage: string, pass: string): string => {
 
         return decrypted;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return '';
     }
 };

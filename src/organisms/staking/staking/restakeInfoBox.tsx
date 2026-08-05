@@ -67,7 +67,7 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
             const json = await result.json();
             setRestakeInfoJson(json);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

@@ -147,7 +147,7 @@ const CW721List = ({ data, isEdit }: IProps) => {
 
             handleCw721Thumbnail(item.address, images);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             handleCw721Thumbnail(item.address, []);
         }
     };

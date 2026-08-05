@@ -56,7 +56,7 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
                             return;
                         }
 
-                        console.log(error);
+                        console.error(error);
                         setActive(false);
                     }
                 } catch (error) {
@@ -64,7 +64,7 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
                         return;
                     }
 
-                    console.log(error);
+                    console.error(error);
                     setActive(false);
                 }
             }, 250),

@@ -59,7 +59,7 @@ const DappSignModal = () => {
             }
             handleModal(false);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -89,7 +89,7 @@ const DappSignModal = () => {
                 const session = await getDAppConnectSession(walletName + network);
                 setUserSession(session);
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
 

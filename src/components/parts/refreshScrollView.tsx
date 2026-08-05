@@ -48,7 +48,7 @@ const RefreshScrollView = ({
             setRefreshing(false);
         } catch (error) {
             setRefreshing(false);
-            console.log(error);
+            console.error(error);
         }
     };
 

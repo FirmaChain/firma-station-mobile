@@ -255,7 +255,6 @@ class ConnectClient {
                 throw new Error('Invalid API Code');
             }
         } catch (e) {
-            console.log(e);
             CommonActions.endLoadingProgress(loadingRequestId);
             throw new Error('Invalid QR(' + e + ')');
         }
@@ -284,7 +283,6 @@ class ConnectClient {
                 throw new Error('Invalid API Code');
             }
         } catch (error) {
-            console.log(error);
             throw new Error('Invalid QR(' + error + ')');
         }
     }
@@ -305,7 +303,6 @@ class ConnectClient {
 
             return jsonString;
         } catch (error) {
-            console.log(error);
             throw new Error('Invalid Raw(' + error + ')');
         }
     }
@@ -327,7 +324,6 @@ class ConnectClient {
                 throw new Error('Invalid Raw');
             }
         } catch (error) {
-            console.log(error);
             throw new Error('Invalid Raw(' + error + ')');
         }
     }
@@ -359,7 +355,6 @@ class ConnectClient {
                 else return value;
             });
         } catch (e) {
-            console.log(e);
             throw new Error('Invalid QR(' + e + ')');
         }
     }
@@ -375,7 +370,6 @@ class ConnectClient {
                 throw new Error('Invalid API Code');
             }
         } catch (e) {
-            console.log(e);
             throw new Error('Invalid QR(' + e + ')');
         }
     }
@@ -404,22 +398,17 @@ class RequestService {
     constructor(public relay: string) {}
 
     async requestPost<T = unknown>(uri: string, body: object = {}, headers: Record<string, string> = {}): Promise<T> {
-        try {
-            const requestOptions = {
-                method: 'POST',
-                headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            };
-            const response = await fetch(`${this.relay}${uri}`, requestOptions);
-            const data: RelayResponse<T> = await response.json();
-            if (data.code === 0) {
-                return data.result;
-            } else {
-                throw new Error(data.message);
-            }
-        } catch (e) {
-            console.log(e);
-            throw e;
+        const requestOptions = {
+            method: 'POST',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        };
+        const response = await fetch(`${this.relay}${uri}`, requestOptions);
+        const data: RelayResponse<T> = await response.json();
+        if (data.code === 0) {
+            return data.result;
+        } else {
+            throw new Error(data.message);
         }
     }
 

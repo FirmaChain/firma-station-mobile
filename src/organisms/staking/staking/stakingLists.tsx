@@ -57,9 +57,9 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
                     .then(() => {
                         handleDelegationLoading(false);
                     })
-                    .catch((error) => console.log(error));
+                    .catch((error) => console.error(error));
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
             }
         },
@@ -73,7 +73,7 @@ const StakingLists = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps)
             setTab(index);
             await loadDelegationState(index);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

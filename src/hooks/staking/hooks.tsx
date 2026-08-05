@@ -566,7 +566,7 @@ export const useValidatorData = () => {
 
             StakingActions.updateValidatorsState(mergedList);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [validator, validatorsAvatarList]);
 
@@ -700,7 +700,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 percentageData
             });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [validatorAddress, validatorsProfile]);
 
@@ -708,7 +708,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
         try {
             await handleValidatorState();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -750,7 +750,7 @@ export const useRestakeInfoData = () => {
             const json = await result.json();
             setInfo(json);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

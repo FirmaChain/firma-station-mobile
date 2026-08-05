@@ -135,7 +135,7 @@ const DeepLinkManager = () => {
             const projectIds: string[] = JSON.parse(result);
             return projectIds;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return null;
         }
     };

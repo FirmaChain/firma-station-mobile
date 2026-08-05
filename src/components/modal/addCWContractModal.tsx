@@ -114,7 +114,7 @@ const AddCWContractModal = ({ open, setOpenModal, successCallback }: IProps) => 
                 }
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Toast.show({
                 type: 'error',
                 text1: String(error)
