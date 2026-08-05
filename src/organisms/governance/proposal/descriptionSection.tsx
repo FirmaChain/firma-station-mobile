@@ -1,7 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import LaunchIcon from '@/assets/icons/material/launch.svg';
 import { CHAIN_SYMBOL, PROPOSAL_MESSAGE_TYPE, PROPOSAL_STATUS_DEPOSIT_PERIOD } from '@/constants/common';
-import { BoxColor, DividerColor, Lato, TextAddressColor, TextCatTitleColor, TextColor, TextDarkGrayColor } from '@/constants/theme';
+import {
+    BoxColor,
+    DividerColor,
+    Lato,
+    TableHeaderColor,
+    TextAddressColor,
+    TextCatTitleColor,
+    TextColor,
+    TextDarkGrayColor
+} from '@/constants/theme';
 import { convertAmount, convertTime } from '@/util/common';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -337,7 +346,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: DividerColor,
-        backgroundColor: '#25252d'
+        backgroundColor: TableHeaderColor
     },
     tableRow: {
         width: '100%',

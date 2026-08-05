@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { BgColor, BoxColor } from '@/constants/theme';
+import { BgColor, BoxColor, ModalBackdropColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { Dimensions, EmitterSubscription, Keyboard, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     },
     dimmedBackground: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.7)'
+        backgroundColor: ModalBackdropColor
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject

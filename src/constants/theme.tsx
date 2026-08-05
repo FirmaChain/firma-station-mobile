@@ -7,6 +7,8 @@ export const BoxDarkColor = '#14141a';
 
 export const WhiteColor = '#ffffff';
 export const BlackColor = '#000000';
+export const TransparentColor = '#00000000';
+export const ModalBackdropColor = '#000000B3';
 export const GrayColor = '#8d8d91';
 export const DarkGrayColor = '#a1a1ac';
 export const LightGrayColor = '#393945';
@@ -31,7 +33,9 @@ export const PointDarkColor = '#263fa1';
 export const BorderColor = '#696974';
 export const DisableColor = '#44444f';
 export const DividerColor = '#33333a';
+export const TableHeaderColor = '#25252d';
 export const FailedColor = '#de3d3d';
+export const DangerColor = '#ff6347';
 
 export const RestakeNoDelegationColor = '#c4c4c4';
 export const RestakeActiveColor = '#3dd598';

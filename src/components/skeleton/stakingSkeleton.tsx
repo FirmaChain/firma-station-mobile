@@ -1,4 +1,4 @@
-import { BgColor, DarkGrayColor, DisableColor, GrayColor, Lato, TextGrayColor, WhiteColor } from '@/constants/theme';
+import { BgColor, DarkGrayColor, DisableColor, GrayColor, Lato, TextGrayColor, TransparentColor, WhiteColor } from '@/constants/theme';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { DownArrow, ForwardArrow } from '../icon/icon';
@@ -65,7 +65,7 @@ const StakingSkeleton = () => {
 const styles = StyleSheet.create({
     inlineStyle1: { display: 'flex' },
     inlineStyle2: { borderBottomColor: WhiteColor },
-    inlineStyle3: { borderBottomColor: 'transparent' },
+    inlineStyle3: { borderBottomColor: TransparentColor },
     inlineStyle4: { flexDirection: 'row', justifyContent: 'flex-start', flex: 1 },
     inlineStyle5: { width: 30 },
     inlineStyle6: { flexDirection: 'row', alignItems: 'center' },

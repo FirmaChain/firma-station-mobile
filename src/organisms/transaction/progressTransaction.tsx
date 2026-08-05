@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { TRANSACTION_PROCESS_DESCRIPTION_TEXT, TRANSACTION_PROCESS_NOTICE_TEXT, TRANSACTION_PROCESS_TEXT } from '@/constants/common';
-import { BgColor, Lato, TextCatTitleColor, TextColor, TextLightGrayColor, TextWarnColor } from '@/constants/theme';
+import { BgColor, Lato, TextCatTitleColor, TextColor, TextLightGrayColor, TextWarnColor, TransparentColor } from '@/constants/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import { BackHandler, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, {
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 0,
         margin: 0,
-        backgroundColor: 'transparent',
+        backgroundColor: TransparentColor,
         includeFontPadding: false,
         fontVariant: ['tabular-nums']
     },

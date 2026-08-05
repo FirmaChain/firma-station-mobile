@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { BgColor, BoxColor, Lato, TextColor } from '@/constants/theme';
+import { BgColor, BoxColor, DangerColor, Lato, TextColor } from '@/constants/theme';
 import { useAppSelector } from '@/redux/hooks';
 import { getWalletList, removeDAppData, removeRecoverType, removeUseBioAuth, removeWallet, setWalletList } from '@/util/wallet';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -70,7 +70,7 @@ const Delete = ({ walletName, walletAddress, handleDisconnect }: IProps) => {
 
 const styles = StyleSheet.create({
     inlineStyle1: { justifyContent: 'center' },
-    inlineStyle2: { color: 'tomato', fontWeight: 'bold' },
+    inlineStyle2: { color: DangerColor, fontWeight: 'bold' },
     listItem: {
         backgroundColor: BoxColor,
         padding: 20,

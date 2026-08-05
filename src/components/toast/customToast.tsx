@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lato, toastError, toastInfo, toastSuccess } from '@/constants/theme';
+import { Lato, toastError, toastInfo, toastSuccess, WhiteColor } from '@/constants/theme';
 import { wait } from '@/util/common';
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 15,
         fontWeight: '400',
-        color: 'white'
+        color: WhiteColor
     },
     text2Style: {
         fontFamily: Lato,
         fontSize: 13,
         fontWeight: '400',
-        color: 'white'
+        color: WhiteColor
     }
 });
 
