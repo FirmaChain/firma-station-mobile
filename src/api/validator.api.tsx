@@ -1,6 +1,6 @@
 import { VALIDATORS_PROFILE_API } from '@/../config';
 import { IValidatorsProfileState } from '@/redux/reducers/storageReducer';
-import kyInstance from '@/util/kyService';
+import apiClient from '@/util/kyService';
 
 export interface IAvatarStateProps {
     status: {
@@ -23,5 +23,5 @@ export interface IAvatarStateProps {
 }
 
 export const getValidatorsProfile = () => {
-    return kyInstance.get<IValidatorsProfileState>(VALIDATORS_PROFILE_API).json();
+    return apiClient.getJson<IValidatorsProfileState>(VALIDATORS_PROFILE_API, { retry: { limit: 2 } });
 };

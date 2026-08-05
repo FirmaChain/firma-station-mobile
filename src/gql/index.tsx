@@ -1,5 +1,5 @@
 import { CHAIN_NETWORK } from '@/../config';
-import kyInstance, { type ApiOptions } from '@/util/kyService';
+import apiClient, { ApiError, type ApiOptions } from '@/util/kyService';
 
 type GraphQLError = {
     message: string;
@@ -15,20 +15,6 @@ type GraphQLResponse<TData> = {
 
 export const getGraphQLEndpoint = (network: string) => CHAIN_NETWORK[network].GRAPHQL + '/v1/graphql';
 
-async function parseGraphQLResponse<TData>(response: Response): Promise<GraphQLResponse<TData>> {
-    const raw = await response.text();
-
-    if (!raw) {
-        return {};
-    }
-
-    try {
-        return JSON.parse(raw) as GraphQLResponse<TData>;
-    } catch {
-        throw new Error(`Invalid GraphQL response: ${raw.slice(0, 200)}`);
-    }
-}
-
 export async function requestGraphQL<TData, TVariables extends Record<string, unknown> | undefined = undefined>(
     network: string,
     query: string,
@@ -39,22 +25,17 @@ export async function requestGraphQL<TData, TVariables extends Record<string, un
         context: {
             disableProgress: true
         },
-        throwHttpErrors: false
+        retry: { limit: 0 }
     };
 
-    const response = await kyInstance.post(getGraphQLEndpoint(network), requestOptions);
-    const payload = await parseGraphQLResponse<TData>(response);
+    const payload = await apiClient.postJson<GraphQLResponse<TData>>(getGraphQLEndpoint(network), requestOptions);
 
     if (payload.errors?.length) {
-        throw new Error(payload.errors[0]?.message ?? 'GraphQL request failed');
-    }
-
-    if (!response.ok && payload.data === undefined) {
-        throw new Error(`GraphQL request failed with status ${response.status}`);
+        throw ApiError.fromServer(payload.errors[0]?.message ?? 'GraphQL request failed.');
     }
 
     if (payload.data === undefined) {
-        throw new Error('GraphQL response did not contain data');
+        throw ApiError.fromServer('GraphQL response did not contain data.');
     }
 
     return payload.data;

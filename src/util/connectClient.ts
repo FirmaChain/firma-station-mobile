@@ -2,6 +2,7 @@ import { CommonActions } from '@/redux/actions';
 import { FirmaUtil } from '@firmachain/firma-js';
 import { FirmaWalletService } from '@firmachain/firma-js/dist/sdk/FirmaWalletService';
 
+import { ApiError, createApiClient, type ApiOptions } from './kyService';
 import { getDAppConnectSession, setDAppConnectSession } from './wallet';
 
 export interface UserSession {
@@ -156,13 +157,17 @@ class ConnectClient {
 
     public async getProjects(): Promise<ProjectList> {
         try {
-            const response: ResponseProjectData = await this.requestService.requestGet<ResponseProjectData>('/v1/projects');
+            const response: ResponseProjectData = await this.requestService.requestGet<ResponseProjectData>(
+                '/v1/projects',
+                {},
+                { context: { disableProgress: true } }
+            );
 
             return {
                 projectList: response.projectList
             };
-        } catch {
-            throw new Error('Failed Request');
+        } catch (error) {
+            throw ApiError.from(error);
         }
     }
 
@@ -175,8 +180,8 @@ class ConnectClient {
             return {
                 service: response.service
             };
-        } catch {
-            throw new Error('Failed Request');
+        } catch (error) {
+            throw ApiError.from(error);
         }
     }
 
@@ -187,8 +192,8 @@ class ConnectClient {
             return {
                 userkey: response.userkey
             };
-        } catch {
-            throw new Error('Failed Request');
+        } catch (error) {
+            throw ApiError.from(error);
         }
     }
 
@@ -204,8 +209,8 @@ class ConnectClient {
             setDAppConnectSession(walletKey, JSON.stringify(newKey));
 
             return newKey;
-        } catch {
-            throw new Error('Failed Request');
+        } catch (error) {
+            throw ApiError.from(error);
         }
     }
 
@@ -218,8 +223,8 @@ class ConnectClient {
             return {
                 userkey: response.userkey
             };
-        } catch {
-            throw new Error('Failed Request');
+        } catch (error) {
+            throw ApiError.from(error);
         }
     }
 
@@ -256,7 +261,7 @@ class ConnectClient {
             }
         } catch (e) {
             CommonActions.endLoadingProgress(loadingRequestId);
-            throw new Error('Invalid QR(' + e + ')');
+            throw ApiError.from(e);
         }
     }
 
@@ -283,7 +288,7 @@ class ConnectClient {
                 throw new Error('Invalid API Code');
             }
         } catch (error) {
-            throw new Error('Invalid QR(' + error + ')');
+            throw ApiError.from(error);
         }
     }
 
@@ -303,7 +308,7 @@ class ConnectClient {
 
             return jsonString;
         } catch (error) {
-            throw new Error('Invalid Raw(' + error + ')');
+            throw ApiError.from(error);
         }
     }
 
@@ -324,7 +329,7 @@ class ConnectClient {
                 throw new Error('Invalid Raw');
             }
         } catch (error) {
-            throw new Error('Invalid Raw(' + error + ')');
+            throw ApiError.from(error);
         }
     }
 
@@ -340,7 +345,7 @@ class ConnectClient {
 
             return response.isValid;
         } catch (e) {
-            throw new Error('Invalid QR(' + e + ')');
+            throw ApiError.from(e);
         }
     }
 
@@ -355,7 +360,7 @@ class ConnectClient {
                 else return value;
             });
         } catch (e) {
-            throw new Error('Invalid QR(' + e + ')');
+            throw ApiError.from(e);
         }
     }
 
@@ -370,7 +375,7 @@ class ConnectClient {
                 throw new Error('Invalid API Code');
             }
         } catch (e) {
-            throw new Error('Invalid QR(' + e + ')');
+            throw ApiError.from(e);
         }
     }
 
@@ -389,57 +394,36 @@ class ConnectClient {
                 throw new Error('Invalid API Code');
             }
         } catch (e) {
-            throw new Error('Invalid QR(' + e + ')');
+            throw ApiError.from(e);
         }
     }
 }
 
 class RequestService {
-    constructor(public relay: string) {}
+    private readonly client;
+
+    constructor(relay: string) {
+        this.client = createApiClient(relay);
+    }
 
     async requestPost<T = unknown>(uri: string, body: object = {}, headers: Record<string, string> = {}): Promise<T> {
-        const requestOptions = {
-            method: 'POST',
-            headers: { ...headers, 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        };
-        const response = await fetch(`${this.relay}${uri}`, requestOptions);
-        const data: RelayResponse<T> = await response.json();
-        if (data.code === 0) {
-            return data.result;
-        } else {
-            throw new Error(data.message);
-        }
+        return this.unwrap(this.client.postJson<RelayResponse<T>>(uri, { headers, json: body }));
     }
 
     async requestPut<T = unknown>(uri: string, body: object = {}, headers: Record<string, string> = {}): Promise<T> {
-        const requestOptions = {
-            method: 'PUT',
-            headers: { ...headers, 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        };
-        const response = await fetch(`${this.relay}${uri}`, requestOptions);
-        const data: RelayResponse<T> = await response.json();
-        if (data.code === 0) {
-            return data.result;
-        } else {
-            throw new Error(data.message);
-        }
+        return this.unwrap(this.client.putJson<RelayResponse<T>>(uri, { headers, json: body }));
     }
 
-    async requestGet<T = unknown>(uri: string, headers: Record<string, string> = {}): Promise<T> {
-        const response = await fetch(`${this.relay}${uri}`, {
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            }
-        });
-        const data: RelayResponse<T> = await response.json();
-        if (data.code === 0) {
-            return data.result;
-        } else {
-            throw new Error(data.message);
-        }
+    async requestGet<T = unknown>(uri: string, headers: Record<string, string> = {}, options?: ApiOptions): Promise<T> {
+        return this.unwrap(this.client.getJson<RelayResponse<T>>(uri, { ...options, headers }));
+    }
+
+    private async unwrap<T>(request: Promise<RelayResponse<T>>): Promise<T> {
+        const response = await request;
+
+        if (response.code !== 0) throw ApiError.fromServer(response.message);
+
+        return response.result;
     }
 }
 

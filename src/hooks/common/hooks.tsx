@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { CHAIN_NETWORK, MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
 import { getChainInfo } from '@/util/firma';
-import kyInstance from '@/util/kyService';
+import kyInstance, { ApiError } from '@/util/kyService';
 
 export interface IMaintenanceState {
     isShow: boolean;
@@ -74,31 +74,29 @@ export const useServerMessage = () => {
 
     const getMaintenanceData = useCallback(async () => {
         try {
-            const data = await kyInstance
-                .get<{ minAppVer: string; currentAppVer: string; maintenance: IMaintenanceState }>(
-                    `${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Cache-Control': 'no-store',
-                            Pragma: 'no-store',
-                            Expires: '0'
-                        },
-                        context: {
-                            disableProgress: true
-                        }
+            const data = await kyInstance.getJson<{ minAppVer: string; currentAppVer: string; maintenance: IMaintenanceState }>(
+                `${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-store',
+                        Pragma: 'no-store',
+                        Expires: '0'
+                    },
+                    context: {
+                        disableProgress: true
                     }
-                )
-                .json();
+                }
+            );
 
             setMinAppVer(data.minAppVer);
             setCurrentAppVer(data.currentAppVer);
             setMaintenanceState(data.maintenance);
-        } catch {
+        } catch (error) {
             setMinAppVer(undefined);
             setCurrentAppVer(undefined);
             setMaintenanceState(undefined);
-            throw new Error('Failed Request');
+            throw ApiError.from(error);
         }
     }, []);
 

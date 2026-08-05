@@ -200,17 +200,15 @@ export const useFetchPrices = () => {
 
     const fetchPrices = async () => {
         try {
-            const data = await kyInstance
-                .get<unknown>(COINGECKO, {
-                    searchParams: {
-                        ids: COINGECKO_PRICE_LIST,
-                        vs_currencies: 'usd'
-                    },
-                    context: {
-                        disableProgress: true
-                    }
-                })
-                .json();
+            const data = await kyInstance.getJson<unknown>(COINGECKO, {
+                searchParams: {
+                    ids: COINGECKO_PRICE_LIST,
+                    vs_currencies: 'usd'
+                },
+                context: {
+                    disableProgress: true
+                }
+            });
 
             const transformedPrices = transformPrices(data);
             setPriceData(transformedPrices);
