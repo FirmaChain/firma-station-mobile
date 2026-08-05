@@ -36,7 +36,10 @@ interface IProps {
 }
 
 // Custom hook: manange remove animation
-const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | null): {
+const useRemoveAnimation = (
+    item: IFavoriteProps,
+    removeItem: IFavoriteProps | null
+): {
     opacity: Animated.Value;
     height: number | 'auto';
     padding: number;
@@ -117,6 +120,8 @@ interface FavoriteListItemProps {
     item: IFavoriteProps;
     isEdit: boolean;
     selected: string;
+    // FIXME: The caller supplies an animation implementation with no shared interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     animationState: any;
     onSelect: (address: string, memo: string, isEdit: boolean) => void;
     onRemove: (item: IFavoriteProps) => void;

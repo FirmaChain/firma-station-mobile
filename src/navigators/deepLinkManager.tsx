@@ -131,7 +131,9 @@ const DeepLinkManager = () => {
     const getProjectId = async () => {
         try {
             const result = await getDAppProjectIdList(walletName, network);
-            return JSON.parse(result);
+            if (result === null) return null;
+            const projectIds: string[] = JSON.parse(result);
+            return projectIds;
         } catch (error) {
             console.log(error);
             return null;
@@ -145,6 +147,8 @@ const DeepLinkManager = () => {
         return false;
     };
 
+    // FIXME: QR scanner results are externally produced and do not provide a stable interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleQRResult = async (result: any, loadingRequestId?: string) => {
         const isValidAddress = addressCheck(result);
         const isURL = urlForWebLinkCheck(result);

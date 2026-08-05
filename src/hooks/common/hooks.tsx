@@ -4,7 +4,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { getChainInfo } from '@/util/firma';
 import kyInstance from '@/util/kyService';
 
-interface IMaintenanceState {
+export interface IMaintenanceState {
     isShow: boolean;
     title: string;
     content: string;
@@ -48,14 +48,10 @@ export const useChainVersion = () => {
     const [sdkVer, setSdkVer] = useState('');
 
     const handleChainInfo = useCallback(async () => {
-        try {
-            const info = await getChainInfo();
+        const info = await getChainInfo();
 
-            setChainVer(`v${info.appVersion}`);
-            setSdkVer(info.cosmosVersion);
-        } catch (error) {
-            throw error;
-        }
+        setChainVer(`v${info.appVersion}`);
+        setSdkVer(info.cosmosVersion);
     }, []);
 
     useEffect(() => {
@@ -79,17 +75,20 @@ export const useServerMessage = () => {
     const getMaintenanceData = useCallback(async () => {
         try {
             const data = await kyInstance
-                .get<any>(`${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Cache-Control': 'no-store',
-                        Pragma: 'no-store',
-                        Expires: '0'
-                    },
-                    context: {
-                        disableProgress: true
+                .get<{ minAppVer: string; currentAppVer: string; maintenance: IMaintenanceState }>(
+                    `${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-store',
+                            Pragma: 'no-store',
+                            Expires: '0'
+                        },
+                        context: {
+                            disableProgress: true
+                        }
                     }
-                })
+                )
                 .json();
 
             setMinAppVer(data.minAppVer);

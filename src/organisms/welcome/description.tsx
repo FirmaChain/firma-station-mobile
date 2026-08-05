@@ -88,5 +88,5 @@ const styles = StyleSheet.create({
     arrow: {
         width: 16,
         height: 16
-    },
+    }
 });

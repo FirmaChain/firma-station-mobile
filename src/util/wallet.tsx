@@ -73,7 +73,7 @@ const getRecoverValueFromEncryptedPayload = (encryptedPayload: string, key: stri
 
 const setWalletListArray = (list: string) => {
     const arr = list.split('/');
-    const walletList: any[] = [];
+    const walletList: string[] = [];
     arr.map((item) => {
         walletList.push(item);
     });
@@ -430,12 +430,8 @@ export const setWalletWithBioAuth = async (name: string, password: string, recov
 };
 
 export const setDAppConnectSession = async (name: string, session: string) => {
-    try {
-        const encSession = encrypt(session, UNIQUE_ID + name);
-        await setChain(CONNECT_SESSION + name, encSession);
-    } catch (error) {
-        throw error;
-    }
+    const encSession = encrypt(session, UNIQUE_ID + name);
+    await setChain(CONNECT_SESSION + name, encSession);
 };
 
 export const getDAppConnectSession = async (name: string) => {
@@ -462,12 +458,8 @@ export const removeDAppConnectSession = async (name: string) => {
 };
 
 export const setDAppProjectIdList = async (name: string, key: string, list: string) => {
-    try {
-        const encList = encrypt(list, CONNECT_ID_LIST + key + '_' + name);
-        await setChain(CONNECT_ID_LIST + name, encList);
-    } catch (error) {
-        throw error;
-    }
+    const encList = encrypt(list, CONNECT_ID_LIST + key + '_' + name);
+    await setChain(CONNECT_ID_LIST + name, encList);
 };
 
 export const getDAppProjectIdList = async (name: string, key: string) => {
@@ -493,12 +485,8 @@ export const removeDAppProjectIdList = async (name: string) => {
 };
 
 export const setDAppServiceId = async (name: string, value: string) => {
-    try {
-        const encList = encrypt(value, DAPPS_SERVICE_IDENTITY + '_' + name + '_' + UNIQUE_ID);
-        await setChain(DAPPS_SERVICE_IDENTITY + name, encList);
-    } catch (error) {
-        throw error;
-    }
+    const encList = encrypt(value, DAPPS_SERVICE_IDENTITY + '_' + name + '_' + UNIQUE_ID);
+    await setChain(DAPPS_SERVICE_IDENTITY + name, encList);
 };
 
 export const getDAppServiceId = async (name: string) => {

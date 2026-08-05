@@ -121,18 +121,14 @@ const Validator = ({ validatorAddress }: IProps) => {
     };
 
     const handleDelegateState = async () => {
-        try {
-            const state = await getStakingFromvalidator(walletAddress, validatorAddress);
+        const state = await getStakingFromvalidator(walletAddress, validatorAddress);
 
-            setStakingState({
-                available: state.available,
-                delegated: state.delegated,
-                undelegate: state.undelegate,
-                stakingReward: state.stakingReward
-            });
-        } catch (error) {
-            throw error;
-        }
+        setStakingState({
+            available: state.available,
+            delegated: state.delegated,
+            undelegate: state.undelegate,
+            stakingReward: state.stakingReward
+        });
     };
 
     const refreshStates = async () => {

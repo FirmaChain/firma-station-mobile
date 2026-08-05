@@ -166,7 +166,7 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
                 placeholder="Address"
                 value={addressValue}
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('address', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('address', value)}
                 type={type}
             />
             <InputSetVerticalForAmount
@@ -176,7 +176,7 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
                 limitValue={limitAvailable}
                 resetValues={reset}
                 enableMaxAmount={true}
-                onChangeEvent={(value: any) => handleSendInfoState('amount', value)}
+                onChangeEvent={(value: number) => handleSendInfoState('amount', value)}
             />
             <InputSetVertical
                 title="Memo"
@@ -184,7 +184,7 @@ const SendInputBox = ({ handleSendInfo, available, type, reset, dstAddress }: IP
                 validation={true}
                 placeholder="Memo"
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('memo', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('memo', value)}
             />
             <View style={styles.radioBox}>
                 <Text style={[styles.title, { paddingRight: 5 }]}>Safety</Text>

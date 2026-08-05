@@ -8,7 +8,7 @@ export const encrypt = (originalMessage: string, pass: string): string => {
     return encryptV2(originalMessage, pass);
 };
 
-export const decrypt = (encryptedMessage: string, pass: string): any => {
+export const decrypt = (encryptedMessage: string, pass: string): string => {
     if (isV2EncryptedEnvelope(encryptedMessage)) {
         return decryptV2(encryptedMessage, pass);
     }

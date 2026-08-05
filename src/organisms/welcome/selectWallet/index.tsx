@@ -8,7 +8,6 @@ import { useAppSelector } from '@/redux/hooks';
 import { waitForNextFrame } from '@/util/common';
 import { getAddressFromRecoverValue } from '@/util/firma';
 import { PasswordCheck } from '@/util/validationCheck';
-import { debounce } from 'es-toolkit';
 import {
     getRecoverValueWithMeta,
     getWalletList,
@@ -20,6 +19,7 @@ import {
 } from '@/util/wallet';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { debounce } from 'es-toolkit';
 import { Alert, Keyboard, Linking, Pressable, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -40,7 +40,7 @@ const SelectWallet = () => {
     const { lastSelectedWalletIndex } = useAppSelector((state) => state.storage);
     const { loading } = useAppSelector((state) => state.common);
 
-    const [items, setItems] = useState<Array<any> | null>(null);
+    const [items, setItems] = useState<string[] | null>(null);
     const [selected, setSelected] = useState<number>(-1);
     const [selectedWallet, setSelectedWallet] = useState('');
     const [resetValues, setResetValues] = useState(false);

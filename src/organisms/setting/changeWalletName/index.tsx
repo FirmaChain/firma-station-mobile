@@ -8,9 +8,9 @@ import { useAppSelector } from '@/redux/hooks';
 import { updateArray } from '@/util/common';
 import {
     getAutoLoginTimestamp,
-    removeDAppData,
     getUseBioAuth,
     getWalletList,
+    removeDAppData,
     removeEncryptPasswordByTimestamp,
     removePasswordViaBioAuthByTimestamp,
     removeUseBioAuth,

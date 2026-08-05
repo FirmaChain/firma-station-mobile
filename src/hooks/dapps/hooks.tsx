@@ -3,6 +3,7 @@ import { ICON_CW_NFT_THUMBNAIL } from '@/constants/images';
 import { useAppSelector } from '@/redux/hooks';
 import { getCW721NftIdList, getCW721NFTItemFromId, getNFTIdListOfOwner, getNFTItemFromId, INftItemType } from '@/util/firma';
 import { Cw721NftInfo } from '@firmachain/firma-js';
+import { Image } from 'react-native';
 
 export interface INFTTransctionState {
     height: number;
@@ -110,13 +111,9 @@ export const useCW721NFT = ({ contractAddress }: { contractAddress: string | nul
     );
 
     const getCW721NFTMetaData = async (uri: string) => {
-        try {
-            const res = await fetch(uri);
-            const json = await res.json();
-            return json;
-        } catch (error) {
-            throw error;
-        }
+        const res = await fetch(uri);
+        const json = await res.json();
+        return json;
     };
 
     const handleCW721NFTList = useCallback(async () => {
@@ -241,7 +238,7 @@ const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
                     const res = await fetch(NFT.tokenURI);
                     const json = await res.json();
                     const name = json.name !== undefined ? json.name : NFT.id;
-                    const image = json.imageURI !== undefined ? json.imageURI : ICON_CW_NFT_THUMBNAIL;
+                    const image = json.imageURI !== undefined ? json.imageURI : Image.resolveAssetSource(ICON_CW_NFT_THUMBNAIL).uri;
                     const metaURI = json.metaURI !== undefined ? json.metaURI : '';
                     const description = json.description !== undefined ? json.description : '';
                     const identity = json.identity !== undefined ? json.identity : '';
@@ -260,7 +257,7 @@ const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
                     list = list.concat({
                         id: NFT.id,
                         name: NFT.id,
-                        image: ICON_CW_NFT_THUMBNAIL,
+                        image: Image.resolveAssetSource(ICON_CW_NFT_THUMBNAIL).uri,
                         description: '',
                         identity: '',
                         metaURI: ''
@@ -279,6 +276,8 @@ const getMyCW721NFTList = async (nfts: Array<INftItemType>) => {
 };
 
 export const useDappCertified = () => {
+    // FIXME: DApp metadata is supplied by external projects without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Certified = (metaData: any | null | undefined) => {
         let certified = 0;
         if (metaData === null || metaData === undefined) return 0;

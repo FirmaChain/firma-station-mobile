@@ -30,6 +30,8 @@ const RestakeInfoBox = ({ moveToRestake, stakingState, grantStates }: IProps) =>
 
     const isFocused = useIsFocused();
 
+    // FIXME: Restake API responses do not publish a stable interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [restakeInfoJson, setRestakeInfoJson]: any = useState(null);
     const [nextRoundDateTime, setNextRoundTime] = useState('00:00:00');
 

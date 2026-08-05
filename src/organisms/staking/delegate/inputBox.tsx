@@ -30,8 +30,8 @@ import InputSetVerticalForAmount from '@/components/input/inputSetVerticalForAmo
 import BalanceInfo from '@/components/parts/balanceInfo';
 import WarnContainer from '@/components/parts/containers/warnContainer';
 
-import ValidatorSelectModal from './validatorSelectModal';
 import RedelegateRestakeStepBox from './redelegateRestakeStepBox';
+import ValidatorSelectModal from './validatorSelectModal';
 
 interface IProps {
     type: string;

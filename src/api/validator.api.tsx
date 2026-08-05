@@ -13,6 +13,8 @@ export interface IAvatarStateProps {
             pictures: {
                 primary: {
                     url: string;
+                    // FIXME: The validator profile API does not publish a schema for this value.
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     source: any | null;
                 };
             };

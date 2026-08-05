@@ -64,7 +64,7 @@ const SendCW20 = ({ contract, symbol }: IProps) => {
     };
 
     const handleSendInfo = (type: string, value: string | number) => {
-        let val: any = value;
+        let val: string | number | null = value;
         if (type === 'memo' && val === '') val = null;
         setSendInfoState((prevState) => ({
             ...prevState,

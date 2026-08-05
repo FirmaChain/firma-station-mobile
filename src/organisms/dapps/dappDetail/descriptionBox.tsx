@@ -17,6 +17,8 @@ import Svg, { Defs, Rect, Stop, LinearGradient as SvgLinearGradient } from 'reac
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 
 interface IProps {
+    // FIXME: DApp descriptions are supplied by external projects without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
 }
 
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end'
-    },
+    }
 });
 
 export default React.memo(DescriptionBox);

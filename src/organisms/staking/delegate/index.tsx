@@ -172,7 +172,8 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     const shouldShowRedelegateRestakeStep = type === 'Redelegate' && currentRestakeValidatorAddressList.length > 0;
 
     const primaryButtonTitle = type === 'Redelegate' && redelegateStep === 'restake' ? (hasRestakeListChanged ? 'Next' : 'Skip') : 'Next';
-    const hasRedelegateRestakeConfirm = type === 'Redelegate' && (redelegateTransactionPlan?.hasRestakeListChanged ?? hasRestakeListChanged);
+    const hasRedelegateRestakeConfirm =
+        type === 'Redelegate' && (redelegateTransactionPlan?.hasRestakeListChanged ?? hasRestakeListChanged);
 
     const ActivateButton = useMemo(() => {
         const enteredAmount = convertNumber(delegateState.amount) > 0;

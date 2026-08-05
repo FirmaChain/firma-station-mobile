@@ -1,9 +1,12 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
+import type { ProjectList } from '@/util/connectClient';
+
+export type DappsContextData = ProjectList['projectList'][number] | Record<string, never>;
 
 interface DappsContextType {
-    data: any;
+    data: DappsContextData;
     selectedTabIndex: number;
-    setData: (_data: any) => void;
+    setData: (_data: DappsContextData) => void;
     setSelectedTabIndex: (index: number) => void;
 }
 
@@ -22,7 +25,7 @@ interface DappsProviderProps {
 }
 
 export const DappsProvider: React.FC<DappsProviderProps> = ({ children }) => {
-    const [data, setData] = useState<any>({});
+    const [data, setData] = useState<DappsContextData>({});
     const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0);
 
     return <DappsContext.Provider value={{ data, setData, selectedTabIndex, setSelectedTabIndex }}>{children}</DappsContext.Provider>;

@@ -77,6 +77,14 @@ export interface IStakingData {
     amount?: number;
 }
 
+export interface IValidatorStateItem extends IStakingData {
+    title: string;
+}
+
+export interface IValidatorStateRow {
+    row: IValidatorStateItem[];
+}
+
 export interface IValidatorData {
     address: IValidatorAddress;
     APR: string | number;
@@ -86,7 +94,7 @@ export interface IValidatorData {
     commission: IStakingData;
     uptime: IStakingData;
 
-    state: Array<any>;
+    state: IValidatorStateRow[];
 }
 
 export interface IStakeInfo {
@@ -118,6 +126,8 @@ export interface IUndelegationInfo {
 }
 
 export interface IStakingGrantState {
+    // FIXME: Staking grant records come from external chain modules with multiple schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     list: Array<any>;
     count: number;
     expire: string;
@@ -213,11 +223,15 @@ export const useDelegationData = () => {
     };
 
     const handleStakingGrantState = useCallback(async () => {
+        // FIXME: Staking grant records are returned by an external SDK without a stable interface.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const grantStakeResult: any[] = await getStakingGrant(walletAddress);
         setStakingGrantList(StakingGrantData(delegationList, grantStakeResult[0]));
     }, [delegationList]);
 
     const handleStakingGrantActivationState = async () => {
+        // FIXME: Staking grant records are returned by an external SDK without a stable interface.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const grantStakingResult: any[] = await getStakingGrant(walletAddress);
         const grantExist = grantStakingResult[0] === undefined ? false : grantStakingResult[0].authorization.allow_list.address.length > 0;
         setStakingGrantActivation(grantExist);
@@ -225,6 +239,8 @@ export const useDelegationData = () => {
 
     useEffect(() => {
         setDelegationList(
+            // FIXME: Delegation records are returned by an external SDK without a stable interface.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             delegationList.map((vd: any) =>
                 delegate !== null && vd.validatorAddress === delegate.address ? { ...vd, reward: delegate.reward } : vd
             )
@@ -303,6 +319,8 @@ export const useDelegationData = () => {
     };
 };
 
+// FIXME: Delegation records are returned by an external SDK without a stable interface.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const StakingGrantData = (delegationList: Array<any>, stakingGrantList: IGrantState) => {
     const calculateExpiration = (date: string) => {
         const today = new Date().getTime();
@@ -408,6 +426,8 @@ export const useStakingData = () => {
 };
 
 export const parseValidatorDescription = (
+    // FIXME: Delegation records are returned by an external SDK without a stable interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delegations: Array<any>,
     validators: Array<ValidatorDataType>,
     validatorsAvatarList: Array<IValidatorProfileInfo> | []
@@ -462,7 +482,11 @@ export const useValidatorData = () => {
 
     const handleValidatorsState = useCallback(async () => {
         try {
-            const [validatorListResponse, commonState, signingInfos] = await Promise.all([getValidators(), getCommonState(), getSigningInfos()]);
+            const [validatorListResponse, commonState, signingInfos] = await Promise.all([
+                getValidators(),
+                getCommonState(),
+                getSigningInfos()
+            ]);
 
             const list = validatorListResponse
                 .filter((validator: ValidatorDataType) => {
@@ -524,18 +548,21 @@ export const useValidatorData = () => {
                     };
                 });
 
-            const mergedList = validator === null ? list : list.map((vd: IValidatorState) =>
-                vd.validatorAddress === validator.address.operatorAddress
-                    ? {
-                          ...vd,
-                          status: validator.status,
-                          jailed: validator.jailed,
-                          tombstoned: validator.tombstoned,
-                          APR: validator.percentageData.APR,
-                          APY: validator.percentageData.APY
-                      }
-                    : vd
-            );
+            const mergedList =
+                validator === null
+                    ? list
+                    : list.map((vd: IValidatorState) =>
+                          vd.validatorAddress === validator.address.operatorAddress
+                              ? {
+                                    ...vd,
+                                    status: validator.status,
+                                    jailed: validator.jailed,
+                                    tombstoned: validator.tombstoned,
+                                    APR: validator.percentageData.APR,
+                                    APY: validator.percentageData.APY
+                                }
+                              : vd
+                      );
 
             StakingActions.updateValidatorsState(mergedList);
         } catch (error) {
@@ -710,7 +737,11 @@ const getCommonState = async () => {
 export const useRestakeInfoData = () => {
     const { network } = useAppSelector((state) => state.storage);
 
+    // FIXME: Restake information originates from external chain modules without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [restakeInfo, setRestakeInfo]: any = useState(null);
+    // FIXME: Restake information originates from external chain modules without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [info, setInfo]: any = useState(null);
 
     const handleRestakeInfo = async () => {
@@ -813,9 +844,13 @@ const getSelfDelegationState = (delegation: DelegationInfo[], selfDelegateAddres
     let selfPercent = '0';
     let delegationList = [];
 
+    // FIXME: Delegation records are returned by an external SDK without a stable interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const totalDelegations = delegation.reduce((prev: number, current: any) => {
         return prev + convertNumber(current.balance.amount);
     }, 0);
+    // FIXME: Delegation records are returned by an external SDK without a stable interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selfDelegation] = delegation.filter((y: any) => {
         return y.delegation.delegator_address === selfDelegateAddress;
     });
@@ -823,6 +858,8 @@ const getSelfDelegationState = (delegation: DelegationInfo[], selfDelegateAddres
     if (selfDelegation) self = convertNumber(selfDelegation.balance.amount);
 
     selfPercent = makeDecimalPoint(convertNumber((self / (totalDelegations || 1)) * 100), 2);
+    // FIXME: Delegation records are returned by an external SDK without a stable interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delegationList = delegation.map((value: any) => {
         return {
             address: value.delegation.delegator_address,

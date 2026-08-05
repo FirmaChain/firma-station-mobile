@@ -3,9 +3,7 @@ import TRANSACTION_LABELS from '@/constants/message_labels.json';
 
 import { RestakeActiveColor, RestakeInactiveColor, RestakeNoDelegationColor } from './theme';
 
-export interface IKeyValue {
-    [key: string]: any;
-}
+export type IKeyValue<T = string> = Record<string, T>;
 
 const LABELS: IKeyValue = TRANSACTION_LABELS;
 let EXPLORER = CHAIN_NETWORK.MainNet.EXPLORER;
@@ -228,7 +226,7 @@ export const TRANSACTION_TYPE: IKeyValue = {
     SEND_CW721: 'TRANSACTION_SEND_CW721'
 };
 
-export const RESTAKE_STATUS: IKeyValue = {
+export const RESTAKE_STATUS: IKeyValue<{ title: string; color: string }> = {
     NO_DELEGATION: {
         title: 'Not yet delegated',
         color: RestakeNoDelegationColor
@@ -334,7 +332,7 @@ export const TYPE_COLORS: IKeyValue = {
     twenty: '#D9C788'
 };
 
-export const TRANSACTION_TYPE_MODEL: IKeyValue = {
+export const TRANSACTION_TYPE_MODEL: IKeyValue<{ tagTheme: string; tagDisplay: string }> = {
     // ========================
     // staking
     // ========================

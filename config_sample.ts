@@ -11,7 +11,25 @@ export const MAINTENANCE_PATH: IKeyValue = {
     DevNet: ''
 };
 
-export const CHAIN_NETWORK: IKeyValue = {
+interface ISampleChainNetworkState {
+    FIRMACHAIN_CONFIG: string;
+    AVERAGE_BLOCK_TIME: number;
+    EXPLORER: string;
+    GRAPHQL: string;
+    RELAY_HOST: string;
+    RESTAKE_API: string;
+    RESTAKE_REWARD_API: string;
+    RESTAKE_ADDRESS: string;
+    RESTAKE_URL: string;
+    CHAIN_SYMBOL: string;
+    CHAIN_NAME_FOR_COINGECKO: string;
+    BLOCKS_PER_YEAR: number;
+    DEFAULT_MINT_INFLATION: number;
+    PROPOSAL_JSON: string;
+    WALLET_JSON: string;
+}
+
+export const CHAIN_NETWORK: IKeyValue<ISampleChainNetworkState> = {
     MainNet: {
         FIRMACHAIN_CONFIG: '',
         AVERAGE_BLOCK_TIME: 0,

@@ -6,6 +6,8 @@ interface IProps {
 }
 
 export type TransactionParams = {
+    // FIXME: Navigation supplies transaction payloads from multiple external signing flows.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     state: any;
 };
 

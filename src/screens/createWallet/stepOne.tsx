@@ -5,6 +5,8 @@ interface IProps {
 }
 
 export type CreateStepOneParams = {
+    // FIXME: Navigation provides recovery data from multiple external wallet formats.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recoverValue?: any;
 };
 

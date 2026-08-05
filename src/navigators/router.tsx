@@ -5,19 +5,20 @@ import { DappsProvider } from '@/context/dappsContext';
 import { IBCTokenProvider } from '@/context/ibcTokenContext';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import { DarkTheme, NavigationContainer } from '@react-navigation/native';
+import { DarkTheme, NavigationContainer, type NavigationContainerRef } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
 import RootView from '@/components/parts/containers/rootView';
 import CustomToast from '@/components/toast/customToast';
 
+import type { StackParamList } from './appRoutes';
 import AppStateManager from './appStateManager';
 import StackNavigator from './stackNavigators';
 
 const Router = () => {
     const { dataLoadStatus, currentRoute } = useAppSelector((state) => state.common);
 
-    const navigationRef = React.useRef<any>(null);
+    const navigationRef = React.useRef<NavigationContainerRef<StackParamList> | null>(null);
 
     const handleDataLoadDelayedToast = useCallback(() => {
         Toast.show({
@@ -48,7 +49,7 @@ const Router = () => {
                 const currentRouteName = navigationRef.current?.getCurrentRoute()?.name;
 
                 if (previousRouteName !== currentRouteName) {
-                    CommonActions.handleCurrentRoute(currentRouteName);
+                    CommonActions.handleCurrentRoute(currentRouteName!);
                 }
             }}
         >

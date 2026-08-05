@@ -26,7 +26,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppState, Dimensions, Platform, StyleSheet, View } from 'react-native';
 
-import { useServerMessage } from '@/hooks/common/hooks';
+import { useServerMessage, type IMaintenanceState } from '@/hooks/common/hooks';
 import { MaintenanceModal, QRCodeScannerModal, UpdateModal } from '@/components/modal';
 import AlertModal from '@/components/modal/alertModal';
 import ValidationModal from '@/components/modal/validationModal';
@@ -65,7 +65,7 @@ const AppStateManager = () => {
     const [maintenanceHealthCheck, setMaintenanceHealthCheck] = useState<boolean>(true);
     const [update, setUpdate] = useState<boolean | null>(null);
     const [maintenance, setMaintenance] = useState<boolean | null>(null);
-    const [maintenanceData, setMaintenanceData] = useState({});
+    const [maintenanceData, setMaintenanceData] = useState<IMaintenanceState>({} as IMaintenanceState);
     const [openAlertModal, setOpenAlertModal] = useState(false);
     const networkLoadingRequestId = useRef<string | null>(null);
     const lastHandledDeepLinkRef = useRef('');

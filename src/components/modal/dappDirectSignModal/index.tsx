@@ -12,7 +12,7 @@ import {
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { convertNumber, convertToFctNumber, makeDecimalPoint } from '@/util/common';
-import ConnectClient from '@/util/connectClient';
+import ConnectClient, { QRData } from '@/util/connectClient';
 import { getBalanceFromAdr, getFirmaSDK, getTokenBalance } from '@/util/firma';
 import { getDAppConnectSession } from '@/util/wallet';
 import { StyleSheet, View } from 'react-native';
@@ -60,7 +60,7 @@ const DappDirectSignModal = () => {
     const [productPriceSymbol, setProductPriceSymbol] = useState(_CHAIN_SYMBOL);
 
     const [chainID, setChainId] = useState('');
-    const [userSession, setUserSession] = useState(null);
+    const [userSession, setUserSession] = useState<string | null>(null);
 
     const initValues = () => {
         setIsFCT(true);
@@ -84,13 +84,13 @@ const DappDirectSignModal = () => {
 
     const QRData = useMemo(() => {
         if (isVisible) {
-            return modalData;
+            return modalData as QRData;
         }
         return null;
     }, [modalData, isVisible]);
 
     const MessageType = useMemo(() => {
-        if (QRData === null || QRData.signParams.argument?.messageType === undefined) return null;
+        if (QRData === null || QRData.signParams.argument.messageType === undefined) return null;
         return QRData.signParams.argument.messageType;
     }, [QRData]);
 
@@ -137,20 +137,20 @@ const DappDirectSignModal = () => {
     useEffect(() => {
         if (QRData) {
             try {
-                const _productName = QRData.signParams.argument?.name === undefined ? '' : QRData.signParams.argument.name;
+                const _productName = QRData!.signParams.argument.name === undefined ? '' : QRData!.signParams.argument.name;
                 setProductName(_productName);
 
-                const _companyName = QRData.signParams.argument?.corpName === undefined ? '' : QRData.signParams.argument.corpName;
+                const _companyName = QRData!.signParams.argument.corpName === undefined ? '' : QRData!.signParams.argument.corpName;
                 setCompanyName(_companyName);
 
-                if (QRData.signParams.argument?.fctPrice !== undefined) {
+                if (QRData!.signParams.argument.fctPrice !== undefined) {
                     setIsFCT(true);
-                    setProductPrice(convertNumber(QRData.signParams.argument.fctPrice));
-                } else if (QRData.signParams.argument?.token !== undefined) {
+                    setProductPrice(convertNumber(QRData!.signParams.argument.fctPrice));
+                } else if (QRData!.signParams.argument.token !== undefined) {
                     setIsFCT(false);
-                    getTokenBalanceFromDenom(QRData.signParams.argument.token.denom);
-                    setProductPrice(convertToFctNumber(QRData.signParams.argument.token.amount));
-                    setProductPriceSymbol(QRData.signParams.argument.token.symbol);
+                    getTokenBalanceFromDenom(QRData!.signParams.argument.token.denom);
+                    setProductPrice(convertToFctNumber(QRData!.signParams.argument.token.amount));
+                    setProductPriceSymbol(QRData!.signParams.argument.token.symbol);
                 }
             } catch (error) {
                 Toast.show({
@@ -217,7 +217,7 @@ const DappDirectSignModal = () => {
             ModalActions.handleDAppData({
                 type: TRANSACTION_TYPE['DAPP'],
                 password: result,
-                data: QRData,
+                data: QRData!,
                 chainId: chainID,
                 session: userSession
             });
@@ -244,10 +244,10 @@ const DappDirectSignModal = () => {
     useEffect(() => {
         if (isVisible) {
             try {
-                setUrl(QRData.projectMetaData.url);
-                setIconUrl(QRData.projectMetaData.icon);
-                setTitle(QRData.signParams.info);
-                setIsCertified(Certified(QRData.projectMetaData));
+                setUrl(QRData!.projectMetaData.url);
+                setIconUrl(QRData!.projectMetaData.icon);
+                setTitle(QRData!.signParams.info);
+                setIsCertified(Certified(QRData!.projectMetaData));
                 getBalance();
             } catch (error) {
                 CommonActions.endLoadingProgress(modalData?.loadingRequestId);

@@ -11,6 +11,7 @@ import {
     getCW721TotalNFTs,
     getCWContractInfo
 } from '@/util/firma';
+import { Image } from 'react-native';
 
 export const useCW721 = () => {
     const { address } = useAppSelector((state) => state.wallet);
@@ -117,7 +118,10 @@ export const useCW20 = () => {
                         totalSupply: cw20Info.total_supply,
                         marketing: cw20ExtraInfo.marketing,
                         label: cwInfo.contract_info.label,
-                        imgURI: cw20ExtraInfo.marketing.logo === null ? ICON_CW_NFT_THUMBNAIL : cw20ExtraInfo.marketing.logo.url,
+                        imgURI:
+                            cw20ExtraInfo.marketing.logo === null
+                                ? Image.resolveAssetSource(ICON_CW_NFT_THUMBNAIL).uri
+                                : cw20ExtraInfo.marketing.logo.url,
                         available: cw20Balance,
                         network: contract.network
                     };

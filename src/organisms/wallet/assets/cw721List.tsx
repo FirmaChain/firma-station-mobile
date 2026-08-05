@@ -46,6 +46,8 @@ const CW721List = ({ data, isEdit }: IProps) => {
     const { address } = useAppSelector((state) => state.wallet);
     const { network, cw721Contracts } = useAppSelector((state) => state.storage);
 
+    // FIXME: The third-party draggable list ref does not expose a stable public interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const flatListRef = useRef<any>(null);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const navigation: ScreenNavgationProps = useNavigation();
@@ -151,160 +153,160 @@ const CW721List = ({ data, isEdit }: IProps) => {
     };
 
     const CW721Item = ({ item, getIndex, drag }: RenderItemParams<ICW721ContractState>) => {
-            const index = getIndex() ?? 0;
-            const isLastItem = index >= initialData.length - 1;
-            const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
+        const index = getIndex() ?? 0;
+        const isLastItem = index >= initialData.length - 1;
+        const fadeAnimForRemove = useRef(new Animated.Value(0)).current;
 
-            const AnimationStateForRemoveBox = useMemo((): { height: number | 'auto'; padding: number; buttonPadding: number } => {
-                easeInAndOutCustomAnim(150);
-                if (item.address.toLowerCase() === removeItemAddr.toLowerCase()) {
-                    fadeIn(Animated, fadeAnimForRemove, 300);
-                    return { height: 'auto', padding: 10, buttonPadding: 4 };
-                } else {
-                    fadeOut(Animated, fadeAnimForRemove, 150);
-                    return { height: 0, padding: 0, buttonPadding: 0 };
-                }
-            }, [removeItemAddr, fadeAnimForRemove, item?.address]);
+        const AnimationStateForRemoveBox = useMemo((): { height: number | 'auto'; padding: number; buttonPadding: number } => {
+            easeInAndOutCustomAnim(150);
+            if (item.address.toLowerCase() === removeItemAddr.toLowerCase()) {
+                fadeIn(Animated, fadeAnimForRemove, 300);
+                return { height: 'auto', padding: 10, buttonPadding: 4 };
+            } else {
+                fadeOut(Animated, fadeAnimForRemove, 150);
+                return { height: 0, padding: 0, buttonPadding: 0 };
+            }
+        }, [removeItemAddr, fadeAnimForRemove, item?.address]);
 
-            const getImageSource = (value: string | Source): Source => {
-                return typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))
-                    ? { uri: value, priority: FastImage.priority.low }
-                    : (value as Source);
-            };
+        const getImageSource = (value: string | Source): Source => {
+            return typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))
+                ? { uri: value, priority: FastImage.priority.low }
+                : (value as Source);
+        };
 
-            const images = cw721Thumbnail[item.address];
+        const images = cw721Thumbnail[item.address];
 
-            const DisplayNFTCount = useCallback(() => {
-                const { totalSupply } = item;
+        const DisplayNFTCount = useCallback(() => {
+            const { totalSupply } = item;
 
-                if (Boolean(images) === false) {
-                    handleThumbnail(item);
-                    return (
-                        <View style={styles.nftsCountBox}>
-                            <Text style={styles.valueText}>{'Loading NFTs Data'}</Text>
-                        </View>
-                    );
-                }
-
-                if (totalSupply === 0) {
-                    return (
-                        <View style={styles.nftsCountBox}>
-                            <Text style={styles.valueText}>{'No NFTs minted yet.'}</Text>
-                        </View>
-                    );
-                }
-
-                const count = totalSupply > 999 ? '+999' : `+${totalSupply}`;
-
-                if (images.every((value) => value === '')) {
-                    return (
-                        <View style={styles.nftsCountBox}>
-                            <Text style={styles.valueText}>{`Total NFTs: ${count}`}</Text>
-                        </View>
-                    );
-                }
-
+            if (Boolean(images) === false) {
+                handleThumbnail(item);
                 return (
                     <View style={styles.nftsCountBox}>
-                        <View style={styles.thumbnailWrap}>
-                            {images
-                                .filter((value) => value !== '')
-                                .map((value, idx) => (
-                                    <FastImage
-                                        key={`${item.address}-${idx}`}
-                                        style={styles.thumbnail}
-                                        resizeMode="contain"
-                                        source={getImageSource(value)}
-                                    />
-                                ))}
-                        </View>
-                        <Text style={styles.valueText}>{count}</Text>
+                        <Text style={styles.valueText}>{'Loading NFTs Data'}</Text>
                     </View>
                 );
-            }, [images]);
+            }
 
-            const moveToCW721Detail = () => {
-                navigation.navigate(Screens.CW721, { data: { cw721Contract: item.address } });
-            };
+            if (totalSupply === 0) {
+                return (
+                    <View style={styles.nftsCountBox}>
+                        <Text style={styles.valueText}>{'No NFTs minted yet.'}</Text>
+                    </View>
+                );
+            }
+
+            const count = totalSupply > 999 ? '+999' : `+${totalSupply}`;
+
+            if (images.every((value) => value === '')) {
+                return (
+                    <View style={styles.nftsCountBox}>
+                        <Text style={styles.valueText}>{`Total NFTs: ${count}`}</Text>
+                    </View>
+                );
+            }
 
             return (
-                <TouchableOpacity onPress={moveToCW721Detail} disabled={isEdit} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
-                    <View
+                <View style={styles.nftsCountBox}>
+                    <View style={styles.thumbnailWrap}>
+                        {images
+                            .filter((value) => value !== '')
+                            .map((value, idx) => (
+                                <FastImage
+                                    key={`${item.address}-${idx}`}
+                                    style={styles.thumbnail}
+                                    resizeMode="contain"
+                                    source={getImageSource(value)}
+                                />
+                            ))}
+                    </View>
+                    <Text style={styles.valueText}>{count}</Text>
+                </View>
+            );
+        }, [images]);
+
+        const moveToCW721Detail = () => {
+            navigation.navigate(Screens.CW721, { data: { cw721Contract: item.address } });
+        };
+
+        return (
+            <TouchableOpacity onPress={moveToCW721Detail} disabled={isEdit} style={isLastItem ? styles.itemBoxLast : styles.itemBox}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'flex-start',
+                        justifyContent: 'space-between'
+                    }}
+                >
+                    <Animated.View
                         style={{
-                            flexDirection: 'row',
-                            alignItems: 'flex-start',
-                            justifyContent: 'space-between'
+                            opacity: fadeAnim,
+                            marginLeft: AnimationState.iconMargin,
+                            width: AnimationState.iconWidth,
+                            paddingTop: 30
                         }}
                     >
-                        <Animated.View
-                            style={{
-                                opacity: fadeAnim,
-                                marginLeft: AnimationState.iconMargin,
-                                width: AnimationState.iconWidth,
-                                paddingTop: 30
+                        <TouchableOpacity
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            onPress={() => {
+                                if (isEdit) handleRemoveItemSelect(item.address);
                             }}
                         >
-                            <TouchableOpacity
-                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                onPress={() => {
-                                    if (isEdit) handleRemoveItemSelect(item.address);
-                                }}
-                            >
-                                <RemoveIcon size={20} color={FailedColor} />
-                            </TouchableOpacity>
-                        </Animated.View>
-                        <View style={styles.item}>
-                            <View style={[styles.contentBox, { paddingVertical: 6 }]}>
-                                <Text numberOfLines={1} ellipsizeMode="middle" style={styles.nameText}>
-                                    {item.name}
-                                </Text>
-                                <Animated.View>
-                                    {isEdit ? (
-                                        <TouchableOpacity onPressIn={drag}>
-                                            <MenuIcon size={24} color={WhiteColor} />
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <ForwardArrow size={24} color={DarkGrayColor} />
-                                    )}
-                                </Animated.View>
-                            </View>
-                            <DataSection title={'Symbol'} data={item.symbol} />
-                            <DataSection title={'Label'} data={item.label} label />
-                            <View style={[styles.contentBox, { paddingTop: 5 }]}>
-                                <Text style={[styles.valueText, { fontWeight: '400' }]}>{'Total Supply'}</Text>
-                                <DisplayNFTCount />
-                            </View>
-                            <View style={{ paddingBottom: 22 }} />
-                        </View>
-                    </View>
-                    <Animated.View
-                        style={[
-                            styles.removeConfirmBox,
-                            {
-                                opacity: item.address.toLowerCase() === removeItemAddr.toLowerCase() ? 1 : 0,
-                                height: AnimationStateForRemoveBox.height,
-                                paddingBottom: AnimationStateForRemoveBox.padding,
-                                paddingHorizontal: 20,
-                                paddingTop: 3
-                            }
-                        ]}
-                    >
-                        <Text style={styles.removeNotice}>{CW_REMOVE_WARN_TEXT}</Text>
-                        <TouchableOpacity onPress={() => removeContract(item.address)}>
-                            <Text
-                                style={[
-                                    styles.removeButton,
-                                    {
-                                        paddingVertical: AnimationStateForRemoveBox.buttonPadding
-                                    }
-                                ]}
-                            >
-                                {'Remove'}
-                            </Text>
+                            <RemoveIcon size={20} color={FailedColor} />
                         </TouchableOpacity>
                     </Animated.View>
-                </TouchableOpacity>
-            );
+                    <View style={styles.item}>
+                        <View style={[styles.contentBox, { paddingVertical: 6 }]}>
+                            <Text numberOfLines={1} ellipsizeMode="middle" style={styles.nameText}>
+                                {item.name}
+                            </Text>
+                            <Animated.View>
+                                {isEdit ? (
+                                    <TouchableOpacity onPressIn={drag}>
+                                        <MenuIcon size={24} color={WhiteColor} />
+                                    </TouchableOpacity>
+                                ) : (
+                                    <ForwardArrow size={24} color={DarkGrayColor} />
+                                )}
+                            </Animated.View>
+                        </View>
+                        <DataSection title={'Symbol'} data={item.symbol} />
+                        <DataSection title={'Label'} data={item.label} label />
+                        <View style={[styles.contentBox, { paddingTop: 5 }]}>
+                            <Text style={[styles.valueText, { fontWeight: '400' }]}>{'Total Supply'}</Text>
+                            <DisplayNFTCount />
+                        </View>
+                        <View style={{ paddingBottom: 22 }} />
+                    </View>
+                </View>
+                <Animated.View
+                    style={[
+                        styles.removeConfirmBox,
+                        {
+                            opacity: item.address.toLowerCase() === removeItemAddr.toLowerCase() ? 1 : 0,
+                            height: AnimationStateForRemoveBox.height,
+                            paddingBottom: AnimationStateForRemoveBox.padding,
+                            paddingHorizontal: 20,
+                            paddingTop: 3
+                        }
+                    ]}
+                >
+                    <Text style={styles.removeNotice}>{CW_REMOVE_WARN_TEXT}</Text>
+                    <TouchableOpacity onPress={() => removeContract(item.address)}>
+                        <Text
+                            style={[
+                                styles.removeButton,
+                                {
+                                    paddingVertical: AnimationStateForRemoveBox.buttonPadding
+                                }
+                            ]}
+                        >
+                            {'Remove'}
+                        </Text>
+                    </TouchableOpacity>
+                </Animated.View>
+            </TouchableOpacity>
+        );
     };
 
     const recreateList = (data: ICW721ContractState[]) => {

@@ -56,7 +56,7 @@ const SendCW721 = ({ contract, imageURL, nftName, tokenId }: IProps) => {
     const [alertDescription, setAlertDescription] = useState('');
 
     const handleSendInfo = (type: string, value: string | number) => {
-        let val: any = value;
+        let val: string | number | null = value;
         if (type === 'memo' && val === '') val = null;
         setSendInfoState((prevState) => ({
             ...prevState,

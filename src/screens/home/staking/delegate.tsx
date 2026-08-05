@@ -6,6 +6,8 @@ interface IProps {
 }
 
 export type DelegateParams = {
+    // FIXME: Navigation supplies delegation payloads from external chain modules.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     state: any;
 };
 

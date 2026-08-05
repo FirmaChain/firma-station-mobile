@@ -4,7 +4,7 @@ import { CHAIN_NETWORK } from '@/../config';
 import { DAPP_SIGNATURE_REQUEST, DAPP_SIGNATURE_REQUEST_DESCRIPTION, TRANSACTION_TYPE } from '@/constants/common';
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
-import ConnectClient from '@/util/connectClient';
+import ConnectClient, { QRData } from '@/util/connectClient';
 import { getFirmaSDK } from '@/util/firma';
 import { getDAppConnectSession } from '@/util/wallet';
 import { StyleSheet, View } from 'react-native';
@@ -34,7 +34,7 @@ const DappSignModal = () => {
     const [description, setDescription] = useState(DAPP_SIGNATURE_REQUEST_DESCRIPTION);
 
     const [chainID, setChainId] = useState('');
-    const [userSession, setUserSession] = useState(null);
+    const [userSession, setUserSession] = useState<string | null>(null);
 
     const isVisible = useMemo(() => {
         return dappSignModal;
@@ -42,7 +42,7 @@ const DappSignModal = () => {
 
     const QRData = useMemo(() => {
         if (isVisible) {
-            return modalData;
+            return modalData as QRData;
         }
         return null;
     }, [modalData, isVisible]);
@@ -74,7 +74,7 @@ const DappSignModal = () => {
             ModalActions.handleDAppData({
                 type: TRANSACTION_TYPE['DAPP'],
                 password: result,
-                data: QRData,
+                data: QRData!,
                 chainId: chainID,
                 session: userSession
             });
@@ -101,11 +101,11 @@ const DappSignModal = () => {
     useEffect(() => {
         if (isVisible) {
             try {
-                setUrl(QRData.projectMetaData.url);
-                setIconUrl(QRData.projectMetaData.icon);
-                setIsCertified(Certified(QRData.projectMetaData));
-                if (QRData.signParams.info !== '') {
-                    setDescription(QRData.signParams.info);
+                setUrl(QRData!.projectMetaData.url);
+                setIconUrl(QRData!.projectMetaData.icon);
+                setIsCertified(Certified(QRData!.projectMetaData));
+                if (QRData!.signParams.info !== '') {
+                    setDescription(QRData!.signParams.info);
                 }
             } catch {
                 handleModal(false);
@@ -118,7 +118,11 @@ const DappSignModal = () => {
     }, [appState]);
 
     return (
-        <CustomModal visible={isVisible} handleOpen={handleModal} handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}>
+        <CustomModal
+            visible={isVisible}
+            handleOpen={handleModal}
+            handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}
+        >
             <React.Fragment>
                 <View style={styles.modalTextContents}>
                     <View style={[styles.boxV, { alignItems: 'center', paddingBottom: 30 }]}>

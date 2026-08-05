@@ -75,7 +75,7 @@ const SendInputBox = ({ handleSendInfo, reset, dstAddress }: IProps) => {
                 placeholder="Address"
                 value={addressValue}
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('address', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('address', value)}
             />
             <InputSetVertical
                 title="Memo"
@@ -83,7 +83,7 @@ const SendInputBox = ({ handleSendInfo, reset, dstAddress }: IProps) => {
                 validation={true}
                 placeholder="Memo"
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('memo', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('memo', value)}
             />
             <View style={{ paddingTop: 20 }}>
                 <WarnContainer text={CW_TX_NOTICE_TEXT} question={false} />

@@ -29,7 +29,7 @@ const Dapps = () => {
     const fadeAnimDapp = useRef(new Animated.Value(0)).current;
 
     const [containerSize, setContainerSize] = useState(0);
-    const [projectList, setProjectList] = useState<Array<any>>([]);
+    const [projectList, setProjectList] = useState<ProjectList['projectList']>([]);
 
     const dappsVolumes = useMemo(() => {
         if (contentVolume?.dapps === undefined) return null;
@@ -62,13 +62,13 @@ const Dapps = () => {
         }
     };
 
-    const moveToDetail = useCallback((data: any) => {
+    const moveToDetail = useCallback((data: ProjectList['projectList'][number]) => {
         setData(data);
         navigation.navigate(Screens.DappDetail);
     }, []);
 
     const DappItem = useCallback(
-        ({ item, size }: any) => {
+        ({ item, size }: { item: ProjectList['projectList'][number]; size: number }) => {
             return (
                 <TouchableOpacity style={styles.contentWrap} onPress={() => moveToDetail(item)}>
                     <Animated.View style={{ paddingHorizontal: 10 }}>

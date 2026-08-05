@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { isMainTabScreen, Screens, StackParamList } from '@/navigators/appRoutes';
 import Home from '@/organisms/home';
 import { useAppSelector } from '@/redux/hooks';
-
 import { RouteProp } from '@react-navigation/native';
 
 type HomeScreenRouteProp = RouteProp<StackParamList, Screens.Home>;

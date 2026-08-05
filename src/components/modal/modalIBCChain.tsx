@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'normal',
         color: TextColor
-    },
+    }
 });
 
 export default ModalIBCChain;

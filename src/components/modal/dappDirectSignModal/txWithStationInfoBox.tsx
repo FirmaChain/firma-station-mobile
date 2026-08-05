@@ -27,6 +27,8 @@ import ValidatorProfile from '@/components/parts/validatorProfile';
 
 interface IProps {
     type: string;
+    // FIXME: The direct-sign relay payload has no stable schema for transaction arguments.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     qrData: any | null;
 }
 

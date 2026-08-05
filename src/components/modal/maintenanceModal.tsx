@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { useInterval } from '@/hooks/common/hooks';
+import { useInterval, type IMaintenanceState } from '@/hooks/common/hooks';
 import AlertModal from '@/components/modal/alertModal';
 
 interface IProps {
-    data: any;
+    data: IMaintenanceState;
     refreshData: () => void;
 }
 

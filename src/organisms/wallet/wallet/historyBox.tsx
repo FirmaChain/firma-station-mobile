@@ -9,6 +9,8 @@ import { ForwardArrow } from '@/components/icon/icon';
 import RecentHistorySkeleton from '@/components/skeleton/recentHistorySkeleton';
 
 interface IProps {
+    // FIXME: Transaction history is supplied by the external GraphQL API without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recentHistory: any;
     historyVolume: number | null;
     handleHistory: () => void;

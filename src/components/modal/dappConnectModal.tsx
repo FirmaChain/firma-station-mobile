@@ -4,7 +4,7 @@ import { DAPP_SERVICE_CONNECTION, DAPP_SERVICE_CONNECTION_DESCRIPTION_1, DAPP_SE
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { wait } from '@/util/common';
-import ConnectClient from '@/util/connectClient';
+import ConnectClient, { QRData } from '@/util/connectClient';
 import { setDAppProjectIdList } from '@/util/wallet';
 import { StyleSheet, View } from 'react-native';
 
@@ -34,12 +34,12 @@ const DappConnectModal = () => {
     }, [dappConnectModal]);
 
     const QRData = useMemo(() => {
-        return isVisible ? (modalData?.data ?? null) : null;
+        return isVisible ? ((modalData?.data as QRData) ?? null) : null;
     }, [modalData, isVisible]);
 
     const IdState = useMemo(() => {
         if (isVisible) {
-            return modalData.idState;
+            return modalData?.idState ?? null;
         }
         return null;
     }, [modalData, isVisible]);
@@ -70,10 +70,10 @@ const DappConnectModal = () => {
         handleModal(false);
         if (appState === 'active') {
             try {
-                const updateList = JSON.stringify(IdState.list);
+                const updateList = JSON.stringify(IdState!.list);
                 await setDAppProjectIdList(walletName, network, updateList);
-                ModalActions.handleModalData(QRData);
-                if (connectClient.isDirectSign(QRData)) {
+                ModalActions.handleModalData(QRData!);
+                if (connectClient.isDirectSign(QRData!)) {
                     wait(500).then(() => {
                         ModalActions.handleDAppDirectSignModal(true);
                     });
@@ -93,7 +93,11 @@ const DappConnectModal = () => {
     }, [appState]);
 
     return (
-        <CustomModal visible={isVisible} handleOpen={handleModal} handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}>
+        <CustomModal
+            visible={isVisible}
+            handleOpen={handleModal}
+            handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}
+        >
             <View style={styles.modalTextContents}>
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
                     <DappURLBox certifiedState={isCertified} url={url} />

@@ -101,7 +101,7 @@ const ValidatorList = ({ isRefresh, handleIsRefresh, navigateValidator }: IProps
                     borderBottomRightRadius: 8
                 }}
             >
-                {validatorList.map((vd: any, index: number) => {
+                {validatorList.map((vd, index: number) => {
                     const isLastItem = index === validatorList.length - 1;
                     return <ValidatorItem key={index} data={vd} isLastItem={isLastItem} navigate={navigateValidator} />;
                 })}

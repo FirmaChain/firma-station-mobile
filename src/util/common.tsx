@@ -12,7 +12,7 @@ export const waitForNextFrame = () => {
     return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 };
 
-export const updateArray = (array: Array<any>, oldVal: any, newVal: any) => {
+export const updateArray = <T,>(array: T[], oldVal: T, newVal: T) => {
     const index = array.indexOf(oldVal);
     if (index !== -1) {
         array[index] = newVal;

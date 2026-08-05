@@ -14,6 +14,8 @@ import MnemonicGrid from './mnmonicGrid';
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepTwo>;
 
 interface IProps {
+    // FIXME: Navigation provides wallet data from multiple external wallet formats.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     wallet: any;
 }
 

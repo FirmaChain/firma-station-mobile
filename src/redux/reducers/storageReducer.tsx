@@ -10,9 +10,9 @@ import {
     HANDLE_FAVORITE,
     HANDLE_HISTORY_VOLUME,
     HANDLE_LAST_SELECTED_WALLET_INDEX,
+    HANDLE_NETWORK,
     HANDLE_NOTIFICATION_ENABLED,
     HANDLE_NOTIFICATION_PERMISSION_PROMPTED,
-    HANDLE_NETWORK,
     HANDLE_RECOVER_TYPE,
     HANDLE_VALIDATORS_PROFILE_INFO,
     ICWContractsState,
@@ -44,9 +44,9 @@ export interface IStorageStateProps {
     notificationEnabled: boolean;
     notificationPermissionPrompted: boolean;
     contentVolume: IContentVolume;
-    historyVolume: IKeyValue;
-    dappServicesVolume: IKeyValue;
-    recoverType: IKeyValue;
+    historyVolume: IKeyValue<number>;
+    dappServicesVolume: IKeyValue<number>;
+    recoverType: IKeyValue<string>;
     validatorsProfile: IValidatorsProfileState;
     lastSelectedWalletIndex: number;
     favorite: IFavoriteState[];
@@ -80,9 +80,9 @@ export const ACTION_CREATORS = {
     HANDLE_CURRENCY: createAction<string>(HANDLE_CURRENCY),
     HANDLE_NETWORK: createAction<string>(HANDLE_NETWORK),
     HANDLE_CONTENT_VOLUME: createAction<IContentVolume>(HANDLE_CONTENT_VOLUME),
-    HANDLE_HISTORY_VOLUME: createAction<IKeyValue>(HANDLE_HISTORY_VOLUME),
-    HANDLE_DAPP_SERVICES_VOLUME: createAction<IKeyValue>(HANDLE_DAPP_SERVICES_VOLUME),
-    HANDLE_RECOVER_TYPE: createAction<IKeyValue>(HANDLE_RECOVER_TYPE),
+    HANDLE_HISTORY_VOLUME: createAction<IKeyValue<number>>(HANDLE_HISTORY_VOLUME),
+    HANDLE_DAPP_SERVICES_VOLUME: createAction<IKeyValue<number>>(HANDLE_DAPP_SERVICES_VOLUME),
+    HANDLE_RECOVER_TYPE: createAction<IKeyValue<string>>(HANDLE_RECOVER_TYPE),
     HANDLE_VALIDATORS_PROFILE_INFO: createAction<IValidatorsProfileState>(HANDLE_VALIDATORS_PROFILE_INFO),
     HANDLE_LAST_SELECTED_WALLET_INDEX: createAction<number>(HANDLE_LAST_SELECTED_WALLET_INDEX),
     HANDLE_FAVORITE: createAction<IFavoriteState[]>(HANDLE_FAVORITE),

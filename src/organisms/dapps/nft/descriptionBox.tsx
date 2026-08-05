@@ -18,6 +18,8 @@ import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
 import SquareSkeleton from '@/components/skeleton/squareSkeleton';
 
 interface IProps {
+    // FIXME: NFT metadata is supplied by external contracts without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
     isCW721: boolean;
 }
@@ -191,7 +193,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end'
-    },
+    }
 });
 
 export default DescriptionBox;

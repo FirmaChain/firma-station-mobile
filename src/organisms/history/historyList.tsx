@@ -8,6 +8,8 @@ import { ForwardArrow } from '@/components/icon/icon';
 import RectangleSkeleton from '@/components/skeleton/rectangleSkeleton';
 
 interface IProps {
+    // FIXME: Transaction records are supplied by the external GraphQL API without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     item: any;
     loading: boolean;
     handleExplorer: (uri: string) => void;

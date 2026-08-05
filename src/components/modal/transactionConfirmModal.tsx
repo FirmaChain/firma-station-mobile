@@ -24,7 +24,7 @@ interface IProps {
     fee: number;
     memo?: string;
     vote?: string;
-    extraData?: any;
+    extraData?: Record<string, React.ReactNode> | null;
     open: boolean;
     setOpenModal: (v: boolean) => void;
     symbol?: string;
@@ -54,12 +54,11 @@ const TransactionConfirmModal = ({
     const _CHAIN_SYMBOL = CHAIN_SYMBOL();
     const [openValidationModal, setOpenValidationModal] = useState(false);
     const [transactionStart, setTransactionStart] = useState(false);
-    const [extraKey, setExtraKey] = useState([]);
+    const [extraKey, setExtraKey] = useState<string[]>([]);
 
     const handleValidation = (open: boolean) => {
         setOpenValidationModal(open);
     };
-
 
     const handleTransaction = (result: string) => {
         if (appState === 'active') {
@@ -85,7 +84,7 @@ const TransactionConfirmModal = ({
 
     useEffect(() => {
         if (extraData) {
-            let keyArray: any = [];
+            let keyArray: string[] = [];
             for (const key in extraData) {
                 keyArray = keyArray.concat(key);
             }
@@ -108,12 +107,7 @@ const TransactionConfirmModal = ({
     return (
         <CustomModal visible={open} bgColor={BgColor} handleOpen={handleModal}>
             <>
-                <View
-                    style={[
-                        styles.modalTextContents,
-                        { display: openValidationModal ? 'none' : transactionStart ? 'none' : 'flex' }
-                    ]}
-                >
+                <View style={[styles.modalTextContents, { display: openValidationModal ? 'none' : transactionStart ? 'none' : 'flex' }]}>
                     <View style={[styles.boxH, { justifyContent: 'flex-start', alignItems: 'center' }]}>
                         <Text style={styles.receiptTitle}>{signMoalText.title}</Text>
                     </View>

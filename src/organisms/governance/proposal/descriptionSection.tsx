@@ -80,12 +80,16 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
         }));
     };
 
+    // FIXME: Governance messages are supplied by chain modules with multiple schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getMessageType = (message: any, index: number) => {
         const messageType = message?.content?.['@type'] || message?.['@type'];
         if (!messageType) return `Message #${index + 1}`;
         return String(messageType);
     };
 
+    // FIXME: Governance messages are supplied by chain modules with multiple schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getMessageName = (message: any, index: number) => {
         const rawType = getMessageType(message, index);
         if (rawType.startsWith('Message #')) return rawType;
@@ -96,6 +100,8 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
         return dotSeparated[dotSeparated.length - 1] || lastSegment;
     };
 
+    // FIXME: Governance message fields are supplied by chain modules with multiple schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const parseRows = (value: any, parentKey = ''): Array<{ key: string; value: string }> => {
         const shouldSkipKey = (keyPath: string) => {
             if (!keyPath) return false;
@@ -130,6 +136,8 @@ const DescriptionSection = ({ data, handleMoveToExplorer }: IProps) => {
         return [{ key: parentKey || 'value', value: String(value) }];
     };
 
+    // FIXME: Classified governance content depends on external message schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const convertClassified = (classified: any) => {
         if (classified === undefined || classified === null) return;
         if (classified.changes) {

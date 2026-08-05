@@ -8,6 +8,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import ValidatorProfile from '@/components/parts/validatorProfile';
 
 interface IProps {
+    // FIXME: Validator records are supplied by external chain modules without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
     minimumRewards: number;
 }

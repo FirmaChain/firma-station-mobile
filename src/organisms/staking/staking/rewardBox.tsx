@@ -22,6 +22,8 @@ import TransactionConfirmModal from '@/components/modal/transactionConfirmModal'
 
 interface IProps {
     walletName: string;
+    // FIXME: Reward data is supplied by external chain modules without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     reward: any;
     transactionHandler: (password: string, gas: number) => void;
 }

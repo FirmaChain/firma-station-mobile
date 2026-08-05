@@ -23,6 +23,8 @@ import InputBox from './inputBox';
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepOne>;
 
 interface IProps {
+    // FIXME: Navigation provides recovery data from multiple external wallet formats.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recoverValue?: any;
 }
 

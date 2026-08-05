@@ -34,11 +34,15 @@ import TransactionResult from './transactionResult';
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Transaction>;
 
 interface IProps {
+    // FIXME: Navigation supplies transaction payloads from multiple external signing flows.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     state: any;
 }
 
 export interface IResultState {
     code: number;
+    // FIXME: Transaction results are supplied by external chain modules with multiple schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any;
     type: string;
 }

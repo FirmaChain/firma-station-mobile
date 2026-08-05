@@ -111,7 +111,7 @@ const PercentageBox = ({ data }: IProps) => {
                     {PercentageData.map((grid, index) => {
                         return (
                             <View key={index} style={[styles.wrapperH, index < PercentageData.length - 1 && { paddingBottom: 34 }]}>
-                                {grid.row.map((item: any, index: number) => {
+                                {grid.row.map((item, index: number) => {
                                     return (
                                         <View key={index} style={[styles.wrapperH, { flex: 1, alignItems: 'center' }]}>
                                             <View style={[styles.wrapperV, { alignItems: 'center', flex: 1 }]}>

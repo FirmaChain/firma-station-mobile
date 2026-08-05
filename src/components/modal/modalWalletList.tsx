@@ -8,7 +8,7 @@ import { MenuIcon, Radio } from '../icon/icon';
 
 interface IProps {
     initVal: number;
-    data: any[] | null;
+    data: string[] | null;
     handleEditWalletList: (list: string, newIndex: number) => void;
     onPressEvent: (index: number) => void;
 }

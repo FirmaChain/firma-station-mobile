@@ -133,7 +133,7 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
                 placeholder="Address"
                 value={addressValue}
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('address', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('address', value)}
                 type={type}
             />
             <InputSetVerticalForAmount
@@ -143,7 +143,7 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
                 limitValue={available}
                 resetValues={reset}
                 enableMaxAmount={true}
-                onChangeEvent={(value: any) => handleSendInfoState('amount', value)}
+                onChangeEvent={(value: number) => handleSendInfoState('amount', value)}
             />
             <InputSetVertical
                 title="Memo"
@@ -151,7 +151,7 @@ const SendInputBox = ({ handleSendInfo, type, denom, decimal, available, symbol 
                 validation={true}
                 placeholder="Memo"
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('memo', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('memo', value)}
             />
 
             <View style={{ paddingTop: 20 }}>

@@ -55,7 +55,7 @@ const Send = () => {
     const [activeType, setActiveType] = useState<SendType>('SEND_TOKEN');
 
     const handleSendInfo = (type: string, value: string | number | IBCChainState | null) => {
-        let val: any = value;
+        let val: string | number | IBCChainState | null = value;
         if (type === 'memo' && val === '') val = null;
         setSendInfoState((prevState) => ({
             ...prevState,

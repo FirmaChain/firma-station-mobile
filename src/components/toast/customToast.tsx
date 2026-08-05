@@ -3,14 +3,14 @@ import { Lato, toastError, toastInfo, toastSuccess } from '@/constants/theme';
 import { wait } from '@/util/common';
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import Toast, { BaseToast, ErrorToast, type ToastConfigParams } from 'react-native-toast-message';
 
 const CustomToast = () => {
-    const [display, setDisplay] = useState('none');
+    const [display, setDisplay] = useState<'none' | 'flex'>('none');
     const inset = useSafeAreaInsets();
 
     const toastConfig = {
-        success: (props: any) => (
+        success: (props: ToastConfigParams<unknown>) => (
             <BaseToast
                 {...props}
                 style={{
@@ -26,14 +26,13 @@ const CustomToast = () => {
                 text2Style={styles.text2Style}
             />
         ),
-        info: (props: any) => (
+        info: (props: ToastConfigParams<unknown>) => (
             <BaseToast
                 {...props}
                 style={{
                     zIndex: 9999,
                     borderLeftWidth: 0,
                     backgroundColor: toastInfo,
-                    color: 'white',
                     display: display,
                     marginTop: inset.top / 2
                 }}
@@ -43,14 +42,13 @@ const CustomToast = () => {
                 text2Style={styles.text2Style}
             />
         ),
-        error: (props: any) => (
+        error: (props: ToastConfigParams<unknown>) => (
             <ErrorToast
                 {...props}
                 style={{
                     zIndex: 9999,
                     borderLeftWidth: 0,
                     backgroundColor: toastError,
-                    color: 'white',
                     display: display,
                     marginTop: inset.top / 2
                 }}

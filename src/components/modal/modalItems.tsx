@@ -6,8 +6,8 @@ import { Radio } from '../icon/icon';
 
 interface IProps {
     initVal: number;
-    data: any[];
-    subData?: any[];
+    data: string[];
+    subData?: string[];
     onPressEvent: (index: number) => void;
 }
 

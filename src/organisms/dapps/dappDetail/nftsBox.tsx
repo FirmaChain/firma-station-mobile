@@ -110,8 +110,12 @@ const NFTsBox = ({ visible, identity, cw721Contract, isScrollEnd, isRefresh, han
     }, [isFocused, identity, cw721Contract]);
 
     const moveToNFTDetail = useCallback(
+        // FIXME: NFT identifiers are supplied by external contracts without a stable schema.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (id: any) => {
             if (NFTList !== null) {
+                // FIXME: NFT records are supplied by external contracts without a stable schema.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const nft = NFTList.find((value: any) => id === value.id);
                 navigation.navigate(Screens.NFT, { data: { nft: nft, cw721Contract: cw721Contract } });
             }

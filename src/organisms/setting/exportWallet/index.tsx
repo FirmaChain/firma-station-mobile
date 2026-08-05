@@ -74,7 +74,7 @@ const ExportWallet = ({ type }: IProps) => {
     const getMnemonicFromChain = async (password: string) => {
         const loadingRequestId = CommonActions.beginLoadingProgress();
 
-        try {    
+        try {
             const result = await getRecoverValue(walletName, password);
             if (result !== null) {
                 handleModalOpen(false);

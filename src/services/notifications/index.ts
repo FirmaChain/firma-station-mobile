@@ -32,7 +32,9 @@ const resolveTitle = (remoteMessage: FirebaseMessagingTypes.RemoteMessage): stri
 const resolveBody = (remoteMessage: FirebaseMessagingTypes.RemoteMessage): string => {
     const dataBody = remoteMessage.data?.body;
     const dataMessage = remoteMessage.data?.message;
-    return remoteMessage.notification?.body ?? (typeof dataBody === 'string' ? dataBody : typeof dataMessage === 'string' ? dataMessage : '');
+    return (
+        remoteMessage.notification?.body ?? (typeof dataBody === 'string' ? dataBody : typeof dataMessage === 'string' ? dataMessage : '')
+    );
 };
 
 const normalizeData = (data: FirebaseMessagingTypes.RemoteMessage['data']): Record<string, string> => {

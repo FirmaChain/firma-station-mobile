@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
         height: 18,
         borderRadius: 50,
         backgroundColor: WhiteColor
-    },
+    }
 });
 
 export default NotificationRadio;

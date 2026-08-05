@@ -1,6 +1,6 @@
 export type Action = {
     type: string;
-    payload?: any;
+    payload?: unknown;
 };
 
 export interface IFavoriteState {

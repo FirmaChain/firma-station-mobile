@@ -43,7 +43,11 @@ export interface IProposalDescriptionState {
     submitTime: string;
     description: string;
     isTextProposal: boolean;
+    // FIXME: Governance messages are supplied by chain modules with multiple payload schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     messages: Array<any>;
+    // FIXME: Classified governance content depends on the external message schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     classified: any;
     votingStartTime: string;
     votingEndTime: string;
@@ -66,6 +70,8 @@ export interface IProposalVoteState {
     currentTurnout: number | null;
     totalVotingPower: number | null;
     proposalTally: IProposalTallyState;
+    // FIXME: Voter records are supplied by an external governance API without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     voters: Array<any>;
 }
 
@@ -107,9 +113,13 @@ export const useGovernanceList = () => {
             const list = proposals
                 .filter((proposal) => proposalsJSON.includes(Number(proposal.id)) === false)
                 .map((proposal) => {
+                    // FIXME: The SDK proposal model exposes version-dependent fields outside its public type.
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const _proposal = proposal as any;
                     const { id, messages, status, title, summary } = proposal;
 
+                    // FIXME: Governance message variants are defined by external chain modules.
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const firstMsg = messages[0] as any;
                     const firmsMsgContent = firstMsg?.content || null;
                     // If Messages is empty, can be considered as Text Proposal
@@ -180,6 +190,8 @@ export const useProposalData = () => {
                 ]);
 
                 let bondedTokens = null;
+                // FIXME: Vote history is supplied by an external GraphQL API without a stable schema.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let votingList: Array<any> = [];
                 try {
                     await new Promise<void>((resolve) => setTimeout(resolve, 1000));
@@ -206,7 +218,11 @@ export const useProposalData = () => {
                     console.log(error);
                 }
 
+                // FIXME: The SDK proposal model exposes version-dependent fields outside its public type.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const _proposal = proposal as any;
+                // FIXME: Governance message variants are defined by external chain modules.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const firstMsg = proposal.messages[0] as any;
                 const firmsMsgContent = firstMsg?.content ?? firstMsg ?? {};
                 const isEmptyMsg = Array.isArray(proposal.messages) ? proposal.messages.length === 0 : Boolean(proposal.messages);
@@ -289,6 +305,8 @@ export const useProposalData = () => {
         return convertTime(date, true);
     };
 
+    // FIXME: Classified governance content depends on external message schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const classifiedData = (content: any) => {
         if (content.changes !== undefined) {
             return {

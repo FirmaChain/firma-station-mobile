@@ -6,7 +6,7 @@ interface IProps {
 }
 
 export type WebParams = {
-    uri: any;
+    uri: string;
 };
 
 const WebScreen = (props: IProps) => {

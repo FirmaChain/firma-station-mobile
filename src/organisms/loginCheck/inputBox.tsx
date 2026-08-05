@@ -19,7 +19,7 @@ import WalletSelector from '../welcome/selectWallet/walletSelector';
 interface IProps {
     walletName: string;
     useBio: boolean;
-    fadeIn: any;
+    fadeIn: Animated.Value;
     loginHandler: (mnemonic: string, name: string, password: string) => void;
     isLoginProgress: boolean;
 }
@@ -32,6 +32,8 @@ const InputBox = ({ walletName, useBio, fadeIn, loginHandler, isLoginProgress }:
         placeholder: PLACEHOLDER_FOR_PASSWORD
     };
 
+    // FIXME: The secure wallet-list response can be null before a wallet is configured.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [items, setItems]: Array<any> = useState([]);
     const [pwValidation, setPwValidation] = useState(false);
     const [password, setPassword] = useState('');

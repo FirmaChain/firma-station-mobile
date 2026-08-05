@@ -13,6 +13,8 @@ import CircleSkeleton from '@/components/skeleton/circleSkeleton';
 import TextSkeleton from '@/components/skeleton/textSkeleton';
 
 interface IProps {
+    // FIXME: NFT metadata is supplied by external contracts without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
 }
 

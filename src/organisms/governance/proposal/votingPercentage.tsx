@@ -22,6 +22,8 @@ import { IProposalTallyState } from '@/hooks/governance/hooks';
 import { UpArrow, VoteCircle } from '@/components/icon/icon';
 
 interface IProps {
+    // FIXME: Governance vote data is supplied by chain modules with multiple schemas.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
 }
 
@@ -57,7 +59,11 @@ const VotingPercentage = ({ data }: IProps) => {
     const myVote = useMemo(() => {
         const result = tally.map((value) => {
             const vote = data.voters
+                // FIXME: Governance voter records are supplied by an external API without a stable schema.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .filter((voter: any) => voter.option === value.option)
+                // FIXME: Governance voter records are supplied by an external API without a stable schema.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .find((voter: any) => voter.voterAddress === walletAddress);
             if (vote !== undefined) {
                 return true;

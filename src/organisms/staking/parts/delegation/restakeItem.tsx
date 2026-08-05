@@ -8,6 +8,8 @@ import DataSection from '../list/dataSection';
 import MonikerSection from '../list/monikerSection';
 
 interface IProps {
+    // FIXME: Restake records are supplied by external chain modules without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
     navigate: (address: string) => void;
 }

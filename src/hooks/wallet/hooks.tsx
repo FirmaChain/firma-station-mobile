@@ -19,13 +19,19 @@ export interface IBalanceState {
 }
 
 export interface IHistoryState {
+    // FIXME: Transaction hashes are supplied by the external GraphQL API without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     hash: any;
     success: string;
     type: {
         tagTheme: string;
         tagDisplay: string;
     };
+    // FIXME: Transaction timestamps are supplied by the external GraphQL API without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     timestamp: any;
+    // FIXME: Transaction block values are supplied by the external GraphQL API without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     block: any;
 }
 
@@ -88,7 +94,7 @@ export const useHistoryData = () => {
             const value = type.replace('Msg', '').split('.');
             result = {
                 tagTheme: PointColor,
-                tagDisplay: value.pop()
+                tagDisplay: value.pop()!
             };
         }
         return result;
@@ -121,6 +127,8 @@ export const useHistoryData = () => {
                         }
                     }
 
+                    // FIXME: Transaction records are supplied by the external GraphQL API without a stable schema.
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const list = data.messagesByAddress.map((value: any) => {
                         const result = {
                             hash: value.transaction.hash,
@@ -151,11 +159,7 @@ export const useHistoryData = () => {
     );
 
     const handleHisotyPolling = async () => {
-        try {
-            handleHistoryOffset(true);
-        } catch (error) {
-            throw error;
-        }
+        handleHistoryOffset(true);
     };
 
     useEffect(() => {
@@ -184,6 +188,8 @@ export const useHistoryData = () => {
 export const useFetchPrices = () => {
     const [priceData, setPriceData] = useState<CryptoPrices | null>(null);
 
+    // FIXME: CoinGecko returns dynamic currency keys without a stable interface.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const transformPrices = (data: any): CryptoPrices => {
         const transformed: CryptoPrices = {};
         for (const [chain, priceObj] of Object.entries(data)) {
@@ -195,7 +201,7 @@ export const useFetchPrices = () => {
     const fetchPrices = async () => {
         try {
             const data = await kyInstance
-                .get<any>(COINGECKO, {
+                .get<unknown>(COINGECKO, {
                     searchParams: {
                         ids: COINGECKO_PRICE_LIST,
                         vs_currencies: 'usd'

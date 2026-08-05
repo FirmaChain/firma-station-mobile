@@ -56,6 +56,8 @@ const ServicesBox = ({ visible, identity, data }: IProps) => {
     }, []);
 
     const ServiceItem = useCallback(
+        // FIXME: Service entries are supplied by external DApp metadata without a stable schema.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ({ item, size }: any) => {
             return (
                 <TouchableOpacity

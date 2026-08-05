@@ -3,6 +3,8 @@ import { BgColor, BoxColor, DividerColor, Lato, TextCatTitleColor, TextColor, Te
 import { StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
+    // FIXME: NFT properties are supplied by external contracts without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
 }
 
@@ -13,6 +15,8 @@ const PropertiesBox = ({ data }: IProps) => {
 
     const attributesData = useMemo(() => {
         if (data !== null && data !== undefined && data.length > 0) {
+            // FIXME: NFT properties are supplied by external contracts without a stable schema.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return data.filter((value: any) => value.key !== 'character_type' && value.key !== 'special');
         }
         return [];
@@ -20,9 +24,9 @@ const PropertiesBox = ({ data }: IProps) => {
 
     const dataKeys = useMemo(() => {
         if (attributesData.length > 0) {
-            let keyArray: any = [];
+            const keyArray: string[] = [];
             for (const key in attributesData) {
-                keyArray = keyArray.concat(key);
+                keyArray.push(key);
             }
             return keyArray;
         }
@@ -39,6 +43,8 @@ const PropertiesBox = ({ data }: IProps) => {
         return result;
     };
 
+    // FIXME: NFT property items are supplied by external contracts without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const PropertiesItem = ({ item, size }: any) => {
         return (
             <View style={[styles.itemBox, { width: size }]}>
@@ -58,8 +64,8 @@ const PropertiesBox = ({ data }: IProps) => {
         <View style={[styles.container, { display: dataKeys.length > 0 ? 'flex' : 'none' }]}>
             <Text style={styles.title}>Properties</Text>
             <View style={styles.wrapBox} onLayout={(e) => setContainerSize(e.nativeEvent.layout.width)}>
-                {dataKeys.map((value: any, index: any) => {
-                    return <PropertiesItem key={index} item={attributesData[value]} size={containerSize / itemCountPerLine} />;
+                {dataKeys.map((value, index) => {
+                    return <PropertiesItem key={index} item={attributesData[Number(value)]} size={containerSize / itemCountPerLine} />;
                 })}
             </View>
         </View>

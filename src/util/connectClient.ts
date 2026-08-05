@@ -17,6 +17,7 @@ export interface ProjectList {
         identity: string;
         cw721ContractAddress: string;
         cw20ContractAddress: string;
+        serviceList: ServiceMetaData[];
     }[];
 }
 
@@ -29,6 +30,7 @@ interface ResponseProjectData {
         identity: string;
         cw721ContractAddress: string;
         cw20ContractAddress: string;
+        serviceList: ServiceMetaData[];
     }[];
 }
 
@@ -55,14 +57,26 @@ interface ResponseAuthData {
     userkey: string;
 }
 
-interface SignParams {
+export interface SignParams {
     message: string;
     signer: string;
-    argument: object;
+    argument: {
+        messageType?: string;
+        name?: string;
+        corpName?: string;
+        fctPrice?: number;
+        token?: {
+            denom: string;
+            amount: string | number;
+            symbol: string;
+        };
+        [key: string]: unknown;
+    };
     type: number;
+    info: string;
 }
 
-interface ProjectMetaData {
+export interface ProjectMetaData {
     projectId: string;
     name: string;
     description: string;
@@ -124,6 +138,15 @@ interface ApproveParam {
     address: string;
     chainId: string;
 }
+
+interface RelayResponse<T> {
+    code: number;
+    result: T;
+    message: string;
+}
+
+type CommonTxClient = ReturnType<typeof FirmaUtil.getCommonTxClient>;
+type BroadcastTxRaw = Parameters<CommonTxClient['broadcast']>[0];
 
 class ConnectClient {
     constructor(
@@ -311,7 +334,7 @@ class ConnectClient {
 
     public async verifySign(session: UserSession, QRData: QRData, signature: string): Promise<boolean> {
         try {
-            const response = await this.requestService.requestPut<any>(
+            const response = await this.requestService.requestPut<{ isValid: boolean }>(
                 `/v1/wallets/sign/${QRData.requestKey}`,
                 { signature },
                 {
@@ -325,7 +348,7 @@ class ConnectClient {
         }
     }
 
-    public async broadcast(wallet: FirmaWalletService, txRaw: any): Promise<any> {
+    public async broadcast(wallet: FirmaWalletService, txRaw: BroadcastTxRaw): Promise<string> {
         try {
             const commonTxClient = FirmaUtil.getCommonTxClient(wallet);
             const result = await commonTxClient.broadcast(txRaw);
@@ -341,16 +364,12 @@ class ConnectClient {
         }
     }
 
-    public async approve(session: UserSession, QRData: QRData, approveParam: ApproveParam): Promise<any> {
+    public async approve(session: UserSession, QRData: QRData, approveParam: ApproveParam): Promise<Record<string, never>> {
         try {
             if (QRData.apiCode === 'sign') {
-                await this.requestService.requestPut<any>(
-                    `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/approve`,
-                    approveParam,
-                    {
-                        userkey: session.userkey
-                    }
-                );
+                await this.requestService.requestPut<unknown>(`/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/approve`, approveParam, {
+                    userkey: session.userkey
+                });
                 return {};
             } else {
                 throw new Error('Invalid API Code');
@@ -361,10 +380,10 @@ class ConnectClient {
         }
     }
 
-    public async reject(session: UserSession, QRData: QRData): Promise<any> {
+    public async reject(session: UserSession, QRData: QRData): Promise<Record<string, never>> {
         try {
             if (QRData.apiCode === 'sign') {
-                await this.requestService.requestPut<any>(
+                await this.requestService.requestPut<unknown>(
                     `/v1/wallets/${QRData.apiCode}/${QRData.requestKey}/reject`,
                     {},
                     {
@@ -384,7 +403,7 @@ class ConnectClient {
 class RequestService {
     constructor(public relay: string) {}
 
-    async requestPost<T = any>(uri: string, body: any = {}, headers: any = {}): Promise<T> {
+    async requestPost<T = unknown>(uri: string, body: object = {}, headers: Record<string, string> = {}): Promise<T> {
         try {
             const requestOptions = {
                 method: 'POST',
@@ -392,7 +411,7 @@ class RequestService {
                 body: JSON.stringify(body)
             };
             const response = await fetch(`${this.relay}${uri}`, requestOptions);
-            const data: any = await response.json();
+            const data: RelayResponse<T> = await response.json();
             if (data.code === 0) {
                 return data.result;
             } else {
@@ -404,41 +423,33 @@ class RequestService {
         }
     }
 
-    async requestPut<T = any>(uri: string, body: any = {}, headers: any = {}): Promise<T> {
-        try {
-            const requestOptions = {
-                method: 'PUT',
-                headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            };
-            const response = await fetch(`${this.relay}${uri}`, requestOptions);
-            const data: any = await response.json();
-            if (data.code === 0) {
-                return data.result;
-            } else {
-                throw new Error(data.message);
-            }
-        } catch (e) {
-            throw e;
+    async requestPut<T = unknown>(uri: string, body: object = {}, headers: Record<string, string> = {}): Promise<T> {
+        const requestOptions = {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        };
+        const response = await fetch(`${this.relay}${uri}`, requestOptions);
+        const data: RelayResponse<T> = await response.json();
+        if (data.code === 0) {
+            return data.result;
+        } else {
+            throw new Error(data.message);
         }
     }
 
-    async requestGet<T = any>(uri: string, headers: any = {}): Promise<T> {
-        try {
-            const response = await fetch(`${this.relay}${uri}`, {
-                headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data: any = await response.json();
-            if (data.code === 0) {
-                return data.result;
-            } else {
-                throw new Error(data.message);
+    async requestGet<T = unknown>(uri: string, headers: Record<string, string> = {}): Promise<T> {
+        const response = await fetch(`${this.relay}${uri}`, {
+            headers: {
+                ...headers,
+                'Content-Type': 'application/json'
             }
-        } catch (e) {
-            throw e;
+        });
+        const data: RelayResponse<T> = await response.json();
+        if (data.code === 0) {
+            return data.result;
+        } else {
+            throw new Error(data.message);
         }
     }
 }

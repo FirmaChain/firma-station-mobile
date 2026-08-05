@@ -26,6 +26,8 @@ interface IProps {
 interface IMetaData {
     name: string;
     description: string;
+    // FIXME: NFT attributes are supplied by external contracts without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     attributes: Array<any>;
     collection: { name: string | null; icon: string };
     createdBy: string;

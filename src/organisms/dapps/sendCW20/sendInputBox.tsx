@@ -80,7 +80,7 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
                 placeholder="Address"
                 value={addressValue}
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('address', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('address', value)}
             />
             <InputSetVerticalForAmount
                 title="Amount"
@@ -88,7 +88,7 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
                 accent={false}
                 limitValue={available}
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('amount', value)}
+                onChangeEvent={(value: number) => handleSendInfoState('amount', value)}
             />
             <InputSetVertical
                 title="Memo"
@@ -96,7 +96,7 @@ const SendInputBox = ({ handleSendInfo, available, reset, dstAddress, symbol = C
                 validation={true}
                 placeholder="Memo"
                 resetValues={reset}
-                onChangeEvent={(value: any) => handleSendInfoState('memo', value)}
+                onChangeEvent={(value: string) => handleSendInfoState('memo', value)}
             />
 
             <View style={{ paddingTop: 20 }}>

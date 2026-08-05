@@ -3,6 +3,7 @@ import { DAPP_SERVICE_EXIST_NOTICE, DAPP_SERVICE_REGIST, DAPP_SERVICE_REGIST_SUC
 import { BgColor, Lato, TextCatTitleColor, TextDarkGrayColor, TextWarnColor, WhiteColor } from '@/constants/theme';
 import { CommonActions, ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
+import type { DappQRData } from '@/util/connectClient';
 import { getDAppServiceId, setDAppServiceId } from '@/util/wallet';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -22,6 +23,11 @@ interface IServiceState {
     serviceId: string;
 }
 
+interface IStoredDappService {
+    identity: string;
+    serviceId: string;
+}
+
 // interface IDappServiceState {
 //   identity: string;
 //   serviceId: string;
@@ -36,7 +42,7 @@ const DappServiceRegistModal = () => {
     const [project, setProject] = useState<IProjectState>();
     const [service, setService] = useState<IServiceState>();
     const [serviceRegistered, setServiceRegistered] = useState(false);
-    const [storageServiceData, setStorageServiceData] = useState<IKeyValue>({});
+    const [storageServiceData, setStorageServiceData] = useState<IKeyValue<IStoredDappService>>({});
 
     const isVisible = useMemo(() => {
         return dappServiceRegModal;
@@ -44,7 +50,7 @@ const DappServiceRegistModal = () => {
 
     const QRData = useMemo(() => {
         if (isVisible) {
-            return modalData.data;
+            return modalData?.data as DappQRData;
         }
         return null;
     }, [modalData, isVisible]);
@@ -57,8 +63,8 @@ const DappServiceRegistModal = () => {
                     setService(QRData.service);
 
                     const result = await getDAppServiceId(walletName);
-                    const service: IKeyValue = JSON.parse(result);
-                    setStorageServiceData(service === undefined ? [] : service);
+                    const service: IKeyValue<IStoredDappService> = JSON.parse(result ?? 'null');
+                    setStorageServiceData(service === undefined ? {} : service);
                     const exist = isStoragedServiceId(service);
                     setServiceRegistered(exist);
                 } catch (error) {
@@ -70,7 +76,7 @@ const DappServiceRegistModal = () => {
         checkDappServiceRegistered();
     }, [QRData]);
 
-    const isStoragedServiceId = (service: IKeyValue) => {
+    const isStoragedServiceId = (service: IKeyValue<IStoredDappService>) => {
         return service !== null && service[network] !== undefined;
     };
 
@@ -85,7 +91,7 @@ const DappServiceRegistModal = () => {
 
     const handleRegistService = async () => {
         try {
-            let serviceId: IKeyValue = {};
+            let serviceId: IKeyValue<IStoredDappService> = {};
             if (project !== undefined && service !== undefined) {
                 serviceId = {
                     ...storageServiceData,
@@ -109,7 +115,12 @@ const DappServiceRegistModal = () => {
     }, [appState]);
 
     return (
-        <CustomModal visible={isVisible} handleOpen={handleModal} handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)} toastInModal={false}>
+        <CustomModal
+            visible={isVisible}
+            handleOpen={handleModal}
+            handleShow={() => CommonActions.endLoadingProgress(modalData?.loadingRequestId)}
+            toastInModal={false}
+        >
             <View style={styles.modalTextContents}>
                 <View style={[styles.boxV, { alignItems: 'center' }]}>
                     {project !== undefined && (

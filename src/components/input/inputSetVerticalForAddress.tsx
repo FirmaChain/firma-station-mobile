@@ -113,7 +113,7 @@ const InputSetVerticalForAddress = ({
                     });
                 }
             }
-            ModalActions.handleResetModal({});
+            ModalActions.handleResetModal();
         }
     }, [isFocused, modalData]);
 

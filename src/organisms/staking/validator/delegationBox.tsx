@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: DividerColor,
         marginVertical: 20
-    },
+    }
 });
 
 export default DelegationBox;

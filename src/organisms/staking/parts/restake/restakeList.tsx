@@ -20,12 +20,17 @@ interface IProps {
     navigateValidator: (address: string) => void;
 }
 
+interface IRestakeLatestInfo {
+    validatorAddr: string;
+    rewards: number;
+}
+
 const RestakeList = ({ isRefresh, delegationState, restakeState, handleIsRefresh, navigateValidator }: IProps) => {
     const { dataLoadStatus } = useAppSelector((state) => state.common);
     const { address: walletAddress } = useAppSelector((state) => state.wallet);
     const { network } = useAppSelector((state) => state.storage);
 
-    const [restakeLatestInfo, setRestakeLatestInfo]: any = useState(null);
+    const [restakeLatestInfo, setRestakeLatestInfo] = useState<IRestakeLatestInfo[] | null>(null);
 
     // Remove unnecessary useMemo - direct assignment is more efficient
     const delegationList = delegationState;
@@ -95,7 +100,7 @@ const Restake = ({
     navigateValidator
 }: {
     stakingGrantList: IStakingGrantState;
-    restakeLatestInfo: any;
+    restakeLatestInfo: IRestakeLatestInfo[] | null;
     navigateValidator: (address: string) => void;
 }) => {
     return (
@@ -113,7 +118,7 @@ const Restake = ({
 
                     let latestReward = 0;
                     if (restakeLatestInfo) {
-                        const result = restakeLatestInfo.find((restake: any) => restake.validatorAddr === value.validatorAddress);
+                        const result = restakeLatestInfo.find((restake) => restake.validatorAddr === value.validatorAddress);
                         latestReward = result !== undefined ? result.rewards : 0;
                     }
 

@@ -79,8 +79,8 @@ const RecoverWallet = () => {
 
     useEffect(() => {
         if (isFocused && modalData) {
-            recoverWalletViaQR(modalData.result);
-            ModalActions.handleResetModal({});
+            recoverWalletViaQR(modalData.result!);
+            ModalActions.handleResetModal();
         }
     }, [isFocused, modalData]);
 

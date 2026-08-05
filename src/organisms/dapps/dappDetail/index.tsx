@@ -41,6 +41,8 @@ interface IDappServiceState {
 }
 
 interface IProps {
+    // FIXME: DApp detail data is supplied by external projects without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
 }
 
@@ -142,6 +144,8 @@ const DappDetail = ({ data }: IProps) => {
                 if (index === -1) {
                     dappData['serviceList'] = [...prevList, dappService.service];
                 }
+                // FIXME: DApp services are supplied by external projects without a stable schema.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 dappData['serviceList'].sort((a: any, b: any) => (a.serviceId < b.serviceId ? -1 : a.serviceId > b.serviceId ? 1 : 0));
 
                 setIsLoadedDappService(true);

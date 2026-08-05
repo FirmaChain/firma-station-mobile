@@ -21,6 +21,8 @@ import MnemonicQuiz from './mnemonicQuiz';
 type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.CreateStepThree>;
 
 interface IProps {
+    // FIXME: Navigation provides wallet data from multiple external wallet formats.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     walletInfo: any;
 }
 

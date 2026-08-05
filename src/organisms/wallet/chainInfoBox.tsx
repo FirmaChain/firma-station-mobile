@@ -6,6 +6,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { TrendingDownIcon, TrendingUpIcon } from '@/components/icon/icon';
 
 interface IProps {
+    // FIXME: Chain information is supplied by an external endpoint without a stable schema.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chainInfo: any;
 }
 

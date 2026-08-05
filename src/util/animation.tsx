@@ -1,6 +1,6 @@
 import { Animated, LayoutAnimation } from 'react-native';
 
-export const fadeIn = (animated: any, value: Animated.Value, duration: number, toValue: number = 1) => {
+export const fadeIn = (animated: typeof Animated, value: Animated.Value, duration: number, toValue: number = 1) => {
     animated
         .timing(value, {
             toValue: toValue,
@@ -10,7 +10,7 @@ export const fadeIn = (animated: any, value: Animated.Value, duration: number, t
         .start();
 };
 
-export const fadeOut = (animated: any, value: Animated.Value, duration: number, toValue: number = 0) => {
+export const fadeOut = (animated: typeof Animated, value: Animated.Value, duration: number, toValue: number = 0) => {
     animated
         .timing(value, {
             toValue: toValue,
@@ -20,7 +20,7 @@ export const fadeOut = (animated: any, value: Animated.Value, duration: number, 
         .start();
 };
 
-export const TurnToOpposite = (animated: any, value: Animated.Value) => {
+export const TurnToOpposite = (animated: typeof Animated, value: Animated.Value) => {
     animated
         .timing(value, {
             toValue: 1,
@@ -30,7 +30,7 @@ export const TurnToOpposite = (animated: any, value: Animated.Value) => {
         .start();
 };
 
-export const TurnToOriginal = (animated: any, value: Animated.Value) => {
+export const TurnToOriginal = (animated: typeof Animated, value: Animated.Value) => {
     animated
         .timing(value, {
             toValue: 0,

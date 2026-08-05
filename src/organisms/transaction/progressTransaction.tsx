@@ -97,7 +97,7 @@ const ProgressTransaction = () => {
                         />
                     </View>
                 </View>
-                <View style={[styles.counterBox, { flex: 1, width: '100%', justifyContent: 'center' }]}> 
+                <View style={[styles.counterBox, { flex: 1, width: '100%', justifyContent: 'center' }]}>
                     <Text style={[styles.description, { paddingBottom: 20, fontSize: 16 }]}>{TRANSACTION_PROCESS_DESCRIPTION_TEXT}</Text>
                     <Animated.View style={[styles.descriptionWrapper, noticeAnimatedStyle]}>
                         <View style={{ paddingTop: 3 }}>

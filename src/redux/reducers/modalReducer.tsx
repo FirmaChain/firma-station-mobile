@@ -1,3 +1,4 @@
+import type { DappQRData, QRData } from '@/util/connectClient';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 
 import {
@@ -16,10 +17,31 @@ import {
     VALIDATION_MODAL
 } from '../types';
 
+export interface ModalData {
+    result?: string;
+    deeplink?: string;
+    data?: DappQRData | QRData;
+    idState?: { list: string[] };
+    loadingRequestId?: string;
+    qrType?: QRData['qrType'];
+    apiCode?: QRData['apiCode'];
+    requestKey?: QRData['requestKey'];
+    signParams?: QRData['signParams'];
+    projectMetaData?: QRData['projectMetaData'];
+}
+
+export interface IDappTransactionData {
+    type: string;
+    password: string;
+    data: QRData;
+    chainId: string;
+    session: string | null;
+}
+
 export interface IModalStateProps {
-    modalData: any;
-    dappData: any;
-    favoriteData: any;
+    modalData: ModalData | null;
+    dappData: IDappTransactionData | null;
+    favoriteData: string | null;
     validationModal: boolean;
     favoriteModal: boolean;
     favoriteCreateModal: boolean;
@@ -47,10 +69,10 @@ const initialState: IModalStateProps = {
 };
 
 export const ACTION_CREATORS = {
-    HANDLE_RESET_MODAL: createAction<any>(HANDLE_RESET_MODAL),
-    HANDLE_MODAL_DATA: createAction<any>(HANDLE_MODAL_DATA),
-    HANDLE_DAPP_DATA: createAction<any>(HANDLE_DAPP_DATA),
-    HANDLE_FAVORITE_DATA: createAction<any>(HANDLE_FAVORITE_DATA),
+    HANDLE_RESET_MODAL: createAction<undefined>(HANDLE_RESET_MODAL),
+    HANDLE_MODAL_DATA: createAction<ModalData | null>(HANDLE_MODAL_DATA),
+    HANDLE_DAPP_DATA: createAction<IDappTransactionData | null>(HANDLE_DAPP_DATA),
+    HANDLE_FAVORITE_DATA: createAction<string | null>(HANDLE_FAVORITE_DATA),
     VALIDATION_MODAL: createAction<boolean>(VALIDATION_MODAL),
     FAVORITE_MODAL: createAction<boolean>(FAVORITE_MODAL),
     FAVORITE_CREATE_MODAL: createAction<boolean>(FAVORITE_CREATE_MODAL),
