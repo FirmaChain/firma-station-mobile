@@ -1,7 +1,6 @@
 import React, { type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
-
 import CW721 from '@/organisms/wallet/cw721';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 const mockHandleCW721NFTIdList = jest.fn<(startId: string) => Promise<void>>();
 const mockStateValues: Array<readonly [unknown, Dispatch<SetStateAction<unknown>>]> = [];

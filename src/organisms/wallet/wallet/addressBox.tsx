@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         marginHorizontal: 20,
         backgroundColor: AddressBoxColor,
-        borderRadius: 4,
+        borderRadius: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'

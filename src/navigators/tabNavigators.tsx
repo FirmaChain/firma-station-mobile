@@ -23,7 +23,7 @@ const TabNavigators = () => {
                 tabBarStyle: {
                     backgroundColor: BoxDarkColor,
                     borderTopColor: BoxDarkColor,
-                    height: 58,
+                    height: 58
                 },
                 tabBarActiveTintColor: WhiteColor,
                 tabBarInactiveTintColor: GrayColor,

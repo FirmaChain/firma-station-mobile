@@ -80,7 +80,9 @@ jest.mock('@/redux/hooks', () => ({
     ) => selector({ storage: { network: 'mainnet', contentVolume: { proposals: 0 } } })
 }));
 jest.mock('@react-navigation/native', () => ({ useNavigation: () => ({ goBack: mockGoBack }) }));
-jest.mock('react-native-toast-message', () => ({ show: (value: { readonly type: string; readonly text1: string }) => mockToastShow(value) }));
+jest.mock('react-native-toast-message', () => ({
+    show: (value: { readonly type: string; readonly text1: string }) => mockToastShow(value)
+}));
 jest.mock('@/util/common', () => ({ convertNumber: Number, convertTime: () => 'converted' }));
 jest.mock('@/gql/query', () => ({ getProposalData: () => mockGetProposalData() }));
 jest.mock('@/util/firma', () => ({

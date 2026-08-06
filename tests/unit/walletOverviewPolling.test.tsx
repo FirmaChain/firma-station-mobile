@@ -1,11 +1,7 @@
+import Wallet from '@/organisms/wallet/wallet';
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import {
-    createRefreshPollingController,
-    type RefreshLifecycle,
-    type RefreshPollingOptions
-} from '@/hooks/common/useRefreshPolling';
-import Wallet from '@/organisms/wallet/wallet';
+import { createRefreshPollingController, type RefreshLifecycle, type RefreshPollingOptions } from '@/hooks/common/useRefreshPolling';
 
 const DELAY = 30_000;
 
@@ -161,13 +157,13 @@ describe('Wallet overview polling surface', () => {
         const stakingRequests = [deferred<void>(), deferred<void>()];
         const historyRequests = [deferred<void>(), deferred<void>()];
         const tokenRequests = [deferred<readonly string[]>(), deferred<readonly string[]>()];
-        mockGetStakingState.mockImplementation(() => stakingRequests[mockGetStakingState.mock.calls.length - 1]?.promise ?? Promise.resolve());
+        mockGetStakingState.mockImplementation(
+            () => stakingRequests[mockGetStakingState.mock.calls.length - 1]?.promise ?? Promise.resolve()
+        );
         mockHandleHistoryPolling.mockImplementation(
             () => historyRequests[mockHandleHistoryPolling.mock.calls.length - 1]?.promise ?? Promise.resolve()
         );
-        mockGetTokenList.mockImplementation(
-            () => tokenRequests[mockGetTokenList.mock.calls.length - 1]?.promise ?? Promise.resolve([])
-        );
+        mockGetTokenList.mockImplementation(() => tokenRequests[mockGetTokenList.mock.calls.length - 1]?.promise ?? Promise.resolve([]));
         const options = renderWallet();
         const controller = createRefreshPollingController(options);
 
@@ -219,44 +215,44 @@ describe('Wallet overview polling surface', () => {
     it.each(['staking', 'history', 'token'] as const)(
         'waits for every started Wallet request before reporting a %s failure',
         async (failureSource) => {
-        // Given
-        const stakingRequest = deferred<void>();
-        const historyRequest = deferred<void>();
-        const tokenRequest = deferred<readonly string[]>();
-        mockGetStakingState.mockReturnValueOnce(stakingRequest.promise);
-        mockHandleHistoryPolling.mockReturnValueOnce(historyRequest.promise);
-        mockGetTokenList.mockReturnValueOnce(tokenRequest.promise);
-        const failure = new Error(`${failureSource} failure`);
-        const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-        let settled = false;
-        const outcome = renderWallet()
-            .refresh({ isValid: () => true })
-            .then(
-                () => {
-                    settled = true;
-                    return undefined;
-                },
-                (error: unknown) => {
-                    settled = true;
-                    return error;
-                }
-            );
+            // Given
+            const stakingRequest = deferred<void>();
+            const historyRequest = deferred<void>();
+            const tokenRequest = deferred<readonly string[]>();
+            mockGetStakingState.mockReturnValueOnce(stakingRequest.promise);
+            mockHandleHistoryPolling.mockReturnValueOnce(historyRequest.promise);
+            mockGetTokenList.mockReturnValueOnce(tokenRequest.promise);
+            const failure = new Error(`${failureSource} failure`);
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+            let settled = false;
+            const outcome = renderWallet()
+                .refresh({ isValid: () => true })
+                .then(
+                    () => {
+                        settled = true;
+                        return undefined;
+                    },
+                    (error: unknown) => {
+                        settled = true;
+                        return error;
+                    }
+                );
 
-        // When
-        if (failureSource === 'staking') stakingRequest.reject(failure);
-        else if (failureSource === 'token') stakingRequest.resolve();
-        if (failureSource === 'history') historyRequest.reject(failure);
-        if (failureSource === 'token') tokenRequest.reject(failure);
-        else tokenRequest.resolve([]);
-        await jest.advanceTimersByTimeAsync(0);
+            // When
+            if (failureSource === 'staking') stakingRequest.reject(failure);
+            else if (failureSource === 'token') stakingRequest.resolve();
+            if (failureSource === 'history') historyRequest.reject(failure);
+            if (failureSource === 'token') tokenRequest.reject(failure);
+            else tokenRequest.resolve([]);
+            await jest.advanceTimersByTimeAsync(0);
 
-        // Then
-        expect(settled).toBe(false);
-        stakingRequest.resolve();
-        historyRequest.resolve();
-        tokenRequest.resolve([]);
-        expect(await outcome).toBe(failure);
-        errorSpy.mockRestore();
+            // Then
+            expect(settled).toBe(false);
+            stakingRequest.resolve();
+            historyRequest.resolve();
+            tokenRequest.resolve([]);
+            expect(await outcome).toBe(failure);
+            errorSpy.mockRestore();
         }
     );
 
@@ -265,13 +261,13 @@ describe('Wallet overview polling surface', () => {
         const stakingRequests = [deferred<void>(), deferred<void>()];
         const historyRequests = [deferred<void>(), deferred<void>()];
         const tokenRequests = [deferred<readonly string[]>(), deferred<readonly string[]>()];
-        mockGetStakingState.mockImplementation(() => stakingRequests[mockGetStakingState.mock.calls.length - 1]?.promise ?? Promise.resolve());
+        mockGetStakingState.mockImplementation(
+            () => stakingRequests[mockGetStakingState.mock.calls.length - 1]?.promise ?? Promise.resolve()
+        );
         mockHandleHistoryPolling.mockImplementation(
             () => historyRequests[mockHandleHistoryPolling.mock.calls.length - 1]?.promise ?? Promise.resolve()
         );
-        mockGetTokenList.mockImplementation(
-            () => tokenRequests[mockGetTokenList.mock.calls.length - 1]?.promise ?? Promise.resolve([])
-        );
+        mockGetTokenList.mockImplementation(() => tokenRequests[mockGetTokenList.mock.calls.length - 1]?.promise ?? Promise.resolve([]));
         const controller = createRefreshPollingController(renderWallet());
         const request = controller.setEligible(true);
 

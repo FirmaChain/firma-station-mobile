@@ -107,62 +107,67 @@ export const useGovernanceList = () => {
         }
     }, [network]);
 
-    const handleProposalList = useCallback(async (lifecycle?: RefreshLifecycle) => {
-        const proposalsJSON = (await getProposalJsonData()).ignoreProposalIdList;
-        if (lifecycle?.isValid() === false) return;
-        const proposals = await getProposals();
-        if (lifecycle?.isValid() === false) return;
+    const handleProposalList = useCallback(
+        async (lifecycle?: RefreshLifecycle) => {
+            const proposalsJSON = (await getProposalJsonData()).ignoreProposalIdList;
+            if (lifecycle?.isValid() === false) return;
+            const proposals = await getProposals();
+            if (lifecycle?.isValid() === false) return;
 
-        if (proposals.length > 0) {
-            const list = proposals
-                .filter((proposal) => proposalsJSON.includes(Number(proposal.id)) === false)
-                .map((proposal) => {
-                    // FIXME: The SDK proposal model exposes version-dependent fields outside its public type.
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const _proposal = proposal as any;
-                    const { id, messages, status, title, summary } = proposal;
+            if (proposals.length > 0) {
+                const list = proposals
+                    .filter((proposal) => proposalsJSON.includes(Number(proposal.id)) === false)
+                    .map((proposal) => {
+                        // FIXME: The SDK proposal model exposes version-dependent fields outside its public type.
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const _proposal = proposal as any;
+                        const { id, messages, status, title, summary } = proposal;
 
-                    // FIXME: Governance message variants are defined by external chain modules.
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const firstMsg = messages[0] as any;
-                    const firmsMsgContent = firstMsg?.content || null;
-                    // If Messages is empty, can be considered as Text Proposal
-                    const isEmptyMsg = Array.isArray(messages) ? messages.length === 0 : Boolean(messages);
+                        // FIXME: Governance message variants are defined by external chain modules.
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const firstMsg = messages[0] as any;
+                        const firmsMsgContent = firstMsg?.content || null;
+                        // If Messages is empty, can be considered as Text Proposal
+                        const isEmptyMsg = Array.isArray(messages) ? messages.length === 0 : Boolean(messages);
 
-                    const proposalId = id.toString();
-                    const proposalType = isEmptyMsg
-                        ? PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']
-                        : PROPOSAL_MESSAGE_TYPE[(firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')];
+                        const proposalId = id.toString();
+                        const proposalType = isEmptyMsg
+                            ? PROPOSAL_MESSAGE_TYPE['/cosmos.gov.v1beta1.TextProposal']
+                            : PROPOSAL_MESSAGE_TYPE[
+                                  (firmsMsgContent ? firmsMsgContent['@type'] : firstMsg['@type'] || '').replace('Msg', '')
+                              ];
 
-                    const depositEndTime = _proposal.deposit_end_time;
-                    const votingStartTime = _proposal.voting_start_time;
-                    const votingEndTime = _proposal.voting_end_time;
+                        const depositEndTime = _proposal.deposit_end_time;
+                        const votingStartTime = _proposal.voting_start_time;
+                        const votingEndTime = _proposal.voting_end_time;
 
-                    return {
-                        proposalId,
-                        proposalType,
-                        status: status.toString(),
-                        title,
-                        description: summary,
-                        depositEndTime,
-                        votingStartTime,
-                        votingEndTime
-                    };
+                        return {
+                            proposalId,
+                            proposalType,
+                            status: status.toString(),
+                            title,
+                            description: summary,
+                            depositEndTime,
+                            votingStartTime,
+                            votingEndTime
+                        };
+                    });
+
+                StorageActions.handleContentVolume({
+                    ...contentVolume,
+                    proposals: list.length
                 });
 
-            StorageActions.handleContentVolume({
-                ...contentVolume,
-                proposals: list.length
-            });
-
-            const sortList = list.sort((a, b) => Number(b.proposalId) - Number(a.proposalId));
-            if (lifecycle?.isValid() === false) return;
-            setGovernanceList((prevState) => ({
-                ...prevState,
-                list: sortList
-            }));
-        }
-    }, [getProposalJsonData, contentVolume]);
+                const sortList = list.sort((a, b) => Number(b.proposalId) - Number(a.proposalId));
+                if (lifecycle?.isValid() === false) return;
+                setGovernanceList((prevState) => ({
+                    ...prevState,
+                    list: sortList
+                }));
+            }
+        },
+        [getProposalJsonData, contentVolume]
+    );
 
     const handleGovernanceListPolling = async (lifecycle?: RefreshLifecycle) => {
         await handleProposalList(lifecycle);
