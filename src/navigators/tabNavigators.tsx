@@ -24,9 +24,6 @@ const TabNavigators = () => {
                     backgroundColor: BoxDarkColor,
                     borderTopColor: BoxDarkColor,
                     height: 58,
-                    paddingTop: 4,
-                    paddingBottom: 10
-                    // Due to layout changes, it does not appear necessary to adjust the height for each operating system.
                 },
                 tabBarActiveTintColor: WhiteColor,
                 tabBarInactiveTintColor: GrayColor,
@@ -77,7 +74,6 @@ const TabNavigators = () => {
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return <DocumentIcon width={24} height={24} color={focused ? WhiteColor : GrayColor} />;
-                        // return <Image style={{ width: 24, height: 24, opacity: focused ? 1 : 0.6 }} source={ICON_DOCUMENT} />;
                     }
                 }}
             >
