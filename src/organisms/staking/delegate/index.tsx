@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GUIDE_URI } from '@/../config';
 import { DATA_RELOAD_INTERVAL, MAXIMUM_UNDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE } from '@/constants/common';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
@@ -17,7 +17,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 
-import { useInterval } from '@/hooks/common/hooks';
+import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
 import { useDelegationData } from '@/hooks/staking/hooks';
 import Button from '@/components/button/button';
 import AlertModal from '@/components/modal/alertModal';
@@ -62,15 +62,15 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
     const isFocused = useIsFocused();
 
     const { name: walletName } = useAppSelector((state) => state.wallet);
-    const { dataLoadStatus } = useAppSelector((state) => state.common);
+    const { appState, isNetworkChanged } = useAppSelector((state) => state.common);
 
     const {
         delegationState,
         undelegationState,
         stakingGrantState,
         handleDelegationState,
-        handleUndelegationState,
-        handleStakingGrantActivationState
+        handleStakingGrantActivationState,
+        handleTotalDelegationPolling
     } = useDelegationData();
 
     const [redelegateStep, setRedelegateStep] = useState<'amount' | 'restake'>('amount');
@@ -268,19 +268,37 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         navigation.navigate(Screens.Transaction, { state: transactionState });
     };
 
-    const refreshStates = async () => {
-        try {
-            await handleDelegationState();
-            await handleUndelegationState();
-            await handleStakingGrantActivationState();
+    const isPollingEligible = useCallback(
+        () => isFocused && appState === 'active' && !isNetworkChanged,
+        [appState, isFocused, isNetworkChanged]
+    );
+
+    const refreshStates = useCallback(
+        async (lifecycle: RefreshLifecycle) => {
+            const [currentDelegationList] = await Promise.all([
+                handleDelegationState(lifecycle),
+                handleStakingGrantActivationState(lifecycle)
+            ]);
+            if (!lifecycle.isValid() || currentDelegationList === undefined) return;
+            await handleTotalDelegationPolling(lifecycle, currentDelegationList);
+        },
+        [handleDelegationState, handleStakingGrantActivationState, handleTotalDelegationPolling]
+    );
+
+    useRefreshPolling({
+        refresh: refreshStates,
+        commit: (_value, lifecycle) => {
+            if (!lifecycle.isValid()) return;
             setResetRedelegateValues(false);
             setInputResetValues(false);
-            CommonActions.handleDataLoadStatus(0);
-        } catch (error) {
-            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
+        },
+        isEligible: isPollingEligible,
+        delay: DATA_RELOAD_INTERVAL,
+        retryLimit: 3,
+        onError: (error) => {
             console.error(error);
         }
-    };
+    });
 
     const handleMoveToWeb = () => {
         const key = type.toLowerCase();
@@ -318,20 +336,6 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
             handleDelegateState('destinationRestake', hasCurrentDestinationRestake);
         }
     }, [type, redelegateStep, hasCurrentSourceRestake, hasCurrentDestinationRestake]);
-
-    useInterval(
-        () => {
-            refreshStates();
-        },
-        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
-        true
-    );
-
-    useEffect(() => {
-        if (isFocused) {
-            refreshStates();
-        }
-    }, [isFocused]);
 
     return (
         <Container title={type} handleGuide={handleMoveToWeb} backEvent={handleBack}>

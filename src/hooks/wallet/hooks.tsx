@@ -8,6 +8,8 @@ import { convertNumber } from '@/util/common';
 import { getBalanceFromAdr } from '@/util/firma';
 import kyInstance from '@/util/kyService';
 
+import type { RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+
 import { COINGECKO, COINGECKO_PRICE_LIST } from '../../../config';
 
 export interface IBalanceState {
@@ -82,10 +84,10 @@ export const useHistoryData = () => {
     const [recentHistory, setRecentHistory] = useState<IHistoryState>();
     const [historyOffset, setHistoryOffset] = useState(0);
 
-    const handleHistoryOffset = (reset: boolean) => {
+    const handleHistoryOffset = (reset: boolean, lifecycle?: RefreshLifecycle) => {
         const offset = reset ? 0 : historyOffset + 30;
         setHistoryOffset(offset);
-        getHistoryByAddress(offset);
+        return getHistoryByAddress(offset, lifecycle);
     };
 
     const convertMsgType = (type: string) => {
@@ -106,61 +108,61 @@ export const useHistoryData = () => {
     }
 
     const getHistoryByAddress = useCallback(
-        (offset: number) => {
-            getHistoryByAddressData({
-                network,
-                address: `{${walletAddress}}`,
-                offset: offset,
-                limit: 30
-            })
-                .then(async (data) => {
-                    if (offset === 0) {
-                        if (historyVolume === undefined) {
-                            StorageActions.handleHistoryVolume({
-                                [walletAddress]: data.messagesByAddress.length
-                            });
-                        } else {
-                            StorageActions.handleHistoryVolume({
-                                ...historyVolume,
-                                [walletAddress]: data.messagesByAddress.length
-                            });
-                        }
-                    }
-
-                    // FIXME: Transaction records are supplied by the external GraphQL API without a stable schema.
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const list = data.messagesByAddress.map((value: any) => {
-                        const result = {
-                            hash: value.transaction.hash,
-                            success: convertResult(value.transaction.success),
-                            type: convertMsgType(value.transaction.messages[0]['@type']),
-                            timestamp: value.transaction.block.timestamp,
-                            block: value.transaction.block.height
-                        };
-
-                        return result;
-                    });
-
-                    if (list.length > 0 && list[0].hash !== recentHistory?.hash) {
-                        setRecentHistory(list[0]);
-                    }
-
-                    setHistoryList((prevState) => ({
-                        ...prevState,
-                        list
-                    }));
-                })
-                .catch((error) => {
-                    console.error(error);
-                    throw error;
+        async (offset: number, lifecycle?: RefreshLifecycle) => {
+            try {
+                const data = await getHistoryByAddressData({
+                    network,
+                    address: `{${walletAddress}}`,
+                    offset: offset,
+                    limit: 30
                 });
+                if (lifecycle?.isValid() === false) return;
+
+                if (offset === 0) {
+                    if (historyVolume === undefined) {
+                        StorageActions.handleHistoryVolume({
+                            [walletAddress]: data.messagesByAddress.length
+                        });
+                    } else {
+                        StorageActions.handleHistoryVolume({
+                            ...historyVolume,
+                            [walletAddress]: data.messagesByAddress.length
+                        });
+                    }
+                }
+
+                // FIXME: Transaction records are supplied by the external GraphQL API without a stable schema.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const list = data.messagesByAddress.map((value: any) => {
+                    const result = {
+                        hash: value.transaction.hash,
+                        success: convertResult(value.transaction.success),
+                        type: convertMsgType(value.transaction.messages[0]['@type']),
+                        timestamp: value.transaction.block.timestamp,
+                        block: value.transaction.block.height
+                    };
+
+                    return result;
+                });
+
+                if (list.length > 0 && list[0].hash !== recentHistory?.hash) {
+                    setRecentHistory(list[0]);
+                }
+
+                setHistoryList((prevState) => ({
+                    ...prevState,
+                    list
+                }));
+            } catch (error) {
+                if (lifecycle?.isValid() === false) return;
+                console.error(error);
+                throw error;
+            }
         },
         [walletAddress, network]
     );
 
-    const handleHisotyPolling = async () => {
-        handleHistoryOffset(true);
-    };
+    const handleHisotyPolling = (lifecycle?: RefreshLifecycle): Promise<void> => handleHistoryOffset(true, lifecycle);
 
     useEffect(() => {
         const handleRefreshHistory = async () => {

@@ -2,13 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { DATA_RELOAD_INTERVAL, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor, BoxColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet, View } from 'react-native';
 
-import { useInterval } from '@/hooks/common/hooks';
+import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
 import { useDelegationData, useStakingData } from '@/hooks/staking/hooks';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
 
@@ -25,7 +24,7 @@ const Staking = () => {
 
     const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
     const { stakingReward: stakingRewardState } = useAppSelector((state) => state.staking);
-    const { isNetworkChanged, dataLoadStatus, connect } = useAppSelector((state) => state.common);
+    const { isNetworkChanged, connect, appState } = useAppSelector((state) => state.common);
 
     const { stakingState, getStakingState } = useStakingData();
     const { stakingGrantActivation, handleStakingGrantActivationState } = useDelegationData();
@@ -40,19 +39,6 @@ const Staking = () => {
     useEffect(() => {
         handleStakingReward();
     }, [stakingRewardState]);
-
-    const refreshStates = useCallback(async () => {
-        if (isListRefresh === false && isNetworkChanged === false) {
-            try {
-                await Promise.all([getStakingState(), handleStakingGrantActivationState()]);
-                handleIsRefresh(true);
-                CommonActions.handleDataLoadStatus(0);
-            } catch (error) {
-                CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
-                console.error(error);
-            }
-        }
-    }, [isListRefresh, isNetworkChanged]);
 
     const handleWithdrawAll = (password: string, gas: number) => {
         const transactionState = {
@@ -81,23 +67,35 @@ const Staking = () => {
         [isListRefresh]
     );
 
-    useInterval(
-        () => {
-            refreshStates();
-        },
-        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
-        true
+    const isPollingEligible = useCallback(
+        () => isFocused && appState === 'active' && !isNetworkChanged,
+        [appState, isFocused, isNetworkChanged]
     );
 
-    useEffect(() => {
-        if (isFocused) {
-            refreshStates();
+    const refreshStates = useCallback(
+        async (lifecycle: RefreshLifecycle) => {
+            await Promise.all([getStakingState(lifecycle), handleStakingGrantActivationState(lifecycle)]);
+        },
+        [getStakingState, handleStakingGrantActivationState]
+    );
+
+    const refreshNow = useRefreshPolling({
+        refresh: refreshStates,
+        commit: (_value, lifecycle) => {
+            if (!lifecycle.isValid()) return;
+            handleIsRefresh(true);
+        },
+        isEligible: isPollingEligible,
+        delay: DATA_RELOAD_INTERVAL,
+        retryLimit: 3,
+        onError: (error) => {
+            console.error(error);
         }
-    }, [isFocused]);
+    });
 
     return (
         <View style={styles.container}>
-            <RefreshScrollView background={BgColor} refreshFunc={refreshStates}>
+            <RefreshScrollView background={BgColor} refreshFunc={refreshNow}>
                 {connect && isNetworkChanged === false && (
                     <>
                         <View style={styles.box}>

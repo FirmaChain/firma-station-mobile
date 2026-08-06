@@ -25,6 +25,8 @@ import {
 } from '@/util/firma';
 import { DelegationInfo, FirmaUtil, PoolDataType, SlashingParam, ValidatorDataType } from '@firmachain/firma-js';
 
+import type { RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+
 export interface IValidatorState {
     validatorAddress: string;
     validatorAvatar: string;
@@ -173,15 +175,16 @@ export const useDelegationData = () => {
         ? validatorsProfile.profileInfos
         : [];
 
-    const handleDelegationPolling = async () => {
-        await handleValidators();
-        await handleDelegationState();
+    const handleTotalDelegationPolling = async (lifecycle?: RefreshLifecycle, currentDelegationList = delegationList) => {
+        await handleRedelegationState(lifecycle);
+        await handleUndelegationState(lifecycle);
+        await handleStakingGrantState(lifecycle, currentDelegationList);
     };
 
-    const handleTotalDelegationPolling = async () => {
-        await handleRedelegationState();
-        await handleUndelegationState();
-        await handleStakingGrantState();
+    const handleDelegationPolling = async () => {
+        await handleValidators();
+        const currentDelegationList = await handleDelegationState();
+        await handleTotalDelegationPolling(undefined, currentDelegationList);
     };
 
     const handleValidators = async () => {
@@ -200,39 +203,47 @@ export const useDelegationData = () => {
         }
     };
 
-    const handleDelegationState = async () => {
+    const handleDelegationState = async (lifecycle?: RefreshLifecycle) => {
         const result: IStakeInfo[] = await getDelegations(walletAddress);
+        if (lifecycle?.isValid() === false) return;
 
-        setDelegationList(
-            result.filter(
-                (value) =>
-                    convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 ||
-                    convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0
-            )
+        const currentDelegationList = result.filter(
+            (value) =>
+                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.amount)) !== 0 ||
+                convertNumber(FirmaUtil.getFCTStringFromUFCT(value.reward)) !== 0
         );
+        setDelegationList(currentDelegationList);
+        return currentDelegationList;
     };
 
-    const handleRedelegationState = async () => {
+    const handleRedelegationState = async (lifecycle?: RefreshLifecycle) => {
         const redelegationResult: IRedelegationInfo[] = await getRedelegations(walletAddress);
+        if (lifecycle?.isValid() === false) return;
         setRedelegationList(redelegationResult);
     };
 
-    const handleUndelegationState = async () => {
+    const handleUndelegationState = async (lifecycle?: RefreshLifecycle) => {
         const undelegateionResult: IUndelegationInfo[] = await getUndelegations(walletAddress);
+        if (lifecycle?.isValid() === false) return;
         setUndelegationList(undelegateionResult);
     };
 
-    const handleStakingGrantState = useCallback(async () => {
-        // FIXME: Staking grant records are returned by an external SDK without a stable interface.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const grantStakeResult: any[] = await getStakingGrant(walletAddress);
-        setStakingGrantList(StakingGrantData(delegationList, grantStakeResult[0]));
-    }, [delegationList]);
+    const handleStakingGrantState = useCallback(
+        async (lifecycle?: RefreshLifecycle, currentDelegationList = delegationList) => {
+            // FIXME: Staking grant records are returned by an external SDK without a stable interface.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const grantStakeResult: any[] = await getStakingGrant(walletAddress);
+            if (lifecycle?.isValid() === false) return;
+            setStakingGrantList(StakingGrantData(currentDelegationList, grantStakeResult[0]));
+        },
+        [delegationList]
+    );
 
-    const handleStakingGrantActivationState = async () => {
+    const handleStakingGrantActivationState = async (lifecycle?: RefreshLifecycle) => {
         // FIXME: Staking grant records are returned by an external SDK without a stable interface.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const grantStakingResult: any[] = await getStakingGrant(walletAddress);
+        if (lifecycle?.isValid() === false) return;
         const grantExist = grantStakingResult[0] === undefined ? false : grantStakingResult[0].authorization.allow_list.address.length > 0;
         setStakingGrantActivation(grantExist);
     };
@@ -246,10 +257,6 @@ export const useDelegationData = () => {
             )
         );
     }, [delegate]);
-
-    useEffect(() => {
-        handleTotalDelegationPolling();
-    }, [delegationList]);
 
     const delegationState: Array<IStakeInfo> = useMemo(() => {
         if (validatorsList.length > 0) {
@@ -387,8 +394,9 @@ export const useStakingData = () => {
 
     const [stakingState, setStakingState] = useState<IStakingState | null>(null);
 
-    const getStakingState = async () => {
+    const getStakingState = async (lifecycle?: RefreshLifecycle) => {
         const result = await getStaking(walletAddress);
+        if (lifecycle?.isValid() === false) return;
         setStakingState(result);
         StakingActions.updateStakingRewardState(result.stakingReward);
     };
@@ -593,8 +601,8 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
 
     const [validatorState, setValidatorState] = useState<IValidatorDetailState>();
 
-    const handleValidatorState = useCallback(async () => {
-        try {
+    const handleValidatorState = useCallback(
+        async (lifecycle?: RefreshLifecycle) => {
             const [commonState, validator, delegation, selfDelegateAddress] = await Promise.all([
                 getCommonState(),
                 getValidatorFromAddress(validatorAddress),
@@ -691,6 +699,7 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 ]
             };
 
+            if (lifecycle?.isValid() === false) return;
             setValidatorState({
                 status,
                 jailed,
@@ -699,17 +708,12 @@ export const useValidatorDataFromAddress = (validatorAddress: string) => {
                 address,
                 percentageData
             });
-        } catch (error) {
-            console.error(error);
-        }
-    }, [validatorAddress, validatorsProfile]);
+        },
+        [validatorAddress, validatorsProfile]
+    );
 
-    const handleValidatorPolling = async () => {
-        try {
-            await handleValidatorState();
-        } catch (error) {
-            console.error(error);
-        }
+    const handleValidatorPolling = async (lifecycle?: RefreshLifecycle) => {
+        await handleValidatorState(lifecycle);
     };
 
     return {

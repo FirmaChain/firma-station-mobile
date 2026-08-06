@@ -19,7 +19,7 @@ import { ScrollToTop } from '../icon/icon';
 
 interface IProps {
     scrollEndFunc?: (evt: NativeSyntheticEvent<NativeScrollEvent>) => void;
-    refreshFunc: () => void;
+    refreshFunc: () => Promise<void>;
     background?: string;
     scrollToTop?: boolean;
     toTopButton?: boolean;
@@ -37,18 +37,42 @@ const RefreshScrollView = ({
     const { scrollToTop: commonScrollToTop } = useAppSelector((state) => state.common);
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
+    const refreshPromiseRef = useRef<Promise<void> | null>(null);
+    const isMountedRef = useRef(true);
 
     const [activeButton] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
-    const onRefresh = async () => {
-        try {
-            setRefreshing(true);
-            refreshFunc();
-            setRefreshing(false);
-        } catch (error) {
-            setRefreshing(false);
+    const traceRefreshing = (value: boolean): void => {
+        if (typeof __DEV__ !== 'boolean' || !__DEV__) return;
+        // eslint-disable-next-line no-console
+        console.log('[RefreshScrollView]', { refreshing: value });
+    };
+
+    const onRefresh = async (): Promise<void> => {
+        const existingRefresh = refreshPromiseRef.current;
+        if (existingRefresh !== null) {
+            await existingRefresh;
+            return;
+        }
+
+        setRefreshing(true);
+        traceRefreshing(true);
+        const refreshPromise = refreshFunc().catch((error: unknown) => {
             console.error(error);
+        });
+        refreshPromiseRef.current = refreshPromise;
+
+        try {
+            await refreshPromise;
+        } finally {
+            if (refreshPromiseRef.current === refreshPromise) {
+                refreshPromiseRef.current = null;
+                if (isMountedRef.current) {
+                    setRefreshing(false);
+                    traceRefreshing(false);
+                }
+            }
         }
     };
 
@@ -78,6 +102,12 @@ const RefreshScrollView = ({
             fadeOut(Animated, fadeAnim, 300);
         }
     }, [activeButton]);
+
+    useEffect(() => {
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
     useEffect(() => {
         if (commonScrollToTop) {

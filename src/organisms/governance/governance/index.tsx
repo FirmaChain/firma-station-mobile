@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { DATA_RELOAD_INTERVAL, PROPOSAL_NOT_REGISTERED } from '@/constants/common';
 import { BgColor, TextDarkGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
-import { useInterval } from '@/hooks/common/hooks';
+import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
 import { IProposalItemState, useGovernanceList } from '@/hooks/governance/hooks';
 import ProposalSkeleton from '@/components/skeleton/proposalSkeleton';
 
@@ -20,7 +19,7 @@ const Governance = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
 
-    const { dataLoadStatus, isNetworkChanged, connect, appState } = useAppSelector((state) => state.common);
+    const { isNetworkChanged, connect, appState } = useAppSelector((state) => state.common);
     const { contentVolume } = useAppSelector((state) => state.storage);
 
     const { governanceState, handleGovernanceListPolling } = useGovernanceList();
@@ -38,39 +37,39 @@ const Governance = () => {
         [navigation]
     );
 
-    const refreshStates = useCallback(async () => {
-        try {
-            await handleGovernanceListPolling();
-        } catch (error) {
-            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
+    const isPollingEligible = useCallback(
+        () => isFocused && appState === 'active' && !isNetworkChanged,
+        [appState, isFocused, isNetworkChanged]
+    );
+
+    const refreshStates = useCallback(
+        async (lifecycle: RefreshLifecycle) => {
+            await handleGovernanceListPolling(lifecycle);
+        },
+        [handleGovernanceListPolling]
+    );
+
+    const refreshNow = useRefreshPolling({
+        refresh: refreshStates,
+        commit: (_value, lifecycle) => {
+            if (!lifecycle.isValid()) return;
+        },
+        isEligible: isPollingEligible,
+        delay: DATA_RELOAD_INTERVAL,
+        retryLimit: 3,
+        onError: (error) => {
             console.error(error);
         }
-    }, [dataLoadStatus, handleGovernanceListPolling]);
+    });
 
     const onRefresh = useCallback(async () => {
         try {
             setRefreshing(true);
-            await refreshStates();
+            await refreshNow();
         } finally {
             setRefreshing(false);
         }
-    }, [refreshStates]);
-
-    const isAppActive = appState === 'active';
-
-    useInterval(
-        () => {
-            refreshStates();
-        },
-        isAppActive && dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
-        true
-    );
-
-    useEffect(() => {
-        if (isFocused && isNetworkChanged === false && isAppActive) {
-            refreshStates();
-        }
-    }, [isFocused, isNetworkChanged, isAppActive, refreshStates]);
+    }, [refreshNow]);
 
     const listData = governanceState.list;
     const isListReady = proposalVolumes !== null;

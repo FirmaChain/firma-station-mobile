@@ -61,12 +61,12 @@ const CW721 = ({ contract }: IProps) => {
         }
     }, [MyCW721NFTS, isCW721Fetching, NFTList]);
 
-    const RefreshNFTs = () => {
+    const RefreshNFTs = (): Promise<void> => {
         if (NFTList === null || NFTList.length === 0) {
-            handleCW721NFTIdList('0');
-        } else {
-            handleCW721NFTIdList(NFTList[NFTList.length - 1].id);
+            return handleCW721NFTIdList('0');
         }
+
+        return handleCW721NFTIdList(NFTList[NFTList.length - 1].id);
     };
 
     useEffect(() => {

@@ -188,7 +188,7 @@ const DappDetail = ({ data }: IProps) => {
     return (
         <Container titleOn={false} backEvent={handleBack}>
             <ViewContainer>
-                <RefreshScrollView refreshFunc={() => handleRefresh(true)} scrollToTop={true} scrollEndFunc={handleScroll}>
+                <RefreshScrollView refreshFunc={() => Promise.resolve(handleRefresh(true))} scrollToTop={true} scrollEndFunc={handleScroll}>
                     <View style={styles.inlineStyle1}>
                         <DescriptionBox data={data} />
                         <View style={styles.inlineStyle2} />

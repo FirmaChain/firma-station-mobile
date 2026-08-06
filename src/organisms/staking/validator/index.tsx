@@ -2,14 +2,14 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { DATA_RELOAD_INTERVAL, IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from '@/constants/common';
 import { BgColor, BoxColor, FailedColor, Lato } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
-import { CommonActions, StakingActions } from '@/redux/actions';
+import { StakingActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { getStakingFromvalidator } from '@/util/firma';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useInterval } from '@/hooks/common/hooks';
+import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
 import {
     IStakingState,
     IValidatorData,
@@ -34,8 +34,9 @@ interface IProps {
 }
 
 const Validator = ({ validatorAddress }: IProps) => {
+    const isFocused = useIsFocused();
     const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
-    const { dataLoadStatus } = useAppSelector((state) => state.common);
+    const { appState, isNetworkChanged } = useAppSelector((state) => state.common);
 
     const navigation: ScreenNavgationProps = useNavigation();
 
@@ -120,8 +121,9 @@ const Validator = ({ validatorAddress }: IProps) => {
         navigation.navigate(Screens.Delegate, { state: delegateState });
     };
 
-    const handleDelegateState = async () => {
+    const handleDelegateState = async (lifecycle: RefreshLifecycle) => {
         const state = await getStakingFromvalidator(walletAddress, validatorAddress);
+        if (!lifecycle.isValid()) return;
 
         setStakingState({
             available: state.available,
@@ -131,22 +133,30 @@ const Validator = ({ validatorAddress }: IProps) => {
         });
     };
 
-    const refreshStates = async () => {
-        try {
-            await Promise.all([handleDelegateState(), handleTotalDelegationPolling(), handleValidatorPolling()]);
-        } catch (error) {
-            CommonActions.handleDataLoadStatus(dataLoadStatus + 1);
+    const isPollingEligible = useCallback(
+        () => isFocused && appState === 'active' && !isNetworkChanged,
+        [appState, isFocused, isNetworkChanged]
+    );
+
+    const refreshStates = useCallback(
+        async (lifecycle: RefreshLifecycle) => {
+            await Promise.all([handleDelegateState(lifecycle), handleTotalDelegationPolling(lifecycle), handleValidatorPolling(lifecycle)]);
+        },
+        [handleTotalDelegationPolling, handleValidatorPolling, validatorAddress, walletAddress]
+    );
+
+    const refreshNow = useRefreshPolling({
+        refresh: refreshStates,
+        commit: (_value, lifecycle) => {
+            if (!lifecycle.isValid()) return;
+        },
+        isEligible: isPollingEligible,
+        delay: DATA_RELOAD_INTERVAL,
+        retryLimit: 3,
+        onError: (error) => {
             console.error(error);
         }
-    };
-
-    useInterval(
-        () => {
-            refreshStates();
-        },
-        dataLoadStatus > 0 ? DATA_RELOAD_INTERVAL : null,
-        true
-    );
+    });
 
     const handleMoveToWeb = (uri: string) => {
         navigation.navigate(Screens.WebScreen, { uri: uri });
@@ -157,13 +167,13 @@ const Validator = ({ validatorAddress }: IProps) => {
     };
 
     useEffect(() => {
-        if (Validator) {
+        if (Validator && isPollingEligible()) {
             StakingActions.updateValidatorState(Validator);
         }
-    }, [Validator]);
+    }, [Validator, isPollingEligible]);
 
     useEffect(() => {
-        if (stakingState !== null) {
+        if (stakingState !== null && isPollingEligible()) {
             if (stakingState.stakingReward > 0) {
                 StakingActions.updateDelegateState({
                     address: validatorAddress,
@@ -171,13 +181,7 @@ const Validator = ({ validatorAddress }: IProps) => {
                 });
             }
         }
-    }, [stakingState]);
-
-    useFocusEffect(
-        useCallback(() => {
-            refreshStates();
-        }, [])
-    );
+    }, [isPollingEligible, stakingState, validatorAddress]);
 
     const inlineStyles1 = {
         inlineStyle1: { backgroundColor: BoxColor },
@@ -188,7 +192,7 @@ const Validator = ({ validatorAddress }: IProps) => {
         <Fragment>
             <Container titleOn={false} bgColor={BoxColor} backEvent={handleBack}>
                 <ViewContainer bgColor={BgColor}>
-                    <RefreshScrollView refreshFunc={refreshStates} background={BoxColor}>
+                    <RefreshScrollView refreshFunc={refreshNow} background={BoxColor}>
                         <View style={inlineStyles1.inlineStyle1}>
                             <Fragment>
                                 <View style={styles.jailedBox}>

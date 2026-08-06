@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { CHAIN_NETWORK } from '@/../config';
 import { ERROR_FETCHING_PROPOSAL_DATA, PROPOSAL_MESSAGE_TYPE } from '@/constants/common';
 import { getProposalData } from '@/gql/query';
@@ -9,6 +9,8 @@ import { getProposalByProposalId, getProposalParams, getProposals, getProposalTa
 import { useNavigation } from '@react-navigation/native';
 import { orderBy } from 'es-toolkit';
 import Toast from 'react-native-toast-message';
+
+import type { RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
 
 export interface IGovernanceState {
     list: Array<IProposalItemState>;
@@ -105,9 +107,11 @@ export const useGovernanceList = () => {
         }
     }, [network]);
 
-    const handleProposalList = useCallback(async () => {
+    const handleProposalList = useCallback(async (lifecycle?: RefreshLifecycle) => {
         const proposalsJSON = (await getProposalJsonData()).ignoreProposalIdList;
+        if (lifecycle?.isValid() === false) return;
         const proposals = await getProposals();
+        if (lifecycle?.isValid() === false) return;
 
         if (proposals.length > 0) {
             const list = proposals
@@ -152,6 +156,7 @@ export const useGovernanceList = () => {
             });
 
             const sortList = list.sort((a, b) => Number(b.proposalId) - Number(a.proposalId));
+            if (lifecycle?.isValid() === false) return;
             setGovernanceList((prevState) => ({
                 ...prevState,
                 list: sortList
@@ -159,13 +164,9 @@ export const useGovernanceList = () => {
         }
     }, [getProposalJsonData, contentVolume]);
 
-    const handleGovernanceListPolling = async () => {
-        await handleProposalList();
+    const handleGovernanceListPolling = async (lifecycle?: RefreshLifecycle) => {
+        await handleProposalList(lifecycle);
     };
-
-    useEffect(() => {
-        handleGovernanceListPolling();
-    }, [network]);
 
     return {
         governanceState,
@@ -180,7 +181,7 @@ export const useProposalData = () => {
     const [proposalState, setProposalState] = useState<IProposalState | null>(null);
 
     const handleProposal = useCallback(
-        async (id: number) => {
+        async (id: number, lifecycle?: RefreshLifecycle) => {
             try {
                 const _id = String(id);
                 const [proposal, param, proposalTally] = await Promise.all([
@@ -188,6 +189,7 @@ export const useProposalData = () => {
                     getProposalParams(),
                     getProposalTally(_id)
                 ]);
+                if (lifecycle?.isValid() === false) return;
 
                 let bondedTokens = null;
                 // FIXME: Vote history is supplied by an external GraphQL API without a stable schema.
@@ -195,7 +197,9 @@ export const useProposalData = () => {
                 let votingList: Array<any> = [];
                 try {
                     await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+                    if (lifecycle?.isValid() === false) return;
                     const proposalData = await getProposalData({ proposalId: _id, network });
+                    if (lifecycle?.isValid() === false) return;
                     if (proposalData.proposal[0] !== undefined) {
                         if (proposalData.proposal[0].staking_pool_snapshot) {
                             const _bondedTokens = proposalData.proposal[0].staking_pool_snapshot.bonded_tokens;
@@ -215,8 +219,10 @@ export const useProposalData = () => {
                         }
                     }
                 } catch (error) {
+                    if (lifecycle?.isValid() === false) return;
                     console.error(error);
                 }
+                if (lifecycle?.isValid() === false) return;
 
                 // FIXME: The SDK proposal model exposes version-dependent fields outside its public type.
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -279,12 +285,14 @@ export const useProposalData = () => {
                     voters: votingList
                 };
 
+                if (lifecycle?.isValid() === false) return;
                 setProposalState({
                     titleState,
                     descState,
                     voteState
                 });
             } catch (e) {
+                if (lifecycle?.isValid() === false) throw e;
                 console.error(e);
                 // Fix: if failed to fetch proposal data, show error toast and return to previous screen (governance)
                 Toast.show({
@@ -292,6 +300,7 @@ export const useProposalData = () => {
                     text1: ERROR_FETCHING_PROPOSAL_DATA
                 });
                 navigation.goBack();
+                throw e;
             }
         },
         [network]
@@ -341,12 +350,8 @@ export const useProposalData = () => {
         return totalVote / totalVotingPower;
     };
 
-    const handleProposalPolling = async (id: number) => {
-        try {
-            await handleProposal(id);
-        } catch (error) {
-            console.error(error);
-        }
+    const handleProposalPolling = async (id: number, lifecycle?: RefreshLifecycle) => {
+        await handleProposal(id, lifecycle);
     };
 
     return {
