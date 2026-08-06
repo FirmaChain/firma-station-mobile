@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         backgroundColor: FailedColor,
         color: TextColor,
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         fontSize: 12
     }
 });

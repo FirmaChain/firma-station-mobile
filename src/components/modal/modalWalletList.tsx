@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     itemTitle: {
         fontFamily: Lato,
         fontSize: 16,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextColor,
         paddingVertical: 20,
         paddingLeft: 20,

@@ -29,7 +29,7 @@ const markdownStyles: ComponentProps<typeof Markdown>['style'] = {
         color: TextColor,
         fontSize: 28,
         lineHeight: 36,
-        fontWeight: 'bold',
+        fontWeight: '700',
         marginTop: 6,
         marginBottom: 10
     },
@@ -37,7 +37,7 @@ const markdownStyles: ComponentProps<typeof Markdown>['style'] = {
         color: TextColor,
         fontSize: 24,
         lineHeight: 36,
-        fontWeight: 'bold',
+        fontWeight: '700',
         marginTop: 6,
         marginBottom: 10
     },
@@ -45,7 +45,7 @@ const markdownStyles: ComponentProps<typeof Markdown>['style'] = {
         color: TextColor,
         fontSize: 22,
         lineHeight: 33,
-        fontWeight: 'bold',
+        fontWeight: '700',
         marginTop: 6,
         marginBottom: 8
     },
@@ -53,7 +53,7 @@ const markdownStyles: ComponentProps<typeof Markdown>['style'] = {
         color: TextColor,
         fontSize: 20,
         lineHeight: 30,
-        fontWeight: 'bold',
+        fontWeight: '700',
         marginTop: 4,
         marginBottom: 8
     },

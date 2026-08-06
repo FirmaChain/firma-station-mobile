@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 24,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     },
     titleButtonBox: {
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16,
         color: TextColor,
-        fontWeight: 'bold',
+        fontWeight: '700',
         paddingTop: 3
     },
     tabTitleInactive: {

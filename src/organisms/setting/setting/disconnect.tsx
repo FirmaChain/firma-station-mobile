@@ -17,7 +17,7 @@ const Disconnect = ({ handleDisconnect }: IProps) => {
 
 const styles = StyleSheet.create({
     inlineStyle1: { justifyContent: 'center' },
-    inlineStyle2: { fontWeight: 'bold' },
+    inlineStyle2: { fontWeight: '700' },
     listItem: {
         backgroundColor: BoxColor,
         padding: 20,

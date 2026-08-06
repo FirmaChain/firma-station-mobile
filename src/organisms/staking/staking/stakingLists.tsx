@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16,
         color: TextColor,
-        fontWeight: 'bold',
+        fontWeight: '700',
         paddingTop: 3
     },
     tabTitleInactive: {

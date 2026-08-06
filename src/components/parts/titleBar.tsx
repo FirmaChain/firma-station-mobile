@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 24,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     },
     guide: {

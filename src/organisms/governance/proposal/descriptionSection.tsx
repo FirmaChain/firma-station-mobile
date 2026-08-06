@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     },
     desc: {
         fontFamily: Lato,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextCatTitleColor
     },
     titleV: {

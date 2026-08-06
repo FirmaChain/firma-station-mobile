@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     },
     stepText: {
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor,
         fontSize: 14,
         textAlign: 'center',

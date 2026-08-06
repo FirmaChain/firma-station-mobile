@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     },
     desc: {
         fontFamily: Lato,
-        fontWeight: 'normal',
+        fontWeight: '400',
         fontSize: 13,
         color: TextGrayColor
     }

@@ -249,7 +249,7 @@ const ValidationModal = ({ type, open, setOpenModal, validationHandler }: IProps
         },
         inlineStyle3: { paddingBottom: contentPaddingBottom },
         inlineStyle4: { alignItems: 'center' },
-        inlineStyle5: { fontWeight: 'bold' },
+        inlineStyle5: { fontWeight: '700' },
         inlineStyle6: { height: dimActive ? 0 : 'auto' },
         inlineStyle7: { flex: 1 }
     } as const;

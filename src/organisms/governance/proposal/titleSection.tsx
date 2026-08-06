@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     },
     status: {
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         fontSize: 13,
         borderRadius: 10,
         textAlign: 'center',
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         width: '100%',
         fontFamily: Lato,
         fontSize: 22,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     }
 });

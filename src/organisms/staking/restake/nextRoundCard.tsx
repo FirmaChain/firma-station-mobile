@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     text: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextGrayColor
     },
     label: {

@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
         width: '100%',
         fontSize: 24,
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     },
     desc: {

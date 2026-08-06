@@ -61,13 +61,13 @@ const styles = StyleSheet.create({
     itemTitle: {
         fontFamily: Lato,
         fontSize: 16,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextColor
     },
     itemSubTitle: {
         fontFamily: Lato,
         fontSize: 11,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextColor,
         opacity: 0.5,
         paddingLeft: 5,

@@ -70,7 +70,7 @@ const Delete = ({ walletName, walletAddress, handleDisconnect }: IProps) => {
 
 const styles = StyleSheet.create({
     inlineStyle1: { justifyContent: 'center' },
-    inlineStyle2: { color: DangerColor, fontWeight: 'bold' },
+    inlineStyle2: { color: DangerColor, fontWeight: '700' },
     listItem: {
         backgroundColor: BoxColor,
         padding: 20,

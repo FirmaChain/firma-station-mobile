@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         color: TextColor,
         textAlign: 'center',
         fontSize: 16,
-        fontWeight: 'normal'
+        fontWeight: '400'
     }
 });
 

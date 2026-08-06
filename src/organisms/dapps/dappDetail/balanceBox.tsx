@@ -66,9 +66,9 @@ const BalanceBox = ({ tokenData, cw20Contract, marketingLogo, decimal, moveToSen
         inlineStyle1: { paddingBottom: 5 },
         inlineStyle2: { width: '100%', justifyContent: 'space-between' },
         inlineStyle3: { fontSize: balanceTextSize },
-        inlineStyle4: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle4: { fontSize: 14, fontWeight: '400' },
         inlineStyle5: { fontSize: balanceTextSize },
-        inlineStyle6: { fontSize: 14, fontWeight: 'normal' }
+        inlineStyle6: { fontSize: 14, fontWeight: '400' }
     } as const;
 
     return (

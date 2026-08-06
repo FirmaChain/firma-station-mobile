@@ -134,7 +134,7 @@ const RadioOnModal = ({ walletName, open, book, setOpenModal, bioAuthhandler }: 
 
 const styles = StyleSheet.create({
     inlineStyle1: { flexDirection: 'row' },
-    inlineStyle2: { fontWeight: 'bold' },
+    inlineStyle2: { fontWeight: '700' },
     inlineStyle3: { paddingBottom: 15 },
     modalTextContents: {
         width: '100%',

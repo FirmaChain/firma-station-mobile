@@ -128,18 +128,18 @@ const DelegationBox = ({ walletName, validatorAddress, stakingState, delegations
             fontSize: resizeFontSize(convertNumber(Available), 100000, 20),
             color: StakingStateExist ? TextColor : TextDisableColor
         },
-        inlineStyle3: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle3: { fontSize: 14, fontWeight: '400' },
         inlineStyle4: {
             fontSize: resizeFontSize(convertNumber(convertAmount({ value: Reward, isUfct: false })), 100000, 20),
             color: StakingStateExist ? TextColor : TextDisableColor
         },
-        inlineStyle5: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle5: { fontSize: 14, fontWeight: '400' },
         inlineStyle6: { marginTop: 12, paddingTop: 22, paddingBottom: 12 },
         inlineStyle7: {
             fontSize: resizeFontSize(convertNumber(Delegate), 100000, 20),
             color: StakingStateExist ? TextColor : TextDisableColor
         },
-        inlineStyle8: { fontSize: 14, fontWeight: 'normal' },
+        inlineStyle8: { fontSize: 14, fontWeight: '400' },
         inlineStyle9: { width: '100%', height: accordionHeight },
         inlineStyle10: { justifyContent: 'center', paddingTop: 22 },
         inlineStyle11: { width: 15 },

@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     nftName: {
         fontSize: 20,
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     },
     label: {

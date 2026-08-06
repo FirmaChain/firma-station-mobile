@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     content: {
         fontFamily: Lato,
         fontSize: 16,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextAddressColor,
         paddingBottom: 5
     }

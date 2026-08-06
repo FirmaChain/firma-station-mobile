@@ -70,11 +70,11 @@ const styles = StyleSheet.create({
     },
     price: {
         color: TextColor,
-        fontWeight: 'bold'
+        fontWeight: '700'
     },
     changePercentage: {
         fontSize: 12,
-        fontWeight: 'bold',
+        fontWeight: '700',
         paddingLeft: 5
     },
     desc: {

@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: TextCatTitleColor,
         marginBottom: 15,
-        fontWeight: 'bold'
+        fontWeight: '700'
     },
     qrcodeContainer: {
         borderRadius: 4,

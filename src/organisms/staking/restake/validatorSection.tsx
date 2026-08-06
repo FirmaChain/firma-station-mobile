@@ -49,7 +49,7 @@ const ValidatorSection = ({ data, minimumRewards }: IProps) => {
 
     const inlineStyles1 = {
         inlineStyle1: { justifyContent: 'flex-end' },
-        inlineStyle2: { fontSize: 12, fontWeight: 'normal', color: RestakeNoDelegationColor },
+        inlineStyle2: { fontSize: 12, fontWeight: '400', color: RestakeNoDelegationColor },
         inlineStyle3: {
             backgroundColor: restakeStatus.color + '30',
             color: restakeStatus.color,

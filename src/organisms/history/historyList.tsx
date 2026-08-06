@@ -27,7 +27,7 @@ const HistoryList = ({ item, loading, handleExplorer }: IProps) => {
         inlineStyle2: { paddingHorizontal: 20 },
         inlineStyle3: { flex: 2 },
         inlineStyle4: { alignItems: 'center', paddingBottom: 15 },
-        inlineStyle5: { fontSize: 10, fontWeight: 'normal' },
+        inlineStyle5: { fontSize: 10, fontWeight: '400' },
         inlineStyle6: { flex: 4, justifyContent: 'flex-start', alignItems: 'flex-start' },
         inlineStyle7: { flex: 1 },
         inlineStyle8: { fontSize: 14 },
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     contentItem: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextColor,
         marginTop: 6,
         paddingVertical: 5
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     contentTitle: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextDarkGrayColor
     }
 });

@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     contentTitle: {
         fontSize: 18,
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         textTransform: 'uppercase',
         color: TextColor,
         paddingRight: 10
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     desc: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         textAlign: 'left',
         color: TextCatTitleColor
     },

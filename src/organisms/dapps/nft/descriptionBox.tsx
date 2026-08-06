@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         width: '100%',
         fontSize: 20,
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     },
     tokenIdTitle: {
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         fontFamily: Lato,
         fontSize: 16,
         lineHeight: 30,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextCatTitleColor
     },
     moreButtonBox: {

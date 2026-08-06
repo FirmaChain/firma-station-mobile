@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     desc: {
         fontFamily: Lato,
         fontSize: 18,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextGrayColor,
         textAlign: 'center'
     },

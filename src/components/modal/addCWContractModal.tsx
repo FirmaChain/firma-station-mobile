@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     infoValue: {
         fontSize: 18,
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor,
         overflow: 'hidden',
         flexShrink: 1

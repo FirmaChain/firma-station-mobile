@@ -202,14 +202,14 @@ const styles = StyleSheet.create({
         flexShrink: 1,
         fontFamily: Lato,
         fontSize: 24,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     },
     contentTitle: {
         flexShrink: 1,
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor,
         paddingVertical: 6
     },

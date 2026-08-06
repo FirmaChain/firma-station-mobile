@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     url: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextCatTitleColor
     }
 });

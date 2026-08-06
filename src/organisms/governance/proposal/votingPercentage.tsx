@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     percent: {
         fontFamily: Lato,
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor,
         paddingBottom: 6
     },

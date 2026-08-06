@@ -108,7 +108,7 @@ const TransactionConfirmModal = ({
         inlineStyle1: { display: openValidationModal ? 'none' : transactionStart ? 'none' : 'flex' },
         inlineStyle2: { justifyContent: 'flex-start', alignItems: 'center' },
         inlineStyle3: { borderBottomWidth: 1, borderBottomColor: BorderColor },
-        inlineStyle4: { color: WhiteColor, fontWeight: 'bold' },
+        inlineStyle4: { color: WhiteColor, fontWeight: '700' },
         inlineStyle5: { borderBottomWidth: memo !== '' ? 0 : 1, borderBottomColor: BorderColor },
         inlineStyle6: { fontSize: 14, color: TextDisableColor },
         inlineStyle7: {
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     receiptTitle: {
         fontFamily: Lato,
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextDarkGrayColor,
         paddingBottom: 20
     },
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     itemTitle: {
         fontFamily: Lato,
         color: TextCatTitleColor,
-        fontWeight: 'normal',
+        fontWeight: '400',
         fontSize: 16,
         paddingRight: 20
     },
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: Lato,
         color: WhiteColor,
-        fontWeight: 'normal',
+        fontWeight: '400',
         textAlign: 'right',
         fontSize: 16
     }

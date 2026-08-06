@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     },
     activeTabText: {
         color: TextColor,
-        fontWeight: 'bold'
+        fontWeight: '700'
     }
 });
 

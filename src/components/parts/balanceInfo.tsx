@@ -86,13 +86,13 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: Lato,
         fontSize: 18,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextCatTitleColor
     },
     balance: {
         fontSize: 20,
         fontFamily: Lato,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextColor
     }
 });

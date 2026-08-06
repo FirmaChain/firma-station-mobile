@@ -59,7 +59,7 @@ const BioAuthModal = (props: IProps) => {
 };
 
 const styles = StyleSheet.create({
-    inlineStyle1: { fontWeight: 'bold' },
+    inlineStyle1: { fontWeight: '700' },
     inlineStyle2: { marginBottom: 10 },
     modalTextContents: {
         width: '100%',

@@ -94,7 +94,7 @@ const RewardBox = ({ walletName, reward, transactionHandler }: IProps) => {
         inlineStyle1: { color: TextStakingReward, marginBottom: 6 },
         inlineStyle2: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-end' },
         inlineStyle3: { fontSize: rewardTextSize },
-        inlineStyle4: { fontSize: 14, fontWeight: 'normal' }
+        inlineStyle4: { fontSize: 14, fontWeight: '400' }
     } as const;
 
     return (

@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextCatTitleColor
     },
     balance: {
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     chainName: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         textAlign: 'center',
         color: TextDarkGrayColor
     },

@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     },
     status: {
         fontFamily: Lato,
-        fontWeight: 'bold',
+        fontWeight: '700',
         fontSize: 11,
         borderRadius: 10,
         textAlign: 'center',
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextColor
     },
     period: {

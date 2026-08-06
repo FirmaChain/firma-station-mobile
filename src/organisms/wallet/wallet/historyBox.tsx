@@ -174,13 +174,13 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextCatTitleColor
     },
     contentItem: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextColor,
         marginTop: 6,
         paddingVertical: 5
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     contentTitle: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextDarkGrayColor
     }
 });

@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     dividerText: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextGrayColor,
         paddingHorizontal: 18
     }

@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     contentTitle: {
         fontFamily: Lato,
         fontSize: 14,
-        fontWeight: 'normal',
+        fontWeight: '400',
         color: TextDarkGrayColor
     }
 });

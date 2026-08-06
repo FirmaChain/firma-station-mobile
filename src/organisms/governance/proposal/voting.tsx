@@ -137,7 +137,7 @@ const Voting = ({ isVotingPeriod, proposalId, transactionHandler }: IProps) => {
                                 },
                                 inlineStyle2: {
                                     color: selectedVote === item ? WhiteColor : TextDarkGrayColor,
-                                    fontWeight: selectedVote === item ? '600' : 'normal'
+                                    fontWeight: selectedVote === item ? '600' : '400'
                                 }
                             } as const;
 
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: Lato,
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '700',
         color: TextDarkGrayColor
     },
     box: {
