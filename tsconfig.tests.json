@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["declarations.d.ts", "tests/**/*.ts", "tests/**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"],
+  "compilerOptions": {
+    "types": ["node", "react", "react-native"]
+  }
+}

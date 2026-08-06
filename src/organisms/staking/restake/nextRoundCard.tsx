@@ -29,7 +29,7 @@ const NextRoundCard = ({ grantState, minimumRewards, nextRound, nextRoundTime, h
     const [nextRoundDateTime, setNextRoundTime] = useState('00:00:00');
 
     useEffect(() => {
-        let timerId: number;
+        let timerId: NodeJS.Timeout;
         let refreshTimer = 0;
         if (nextRoundTime !== '') {
             const handleProgress = () => {
