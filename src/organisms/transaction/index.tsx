@@ -310,8 +310,18 @@ const Transaction = ({ state }: IProps) => {
     }, [recoverValueType, mnemonic, privateKey]);
 
     useEffect(() => {
-        transaction();
-    }, [mnemonic, privateKey]);
+        let secondFrameId: number | undefined;
+        const firstFrameId = requestAnimationFrame(() => {
+            secondFrameId = requestAnimationFrame(() => {
+                void transaction();
+            });
+        });
+
+        return () => {
+            cancelAnimationFrame(firstFrameId);
+            if (secondFrameId !== undefined) cancelAnimationFrame(secondFrameId);
+        };
+    }, [transaction]);
 
     const handleMoveToWeb = (uri: string) => {
         navigation.navigate(Screens.WebScreen, { uri: uri });

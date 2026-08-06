@@ -86,6 +86,7 @@ const ProgressTransaction = () => {
                     <View style={styles.counterWrapper}>
                         <AnimatedTextInput
                             animatedProps={timerAnimatedProps}
+                            defaultValue="00 : 00"
                             editable={false}
                             caretHidden
                             contextMenuHidden
