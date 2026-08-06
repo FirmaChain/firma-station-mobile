@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
         backgroundColor: BgColor
     },
     content: {
-        paddingTop: 32
+        paddingTop: 16
     }
 });
 

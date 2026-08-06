@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         paddingHorizontal: 20,
-        paddingBottom: 18
+        // paddingBottom: 18
     },
     title: {
         fontFamily: Lato,

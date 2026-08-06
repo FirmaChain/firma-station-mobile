@@ -147,11 +147,11 @@ const Dapps = () => {
 };
 
 const styles = StyleSheet.create({
-    inlineStyle1: { flexGrow: 1 },
+    inlineStyle1: { flexGrow: 1, paddingTop: 16 },
     container: {
         flex: 1,
         width: '100%',
-        paddingTop: 32,
+
         backgroundColor: BgColor
     },
     box: {

@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     },
     box: {
         paddingHorizontal: 20,
-        paddingVertical: 15,
+        paddingVertical: 16,
         backgroundColor: BgColor
     }
 });

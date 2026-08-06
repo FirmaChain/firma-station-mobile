@@ -42,7 +42,7 @@ const DescriptionBox = ({ validator }: IProps) => {
     };
 
     const inlineStyles1 = {
-        inlineStyle1: { backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 10 },
+        inlineStyle1: { backgroundColor: BoxColor, paddingHorizontal: 20, paddingTop: 16 },
         inlineStyle2: { flex: 1 },
         inlineStyle3: { paddingBottom: MonikerPaddingBottom }
     } as const;
