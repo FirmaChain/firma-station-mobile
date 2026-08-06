@@ -46,11 +46,10 @@
 		<string>ChakraPetch-Medium.ttf</string>
 		<string>ChakraPetch-Regular.ttf</string>
 		<string>ChakraPetch-SemiBold.ttf</string>
-		<string>Lato-Black.ttf</string>
 		<string>Lato-Bold.ttf</string>
-		<string>Lato-Light.ttf</string>
+		<string>Lato-Medium.ttf</string>
 		<string>Lato-Regular.ttf</string>
-		<string>Lato-Thin.ttf</string>
+		<string>Lato-SemiBold.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
