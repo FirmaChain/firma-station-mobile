@@ -62,6 +62,8 @@ react {
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
 def enableProguardInReleaseBuilds = true
+def fontSourceDir = rootProject.file('../src/assets/fonts')
+def generatedFontResourcesDir = layout.buildDirectory.dir('generated/shared-font-res')
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -97,6 +99,11 @@ android {
         versionCode 51
         versionName "1.0.32"
     }
+    sourceSets {
+        main {
+            res.srcDir(generatedFontResourcesDir)
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -128,6 +135,24 @@ android {
             }
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+    }
+}
+
+tasks.register('copySharedFonts', Sync) {
+    from(fontSourceDir)
+    include('Lato-*.ttf', 'ChakraPetch-*.ttf')
+    rename { fileName ->
+        fileName
+            .replaceAll(/([a-z0-9])([A-Z])/, '$1_$2')
+            .replace('-', '_')
+            .toLowerCase()
+    }
+    into(generatedFontResourcesDir.map { it.dir('font') })
+}
+
+tasks.configureEach { task ->
+    if (task.name.toLowerCase().contains('resource') || task.name.endsWith('SourceSetPaths')) {
+        task.dependsOn('copySharedFonts')
     }
 }
 
