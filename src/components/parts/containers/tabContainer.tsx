@@ -46,6 +46,7 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
                         </TouchableOpacity>
                     )}
                 </View>
+                {network !== 'MainNet' && <NetworkBadge title={network} />}
 
                 <View style={[styles.boxH, styles.inlineStyle3]}>
                     <TouchableOpacity hitSlop={{ top: 5, bottom: 5, left: 10, right: 10 }} onPress={() => handleQRScanner(true)}>
@@ -60,7 +61,6 @@ const TabContainer = ({ title, settingNavEvent, historyNavEvent, handleGuide, ch
                         <Setting size={30} color={WhiteColor} />
                     </TouchableOpacity>
                 </View>
-                {network !== 'MainNet' && <NetworkBadge top={-20} title={network} />}
             </View>
             {children}
         </View>

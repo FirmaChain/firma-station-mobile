@@ -65,7 +65,7 @@ const Welcome = () => {
     return (
         <ViewContainer bgColor={BgColor}>
             <View style={styles.viewContainer}>
-                <View style={styles.network}>{network !== 'MainNet' && <NetworkBadge top={-5} title={network} />}</View>
+                <View style={styles.network}>{network !== 'MainNet' && <NetworkBadge title={network} />}</View>
                 <Description title={Title} desc={Desc} />
                 <View style={styles.buttonBox}>
                     {walletExist && (

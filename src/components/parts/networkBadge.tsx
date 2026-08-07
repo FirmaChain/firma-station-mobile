@@ -1,40 +1,26 @@
-import { FailedColor, Lato, TextColor } from '@/constants/theme';
-import { StyleSheet, Text, View } from 'react-native';
+import { FailedColor, RestakeActiveColor } from '@/constants/theme';
+import { StyleSheet, View } from 'react-native';
 
 interface IProps {
-    top: number;
     title: string;
 }
 
-const NetworkBadge = ({ top, title }: IProps) => {
+const NetworkBadge = ({ title }: IProps) => {
     const inlineStyles1 = {
-        inlineStyle1: { top: top }
+        inlineStyle1: { backgroundColor: title === 'TestNet' ? FailedColor : RestakeActiveColor }
     } as const;
 
-    return (
-        <View style={[styles.container, inlineStyles1.inlineStyle1]}>
-            <Text style={styles.badge}>{title}</Text>
-        </View>
-    );
+    return <View style={[styles.dot, inlineStyles1.inlineStyle1]} pointerEvents="none" accessibilityLabel={`${title} network`} />;
 };
 
 const styles = StyleSheet.create({
-    container: {
+    dot: {
         position: 'absolute',
-        paddingHorizontal: 20,
-        width: '100%',
-        alignItems: 'flex-end'
-    },
-    badge: {
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 4,
-        overflow: 'hidden',
-        backgroundColor: FailedColor,
-        color: TextColor,
-        fontFamily: Lato,
-        fontWeight: '700',
-        fontSize: 12
+        top: 8,
+        right: 8,
+        width: 8,
+        height: 8,
+        borderRadius: 4
     }
 });
 

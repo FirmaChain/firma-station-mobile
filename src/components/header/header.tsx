@@ -37,7 +37,7 @@ const Header = ({ step, bgColor = BoxDarkColor, onPressEvent }: IProps) => {
                     </View>
                 </View>
             ) : (
-                network !== 'MainNet' && <NetworkBadge top={-5} title={network} />
+                network !== 'MainNet' && <NetworkBadge title={network} />
             )}
         </Pressable>
     );
