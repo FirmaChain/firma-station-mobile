@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GUIDE_URI } from '@/../config';
-import { DATA_RELOAD_INTERVAL, MAXIMUM_UNDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE } from '@/constants/common';
+import { MAXIMUM_UNDELEGATE_NOTICE_TEXT, TRANSACTION_TYPE } from '@/constants/common';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { CommonActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
@@ -13,11 +13,12 @@ import {
     getFeesFromGas,
     getFirmaConfig
 } from '@/util/firma';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 
-import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import type { RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import { useScreenRefreshPolling } from '@/hooks/common/useScreenRefreshPolling';
 import { useDelegationData } from '@/hooks/staking/hooks';
 import Button from '@/components/button/button';
 import AlertModal from '@/components/modal/alertModal';
@@ -59,10 +60,8 @@ interface IRedelegateTransactionPlan {
 
 const Delegate = ({ type, operatorAddress }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const isFocused = useIsFocused();
 
     const { name: walletName } = useAppSelector((state) => state.wallet);
-    const { appState, isNetworkChanged } = useAppSelector((state) => state.common);
 
     const {
         delegationState,
@@ -268,11 +267,6 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         navigation.navigate(Screens.Transaction, { state: transactionState });
     };
 
-    const isPollingEligible = useCallback(
-        () => isFocused && appState === 'active' && !isNetworkChanged,
-        [appState, isFocused, isNetworkChanged]
-    );
-
     const refreshStates = useCallback(
         async (lifecycle: RefreshLifecycle) => {
             const [currentDelegationList] = await Promise.all([
@@ -285,18 +279,12 @@ const Delegate = ({ type, operatorAddress }: IProps) => {
         [handleDelegationState, handleStakingGrantActivationState, handleTotalDelegationPolling]
     );
 
-    useRefreshPolling({
+    useScreenRefreshPolling({
         refresh: refreshStates,
         commit: (_value, lifecycle) => {
             if (!lifecycle.isValid()) return;
             setResetRedelegateValues(false);
             setInputResetValues(false);
-        },
-        isEligible: isPollingEligible,
-        delay: DATA_RELOAD_INTERVAL,
-        retryLimit: 3,
-        onError: (error) => {
-            console.error(error);
         }
     });
 

@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { DATA_RELOAD_INTERVAL, TRANSACTION_TYPE } from '@/constants/common';
+import { TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor, BoxColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet, View } from 'react-native';
 
-import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import type { RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import { useScreenRefreshPolling } from '@/hooks/common/useScreenRefreshPolling';
 import { useDelegationData, useStakingData } from '@/hooks/staking/hooks';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
 
@@ -20,11 +21,10 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Staking>
 
 const Staking = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const isFocused = useIsFocused();
-
     const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
     const { stakingReward: stakingRewardState } = useAppSelector((state) => state.staking);
-    const { isNetworkChanged, connect, appState } = useAppSelector((state) => state.common);
+    const isNetworkChanged = useAppSelector((state) => state.common.isNetworkChanged);
+    const connect = useAppSelector((state) => state.common.connect);
 
     const { stakingState, getStakingState } = useStakingData();
     const { stakingGrantActivation, handleStakingGrantActivationState } = useDelegationData();
@@ -67,11 +67,6 @@ const Staking = () => {
         [isListRefresh]
     );
 
-    const isPollingEligible = useCallback(
-        () => isFocused && appState === 'active' && !isNetworkChanged,
-        [appState, isFocused, isNetworkChanged]
-    );
-
     const refreshStates = useCallback(
         async (lifecycle: RefreshLifecycle) => {
             await Promise.all([getStakingState(lifecycle), handleStakingGrantActivationState(lifecycle)]);
@@ -79,17 +74,11 @@ const Staking = () => {
         [getStakingState, handleStakingGrantActivationState]
     );
 
-    const refreshNow = useRefreshPolling({
+    const refreshNow = useScreenRefreshPolling({
         refresh: refreshStates,
         commit: (_value, lifecycle) => {
             if (!lifecycle.isValid()) return;
             handleIsRefresh(true);
-        },
-        isEligible: isPollingEligible,
-        delay: DATA_RELOAD_INTERVAL,
-        retryLimit: 3,
-        onError: (error) => {
-            console.error(error);
         }
     });
 

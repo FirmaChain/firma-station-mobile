@@ -25,6 +25,7 @@ const readSource = (path: string): string => readFileSync(resolve(process.cwd(),
 const governanceSource = readSource('src/organisms/governance/governance/index.tsx');
 const proposalSource = readSource('src/organisms/governance/proposal/index.tsx');
 const hooksSource = readSource('src/hooks/governance/hooks.tsx');
+const pollingHookSource = readSource('src/hooks/common/useScreenRefreshPolling.ts');
 
 describe('governance polling owners', () => {
     it.each([
@@ -32,10 +33,10 @@ describe('governance polling owners', () => {
         ['Proposal', proposalSource]
     ])('routes %s through one completion-scheduled polling owner', (_name, source) => {
         // Given
-        const pollingImport = /import \{ useRefreshPolling, type RefreshLifecycle \} from '@\/hooks\/common\/useRefreshPolling';/;
+        const pollingImport = /import \{ useScreenRefreshPolling \} from '@\/hooks\/common\/useScreenRefreshPolling';/;
 
         // When
-        const pollingOwners = source.match(/useRefreshPolling\(\{/g) ?? [];
+        const pollingOwners = source.match(/useScreenRefreshPolling\(\{/g) ?? [];
 
         // Then
         expect(pollingImport.test(source)).toBe(true);
@@ -46,11 +47,13 @@ describe('governance polling owners', () => {
 
     it('preserves each existing eligibility boundary', () => {
         // Given
-        const governanceEligibility = /isFocused\s*&&\s*appState === 'active'\s*&&\s*!isNetworkChanged/;
-        const proposalEligibility = /isFocused\s*&&\s*appState === 'active'/;
+        const eligibility = /isFocused\s*&&\s*appState === 'active'\s*&&\s*\(!requireStableNetwork \|\| !isNetworkChanged\)/;
 
         // When
-        const eligibilityIsPreserved = governanceEligibility.test(governanceSource) && proposalEligibility.test(proposalSource);
+        const eligibilityIsPreserved =
+            eligibility.test(pollingHookSource) &&
+            !governanceSource.includes('requireStableNetwork: false') &&
+            proposalSource.includes('requireStableNetwork: false');
 
         // Then
         expect(eligibilityIsPreserved).toBe(true);
@@ -75,7 +78,7 @@ describe('governance polling owners', () => {
 
         // When
         const ownersPassLifecycle =
-            governanceSource.includes('handleGovernanceListPolling(lifecycle)') &&
+            hooksSource.includes('handleGovernanceListPolling = async (lifecycle?: RefreshLifecycle)') &&
             proposalSource.includes('handleProposalPolling(proposalId, lifecycle)');
 
         // Then

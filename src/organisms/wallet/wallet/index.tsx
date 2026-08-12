@@ -1,16 +1,16 @@
 import React, { useCallback, useMemo } from 'react';
-import { DATA_RELOAD_INTERVAL } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { useIBCTokenContext } from '@/context/ibcTokenContext';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
 import { getTokenList } from '@/util/firma';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import type { RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import { useScreenRefreshPolling } from '@/hooks/common/useScreenRefreshPolling';
 import { useStakingData } from '@/hooks/staking/hooks';
 import { useHistoryData } from '@/hooks/wallet/hooks';
 import RefreshScrollView from '@/components/parts/refreshScrollView';
@@ -37,11 +37,10 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Wallet>;
 
 const Wallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const isFocused = useIsFocused();
-
-    const { address: walletAddress } = useAppSelector((state) => state.wallet);
-    const { appState, isNetworkChanged, connect } = useAppSelector((state) => state.common);
-    const { historyVolume: storageHistoryVolume } = useAppSelector((state) => state.storage);
+    const walletAddress = useAppSelector((state) => state.wallet.address);
+    const isNetworkChanged = useAppSelector((state) => state.common.isNetworkChanged);
+    const connect = useAppSelector((state) => state.common.connect);
+    const storageHistoryVolume = useAppSelector((state) => state.storage.historyVolume);
 
     const { recentHistory, handleHisotyPolling } = useHistoryData();
     const { stakingState, getStakingState } = useStakingData();
@@ -91,11 +90,6 @@ const Wallet = () => {
         [walletAddress]
     );
 
-    const isPollingEligible = useCallback(
-        () => isFocused && appState === 'active' && !isNetworkChanged,
-        [appState, isFocused, isNetworkChanged]
-    );
-
     const refreshStates = useCallback(
         async (lifecycle: RefreshLifecycle) => {
             const [stakingResult, historyResult, tokenResult] = await Promise.allSettled([
@@ -111,18 +105,12 @@ const Wallet = () => {
         [getIBCTokenList, getStakingState, handleHisotyPolling]
     );
 
-    const refreshNow = useRefreshPolling({
+    const refreshNow = useScreenRefreshPolling({
         refresh: refreshStates,
         commit: (tokenList, lifecycle) => {
             if (!lifecycle.isValid()) return;
             setTokenList(tokenList);
             setIbcTokenConfig(IBC_CONFIG);
-        },
-        isEligible: isPollingEligible,
-        delay: DATA_RELOAD_INTERVAL,
-        retryLimit: 3,
-        onError: (error) => {
-            console.error(error);
         }
     });
 

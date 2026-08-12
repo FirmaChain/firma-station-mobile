@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { DATA_RELOAD_INTERVAL, PROPOSAL_NOT_REGISTERED } from '@/constants/common';
+import { PROPOSAL_NOT_REGISTERED } from '@/constants/common';
 import { BgColor, TextDarkGrayColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
-import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import { useScreenRefreshPolling } from '@/hooks/common/useScreenRefreshPolling';
 import { IProposalItemState, useGovernanceList } from '@/hooks/governance/hooks';
 import ProposalSkeleton from '@/components/skeleton/proposalSkeleton';
 
@@ -17,10 +17,9 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.Governan
 
 const Governance = () => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const isFocused = useIsFocused();
-
-    const { isNetworkChanged, connect, appState } = useAppSelector((state) => state.common);
-    const { contentVolume } = useAppSelector((state) => state.storage);
+    const isNetworkChanged = useAppSelector((state) => state.common.isNetworkChanged);
+    const connect = useAppSelector((state) => state.common.connect);
+    const contentVolume = useAppSelector((state) => state.storage.contentVolume);
 
     const { governanceState, handleGovernanceListPolling } = useGovernanceList();
     const [refreshing, setRefreshing] = useState(false);
@@ -37,29 +36,8 @@ const Governance = () => {
         [navigation]
     );
 
-    const isPollingEligible = useCallback(
-        () => isFocused && appState === 'active' && !isNetworkChanged,
-        [appState, isFocused, isNetworkChanged]
-    );
-
-    const refreshStates = useCallback(
-        async (lifecycle: RefreshLifecycle) => {
-            await handleGovernanceListPolling(lifecycle);
-        },
-        [handleGovernanceListPolling]
-    );
-
-    const refreshNow = useRefreshPolling({
-        refresh: refreshStates,
-        commit: (_value, lifecycle) => {
-            if (!lifecycle.isValid()) return;
-        },
-        isEligible: isPollingEligible,
-        delay: DATA_RELOAD_INTERVAL,
-        retryLimit: 3,
-        onError: (error) => {
-            console.error(error);
-        }
+    const refreshNow = useScreenRefreshPolling({
+        refresh: handleGovernanceListPolling
     });
 
     const onRefresh = useCallback(async () => {

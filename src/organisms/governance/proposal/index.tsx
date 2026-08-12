@@ -1,14 +1,14 @@
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { GUIDE_URI } from '@/../config';
-import { DATA_RELOAD_INTERVAL, EXPLORER_URL, PROPOSAL_STATUS_VOTING_PERIOD, TRANSACTION_TYPE } from '@/constants/common';
+import { EXPLORER_URL, PROPOSAL_STATUS_VOTING_PERIOD, TRANSACTION_TYPE } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { useAppSelector } from '@/redux/hooks';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking } from 'react-native';
 
-import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import { useScreenRefreshPolling } from '@/hooks/common/useScreenRefreshPolling';
 import { useProposalData } from '@/hooks/governance/hooks';
 import Container from '@/components/parts/containers/conatainer';
 import ViewContainer from '@/components/parts/containers/viewContainer';
@@ -27,10 +27,7 @@ interface IProps {
 
 const Proposal = ({ proposalId }: IProps) => {
     const navigation: ScreenNavgationProps = useNavigation();
-    const isFocused = useIsFocused();
-
-    const { address: walletAddress } = useAppSelector((state) => state.wallet);
-    const { appState } = useAppSelector((state) => state.common);
+    const walletAddress = useAppSelector((state) => state.wallet.address);
 
     const { proposalState, handleProposalPolling } = useProposalData();
 
@@ -70,26 +67,9 @@ const Proposal = ({ proposalId }: IProps) => {
         navigation.goBack();
     };
 
-    const isPollingEligible = useCallback(() => isFocused && appState === 'active', [appState, isFocused]);
-
-    const refreshStates = useCallback(
-        async (lifecycle: RefreshLifecycle) => {
-            await handleProposalPolling(proposalId, lifecycle);
-        },
-        [handleProposalPolling, proposalId]
-    );
-
-    const refreshNow = useRefreshPolling({
-        refresh: refreshStates,
-        commit: (_value, lifecycle) => {
-            if (!lifecycle.isValid()) return;
-        },
-        isEligible: isPollingEligible,
-        delay: DATA_RELOAD_INTERVAL,
-        retryLimit: 3,
-        onError: (error) => {
-            console.error(error);
-        }
+    const refreshNow = useScreenRefreshPolling({
+        refresh: (lifecycle) => handleProposalPolling(proposalId, lifecycle),
+        requireStableNetwork: false
     });
 
     return (

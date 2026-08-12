@@ -2,11 +2,11 @@ import React from 'react';
 import DocumentIcon from '@/assets/icons/material/document.svg';
 // import { ICON_DOCUMENT } from '@/constants/images';
 import { BoxDarkColor, GrayColor, Lato, WhiteColor } from '@/constants/theme';
+import Dapps from '@/organisms/dapps';
+import Governance from '@/organisms/governance/governance';
+import Staking from '@/organisms/staking/staking';
+import Wallet from '@/organisms/wallet/wallet';
 import { CommonActions } from '@/redux/actions';
-import DappsScreen from '@/screens/home/dapps/dapps';
-import GovernanceScreen from '@/screens/home/governance/governance';
-import StakingScreen from '@/screens/home/staking/staking';
-import WalletScreen from '@/screens/home/wallet/wallet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // import { Image } from 'react-native';
@@ -47,7 +47,7 @@ const TabNavigators = () => {
                     }
                 }}
             >
-                {() => <WalletScreen />}
+                {() => <Wallet />}
             </Tab.Screen>
             <Tab.Screen
                 name={'Staking'}
@@ -62,7 +62,7 @@ const TabNavigators = () => {
                     }
                 }}
             >
-                {() => <StakingScreen />}
+                {() => <Staking />}
             </Tab.Screen>
             <Tab.Screen
                 name={'Governance'}
@@ -77,7 +77,7 @@ const TabNavigators = () => {
                     }
                 }}
             >
-                {() => <GovernanceScreen />}
+                {() => <Governance />}
             </Tab.Screen>
             <Tab.Screen
                 name={'Dapps'}
@@ -92,7 +92,7 @@ const TabNavigators = () => {
                     }
                 }}
             >
-                {() => <DappsScreen />}
+                {() => <Dapps />}
             </Tab.Screen>
         </Tab.Navigator>
     );

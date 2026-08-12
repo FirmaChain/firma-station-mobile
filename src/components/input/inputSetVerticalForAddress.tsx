@@ -1,15 +1,6 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IBC_OSMO_ADDRESS_INVALID_TEXT, WRONG_TARGET_ADDRESS_WARN_TEXT } from '@/constants/common';
-import {
-    InputBgColor,
-    InputPlaceholderColor,
-    Lato,
-    TextCatTitleColor,
-    TextColor,
-    TextGrayColor,
-    TextWarnColor,
-    WhiteColor
-} from '@/constants/theme';
+import { InputPlaceholderColor, TextWarnColor, WhiteColor } from '@/constants/theme';
 import { SendType } from '@/organisms/wallet/common/senTypeSelector';
 import { ModalActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
@@ -17,11 +8,12 @@ import { easeInAndOutCustomAnim } from '@/util/animation';
 import { addressCheck } from '@/util/firma';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useIsFocused } from '@react-navigation/native';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import TextButton from '../button/textButton';
 import { FavoriteIcon, QRCodeScannerIcon } from '../icon/icon';
+import VerticalInputField from './verticalInputField';
 
 interface IProps {
     title: string;
@@ -43,13 +35,14 @@ const InputSetVerticalForAddress = ({
     placeholder,
     secure = false,
     resetValues = false,
-    enableFavorite: enableFavorite = true,
+    enableFavorite = true,
     enableQrScanner = true,
     onChangeEvent,
     type = 'SEND_TOKEN'
 }: IProps) => {
-    const { loading: isLoading, appState } = useAppSelector((state) => state.common);
-    const { modalData, qrScannerModal } = useAppSelector((state) => state.modal);
+    const appState = useAppSelector((state) => state.common.appState);
+    const modalData = useAppSelector((state) => state.modal.modalData);
+    const qrScannerModal = useAppSelector((state) => state.modal.qrScannerModal);
     // Camera permission prompt can briefly move appState to inactive/background.
     // Ignore only the first transition right after opening QR to avoid immediate close.
     const ignoreNextInactiveRef = useRef(false);
@@ -57,7 +50,6 @@ const InputSetVerticalForAddress = ({
 
     const isFocused = useIsFocused();
 
-    const [focus, setFocus] = useState(false);
     const [val, setVal] = useState(value);
     const [validAddress, setValidAddress] = useState(true);
 
@@ -90,9 +82,9 @@ const InputSetVerticalForAddress = ({
         ModalActions.handleQRScannerModal(active);
     };
 
-    const handleInputChange = (value: string) => {
-        setVal(value);
-        onChangeEvent(value);
+    const handleInputChange = (nextValue: string) => {
+        setVal(nextValue);
+        onChangeEvent(nextValue);
     };
 
     const handlePaste = async () => {
@@ -145,78 +137,53 @@ const InputSetVerticalForAddress = ({
         if (resetValues) handleInputChange('');
     }, [resetValues]);
 
-    const inlineStyles1 = {
-        inlineStyle1: { marginRight: 15, display: enableFavorite ? 'flex' : 'none' },
-        inlineStyle2: { marginRight: 15, display: enableQrScanner ? 'flex' : 'none' },
-        inlineStyle3: { borderColor: focus ? WhiteColor : 'transparent', color: TextColor },
-        inlineStyle4: { maxHeight: validAddress ? 0 : 20 }
+    const inlineStyles = {
+        messageContainer: { height: validAddress ? 0 : 20 },
+        message: { maxHeight: validAddress ? 0 : 20 },
+        favorite: { display: enableFavorite ? 'flex' : 'none' },
+        qrScanner: { display: enableQrScanner ? 'flex' : 'none' }
     } as const;
 
     return (
-        <Fragment>
-            <View style={styles.viewContainer}>
-                <View style={styles.textContainer}>
-                    <Text style={styles.text}>{title}</Text>
-                    <TouchableOpacity style={inlineStyles1.inlineStyle1} onPress={() => setOpenFavoritekModal(true)}>
+        <VerticalInputField
+            title={title}
+            value={val}
+            placeholder={placeholder}
+            placeholderTextColor={InputPlaceholderColor}
+            secureTextEntry={secure}
+            keyboardType={numberOnly ? 'numeric' : 'default'}
+            inputStyle={styles.input}
+            containerStyle={styles.container}
+            message={IBC_OSMO_ADDRESS_INVALID_TEXT}
+            messageColor={TextWarnColor}
+            messageContainerStyle={inlineStyles.messageContainer}
+            messageStyle={inlineStyles.message}
+            rightContent={
+                <>
+                    <TouchableOpacity style={[styles.action, inlineStyles.favorite]} onPress={() => setOpenFavoritekModal(true)}>
                         <FavoriteIcon size={28} color={WhiteColor} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={inlineStyles1.inlineStyle2} onPress={() => handleQRModal(true)}>
+                    <TouchableOpacity style={[styles.action, inlineStyles.qrScanner]} onPress={() => handleQRModal(true)}>
                         <QRCodeScannerIcon size={25} color={WhiteColor} />
                     </TouchableOpacity>
-                    <TextButton title={'Paste'} onPressEvent={handlePaste} />
-                </View>
-                <TextInput
-                    style={[styles.input, inlineStyles1.inlineStyle3]}
-                    placeholder={placeholder}
-                    placeholderTextColor={InputPlaceholderColor}
-                    secureTextEntry={secure}
-                    keyboardType={numberOnly ? 'numeric' : 'default'}
-                    autoCapitalize="none"
-                    value={val}
-                    selectionColor={TextGrayColor}
-                    onFocus={() => setFocus(true)}
-                    onBlur={() => setFocus(false)}
-                    onChangeText={(text) => handleInputChange(text)}
-                    editable={!isLoading} // block edit or focus when loading
-                />
-                <Text style={[styles.noticeText, inlineStyles1.inlineStyle4]}>{IBC_OSMO_ADDRESS_INVALID_TEXT}</Text>
-            </View>
-        </Fragment>
+                    <TextButton title="Paste" onPressEvent={handlePaste} />
+                </>
+            }
+            onChangeEvent={handleInputChange}
+        />
     );
 };
 
 const styles = StyleSheet.create({
-    viewContainer: {
-        marginBottom: 8
+    container: {
+        marginBottom: 8,
+        paddingBottom: 0
     },
-    textContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexDirection: 'row',
-        marginBottom: 8
-    },
-    text: {
-        flex: 1,
-        fontFamily: Lato,
-        fontSize: 16,
-        color: TextCatTitleColor
+    action: {
+        marginRight: 15
     },
     input: {
-        color: TextColor,
-        padding: 12,
-        borderWidth: 1,
-        backgroundColor: InputBgColor,
-        marginBottom: 5,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
-    noticeText: {
-        fontFamily: Lato,
-        fontSize: 14,
-        color: TextWarnColor,
-        overflow: 'hidden'
+        padding: 12
     }
 });
 

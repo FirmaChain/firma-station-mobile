@@ -1,15 +1,16 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { DATA_RELOAD_INTERVAL, IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from '@/constants/common';
+import { IKeyValue, TRANSACTION_TYPE, TYPE_COLORS } from '@/constants/common';
 import { BgColor, BoxColor, FailedColor, Lato } from '@/constants/theme';
 import { Screens, StackParamList } from '@/navigators/appRoutes';
 import { StakingActions } from '@/redux/actions';
 import { useAppSelector } from '@/redux/hooks';
 import { getStakingFromvalidator } from '@/util/firma';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useRefreshPolling, type RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import type { RefreshLifecycle } from '@/hooks/common/useRefreshPolling';
+import { useScreenRefreshEligibility, useScreenRefreshPolling } from '@/hooks/common/useScreenRefreshPolling';
 import {
     IStakingState,
     IValidatorData,
@@ -34,9 +35,7 @@ interface IProps {
 }
 
 const Validator = ({ validatorAddress }: IProps) => {
-    const isFocused = useIsFocused();
     const { name: walletName, address: walletAddress } = useAppSelector((state) => state.wallet);
-    const { appState, isNetworkChanged } = useAppSelector((state) => state.common);
 
     const navigation: ScreenNavgationProps = useNavigation();
 
@@ -133,10 +132,7 @@ const Validator = ({ validatorAddress }: IProps) => {
         });
     };
 
-    const isPollingEligible = useCallback(
-        () => isFocused && appState === 'active' && !isNetworkChanged,
-        [appState, isFocused, isNetworkChanged]
-    );
+    const isPollingEligible = useScreenRefreshEligibility();
 
     const refreshStates = useCallback(
         async (lifecycle: RefreshLifecycle) => {
@@ -145,17 +141,8 @@ const Validator = ({ validatorAddress }: IProps) => {
         [handleTotalDelegationPolling, handleValidatorPolling, validatorAddress, walletAddress]
     );
 
-    const refreshNow = useRefreshPolling({
-        refresh: refreshStates,
-        commit: (_value, lifecycle) => {
-            if (!lifecycle.isValid()) return;
-        },
-        isEligible: isPollingEligible,
-        delay: DATA_RELOAD_INTERVAL,
-        retryLimit: 3,
-        onError: (error) => {
-            console.error(error);
-        }
+    const refreshNow = useScreenRefreshPolling({
+        refresh: refreshStates
     });
 
     const handleMoveToWeb = (uri: string) => {

@@ -29,6 +29,7 @@ const stakingSource = readSource('src/organisms/staking/staking/index.tsx');
 const delegateSource = readSource('src/organisms/staking/delegate/index.tsx');
 const validatorSource = readSource('src/organisms/staking/validator/index.tsx');
 const stakingHooksSource = readSource('src/hooks/staking/hooks.tsx');
+const pollingHookSource = readSource('src/hooks/common/useScreenRefreshPolling.ts');
 
 describe('staking polling owners', () => {
     it.each([
@@ -37,10 +38,10 @@ describe('staking polling owners', () => {
         ['Validator', validatorSource]
     ])('routes the %s aggregate refresh through the completion-scheduled lifecycle', (_name, source) => {
         // Given
-        const pollingImport = /import \{ useRefreshPolling, type RefreshLifecycle \} from '@\/hooks\/common\/useRefreshPolling';/;
+        const pollingImport = /import \{[^}]*useScreenRefreshPolling[^}]*\} from '@\/hooks\/common\/useScreenRefreshPolling';/;
 
         // When
-        const usesCompletionScheduling = pollingImport.test(source) && source.includes('useRefreshPolling({');
+        const usesCompletionScheduling = pollingImport.test(source) && source.includes('useScreenRefreshPolling({');
 
         // Then
         expect(usesCompletionScheduling).toBe(true);
@@ -51,12 +52,12 @@ describe('staking polling owners', () => {
         ['Staking', stakingSource],
         ['Delegate', delegateSource],
         ['Validator', validatorSource]
-    ])('makes %s eligible only while focused, active, and on the current network', (_name, source) => {
+    ])('makes %s eligible only while focused, active, and on the current network', () => {
         // Given
-        const eligibilityExpression = /isFocused\s*&&\s*appState === 'active'\s*&&\s*!isNetworkChanged/;
+        const eligibilityExpression = /isFocused\s*&&\s*appState === 'active'\s*&&\s*\(!requireStableNetwork \|\| !isNetworkChanged\)/;
 
         // When
-        const eligibilityIsComplete = eligibilityExpression.test(source);
+        const eligibilityIsComplete = eligibilityExpression.test(pollingHookSource);
 
         // Then
         expect(eligibilityIsComplete).toBe(true);
@@ -97,12 +98,7 @@ describe('staking polling owners', () => {
         const owners = [stakingSource, delegateSource, validatorSource];
 
         // When
-        const configuredOwners = owners.filter(
-            (source) =>
-                (source.match(/useRefreshPolling\(\{/g) ?? []).length === 1 &&
-                source.includes('delay: DATA_RELOAD_INTERVAL') &&
-                source.includes('retryLimit: 3')
-        );
+        const configuredOwners = owners.filter((source) => (source.match(/useScreenRefreshPolling\(\{/g) ?? []).length === 1);
 
         // Then
         expect(configuredOwners).toHaveLength(3);

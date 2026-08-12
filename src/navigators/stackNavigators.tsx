@@ -1,18 +1,24 @@
+import History from '@/organisms/history';
+import LoginCheck from '@/organisms/loginCheck';
+import ChangePassword from '@/organisms/setting/changePassword';
+import ChangeWalletName from '@/organisms/setting/changeWalletName';
+import Setting from '@/organisms/setting/setting';
+import Version from '@/organisms/setting/version';
+import Restake from '@/organisms/staking/restake';
+import Assets from '@/organisms/wallet/assets';
+import Send from '@/organisms/wallet/send';
+import Welcome from '@/organisms/welcome';
+import RecoverWallet from '@/organisms/welcome/recoverWallet';
+import SelectWallet from '@/organisms/welcome/selectWallet';
 import StepRecoverScreen from '@/screens/createWallet/stepRecover';
-import AssetsScreen from '@/screens/home/assets/assets';
 import CW721Screen from '@/screens/home/assets/cw721';
 import DappDetailScreen from '@/screens/home/dapps/dapp/dappDetail';
 import NFTScreen from '@/screens/home/dapps/nft/nft';
 import SendCW20Screen from '@/screens/home/dapps/sendCW20/sendCW20';
 import SendCW721Screen from '@/screens/home/dapps/sendCW721/sendCW721';
 import DepositScreen from '@/screens/home/governance/deposit';
-import HistoryScreen from '@/screens/home/history/history';
 import SendIBCScreen from '@/screens/home/wallet/sendIBC';
-import LoginCheckScreen from '@/screens/loginCheck';
-import ChangeWalletNameScreen from '@/screens/setting/changeWalletName';
-import VersionScreen from '@/screens/setting/version';
 import WebScreen from '@/screens/webScreen';
-import RecoverWalletScreen from '@/screens/welcome/recoverWallet';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import CreateStepOneScreen from '../screens/createWallet/stepOne';
@@ -21,15 +27,9 @@ import CreateStepTwoScreen from '../screens/createWallet/stepTwo';
 import ProposalScreen from '../screens/home/governance/proposal';
 import HomeScreen from '../screens/home/home';
 import DelegateScreen from '../screens/home/staking/delegate';
-import RestakeScreen from '../screens/home/staking/restake';
 import ValidatorScreen from '../screens/home/staking/validator';
-import SendScreen from '../screens/home/wallet/send';
-import ChangePasswordScreen from '../screens/setting/changePassword';
 import ExportWalletScreen from '../screens/setting/exportWallet';
-import SettingScreen from '../screens/setting/setting';
 import TransactionScreen from '../screens/transaction/transaction';
-import SelectWalletScreen from '../screens/welcome/selectWallet';
-import WelcomeScreen from '../screens/welcome/welcome';
 import { Screens, StackParamList } from './appRoutes';
 
 export const Stack = createStackNavigator<StackParamList>();
@@ -56,19 +56,19 @@ const StackNavigator = () => {
             }}
             initialRouteName={Screens.LoginCheck}
         >
-            <Stack.Screen options={{ headerShown: false }} name={Screens.LoginCheck} component={LoginCheckScreen} />
+            <Stack.Screen options={{ headerShown: false }} name={Screens.LoginCheck} component={LoginCheck} />
             <Stack.Screen options={{ headerShown: false }} name={Screens.WebScreen} component={WebScreen} />
 
             <Stack.Group>
-                <Stack.Screen options={{ headerShown: false, animation: 'none' }} name={Screens.Welcome} component={WelcomeScreen} />
-                <Stack.Screen options={{ headerShown: false }} name={Screens.SelectWallet} component={SelectWalletScreen} />
-                <Stack.Screen options={{ headerShown: false }} name={Screens.RecoverWallet} component={RecoverWalletScreen} />
+                <Stack.Screen options={{ headerShown: false, animation: 'none' }} name={Screens.Welcome} component={Welcome} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.SelectWallet} component={SelectWallet} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.RecoverWallet} component={RecoverWallet} />
             </Stack.Group>
 
             <Stack.Group>
                 <Stack.Screen options={{ headerShown: false, animation: 'none' }} name={Screens.Home} component={HomeScreen} />
 
-                <Stack.Screen options={{ headerShown: false }} name={Screens.History} component={HistoryScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.History} component={History} />
 
                 <Stack.Screen
                     options={{ headerShown: false, animation: 'none' }}
@@ -87,24 +87,24 @@ const StackNavigator = () => {
 
             {/* Setting */}
             <Stack.Group>
-                <Stack.Screen options={{ headerShown: false }} name={Screens.Setting} component={SettingScreen} />
-                <Stack.Screen options={{ headerShown: false }} name={Screens.ChangeWalletName} component={ChangeWalletNameScreen} />
-                <Stack.Screen options={{ headerShown: false }} name={Screens.ChangePassword} component={ChangePasswordScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.Setting} component={Setting} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.ChangeWalletName} component={ChangeWalletName} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.ChangePassword} component={ChangePassword} />
                 <Stack.Screen options={{ headerShown: false }} name={Screens.ExportWallet} component={ExportWalletScreen} />
-                <Stack.Screen options={{ headerShown: false }} name={Screens.Version} component={VersionScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.Version} component={Version} />
             </Stack.Group>
 
             <Stack.Group>
-                <Stack.Screen options={{ headerShown: false }} name={Screens.Send} component={SendScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.Send} component={Send} />
                 <Stack.Screen options={{ headerShown: false }} name={Screens.SendIBC} component={SendIBCScreen} />
-                <Stack.Screen options={{ headerShown: false }} name={Screens.Assets} component={AssetsScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.Assets} component={Assets} />
                 <Stack.Screen options={{ headerShown: false }} name={Screens.CW721} component={CW721Screen} />
             </Stack.Group>
 
             <Stack.Group>
                 <Stack.Screen options={{ headerShown: false }} name={Screens.Validator} component={ValidatorScreen} />
                 <Stack.Screen options={{ headerShown: false }} name={Screens.Delegate} component={DelegateScreen} />
-                <Stack.Screen options={{ headerShown: false }} name={Screens.Restake} component={RestakeScreen} />
+                <Stack.Screen options={{ headerShown: false }} name={Screens.Restake} component={Restake} />
             </Stack.Group>
 
             <Stack.Group>
