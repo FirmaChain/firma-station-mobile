@@ -1,4 +1,4 @@
-import { CHAIN_NETWORK, FIRMACHAIN_DEFAULT_CONFIG } from '@/../config';
+import { CHAIN_NETWORK } from '@/../config';
 import { TOKEN_DENOM } from '@/constants/common';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { FirmaSDK, FirmaUtil, ValidatorDataType } from '@firmachain/firma-js';
@@ -39,11 +39,7 @@ let firmaSDK: FirmaSDK;
 let restakeAddress: string;
 
 export const setFirmaSDK = (network: string) => {
-    if (network === 'MainNet') {
-        firmaSDK = new FirmaSDK(FIRMACHAIN_DEFAULT_CONFIG);
-    } else {
-        firmaSDK = new FirmaSDK(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG);
-    }
+    firmaSDK = new FirmaSDK(CHAIN_NETWORK[network].FIRMACHAIN_CONFIG);
     restakeAddress = CHAIN_NETWORK[network].RESTAKE_ADDRESS;
 };
 
