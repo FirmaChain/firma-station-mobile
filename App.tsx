@@ -13,7 +13,7 @@ export default function App() {
             <Provider store={store}>
                 <PersistGate persistor={persistor}>
                     <NotificationBootstrap>
-                        <StatusBar animated translucent barStyle="default" />
+                        <StatusBar animated barStyle="default" />
                         <Router />
                     </NotificationBootstrap>
                 </PersistGate>
