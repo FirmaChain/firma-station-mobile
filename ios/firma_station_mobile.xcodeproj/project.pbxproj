@@ -13,8 +13,6 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		761780F02CA45674006654EE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EF2CA45674006654EE /* SceneDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		A4366F97520442A7B6CF51CE /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA53BA3C53144C7C9844F063 /* BootSplash.storyboard */; };
-		AF95A8ABAF684862AADCEC0E /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF286EBBACC64E05BD68F7FC /* Colors.xcassets */; };
 		A00000000000000000000001 /* ChakraPetch-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000001 /* ChakraPetch-Bold.ttf */; };
 		A00000000000000000000002 /* ChakraPetch-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002 /* ChakraPetch-Light.ttf */; };
 		A00000000000000000000003 /* ChakraPetch-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000003 /* ChakraPetch-Medium.ttf */; };
@@ -25,6 +23,8 @@
 		A00000000000000000000008 /* Lato-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000008 /* Lato-Light.ttf */; };
 		A00000000000000000000009 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000009 /* Lato-Regular.ttf */; };
 		A0000000000000000000000A /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0000000000000000000000A /* Lato-Thin.ttf */; };
+		A4366F97520442A7B6CF51CE /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA53BA3C53144C7C9844F063 /* BootSplash.storyboard */; };
+		AF95A8ABAF684862AADCEC0E /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF286EBBACC64E05BD68F7FC /* Colors.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,10 +38,6 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = firma_station_mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A56EE56A010AF8288023ACEB /* libPods-firma_station_mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-firma_station_mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF286EBBACC64E05BD68F7FC /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = firma_station_mobile/Colors.xcassets; sourceTree = "<group>"; };
-		D8DDB57B76E052BA80EE9656 /* Pods-firma_station_mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile.debug.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile.debug.xcconfig"; sourceTree = "<group>"; };
-		EA53BA3C53144C7C9844F063 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = firma_station_mobile/BootSplash.storyboard; sourceTree = "<group>"; };
-		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FD7FD28D6A4756F8E5491AFE /* Pods-firma_station_mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile.release.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile.release.xcconfig"; sourceTree = "<group>"; };
 		B00000000000000000000001 /* ChakraPetch-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChakraPetch-Bold.ttf"; path = "../src/assets/fonts/ChakraPetch-Bold.ttf"; sourceTree = "<group>"; };
 		B00000000000000000000002 /* ChakraPetch-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChakraPetch-Light.ttf"; path = "../src/assets/fonts/ChakraPetch-Light.ttf"; sourceTree = "<group>"; };
 		B00000000000000000000003 /* ChakraPetch-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChakraPetch-Medium.ttf"; path = "../src/assets/fonts/ChakraPetch-Medium.ttf"; sourceTree = "<group>"; };
@@ -52,6 +48,10 @@
 		B00000000000000000000008 /* Lato-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Lato-Light.ttf"; path = "../src/assets/fonts/Lato-Light.ttf"; sourceTree = "<group>"; };
 		B00000000000000000000009 /* Lato-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Lato-Regular.ttf"; path = "../src/assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
 		B0000000000000000000000A /* Lato-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Lato-Thin.ttf"; path = "../src/assets/fonts/Lato-Thin.ttf"; sourceTree = "<group>"; };
+		D8DDB57B76E052BA80EE9656 /* Pods-firma_station_mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile.debug.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile.debug.xcconfig"; sourceTree = "<group>"; };
+		EA53BA3C53144C7C9844F063 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = firma_station_mobile/BootSplash.storyboard; sourceTree = "<group>"; };
+		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		FD7FD28D6A4756F8E5491AFE /* Pods-firma_station_mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firma_station_mobile.release.xcconfig"; path = "Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
