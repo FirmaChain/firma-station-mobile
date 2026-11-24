@@ -17,10 +17,7 @@ end
 node_require('react-native/scripts/react_native_pods.rb')
 node_require('react-native-permissions/scripts/setup.rb')
 
-# Disable VisionCamera CLLocation APIs to avoid iOS location privacy requirement.
-$VCEnableLocation = false
-
-platform :ios, min_ios_version_supported
+platform :ios, '15.5'
 prepare_react_native_project!
 
 # Add react-native-permissions
@@ -55,8 +52,6 @@ target 'firma_station_mobile' do
 
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |build_config|
-        build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
-
         if target.name == 'fmt'
           build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
 
@@ -69,12 +64,6 @@ target 'firma_station_mobile' do
         end
       end
     end
-    # Force set iOS target to min version.
-    # installer.pods_project.targets.each do |target|
-    #   target.build_configurations.each do |build_config|
-    #     build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
-    #   end
-    # end
     # Build only for the active arch. This line added to exclude armv7.
     # installer.pods_project.targets.each do |target|
     #   target.build_configurations.each do |config|
