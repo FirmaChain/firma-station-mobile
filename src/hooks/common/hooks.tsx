@@ -57,7 +57,7 @@ export const useChainVersion = () => {
         try {
             const info = await getChainInfo();
 
-            setChainVer(`v${info.appVersion}`);
+            setChainVer(info.appVersion);
             setSdkVer(info.cosmosVersion);
         } catch (error) {
             throw error;
