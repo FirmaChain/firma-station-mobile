@@ -163,6 +163,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				834CD23A4A39A8EBA73EA91D /* [CP] Embed Pods Frameworks */,
+				C4D5E6F708192A3B4C5D6E7F /* [Custom] Generate prebuilt framework dSYMs */,
 				ADBF91527D94E4830A9F72AD /* [CP] Copy Pods Resources */,
 				E1E2A0A62E7C4D4D8F1C2A11 /* [Custom] Copy GoogleService-Info.plist if present */,
 				80D10F3FBEDE63E4E22FEDD8 /* [CP-User] [RNFB] Core Configuration */,
@@ -319,6 +320,17 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-firma_station_mobile/Pods-firma_station_mobile-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C4D5E6F708192A3B4C5D6E7F /* [Custom] Generate prebuilt framework dSYMs */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "[Custom] Generate prebuilt framework dSYMs";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\nset -u\n\nif [ \"${CONFIGURATION:-}\" != \"Release\" ]; then\n  exit 0\nfi\n\nif [ -z \"${DWARF_DSYM_FOLDER_PATH:-}\" ] || [ -z \"${TARGET_BUILD_DIR:-}\" ]; then\n  echo \"warning: dSYM output path is unset, skipping prebuilt framework dSYMs\"\n  exit 0\nfi\n\nmkdir -p \"${DWARF_DSYM_FOLDER_PATH}\"\nFRAMEWORKS_DIR=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n\nfor NAME in React ReactNativeDependencies hermesvm; do\n  BINARY=\"${FRAMEWORKS_DIR}/${NAME}.framework/${NAME}\"\n  OUTPUT=\"${DWARF_DSYM_FOLDER_PATH}/${NAME}.framework.dSYM\"\n\n  if [ ! -f \"${BINARY}\" ]; then\n    echo \"warning: ${BINARY} not found, skipping\"\n    continue\n  fi\n\n  echo \"Generating dSYM for ${NAME}\"\n  dsymutil \"${BINARY}\" -o \"${OUTPUT}\" || echo \"warning: dsymutil failed for ${NAME}\"\ndone\n";
+		};
 		E1E2A0A62E7C4D4D8F1C2A11 /* [Custom] Copy GoogleService-Info.plist if present */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -355,7 +367,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = firma_station_mobile/firma_station_mobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = firma_station_mobile/Info.plist;
@@ -386,7 +398,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = firma_station_mobile/firma_station_mobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = firma_station_mobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Firma Station";
