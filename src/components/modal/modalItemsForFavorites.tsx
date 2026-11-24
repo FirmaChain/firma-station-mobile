@@ -21,8 +21,8 @@ import { IFavoriteProps } from '@/redux/types';
 import { easeInAndOutCustomAnim, fadeIn, fadeOut } from '@/util/animation';
 import { filter, isEqual } from 'es-toolkit/compat';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReorderableList, { reorderItems, useReorderableDrag } from 'react-native-reorderable-list';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 import { MenuIcon, Radio, RemoveIcon } from '../icon/icon';
@@ -46,7 +46,7 @@ const useRemoveAnimation = (item: IFavoriteProps, removeItem: IFavoriteProps | n
             fadeIn(Animated, fadeAnimForRemove, 300);
             return {
                 opacity: fadeAnimForRemove,
-                height: 'auto',
+                height: 'auto' as const,
                 padding: 10,
                 buttonPadding: 4
             };
@@ -115,10 +115,10 @@ interface FavoriteListItemProps {
     animationState: any;
     onSelect: (address: string, memo: string, isEdit: boolean) => void;
     onRemove: (item: IFavoriteProps) => void;
-    drag: () => void;
 }
 
-const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, onRemove, drag }: FavoriteListItemProps) => {
+const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, onRemove }: FavoriteListItemProps) => {
+    const drag = useReorderableDrag();
     const getLogoSVG = (address: string) => {
         if (address.includes('cosmos')) return <AtomLogo width={20} height={20} />;
         if (address.includes('osmo')) return <OsmoLogo width={20} height={20} />;
@@ -162,7 +162,7 @@ const FavoriteListItem = ({ item, isEdit, selected, animationState, onSelect, on
 
                 <View>
                     {isEdit ? (
-                        <TouchableOpacity onPressIn={drag}>
+                        <TouchableOpacity onLongPress={drag}>
                             <MenuIcon size={20} color={WhiteColor} />
                         </TouchableOpacity>
                     ) : (
@@ -240,36 +240,31 @@ const ModalItemsForFavorites = ({ initVal: selectedAddress, data, isEdit, onPres
         [favorite]
     );
 
-    // Smaller ListItem render
-    const ListItem = useCallback(
-        ({ item, drag }: RenderItemParams<IFavoriteProps>) => {
-            return (
-                <View>
-                    <FavoriteListItem
-                        item={item}
-                        isEdit={isEdit}
-                        selected={selectedAddress}
-                        animationState={AnimationState}
-                        onSelect={handleSelect}
-                        onRemove={setRemoveItem}
-                        drag={drag}
-                    />
-                    <RemoveConfirmBox item={item} removeItem={removeItem} onRemove={removeFavorite} />
-                </View>
-            );
-        },
-        [isEdit, removeItem, selectedAddress]
-    );
-
     return (
         <GestureHandlerRootView style={{ minHeight: 300, backgroundColor: BgColor }}>
-            <DraggableFlatList
+            <ReorderableList
                 data={data}
                 style={{ maxHeight: 450 }}
-                renderItem={ListItem}
+                renderItem={({ item }) => (
+                    <View>
+                        <FavoriteListItem
+                            item={item}
+                            isEdit={isEdit}
+                            selected={selectedAddress}
+                            animationState={AnimationState}
+                            onSelect={handleSelect}
+                            onRemove={setRemoveItem}
+                        />
+                        <RemoveConfirmBox item={item} removeItem={removeItem} onRemove={removeFavorite} />
+                    </View>
+                )}
                 scrollEnabled={true}
+                dragEnabled={isEdit}
                 keyExtractor={(item) => item.address + item.name} //? Both address and name are unique
-                onDragEnd={({ data }) => adjustFavoriteList(data)}
+                onReorder={({ from, to }) => {
+                    if (from === to) return;
+                    adjustFavoriteList(reorderItems(data, from, to));
+                }}
             />
         </GestureHandlerRootView>
     );
