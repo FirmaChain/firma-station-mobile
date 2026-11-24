@@ -186,7 +186,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - PromisesObjC (2.4.0)
-  - QuickCrypto (1.0.16):
+  - QuickCrypto (1.1.10):
     - hermes-engine
     - NitroModules
     - RCTRequired
@@ -1571,34 +1571,7 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-quick-base64 (2.2.2):
-    - React-Core
-  - react-native-safe-area-context (5.6.2):
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-Core-prebuilt
-    - React-cxxstableapi
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - react-native-safe-area-context/common (= 5.6.2)
-    - react-native-safe-area-context/fabric (= 5.6.2)
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
-  - react-native-safe-area-context/common (5.6.2):
+  - react-native-quick-base64 (3.0.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1621,7 +1594,55 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.2):
+  - react-native-safe-area-context (5.11.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-safe-area-context/common (= 5.11.1)
+    - react-native-safe-area-context/fabric (= 5.11.1)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - react-native-safe-area-context/common (5.11.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - react-native-safe-area-context/fabric (5.11.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2461,7 +2482,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNSVG (15.15.1):
+  - RNSVG (15.16.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2483,9 +2504,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNSVG/common (= 15.15.1)
+    - RNSVG/common (= 15.16.1)
     - Yoga
-  - RNSVG/common (15.15.1):
+  - RNSVG/common (15.16.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3059,7 +3080,7 @@ SPEC CHECKSUMS:
   NitroImage: eb713c7afe8fe1f6122d26e28d5c35f2b6495b82
   NitroModules: f1a11047ebbb0202a7d0033d6e99ad0527d34b00
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  QuickCrypto: a7093ed8b2be98c4a882c87800219dc63f4ad05c
+  QuickCrypto: 598a55d9fd59db3a3e6a04fc06612955cfd499f4
   RCT-Folly: 82921e585c0400eda46fac1068297aa9dfb035e4
   RCTDeprecation: c62b9b3fbf0d26b76755f3ebd1c913a4fb469dde
   RCTRequired: d0563e2484633b657976195f0543e180133afd3a
@@ -3102,8 +3123,8 @@ SPEC CHECKSUMS:
   React-mutationobservernativemodule: b97a67c29f724d18a92379e7390f24350acb433a
   react-native-get-random-values: 40c89d9412420d41cbfa332a774ff4a207283d24
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
-  react-native-quick-base64: 6568199bb2ac8e72ecdfdc73a230fbc5c1d3aac4
-  react-native-safe-area-context: 839ca66874035361e526a8bcb1bfe7c2076c5c0d
+  react-native-quick-base64: 9fa755b82c2f447d6dc648788abe816fd1a6bb7a
+  react-native-safe-area-context: 56700b839169ce88ffcec68c40447916fe512462
   react-native-webview: a612e9e783eb41035915897e02d196d9aa6d37c3
   React-NativeModulesApple: 8cfb2f308f48c48068c96b932e7f0e4297c23342
   React-networking: 3325cf73ecbdaacab0da91260b094baf36061a56
@@ -3157,7 +3178,7 @@ SPEC CHECKSUMS:
   RNPermissions: f731fb3171e631e65e50fb17842d2dd78d952f2e
   RNReanimated: 24e07521c09de9e5d93c1d30cbfdaf89f8f2fc47
   RNScreens: f15a5bda1ddeff8575b8ce41d83885b67129f84b
-  RNSVG: 6fd3054d74cfeab6786fe76e641a5ee8627f26cf
+  RNSVG: 0851af4352d2e692b44aada9dd7a1d361c18fcfc
   RNWorklets: 2beaf608a368e5894d578ac8c4e3c2b0c9b77e08
   SDWebImage: e9c98383c7572d713c1a0d7dd2783b10599b9838
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
@@ -3168,6 +3189,6 @@ SPEC CHECKSUMS:
   VisionCameraBarcodeScanner: 5025519c281eab8af2cda593cdb24eeffc2e1f03
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
-PODFILE CHECKSUM: 0c9f67a01b82046903dbebe51dfdc8c7c83f648a
+PODFILE CHECKSUM: ae1ba20125e488320925ffbe840b84da1756d6a7
 
 COCOAPODS: 1.16.2

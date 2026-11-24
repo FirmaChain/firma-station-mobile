@@ -52,6 +52,12 @@ target 'firma_station_mobile' do
 
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |build_config|
+        deployment_target = build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+        deployment_target = deployment_target.to_s.strip
+        if deployment_target.empty? || Gem::Version.new(deployment_target) < Gem::Version.new('15.5')
+          build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+        end
+
         if target.name == 'fmt'
           build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
 
@@ -64,6 +70,7 @@ target 'firma_station_mobile' do
         end
       end
     end
+
     # Build only for the active arch. This line added to exclude armv7.
     # installer.pods_project.targets.each do |target|
     #   target.build_configurations.each do |config|
