@@ -14,6 +14,7 @@ export interface IFirmaChainConfig {
 }
 
 export interface IChainNetworkState {
+    readonly MAINTENANCE_URL: string;
     readonly FIRMACHAIN_CONFIG: IFirmaChainConfig;
     readonly AVERAGE_BLOCK_TIME: number;
     readonly EXPLORER: string;
@@ -23,8 +24,6 @@ export interface IChainNetworkState {
     readonly RESTAKE_REWARD_API: string;
     readonly RESTAKE_ADDRESS: string;
     readonly RESTAKE_URL: string;
-    readonly CHAIN_SYMBOL: string;
-    readonly CHAIN_NAME_FOR_COINGECKO: string;
     readonly BLOCKS_PER_YEAR: number;
     readonly DEFAULT_MINT_INFLATION: number;
     readonly PROPOSAL_JSON: string;
