@@ -52,7 +52,7 @@ export const UPDATE_NOTIFICATION =
 export const UNABLE_TO_RETRIEVE_WALLET = 'Unable to retrieve wallet information. If the problem repeats, please contact us.';
 
 export const APPLE_APP_STORE = 'itms-apps://apps.apple.com/tr/app/firma-station/id1611660902?l=tr';
-export const APPLE_APP_STORE_WEB = 'https://apps.apple.com/us/app/firma-station/idid1611660902';
+export const APPLE_APP_STORE_WEB = 'https://apps.apple.com/us/app/firma-station/id1611660902';
 export const GOOGLE_PLAY_STORE = 'market://details?id=com.firma_station_mobile';
 export const GOOGLE_PLAY_STORE_WEB = 'https://play.google.com/store/apps/details?id=com.firma_station_mobile';
 
