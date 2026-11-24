@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { GUIDE_URI } from '@/../config';
 import { CHECK_RECOVER_VALUE, RECOVER_INFO_MESSAGE } from '@/constants/common';
 import { BgColor } from '@/constants/theme';
@@ -23,13 +23,7 @@ type ScreenNavgationProps = StackNavigationProp<StackParamList, Screens.SelectWa
 const RecoverWallet = () => {
     const navigation: ScreenNavgationProps = useNavigation();
     const isFocused = useIsFocused();
-    // Camera permission prompt can briefly move appState to inactive/background.
-    // Ignore only the first transition right after opening QR to avoid immediate close.
-    const ignoreNextInactiveRef = useRef(false);
-    const ignoreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const { appState } = useAppSelector((state) => state.common);
-    const { modalData, qrScannerModal } = useAppSelector((state) => state.modal);
+    const { modalData } = useAppSelector((state) => state.modal);
 
     const recoverWalletViaQR = async (value: string) => {
         const loadingRequestId = CommonActions.beginLoadingProgress();
@@ -53,19 +47,7 @@ const RecoverWallet = () => {
         navigation.navigate(Screens.StepRecover, { type: type });
     };
 
-    const handleRecoverViaQR = async (value: boolean) => {
-        if (value) {
-            // Arm one-time ignore flag only when user explicitly opens scanner.
-            ignoreNextInactiveRef.current = true;
-            if (ignoreTimeoutRef.current) {
-                clearTimeout(ignoreTimeoutRef.current);
-            }
-            // Auto-clear guard in case no appState transition occurs.
-            ignoreTimeoutRef.current = setTimeout(() => {
-                ignoreNextInactiveRef.current = false;
-                ignoreTimeoutRef.current = null;
-            }, 2000);
-        }
+    const handleRecoverViaQR = (value: boolean) => {
         ModalActions.handleQRScannerModal(value);
     };
 
@@ -83,26 +65,6 @@ const RecoverWallet = () => {
             ModalActions.handleResetModal({});
         }
     }, [isFocused, modalData]);
-
-    useEffect(() => {
-        if (qrScannerModal && appState !== 'active') {
-            // Ignore only one inactive/background right after opening scanner.
-            if (ignoreNextInactiveRef.current) {
-                ignoreNextInactiveRef.current = false;
-                return;
-            }
-            // Normal behavior: close scanner when app actually moves out of foreground.
-            handleRecoverViaQR(false);
-        }
-    }, [appState, qrScannerModal]);
-
-    useEffect(() => {
-        return () => {
-            if (ignoreTimeoutRef.current) {
-                clearTimeout(ignoreTimeoutRef.current);
-            }
-        };
-    }, []);
 
     return (
         <Container title="Recover Wallet" handleGuide={handleMoveToWeb} backEvent={handleBack}>
