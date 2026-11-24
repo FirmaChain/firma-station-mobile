@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { IBCConnectedColor } from '@/constants/theme';
+import { IBCConnectedColor, Lato } from '@/constants/theme';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
 const ConnectedSign = () => {
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end'
     },
     connectedTitle: {
-        fontFamily: 'Lato',
+        fontFamily: Lato,
         fontSize: 13,
         fontWeight: '600',
         textTransform: 'uppercase',
