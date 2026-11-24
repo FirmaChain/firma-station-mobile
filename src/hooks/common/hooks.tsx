@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CHAIN_NETWORK, MAINTENANCE_API, MAINTENANCE_PATH } from '@/../config';
+import { CHAIN_NETWORK } from '@/../config';
 import { useAppSelector } from '@/redux/hooks';
 import { getChainInfo } from '@/util/firma';
 import kyInstance from '@/util/kyService';
@@ -85,7 +85,7 @@ export const useServerMessage = () => {
     const getMaintenanceData = useCallback(async () => {
         try {
             const data = await kyInstance
-                .get<any>(`${MAINTENANCE_API}/${MAINTENANCE_PATH[network]}`, {
+                .get<any>(CHAIN_NETWORK[network].MAINTENANCE_URL, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Cache-Control': 'no-store',

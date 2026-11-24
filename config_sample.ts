@@ -1,18 +1,12 @@
 import { IKeyValue } from '@/constants/common';
 
 export const VERSION = '';
-export const MAINTENANCE_API = '';
 export const VALIDATORS_PROFILE_API = '';
 export const CONTACT = '';
 
-export const MAINTENANCE_PATH: IKeyValue = {
-    MainNet: '',
-    TestNet: '',
-    DevNet: ''
-};
-
 export const CHAIN_NETWORK: IKeyValue = {
     MainNet: {
+        MAINTENANCE_URL: '',
         FIRMACHAIN_CONFIG: '',
         AVERAGE_BLOCK_TIME: 0,
         EXPLORER: '',
@@ -22,14 +16,13 @@ export const CHAIN_NETWORK: IKeyValue = {
         RESTAKE_REWARD_API: '',
         RESTAKE_ADDRESS: '',
         RESTAKE_URL: '',
-        CHAIN_SYMBOL: '',
-        CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
         DEFAULT_MINT_INFLATION: 0,
         PROPOSAL_JSON: '',
         WALLET_JSON: ''
     },
     TestNet: {
+        MAINTENANCE_URL: '',
         FIRMACHAIN_CONFIG: '',
         AVERAGE_BLOCK_TIME: 0,
         EXPLORER: '',
@@ -39,14 +32,13 @@ export const CHAIN_NETWORK: IKeyValue = {
         RESTAKE_REWARD_API: '',
         RESTAKE_ADDRESS: '',
         RESTAKE_URL: '',
-        CHAIN_SYMBOL: '',
-        CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
         DEFAULT_MINT_INFLATION: 0,
         PROPOSAL_JSON: '',
         WALLET_JSON: ''
     },
     DevNet: {
+        MAINTENANCE_URL: '',
         FIRMACHAIN_CONFIG: '',
         AVERAGE_BLOCK_TIME: 0,
         EXPLORER: '',
@@ -56,8 +48,6 @@ export const CHAIN_NETWORK: IKeyValue = {
         RESTAKE_REWARD_API: '',
         RESTAKE_ADDRESS: '',
         RESTAKE_URL: '',
-        CHAIN_SYMBOL: '',
-        CHAIN_NAME_FOR_COINGECKO: '',
         BLOCKS_PER_YEAR: 0,
         DEFAULT_MINT_INFLATION: 0,
         PROPOSAL_JSON: '',
@@ -104,8 +94,6 @@ export const GUIDE_URI: IKeyValue = {
 
     dapps: ''
 };
-
-export const NOTARY_URI = '';
 
 export const RELEASE_STORE_PASSWORD = '';
 export const RELEASE_KEY_PASSWORD = '';
