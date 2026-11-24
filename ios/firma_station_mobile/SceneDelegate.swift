@@ -19,6 +19,7 @@ class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate
     dependencyProvider = RCTAppDependencyProvider()
     reactNativeFactory = RCTReactNativeFactory(delegate: self)
     window = UIWindow(windowScene: windowScene)
+    (UIApplication.shared.delegate as? AppDelegate)?.window = window
 
     #if DEBUG
     let devMenuConfiguration = RCTDevMenuConfiguration(
@@ -34,6 +35,11 @@ class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate
       in: window,
       connectionOptions: connectionOptions
     )
+  }
+
+  func sceneDidDisconnect(_ scene: UIScene) {
+    window = nil
+    (UIApplication.shared.delegate as? AppDelegate)?.window = nil
   }
 
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
