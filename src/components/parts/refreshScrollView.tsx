@@ -10,6 +10,7 @@ import {
     NativeSyntheticEvent,
     RefreshControl,
     ScrollView,
+    ScrollViewInstance,
     StyleSheet,
     TouchableOpacity,
     View
@@ -36,7 +37,7 @@ const RefreshScrollView = ({
 }: IProps) => {
     const { scrollToTop: commonScrollToTop } = useAppSelector((state) => state.common);
     const [refreshing, setRefreshing] = useState(false);
-    const scrollRef = useRef<ScrollView>(null);
+    const scrollRef = useRef<ScrollViewInstance>(null);
 
     const [activeButton, setActiveButton] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;

@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BgColor, BoxColor, BoxDarkColor, Lato, TextCatTitleColor, TextColor, WhiteColor } from '@/constants/theme';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View, type LayoutChangeEvent } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReorderableList, { reorderItems, useReorderableDrag } from 'react-native-reorderable-list';
 
 import { MenuIcon, Radio } from '../icon/icon';
 
@@ -18,7 +18,39 @@ type Item = {
     label: string;
 };
 
+interface WalletListItemProps {
+    item: Item;
+    index: number;
+    isEdit: boolean;
+    selected: number;
+    onSelect: (index: number) => void;
+    onLayout: (event: LayoutChangeEvent) => void;
+}
+
+const WalletListItem = ({ item, index, isEdit, selected, onSelect, onLayout }: WalletListItemProps) => {
+    const drag = useReorderableDrag();
+
+    return (
+        <TouchableOpacity style={styles.modalContentBox} onLayout={onLayout} onPress={isEdit ? undefined : () => onSelect(index)}>
+            <View style={styles.itemLabelBox}>
+                <Text style={styles.itemTitle}>{item.label}</Text>
+            </View>
+            {isEdit ? (
+                <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onLongPress={drag}>
+                    <MenuIcon size={20} color={WhiteColor} />
+                </TouchableOpacity>
+            ) : (
+                <View style={{ paddingHorizontal: 20 }}>
+                    <Radio size={20} color={WhiteColor} active={index === selected} />
+                </View>
+            )}
+        </TouchableOpacity>
+    );
+};
+
 const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: IProps) => {
+    const listRef = useRef<FlatList<Item>>(null);
+    const didInitialScroll = useRef(false);
     const initialData = useMemo(() => {
         if (data === null) {
             return [];
@@ -74,40 +106,17 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
         recreateList();
     }, [listData]);
 
-    const canInitialScroll = containerSize > 0 && initVal >= 0 && listData.length > 0;
+    useEffect(() => {
+        const list = listRef.current;
+        if (!didInitialScroll.current && list && containerSize > 0 && initVal >= 0 && initVal < listData.length) {
+            didInitialScroll.current = true;
+            list.scrollToIndex({ index: initVal, animated: false });
+        }
+    }, [containerSize, initVal, listData.length]);
 
-    const RenderListItem = useCallback(
-        ({ item, drag }: RenderItemParams<Item>) => {
-            const index = listData.findIndex((dataItem) => dataItem.key === item.key);
-
-            return (
-                <TouchableOpacity
-                    key={item.key}
-                    style={styles.modalContentBox}
-                    onLayout={(e) => {
-                        if (containerSize === 0) setContainerSize(e.nativeEvent.layout.height);
-                    }}
-                    onPress={() => {
-                        if (isEdit === false) handleSelect(index);
-                    }}
-                >
-                    <View style={styles.itemLabelBox}>
-                        <Text style={styles.itemTitle}>{item.label}</Text>
-                    </View>
-                    {isEdit ? (
-                        <TouchableOpacity style={{ paddingVertical: 15, paddingRight: 20, paddingLeft: 50 }} onPressIn={drag}>
-                            <MenuIcon size={20} color={WhiteColor} />
-                        </TouchableOpacity>
-                    ) : (
-                        <View style={{ paddingHorizontal: 20 }}>
-                            <Radio size={20} color={WhiteColor} active={index === selected} />
-                        </View>
-                    )}
-                </TouchableOpacity>
-            );
-        },
-        [containerSize, isEdit, listData, selected]
-    );
+    const handleItemLayout = (event: LayoutChangeEvent) => {
+        if (containerSize === 0) setContainerSize(event.nativeEvent.layout.height);
+    };
 
     return (
         <View style={styles.modalContainer}>
@@ -118,20 +127,33 @@ const ModalWalletList = ({ initVal, data, handleEditWalletList, onPressEvent }: 
                 </TouchableOpacity>
             </View>
             <GestureHandlerRootView style={{ backgroundColor: BgColor }}>
-                <DraggableFlatList
+                <ReorderableList
+                    ref={listRef}
                     data={listData}
                     style={{ maxHeight: 450 }}
-                    renderItem={RenderListItem}
+                    renderItem={({ item, index }) => (
+                        <WalletListItem
+                            item={item}
+                            index={index}
+                            isEdit={isEdit}
+                            selected={selected}
+                            onSelect={handleSelect}
+                            onLayout={handleItemLayout}
+                        />
+                    )}
                     scrollEnabled={true}
-                    initialScrollIndex={canInitialScroll ? initVal : undefined}
+                    dragEnabled={isEdit}
                     getItemLayout={(_, index) => ({
                         length: containerSize,
                         offset: containerSize * index,
                         index
                     })}
                     keyExtractor={(item) => item.key.toString()}
-                    onScrollToIndexFailed={() => {}}
-                    onDragEnd={({ data }) => setListData(data)}
+                    onScrollToIndexFailed={() => listRef.current?.scrollToOffset({ offset: containerSize * initVal, animated: false })}
+                    onReorder={({ from, to }) => {
+                        if (from === to) return;
+                        setListData(reorderItems(listData, from, to));
+                    }}
                 />
             </GestureHandlerRootView>
         </View>

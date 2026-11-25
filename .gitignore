@@ -82,3 +82,5 @@ android/keystore.properties
 # Firebase
 google-services.json
 GoogleService-Info.plist
+
+.env*

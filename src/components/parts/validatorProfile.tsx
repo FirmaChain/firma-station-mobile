@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ProfileIcon from '@/assets/icons/material/profile.svg';
 import { TextColor } from '@/constants/theme';
-import FastImage from '@d11/react-native-fast-image';
+import FastImage, { ImageStyle as FastImageStyle } from '@d11/react-native-fast-image';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 const ValidatorProfile = ({ uri, size, customStyle }: { uri: string; size: number; customStyle?: StyleProp<ViewStyle> }) => {
@@ -11,7 +11,7 @@ const ValidatorProfile = ({ uri, size, customStyle }: { uri: string; size: numbe
             {error && <ProfileIcon width={size} height={size} color={TextColor} style={style.placeholder} />}
             <FastImage
                 source={{ uri: uri?.trim(), priority: FastImage.priority.low }}
-                style={{ width: size, height: size, borderRadius: size }}
+                style={{ width: size, height: size, borderRadius: size } as FastImageStyle}
                 onError={() => setError(true)}
             />
         </View>

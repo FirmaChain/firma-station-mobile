@@ -123,7 +123,7 @@ const Governance = () => {
                         offset: 142 * index,
                         index
                     })}
-                    ListEmptyComponent={renderEmptyComponent()}
+                    ListEmptyComponent={renderEmptyComponent() ?? undefined}
                 />
             )}
         </View>

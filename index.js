@@ -1,6 +1,5 @@
 import './shim.js';
 import 'react-native-get-random-values';
-import 'react-native-quick-base64';
 
 import notifee, { EventType } from '@notifee/react-native';
 import { AppRegistry } from 'react-native';

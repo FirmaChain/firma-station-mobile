@@ -1,5 +1,5 @@
-export const ChakraPetch = 'ChakraPetch-Regular';
-export const Lato = 'Lato-Regular';
+export const ChakraPetch = 'Chakra Petch';
+export const Lato = 'Lato';
 
 export const BgColor = '#1c1c24';
 export const BoxColor = '#292932';

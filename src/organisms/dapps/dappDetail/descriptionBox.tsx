@@ -11,7 +11,7 @@ import {
     TextGrayColor
 } from '@/constants/theme';
 import { easeInAndOutCustomAnim } from '@/util/animation';
-import { Image, NativeSyntheticEvent, StyleSheet, Text, TextLayoutEventData, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextLayoutEvent, TouchableOpacity, View } from 'react-native';
 import Svg, { Defs, Rect, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 
 import { DownEmptyArrow, UpEmptyArrow } from '@/components/icon/icon';
@@ -47,7 +47,7 @@ const DescriptionBox = ({ data }: IProps) => {
         setOpenAccordion(!openAccordion);
     };
 
-    const onTextLayout = (event: NativeSyntheticEvent<TextLayoutEventData>) => {
+    const onTextLayout = (event: TextLayoutEvent) => {
         if (descLines === 0) {
             setDescLines(event.nativeEvent.lines.length);
         }

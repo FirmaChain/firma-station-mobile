@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { BoxColor, Lato, TextCatTitleColor } from '@/constants/theme';
 import { fadeIn, fadeOut } from '@/util/animation';
-import FastImage, { Source } from '@d11/react-native-fast-image';
+import FastImage, { ImageStyle as FastImageStyle, Source } from '@d11/react-native-fast-image';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { INFTProps } from '@/hooks/dapps/hooks';
@@ -29,7 +29,7 @@ const NFTItem = ({ item, size, disabled = false, moveToNFTDetail }: IProps) => {
         >
             <View style={{ paddingHorizontal: 10 }}>
                 <View style={[styles.contentImageWrap, { width: '100%', height: size - 20 }]}>
-                    <FastImage style={styles.contentImage} resizeMode="contain" source={getImageSource(item.image)} />
+                    <FastImage style={styles.contentImage as unknown as FastImageStyle} resizeMode="contain" source={getImageSource(item.image)} />
                 </View>
                 <Text style={[styles.contentTitle, { width: '100%' }]} numberOfLines={1}>
                     {item.name}
